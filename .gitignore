@@ -1,0 +1,7 @@
+
+*.local
+*.identcache
+/Packages/Debug
+/Packages/Modules/Debug
+/Utility/ConfigTool/Debug
+/Utility/Output
