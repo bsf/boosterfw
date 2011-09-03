@@ -1,0 +1,47 @@
+package bfwCore;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$IMPLICITBUILD OFF}
+
+requires
+  rtl,
+  vcl;
+
+contains
+  AbstractApp in '..\Sources\Core\AbstractApp.pas',
+  ActionsList in '..\Sources\Core\ActionsList.pas',
+  CommandsList in '..\Sources\Core\CommandsList.pas',
+  CoreClasses in '..\Sources\Core\CoreClasses.pas',
+  EventBroker in '..\Sources\Core\EventBroker.pas',
+  ItemsList in '..\Sources\Core\ItemsList.pas',
+  ManagedList in '..\Sources\Core\ManagedList.pas',
+  ModuleEnumerator in '..\Sources\Core\ModuleEnumerator.pas',
+  ModuleEnumeratorEmbeded in '..\Sources\Core\ModuleEnumeratorEmbeded.pas',
+  ModuleLoader in '..\Sources\Core\ModuleLoader.pas',
+  ServicesList in '..\Sources\Core\ServicesList.pas',
+  WindowWorkspace in '..\Sources\Core\WindowWorkspace.pas',
+  Workspace in '..\Sources\Core\Workspace.pas',
+  WorkspacesList in '..\Sources\Core\WorkspacesList.pas';
+
+end.

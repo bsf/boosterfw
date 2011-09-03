@@ -1,0 +1,82 @@
+unit ServicesList;
+
+interface
+uses Classes, CoreClasses, ComObj;
+
+type
+  TServices = class(TComponent, IServices)
+  private
+    FItems: TInterfaceList;
+    FWorkItem: TWorkItem;
+  public
+    constructor Create(AWorkItem: TWorkItem); reintroduce;
+    destructor Destroy; override;
+    procedure Add(const AService: IInterface);
+    procedure Remove(const AService: IInterface);
+    procedure Clear; 
+    function Query(const AService: TGUID; var Obj): boolean;
+    function Get(const AService: TGUID): IInterface;
+    property GetItem[const AService: TGUID]: IInterface read Get; default;
+  end;
+
+implementation
+
+{ TServices }
+
+constructor TServices.Create(AWorkItem: TWorkItem);
+begin
+  inherited Create(nil);
+  FItems := TInterfaceList.Create;
+  FWorkItem := AWorkItem;
+end;
+
+destructor TServices.Destroy;
+begin
+  FItems.Free;
+  inherited;
+end;
+
+procedure TServices.Add(const AService: IInterface);
+begin
+  FItems.Add(AService);
+end;
+
+procedure TServices.Remove(const AService: IInterface);
+begin
+  FItems.Remove(AService);
+end;
+
+function TServices.Get(const AService: TGUID): IInterface;
+var
+  I: integer;
+begin
+  Result := nil;
+  for I := 0 to FItems.Count - 1 do
+    if FItems[I].QueryInterface(AService, Result) = 0 then Exit;
+
+  if FWorkItem.Parent <> nil then
+    Result := FWorkItem.Parent.Services.Get(AService);
+
+  if Result = nil then
+    raise EServiceMissingError.Create('Service ' + GUIDToString(AService) + ' not found.');
+end;
+
+
+function TServices.Query(const AService: TGUID; var Obj): boolean;
+var
+  I: integer;
+begin
+  Result := False;
+  for I := 0 to FItems.Count - 1 do
+  begin
+    Result := FItems[I].QueryInterface(AService, Obj) = 0;
+    if Result then Exit;
+  end;
+end;
+
+procedure TServices.Clear;
+begin
+  FItems.Clear;
+end;
+
+end.

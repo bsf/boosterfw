@@ -1,0 +1,60 @@
+object frWaitBox: TfrWaitBox
+  Left = 640
+  Top = 313
+  BorderIcons = []
+  BorderStyle = bsNone
+  Caption = 'frWaitBox'
+  ClientHeight = 64
+  ClientWidth = 309
+  Color = clBtnFace
+  Enabled = False
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poOwnerFormCenter
+  PixelsPerInch = 96
+  TextHeight = 13
+  object pnMain: TcxGroupBox
+    Left = 0
+    Top = 0
+    Align = alClient
+    PanelStyle.Active = True
+    Style.LookAndFeel.Kind = lfOffice11
+    StyleDisabled.LookAndFeel.Kind = lfOffice11
+    StyleFocused.LookAndFeel.Kind = lfOffice11
+    StyleHot.LookAndFeel.Kind = lfOffice11
+    TabOrder = 0
+    Height = 64
+    Width = 309
+    object Image: TImage
+      Left = 16
+      Top = 16
+      Width = 32
+      Height = 32
+      Center = True
+      Stretch = True
+    end
+    object lbMessageText: TcxLabel
+      Left = 64
+      Top = 0
+      AutoSize = False
+      Caption = 'lbMessageText'
+      Style.LookAndFeel.Kind = lfOffice11
+      StyleDisabled.LookAndFeel.Kind = lfOffice11
+      StyleFocused.LookAndFeel.Kind = lfOffice11
+      StyleHot.LookAndFeel.Kind = lfOffice11
+      Properties.Alignment.Horz = taCenter
+      Properties.Alignment.Vert = taVCenter
+      Properties.Orientation = cxoTop
+      Properties.WordWrap = True
+      Transparent = True
+      Height = 63
+      Width = 238
+      AnchorX = 183
+      AnchorY = 32
+    end
+  end
+end

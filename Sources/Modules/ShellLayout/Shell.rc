@@ -1,0 +1,3 @@
+SHELL_NAVBAR_IMAGE file .\RES\MainMenu.bmp
+TABWS_WIN_IMAGE file .\RES\TabWS_Win.bmp
+TABWS_CROSS_IMAGE file .\RES\TabWS_Cross.bmp

@@ -1,0 +1,53 @@
+package bfwShellLayout;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  bfwCore,
+  bfwInterfaces,
+  bfwUI,
+  dxBarExtItemsD15,
+  cxBarEditItemD15,
+  dxmdsD15,
+  dxNavBarD15,
+  dxSkinscxPCPainterD15,
+  dxSkinsdxBarPainterD15,
+  dxSkinsdxNavBar2PainterD15;
+
+contains
+  bfwShellLayoutModuleInit in '..\..\Sources\Modules\ShellLayout\bfwShellLayoutModuleInit.pas',
+  ShellAbout in '..\..\Sources\Modules\ShellLayout\ShellAbout.pas' {frShellAbout},
+  ShellForm in '..\..\Sources\Modules\ShellLayout\ShellForm.pas' {frMain},
+  ShellNavBar in '..\..\Sources\Modules\ShellLayout\ShellNavBar.pas',
+  ShellWaitBox in '..\..\Sources\Modules\ShellLayout\ShellWaitBox.pas' {frWaitBox},
+  TabbedWorkspace in '..\..\Sources\Modules\ShellLayout\TabbedWorkspace.pas',
+  UILocalization in '..\..\Sources\Modules\ShellLayout\UILocalization.pas',
+  UserPreferencesPresenter in '..\..\Sources\Modules\ShellLayout\UserPreferencesPresenter.pas',
+  UserPreferencesView in '..\..\Sources\Modules\ShellLayout\UserPreferencesView.pas' {frUserPreferencesView},
+  ViewStyleController in '..\..\Sources\Modules\ShellLayout\ViewStyleController.pas',
+  NumLockDotHook in '..\..\Sources\Modules\ShellLayout\NumLockDotHook.pas';
+
+end.

@@ -1,0 +1,74 @@
+package bfwUI;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$IMPLICITBUILD OFF}
+
+requires
+  rtl,
+  vclimg,
+  vcl,
+  dsnap,
+  vcldb,
+  dbrtl,
+  bfwCore,
+  bfwInterfaces,
+  dxCoreD15,
+  cxLibraryD15,
+  dxThemeD15,
+  dxGDIPlusD15,
+  cxEditorsD15,
+  cxDataD15,
+  cxExtEditorsD15,
+  dxBarD15,
+  dxComnD15,
+  cxPageControlD15,
+  cxGridD15,
+  cxExportD15,
+  cxTreeListD15,
+  cxTreeListdxBarPopupMenuD15,
+  dxSkinsCoreD15,
+  cxVerticalGridD15;
+
+contains
+  CommonUtils in '..\Sources\UI\CommonUtils.pas',
+  CommonViewIntf in '..\Sources\UI\CommonViewIntf.pas',
+  CustomContentPresenter in '..\Sources\UI\CustomContentPresenter.pas',
+  CustomDialogPresenter in '..\Sources\UI\CustomDialogPresenter.pas',
+  CustomModule in '..\Sources\UI\CustomModule.pas',
+  CustomPresenter in '..\Sources\UI\CustomPresenter.pas',
+  CustomUIController in '..\Sources\UI\CustomUIController.pas',
+  CustomView in '..\Sources\UI\CustomView.pas' {frCustomView},
+  EditCtrlUtils in '..\Sources\UI\EditCtrlUtils.pas',
+  GridCtrlUtils in '..\Sources\UI\GridCtrlUtils.pas',
+  GridTreeCtrlUtils in '..\Sources\UI\GridTreeCtrlUtils.pas',
+  GridTreeGtrlUtils in '..\Sources\UI\GridTreeGtrlUtils.pas',
+  GridVCtrlUtils in '..\Sources\UI\GridVCtrlUtils.pas',
+  ICommandBarImpl in '..\Sources\UI\ICommandBarImpl.pas',
+  IPagesImpl in '..\Sources\UI\IPagesImpl.pas',
+  ISelectionGridImpl in '..\Sources\UI\ISelectionGridImpl.pas',
+  ITabsImpl in '..\Sources\UI\ITabsImpl.pas',
+  CustomDialogView in '..\Sources\UI\CustomDialogView.pas' {frCustomDialogView},
+  CustomContentView in '..\Sources\UI\CustomContentView.pas' {frCustomContentView};
+
+end.
