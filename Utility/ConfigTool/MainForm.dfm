@@ -31,6 +31,8 @@ object Form2: TForm2
     StyleFocused.LookAndFeel.Kind = lfOffice11
     StyleHot.LookAndFeel.Kind = lfOffice11
     TabOrder = 0
+    ExplicitLeft = -32
+    ExplicitTop = -5
     Height = 552
     Width = 970
     object dxNavBar1: TdxNavBar
@@ -146,12 +148,12 @@ object Form2: TForm2
       TitleFont.Style = []
     end
     object cxDBVerticalGrid2: TcxDBVerticalGrid
-      Left = 416
-      Top = 288
-      Width = 217
-      Height = 200
+      Left = 239
+      Top = 152
+      Width = 586
+      Height = 357
       OptionsView.ShowEditButtons = ecsbAlways
-      OptionsView.RowHeaderWidth = 110
+      OptionsView.RowHeaderWidth = 228
       TabOrder = 5
       DataController.DataSource = DataSource1
       Version = 1
@@ -163,7 +165,10 @@ object Form2: TForm2
         Version = 1
       end
       object cxDBVerticalGrid2IMG: TcxDBEditorRow
-        Properties.EditPropertiesClassName = 'TcxExtLookupComboBoxProperties'
+        Height = 150
+        Properties.EditPropertiesClassName = 'TcxImageProperties'
+        Properties.EditProperties.GraphicClassName = 'TJPEGImage'
+        Properties.EditProperties.Stretch = True
         Properties.DataBinding.FieldName = 'IMG'
         Properties.Options.ShowEditButtons = eisbAlways
         ID = 1

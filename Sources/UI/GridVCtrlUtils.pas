@@ -33,6 +33,7 @@ type
     procedure InitLookupEditor(ARow: TcxDBEditorRow; ADataSet: TDataSet);
     procedure InitComboBoxEditor(ARow: TcxDBEditorRow; ADataSet: TDataSet);
     procedure InitCheckBoxEditor(ARow: TcxDBEditorRow);
+    procedure InitImageEditor(ARow: TcxDBEditorRow);
 
     procedure TuneGridForDataSet(AGrid: TcxDBVerticalGrid;
       ADataSet: TDataSet);
@@ -399,6 +400,9 @@ begin
     else if SameText(editorTyp, FIELD_ATTR_EDITOR_CHECKBOX) then
        InitCheckBoxEditor(AEditorRow)
 
+    else if SameText(editorTyp, FIELD_ATTR_EDITOR_IMAGE) then
+       InitImageEditor(AEditorRow)
+
     else if AField is TDateTimeField then
     begin
       AEditorRow.Properties.EditPropertiesClass := TcxDateEditProperties;
@@ -584,6 +588,11 @@ begin
     TcxComboBoxProperties(ARow.Properties.EditProperties).Items.Append(VarToStr(lookupDS.Fields[0].Value));
     lookupDS.Next;
   end;
+
+end;
+
+procedure TcxVGridViewHelper.InitImageEditor(ARow: TcxDBEditorRow);
+begin
 
 end;
 
