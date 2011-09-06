@@ -599,7 +599,7 @@ begin
   begin
     GraphicClassName := 'TJPEGImage';
     Stretch := true;
-    ClearKey := 'Del';
+    //ClearKey := TextToShortCut('Del'); on move to next row and back dont work !
     ImmediatePost := true;
   end;
 
