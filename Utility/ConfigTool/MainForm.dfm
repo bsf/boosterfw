@@ -31,8 +31,6 @@ object Form2: TForm2
     StyleFocused.LookAndFeel.Kind = lfOffice11
     StyleHot.LookAndFeel.Kind = lfOffice11
     TabOrder = 0
-    ExplicitLeft = -32
-    ExplicitTop = -5
     Height = 552
     Width = 970
     object dxNavBar1: TdxNavBar
