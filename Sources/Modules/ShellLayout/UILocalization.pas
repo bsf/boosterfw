@@ -2,7 +2,7 @@ unit UILocalization;
 
 interface
 uses cxClasses, dxNavBarConsts, cxGridStrs, cxFilterControlStrs, cxFilterConsts,
-  cxGridPopupMenuConsts;
+  cxGridPopupMenuConsts, cxEditConsts;
 
 procedure Localization;
 
@@ -10,6 +10,45 @@ implementation
 
 procedure Localization;
 begin
+//cxEditConsts;
+
+  // TODO
+  cxSetResourceString(@cxSEditCheckBoxChecked, 'Истина');
+  cxSetResourceString(@cxSEditCheckBoxGrayed, '');
+  cxSetResourceString(@cxSEditCheckBoxUnchecked, 'Ложь');
+  cxSetResourceString(@cxSRadioGroupDefaultCaption, '');
+
+  cxSetResourceString(@cxSTextTrue, 'Истина');
+  cxSetResourceString(@cxSTextFalse, 'Ложь');
+
+  // blob
+  cxSetResourceString(@cxSBlobButtonOK, 'OK');
+  cxSetResourceString(@cxSBlobButtonCancel, 'Отмена');
+  cxSetResourceString(@cxSBlobButtonClose, 'Закрыть');
+  cxSetResourceString(@cxSBlobMemo, '(MEMO)');
+  cxSetResourceString(@cxSBlobMemoEmpty, '(memo)');
+  cxSetResourceString(@cxSBlobPicture, '(PICTURE)');
+  cxSetResourceString(@cxSBlobPictureEmpty, '(picture)');
+
+  // popup menu items
+  cxSetResourceString(@cxSMenuItemCaptionCut, 'Вырезать');
+  cxSetResourceString(@cxSMenuItemCaptionCopy, 'Копировать');
+  cxSetResourceString(@cxSMenuItemCaptionPaste, 'Вставить');
+  cxSetResourceString(@cxSMenuItemCaptionDelete, 'Удалить');
+  cxSetResourceString(@cxSMenuItemCaptionLoad,  'Загрузить...');
+  cxSetResourceString(@cxSMenuItemCaptionSave, 'Сохранить как...');
+
+  // date
+  cxSetResourceString(@cxSDatePopupClear, 'Очистить');
+  cxSetResourceString(@cxSDatePopupNow, 'Сейчас');
+  cxSetResourceString(@cxSDatePopupOK, 'OK');
+  cxSetResourceString(@cxSDatePopupToday, 'Сегодня');
+  cxSetResourceString(@cxSDateError, 'Не корректная дата');
+
+  // calculator
+  cxSetResourceString(@scxSCalcError, 'Ошибка');
+
+
 {*-------------------------- NAV BAR -------------------------------------------
   sdxNavigationPaneOverflowPanelCustomizeHint = 'Configure buttons';
   sdxNavigationPaneMinimizeNavPaneSignHint = 'Minimize Navigation Pane';

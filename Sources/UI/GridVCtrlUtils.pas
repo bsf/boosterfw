@@ -4,7 +4,7 @@ interface
 uses cxVGrid, cxDBVGrid, Contnrs, controls, CustomView, classes, sysutils, db,
   EntityServiceIntf, cxButtonEdit, cxEdit, CoreClasses, StrUtils, Variants,
   cxInplaceContainer, cxDBLookupComboBox, cxDropDownEdit, menus, cxCheckBox, forms,
-  CommonViewIntf, ViewServiceIntf, cxCalendar, typinfo;
+  CommonViewIntf, ViewServiceIntf, cxCalendar, typinfo, cxImage;
 
 const
   EDITOR_DATA_ENTITY = 'EntityName';
@@ -593,6 +593,15 @@ end;
 
 procedure TcxVGridViewHelper.InitImageEditor(ARow: TcxDBEditorRow);
 begin
+  ARow.Properties.EditPropertiesClass := TcxImageProperties;
+  ARow.Height := 150;
+  with TcxImageProperties(ARow.Properties.EditProperties) do
+  begin
+    GraphicClassName := 'TJPEGImage';
+    Stretch := true;
+    ClearKey := 'Del';
+    ImmediatePost := true;
+  end;
 
 end;
 
