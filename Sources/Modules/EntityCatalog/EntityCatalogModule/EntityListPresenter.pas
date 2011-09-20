@@ -130,6 +130,9 @@ begin
   FreeOnViewClose := true;
   ViewTitle := UIInfo.Title;
 
+  if UIInfo.OptionExists('Title') <> '' then
+     ViewTitle :=
+       VarToStr(GetEView(UIInfo.EntityName, UIInfo.OptionValue('Title')).DataSet.Fields[0]);
 
 {  if Assigned(GetEVList.DataSet.FindField('VIEW_TITLE')) then
     ViewTitle := VarToStr(GetEVList.DataSet.FindField('VIEW_TITLE').Value);}
