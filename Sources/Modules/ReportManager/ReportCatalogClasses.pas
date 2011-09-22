@@ -1,7 +1,7 @@
 unit ReportCatalogClasses;
 
 interface
-uses Classes, sysutils, ComObj, inifiles, windows;
+uses Classes, sysutils, ComObj, inifiles, windows, Contnrs;
 
 const
   cnstReportManifestFileName = 'ReportManifest.ini';
@@ -51,9 +51,37 @@ type
     property Items[AIndex: integer]: TManifestParamNode read GetItem; default;
   end;
 
+  TReportLayout = class(TObject)
+  private
+    FTemplate: string;
+    FCaption: string;
+    FID: string;
+  public
+    property ID: string read FID;
+    property Caption: string read FCaption;
+    property Template: string read FTemplate;
+  end;
+
+  TReportLayouts = class(TObject)
+  private
+    FItems: TObjectList;
+    function GetItem(AIndex: integer): TReportLayout;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    procedure Clear;
+    function Add(const ID: string): TReportLayout;
+    function Count: integer;
+    function Find(const ID: string): TReportLayout;
+    property Items[AIndex: integer]: TReportLayout read GetItem; default;
+  end;
+
+
   TReportCatalogManifest = class(TComponent)
   private
     FParamNodes: TManifestParamNodes;
+    FLayouts: TReportLayouts;
+
     FGroup: string;
     FCaption: string;
     FTemplate: string;
@@ -81,6 +109,7 @@ type
 //    property ShowParamView: boolean read FShowParamView write FShowParamView;
     property ImmediateRun: boolean read FImmediateRun write FImmediateRun;
     property ParamNodes: TManifestParamNodes read FParamNodes;
+    property Layouts: TReportLayouts read FLayouts;
     property ExtendCommands: TStrings read GetExtendCommands write SetExtendCommands;
   end;
 
@@ -521,12 +550,14 @@ begin
   inherited Create(AOwner);
   FParamNodes := TManifestParamNodes.Create;
   FExtendCommands := TStringList.Create;
+  FLayouts := TReportLayouts.Create;
 end;
 
 destructor TReportCatalogManifest.Destroy;
 begin
   FParamNodes.Free;
   FExtendCommands.Free;
+  FLayouts.Free;
   inherited;
 end;
 
@@ -572,6 +603,7 @@ var
   Sections: TStringList;
   nameID: string;
   paramItem: TManifestParamNode;
+  layout: TReportLayout;
 begin
   Sections := TStringList.Create;
 
@@ -596,7 +628,7 @@ begin
       AManifest.ReadString(Sections[I], 'Editor', 'peNone'));
     paramItem.Hint := AManifest.ReadString(Sections[I], 'Hint', '');
     paramItem.Hidden := AManifest.ReadBool(Sections[I], 'Hidden', false);
-    paramItem.Required := AManifest.ReadBool(Sections[I], 'Required', true);    
+    paramItem.Required := AManifest.ReadBool(Sections[I], 'Required', true);
     paramItem.DefaultValue := AManifest.ReadString(Sections[I], 'DefaultValue', '');
 
     {ExtractStrings([';'], [],
@@ -609,7 +641,18 @@ begin
   FExtendCommands.Clear;
   AManifest.ReadSectionValues('ExtendCommands', FExtendCommands);
 
+  FLayouts.Clear;
+  GetSectionList('Layout.', Sections);
+  for i := 0 to Sections.Count - 1 do
+  begin
+    nameID := StringReplace(Sections[I], 'Layout.', '', []);
+    layout := FLayouts.Add(FID + '.' + nameID);
+    layout.FTemplate := AManifest.ReadString(Sections[I], 'Template', FTemplate);
+    layout.FCaption := AManifest.ReadString(Sections[I], 'Caption', nameID);
+  end;
+
   Sections.Free;
+
 
 end;
 
@@ -703,6 +746,44 @@ begin
   FValues.Free;
   FEditorOptions.Free;
   inherited;
+end;
+
+{ TReportLayouts }
+
+function TReportLayouts.Add(const ID: string): TReportLayout;
+begin
+
+end;
+
+procedure TReportLayouts.Clear;
+begin
+  FItems.Clear;
+end;
+
+function TReportLayouts.Count: integer;
+begin
+
+end;
+
+constructor TReportLayouts.Create;
+begin
+  FItems := TObjectList.Create(true);
+end;
+
+destructor TReportLayouts.Destroy;
+begin
+  FItems.Free;
+  inherited;
+end;
+
+function TReportLayouts.Find(const ID: string): TReportLayout;
+begin
+
+end;
+
+function TReportLayouts.GetItem(AIndex: integer): TReportLayout;
+begin
+
 end;
 
 end.

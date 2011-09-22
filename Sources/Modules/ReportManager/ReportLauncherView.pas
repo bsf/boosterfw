@@ -16,6 +16,7 @@ type
     ParamDataSource: TDataSource;
     grParams: TcxDBVerticalGrid;
     grParamsCategoryTop: TcxCategoryRow;
+    grParamsCategoryLayouts: TcxCategoryRow;
     procedure grParamsEditValueChanged(Sender: TObject;
       ARowProperties: TcxCustomEditorRowProperties);
   private
@@ -97,10 +98,23 @@ begin
 end;
 
 procedure TfrReportLauncherView.LinkParamDataSet(const ADataSet: TDataSet);
+var
+  I: Integer;
 begin
 
   ParamDataSource.DataSet := ADataSet;
   grParams.DataController.CreateAllItems;
+
+  for I := 0 to grParams.Rows.Count - 1 do
+  begin
+    if (grParams.Rows[I] is TcxDBEditorRow) and
+       (TcxDBEditorRow(grParams.Rows[I]).
+         Properties.DataBinding.FieldName = 'ReportLayouts') then
+    begin
+      grParamsCategoryLayouts.Visible := true;
+      grParams.Rows[I].Parent := grParamsCategoryLayouts;
+    end;
+  end;
 
 end;
 

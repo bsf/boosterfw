@@ -139,6 +139,11 @@ begin
   WorkItem.Root.Actions[AItem.ID].SetHandler(ActionReportLaunch);
   WorkItem.Root.Actions[AItem.ID].SetDataClass(TReportLaunchData);
 
+  //Layouts
+  for I := 0 to AItem.Manifest.Layouts.Count - 1 do
+    FReportService.Add(AItem.Manifest.Layouts[I].ID).Template :=
+      AItem.Manifest.Layouts[I].Template;
+
   if not AItem.IsTop then Exit;
 
   activityItem := FActivitySvc.Items.Add(AItem.ID, false);

@@ -174,9 +174,25 @@ procedure TReportLauncherPresenter.InitParamDataSet;
     prmField.Alignment := taLeftJustify;
     prmField.OnChange := ParamValueChangeHandler;
   end;
+
+  procedure CreateReportLayoutsField;
+  var
+    field: TStringField;
+  begin
+    field := TStringField.Create(Self);
+    TStringField(Field).DisplayWidth := 255;
+    TStringField(Field).Size := 255;
+    field.DisplayLabel := 'Макет';
+    field.FieldName := 'ReportLayout';
+    field.DataSet := FParamDataSet;
+  end;
+
 var
   I: integer;
 begin
+
+  CreateReportLayoutsField;
+
   {create fields}
   for I := 0 to FReportCatalogItem.Manifest.ParamNodes.Count - 1 do
     CreateField(FReportCatalogItem.Manifest.ParamNodes[I]);
