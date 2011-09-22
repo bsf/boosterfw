@@ -191,7 +191,8 @@ var
   I: integer;
 begin
 
-  CreateReportLayoutsField;
+  if FReportCatalogItem.Manifest.Layouts.Count > 1 then
+    CreateReportLayoutsField;
 
   {create fields}
   for I := 0 to FReportCatalogItem.Manifest.ParamNodes.Count - 1 do

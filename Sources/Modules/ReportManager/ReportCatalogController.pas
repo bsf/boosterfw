@@ -1,7 +1,7 @@
 unit ReportCatalogController;
 
 interface
-uses classes, CoreClasses, CustomUIController, sysutils,
+uses classes, CoreClasses, CustomUIController, sysutils, strutils,
   ShellIntf, ReportServiceIntf, ViewServiceIntf, ActivityServiceIntf,
   CommonUtils, ConfigServiceIntf,
   ReportCatalogConst, ReportCatalogClasses,
@@ -124,25 +124,29 @@ end;
 procedure TReportCatalogController.LoadCatalogItem(
   AItem: TReportCatalogItem);
 var
-  reportItem: IReport;
   I: integer;
 
   activityItem: IActivity;
   activityItemChild: IActivity;
 begin
 
-  reportItem := FReportService.Add(AItem.ID);
+  //Layouts
+  for I := 0 to AItem.Manifest.Layouts.Count - 1 do
+    with FReportService.Add(AItem.Manifest.Layouts[I].ID) do
+    begin
+      Template := AItem.Manifest.Layouts[I].Template;
+      Caption := AItem.Caption +
+        IfThen(I <> 0, ' [' + AItem.Manifest.Layouts[I].Caption + ']');
+    end;
+
+  {reportItem := FReportService.Add(AItem.ID);
   reportItem.Template := AItem.Path + AItem.Manifest.Template;
   reportItem.Group  := AItem.Group.Caption;
-  reportItem.Caption := AItem.Caption;
+  reportItem.Caption := AItem.Caption; }
 
   WorkItem.Root.Actions[AItem.ID].SetHandler(ActionReportLaunch);
   WorkItem.Root.Actions[AItem.ID].SetDataClass(TReportLaunchData);
 
-  //Layouts
-  for I := 0 to AItem.Manifest.Layouts.Count - 1 do
-    FReportService.Add(AItem.Manifest.Layouts[I].ID).Template :=
-      AItem.Manifest.Layouts[I].Template;
 
   if not AItem.IsTop then Exit;
 
