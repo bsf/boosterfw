@@ -129,20 +129,28 @@ var
 
   activityItem: IActivity;
   activityItemChild: IActivity;
+  layout: TReportLayout;
 begin
 
-  reportItem := FReportService.Add(AItem.ID);
+  //Layouts
+  for layout in AItem.Manifest.Layouts.Values do
+    with FReportService.Add(layout.ID) do
+    begin
+      Template := AItem.Path + layout.Template;
+      Group := AItem.Group.Caption;
+      Caption := AItem.Caption;
+      if layout.ID <> AItem.ID then
+        Caption := Caption + ' [' + layout.Caption + ']';
+    end;
+
+{  reportItem := FReportService.Add(AItem.ID);
   reportItem.Template := AItem.Path + AItem.Manifest.Template;
   reportItem.Group  := AItem.Group.Caption;
   reportItem.Caption := AItem.Caption;
-
+ }
   WorkItem.Root.Actions[AItem.ID].SetHandler(ActionReportLaunch);
   WorkItem.Root.Actions[AItem.ID].SetDataClass(TReportLaunchData);
 
-  //Layouts
-  for I := 0 to AItem.Manifest.Layouts.Count - 1 do
-    FReportService.Add(AItem.Manifest.Layouts[I].ID).Template :=
-      AItem.Manifest.Layouts[I].Template;
 
   if not AItem.IsTop then Exit;
 

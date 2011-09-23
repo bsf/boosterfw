@@ -4,7 +4,7 @@ interface
 uses classes, CoreClasses, CustomPresenter, ShellIntf, CommonViewIntf, SysUtils,
   dxmdaset, db, ReportCatalogClasses, EntityServiceIntf, ViewServiceIntf,
   variants, StrUtils, controls, ReportCatalogConst, CommonUtils,
-  cxDateUtils;
+  cxDateUtils, Generics.Collections;
 
 const
   COMMAND_EXECUTE = '{1D84C651-1B31-4F77-87BF-86A00AC0232B}';
@@ -37,9 +37,15 @@ type
   end;
 
   TReportLauncherPresenter = class(TCustomPresenter)
+  const
+    REPORT_LAYOUT_PARAM = 'ReportLayouts';
+
   private
     FParamDataSet: TdxMemData;
     FReportCatalogItem: TReportCatalogItem;
+    FLayouts: TDictionary<string, string>;
+    FLayoutCaptions: TStringList;
+
     procedure InitParamDataSet;
     procedure InitViewParamEditors;
     procedure InitParamDefaultValues;
@@ -65,6 +71,7 @@ type
     procedure OnViewShow; override;
   public
     class function ExecuteDataClass: TActionDataClass; override;
+    destructor Destroy; override;
   end;
 
 implementation
@@ -96,6 +103,8 @@ begin
 end;
 
 procedure TReportLauncherPresenter.OnInit(Sender: IAction);
+var
+  layout: TReportLayout;
 begin
   FreeOnViewClose := false;
 
@@ -117,6 +126,15 @@ begin
   FParamDataSet := TdxMemData.Create(Self);
 
   ViewTitle := FReportCatalogItem.Caption;
+
+  FLayouts := TDictionary<string, string>.Create;
+  FLayoutCaptions := TStringList.Create;
+
+  for layout in FReportCatalogItem.Manifest.Layouts.Values do
+  begin
+    FLayouts.Add(layout.Caption, layout.ID);
+    FLayoutCaptions.Add(layout.Caption);
+  end;
 
   InitParamDataSet;
   InitParamDefaultValues;
@@ -183,8 +201,11 @@ procedure TReportLauncherPresenter.InitParamDataSet;
     TStringField(Field).DisplayWidth := 255;
     TStringField(Field).Size := 255;
     field.DisplayLabel := 'Макет';
-    field.FieldName := 'ReportLayout';
+    field.FieldName := REPORT_LAYOUT_PARAM;
     field.DataSet := FParamDataSet;
+    field.Required := true;
+    field.Visible := FLayoutCaptions.Count > 1;
+
   end;
 
 var
@@ -199,6 +220,7 @@ begin
 
   FParamDataSet.Open;
   FParamDataSet.Insert;
+  FParamDataSet.FieldValues[REPORT_LAYOUT_PARAM] := FLayoutCaptions[0];
   FParamDataSet.Post;
 
 end;
@@ -237,6 +259,8 @@ var
   defVal: Variant;
 begin
   FParamDataSet.Edit;
+  FParamDataSet.FieldByName(REPORT_LAYOUT_PARAM).Value := FLayoutCaptions[0];
+
   for I := 0 to FReportCatalogItem.Manifest.ParamNodes.Count - 1 do
   begin
     mParam := FReportCatalogItem.Manifest.ParamNodes[I];
@@ -341,6 +365,10 @@ var
   prmItem: TManifestParamNode;
 
 begin
+
+  View.InitParamEditor_Lookup(REPORT_LAYOUT_PARAM, FLayoutCaptions);
+
+  //Params
   for I := 0 to FReportCatalogItem.Manifest.ParamNodes.Count - 1 do
   begin
     prmItem := FReportCatalogItem.Manifest.ParamNodes[I];
@@ -448,6 +476,13 @@ begin
       end;
     end;
 
+end;
+
+destructor TReportLauncherPresenter.Destroy;
+begin
+  FLayouts.Free;
+  FLayoutCaptions.Free;
+  inherited;
 end;
 
 procedure TReportLauncherPresenter.OnSetWorkItemState(const AName: string;

@@ -16,7 +16,6 @@ type
     ParamDataSource: TDataSource;
     grParams: TcxDBVerticalGrid;
     grParamsCategoryTop: TcxCategoryRow;
-    grParamsCategoryLayouts: TcxCategoryRow;
     procedure grParamsEditValueChanged(Sender: TObject;
       ARowProperties: TcxCustomEditorRowProperties);
   private
@@ -105,16 +104,6 @@ begin
   ParamDataSource.DataSet := ADataSet;
   grParams.DataController.CreateAllItems;
 
-  for I := 0 to grParams.Rows.Count - 1 do
-  begin
-    if (grParams.Rows[I] is TcxDBEditorRow) and
-       (TcxDBEditorRow(grParams.Rows[I]).
-         Properties.DataBinding.FieldName = 'ReportLayouts') then
-    begin
-      grParamsCategoryLayouts.Visible := true;
-      grParams.Rows[I].Parent := grParamsCategoryLayouts;
-    end;
-  end;
 
 end;
 
@@ -155,7 +144,10 @@ begin
   grRow.Properties.EditPropertiesClass := TcxComboBoxProperties;
   with TcxComboBoxProperties(grRow.Properties.EditProperties) do
   begin
-    ClearKey := TextToShortCut('Del');
+
+    if not grRow.Properties.DataBinding.Field.Required then
+      ClearKey := TextToShortCut('Del');
+
     Items.AddStrings(AItems);
     DropDownListStyle := lsEditFixedList;
     ImmediatePost := true;

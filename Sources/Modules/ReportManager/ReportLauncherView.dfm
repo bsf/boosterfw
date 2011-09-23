@@ -36,14 +36,6 @@ inherited frReportLauncherView: TfrReportLauncherView
       OnEditValueChanged = grParamsEditValueChanged
       DataController.DataSource = ParamDataSource
       Version = 1
-      object grParamsCategoryLayouts: TcxCategoryRow
-        Properties.Caption = #1052#1072#1082#1077#1090
-        Visible = False
-        ID = 1
-        ParentID = -1
-        Index = 0
-        Version = 1
-      end
       object grParamsCategoryTop: TcxCategoryRow
         Options.Focusing = False
         Options.ShowExpandButton = False
@@ -51,7 +43,7 @@ inherited frReportLauncherView: TfrReportLauncherView
         Properties.Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1086#1090#1095#1077#1090#1072
         ID = 0
         ParentID = -1
-        Index = 1
+        Index = 0
         Version = 1
       end
     end
