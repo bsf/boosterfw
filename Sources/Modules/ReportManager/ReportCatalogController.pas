@@ -133,7 +133,7 @@ var
 begin
 
   //Layouts
-  for layout in AItem.Manifest.Layouts.Values do
+  for layout in AItem.Manifest.Layouts do
     with FReportService.Add(layout.ID) do
     begin
       Template := AItem.Path + layout.Template;

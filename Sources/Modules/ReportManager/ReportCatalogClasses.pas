@@ -1,7 +1,7 @@
 unit ReportCatalogClasses;
 
 interface
-uses Classes, sysutils, ComObj, inifiles, windows, Contnrs, Generics.Collections;
+uses Classes, sysutils, ComObj, inifiles, windows, Contnrs, HashLists,Generics.Collections;
 
 const
   cnstReportManifestFileName = 'ReportManifest.ini';
@@ -70,7 +70,7 @@ type
     BASE_REPORT_LAYOUT_CAPTION = 'Основной макет';
   private
     FParamNodes: TManifestParamNodes;
-    FLayouts: TObjectDictionary<string, TReportLayout>;
+    FLayouts: THashObjectList<TReportLayout>;
 
     FGroup: string;
     FCaption: string;
@@ -99,7 +99,7 @@ type
 //    property ShowParamView: boolean read FShowParamView write FShowParamView;
     property ImmediateRun: boolean read FImmediateRun write FImmediateRun;
     property ParamNodes: TManifestParamNodes read FParamNodes;
-    property Layouts: TObjectDictionary<string, TReportLayout> read FLayouts;
+    property Layouts: THashObjectList<TReportLayout> read FLayouts;
     property ExtendCommands: TStrings read GetExtendCommands write SetExtendCommands;
   end;
 
@@ -540,14 +540,13 @@ begin
   inherited Create(AOwner);
   FParamNodes := TManifestParamNodes.Create;
   FExtendCommands := TStringList.Create;
-  FLayouts := TObjectDictionary<string, TReportLayout>.Create([doOwnsValues]);
+  FLayouts := THashObjectList<TReportLayout>.Create(Self);
 end;
 
 destructor TReportCatalogManifest.Destroy;
 begin
   FParamNodes.Free;
   FExtendCommands.Free;
-  FLayouts.Free;
   inherited;
 end;
 

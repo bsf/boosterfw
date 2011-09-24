@@ -42,6 +42,7 @@ contains
   ServicesList in '..\Sources\Core\ServicesList.pas',
   WindowWorkspace in '..\Sources\Core\WindowWorkspace.pas',
   Workspace in '..\Sources\Core\Workspace.pas',
-  WorkspacesList in '..\Sources\Core\WorkspacesList.pas';
+  WorkspacesList in '..\Sources\Core\WorkspacesList.pas',
+  HashLists in '..\Sources\Core\HashLists.pas';
 
 end.

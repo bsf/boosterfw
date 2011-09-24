@@ -90,7 +90,8 @@ begin
 
   App.Views.MessageBox.StatusBarMessage('Формирование отчета: ' + FReportCatalogItem.Caption);
   try
-    App.Reports[FReportCatalogItem.ID].Execute(WorkItem);
+    App.Reports[FLayouts[WorkItem.State[REPORT_LAYOUT_PARAM]]].Execute(WorkItem);
+//    App.Reports[FReportCatalogItem.ID].Execute(WorkItem);
   finally
     App.Views.MessageBox.StatusBarMessage('Готово');
   end;
@@ -130,7 +131,7 @@ begin
   FLayouts := TDictionary<string, string>.Create;
   FLayoutCaptions := TStringList.Create;
 
-  for layout in FReportCatalogItem.Manifest.Layouts.Values do
+  for layout in FReportCatalogItem.Manifest.Layouts do
   begin
     FLayouts.Add(layout.Caption, layout.ID);
     FLayoutCaptions.Add(layout.Caption);
