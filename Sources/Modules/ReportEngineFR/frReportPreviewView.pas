@@ -43,7 +43,6 @@ type
     miPageNext: TMenuItem;
     miPageLast: TMenuItem;
     lbPages: TcxLabel;
-    miExportODS: TMenuItem;
     procedure miZoomClick(Sender: TObject);
     procedure miZoomModeClick(Sender: TObject);
     procedure frxPreviewPageChanged(Sender: TfrxPreview; PageNo: Integer);
@@ -121,7 +120,6 @@ begin
 
   WorkItem.Commands[COMMAND_EXPORT_PDF].AddInvoker(miExportPDF, 'OnClick');
   WorkItem.Commands[COMMAND_EXPORT_EXCEL].AddInvoker(miExportExcel, 'OnClick');
-  WorkItem.Commands[COMMAND_EXPORT_ODS].AddInvoker(miExportODS, 'OnClick');
   WorkItem.Commands[COMMAND_EXPORT_HTML].AddInvoker(miExportHTML, 'OnClick');
   WorkItem.Commands[COMMAND_EXPORT_CSV].AddInvoker(miExportCSV, 'OnClick');
 

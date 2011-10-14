@@ -1,9 +1,10 @@
 unit frReportPreviewPresenter;
 
 interface
-uses sysutils, CustomPresenter, CoreClasses, ViewServiceIntf, frxClass, classes,
+uses windows, sysutils, CustomPresenter, CoreClasses, ViewServiceIntf, frxClass, classes,
   controls, CommonViewIntf, frxPreview, ShellIntf,
-  frxExportCSV, frxExportHTML, frxExportPDF, frxExportXML, frxExportODF;
+  frxExportCSV, frxExportHTML, frxExportPDF, frxExportXML, frxExportODF,
+  dialogs, shellapi;
 
 const
   VIEW_FR_PREVIEW = 'views.fastreport.preview';
@@ -43,6 +44,7 @@ type
   TfrReportPreviewPresenter = class(TCustomPresenter)
   private
     FReport: TfrxReport;
+    FSaveDialog: TSaveDialog;
     FInitViewTitle: string;
     FfrxPDFExport: TfrxPDFExport;
     FfrxHTMLExport: TfrxHTMLExport;
@@ -130,9 +132,21 @@ begin
     FfrxXMLExport.Wysiwyg := false;
     FfrxXMLExport.Background := false;
     FfrxXMLExport.ExportPageBreaks := false;
-    FfrxXMLExport.OpenExcelAfterExport := true;
+    FfrxXMLExport.SuppressPageHeadersFooters := true;
+    FfrxXMLExport.OpenExcelAfterExport := false;
   end;
-  View.GetPreviewObject.Export(FfrxXMLExport);
+
+  FfrxXMLExport.ShowDialog := false;
+
+  FSaveDialog.Filter := 'Τΰιλ Excel (*.xls)|*.xls';
+  FSaveDialog.DefaultExt := '.xls';
+  if FSaveDialog.Execute then
+  begin
+    FfrxXMLExport.FileName := FSaveDialog.FileName;
+    View.GetPreviewObject.Export(FfrxXMLExport);
+    if FileExists(FSaveDialog.FileName) then
+      ShellExecute(HInstance, nil, PWideChar(FSaveDialog.FileName), nil, nil, SW_SHOWNORMAL);
+  end;
 
 end;
 
@@ -222,6 +236,8 @@ begin
   (Sender.Data as TfrReportPreviewData).ReportStream.Position := 0;
   FReport.PreviewPages.LoadFromStream((Sender.Data as TfrReportPreviewData).ReportStream);
 
+  FSaveDialog := TSaveDialog.Create(Self);
+  FSaveDialog.Options := FSaveDialog.Options + [ofOverwritePrompt];
 
   FInitViewTitle := ViewTitle;
 end;

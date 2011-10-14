@@ -33,103 +33,13 @@ object Form2: TForm2
     TabOrder = 0
     Height = 552
     Width = 970
-    object dxNavBar1: TdxNavBar
-      Left = 2
-      Top = 2
-      Width = 239
-      Height = 548
-      ParentCustomHint = False
-      Align = alLeft
-      ActiveGroupIndex = 0
-      TabOrder = 0
-      View = 13
-      OptionsBehavior.NavigationPane.AllowCustomizing = False
-      OptionsBehavior.NavigationPane.Collapsible = True
-      OptionsBehavior.NavigationPane.ShowOverflowPanelHints = False
-      OptionsView.Common.ShowGroupCaptions = False
-      OptionsView.ExplorerBar.ShowSpecialGroup = True
-      OptionsView.NavigationPane.ShowActiveGroupCaptionWhenCollapsed = True
-      OptionsView.NavigationPane.ShowOverflowPanel = False
-      object dxNavBar1Group1: TdxNavBarGroup
-        Caption = 'dxNavBar1Group1'
-        SelectedLinkIndex = -1
-        TopVisibleLinkIndex = 0
-        Links = <
-          item
-            Item = dxNavBar1Item3
-          end
-          item
-            Item = dxNavBar1Item1
-          end
-          item
-            Item = dxNavBar1Item2
-          end>
-      end
-      object dxNavBar1Group2: TdxNavBarGroup
-        Caption = 'dxNavBar1Group2'
-        SelectedLinkIndex = -1
-        TopVisibleLinkIndex = 0
-        Links = <
-          item
-            Item = dxNavBar1Item6
-          end
-          item
-            Item = dxNavBar1Item5
-          end
-          item
-            Item = dxNavBar1Item4
-          end>
-      end
-      object dxNavBar1Group3: TdxNavBarGroup
-        Caption = 'dxNavBar1Group3'
-        SelectedLinkIndex = -1
-        TopVisibleLinkIndex = 0
-        Links = <>
-      end
-      object dxNavBar1Item1: TdxNavBarItem
-        Caption = #1054#1090#1082#1088#1099#1090#1100
-        OnClick = dxNavBar1Item1Click
-      end
-      object dxNavBar1Item2: TdxNavBarItem
-        Caption = #1055#1088#1077#1074#1100#1102
-        OnClick = dxNavBar1Item2Click
-      end
-      object dxNavBar1Item3: TdxNavBarItem
-        Caption = #1055#1077#1095#1072#1090#1100
-      end
-      object dxNavBar1Item4: TdxNavBarItem
-        Caption = 'dxNavBar1Item4'
-      end
-      object dxNavBar1Item5: TdxNavBarItem
-        Caption = 'dxNavBar1Item5'
-      end
-      object dxNavBar1Item6: TdxNavBarItem
-        Caption = 'dxNavBar1Item6'
-      end
-    end
-    object cxDBComboBox1: TcxDBComboBox
-      Left = 559
-      Top = 109
-      TabOrder = 1
-      Width = 121
-    end
-    object cxMRUEdit1: TcxMRUEdit
-      Left = 472
-      Top = 48
-      Properties.ImmediatePost = True
-      Properties.OnDeleteLookupItem = cxMRUEdit1PropertiesDeleteLookupItem
-      Properties.OnInitPopup = cxMRUEdit1PropertiesInitPopup
-      Properties.OnNewLookupDisplayText = cxMRUEdit1PropertiesNewLookupDisplayText
-      TabOrder = 2
-      Width = 329
-    end
     object Button1: TButton
       Left = 416
       Top = 152
       Width = 75
       Height = 25
       Caption = 'Button1'
-      TabOrder = 3
+      TabOrder = 0
       OnClick = Button1Click
     end
     object DBGrid1: TDBGrid
@@ -138,73 +48,122 @@ object Form2: TForm2
       Width = 193
       Height = 193
       DataSource = DataSource1
-      TabOrder = 4
+      TabOrder = 1
       TitleFont.Charset = DEFAULT_CHARSET
       TitleFont.Color = clWindowText
       TitleFont.Height = -11
       TitleFont.Name = 'Tahoma'
       TitleFont.Style = []
     end
-    object cxDBVerticalGrid2: TcxDBVerticalGrid
-      Left = 239
-      Top = 152
-      Width = 586
-      Height = 357
-      OptionsView.ShowEditButtons = ecsbAlways
-      OptionsView.RowHeaderWidth = 228
-      TabOrder = 5
-      DataController.DataSource = DataSource1
-      Version = 1
-      object cxDBVerticalGrid2ID: TcxDBEditorRow
-        Properties.DataBinding.FieldName = 'ID'
-        ID = 0
-        ParentID = -1
-        Index = 0
-        Version = 1
+    object cxDBPivotGrid1: TcxDBPivotGrid
+      Left = 2
+      Top = 281
+      Width = 966
+      Height = 269
+      Align = alClient
+      DataSource = DataSource1
+      Groups = <>
+      LookAndFeel.Kind = lfOffice11
+      LookAndFeel.NativeStyle = True
+      TabOrder = 2
+      ExplicitTop = 57
+      ExplicitHeight = 493
+      object cxDBPivotGrid1NAME: TcxDBPivotGridField
+        Area = faRow
+        AreaIndex = 1
+        DataBinding.FieldName = 'NAME'
+        Visible = True
+        Width = 258
       end
-      object cxDBVerticalGrid2IMG: TcxDBEditorRow
-        Height = 150
-        Properties.EditPropertiesClassName = 'TcxImageProperties'
-        Properties.EditProperties.GraphicClassName = 'TJPEGImage'
-        Properties.EditProperties.Stretch = True
-        Properties.DataBinding.FieldName = 'IMG'
-        Properties.Options.ShowEditButtons = eisbAlways
-        ID = 1
-        ParentID = -1
-        Index = 1
+      object cxDBPivotGrid1GRP: TcxDBPivotGridField
+        Area = faRow
+        AreaIndex = 0
+        DataBinding.FieldName = 'GRP'
+        Visible = True
+      end
+      object cxDBPivotGrid1WEIGHT: TcxDBPivotGridField
+        Area = faData
+        AreaIndex = 0
+        DataBinding.FieldName = 'WEIGHT'
+        Visible = True
+      end
+    end
+    object cxGroupBox2: TcxGroupBox
+      Left = 2
+      Top = 2
+      Align = alTop
+      Caption = 'cxGroupBox2'
+      TabOrder = 3
+      Height = 279
+      Width = 966
+      object cxButton1: TcxButton
+        Left = 24
+        Top = 16
+        Width = 75
+        Height = 25
+        Caption = 'cxButton1'
+        TabOrder = 0
+        OnClick = cxButton1Click
+      end
+      object cxButton2: TcxButton
+        Left = 128
+        Top = 16
+        Width = 75
+        Height = 25
+        Caption = 'cxButton2'
+        TabOrder = 1
+        OnClick = cxButton2Click
+      end
+      object cxButton3: TcxButton
+        Left = 240
+        Top = 16
+        Width = 75
+        Height = 25
+        Caption = 'cxButton3'
+        TabOrder = 2
+        OnClick = cxButton3Click
+      end
+      object cxDBCheckListBox1: TcxDBCheckListBox
+        Left = 512
+        Top = 16
+        Width = 121
+        Height = 97
+        Items = <>
+        ParentColor = False
+        TabOrder = 3
+      end
+      object cxDBCheckComboBox1: TcxDBCheckComboBox
+        Left = 680
+        Top = 16
+        Properties.EditValueFormat = cvfIndices
+        Properties.Items = <
+          item
+          end>
+        TabOrder = 4
+        Text = 'None selected'
+        Width = 217
+      end
+      object cxDBVerticalGrid1: TcxDBVerticalGrid
+        Left = 232
+        Top = 73
+        Width = 241
+        Height = 200
+        TabOrder = 5
         Version = 1
+        object cxDBVerticalGrid1DBEditorRow1: TcxDBEditorRow
+          Properties.EditPropertiesClassName = 'TcxCheckComboBoxProperties'
+          Properties.EditProperties.Items = <>
+          ID = 0
+          ParentID = -1
+          Index = 0
+          Version = 1
+        end
       end
     end
   end
   object DataSource1: TDataSource
     DataSet = ClientDataSet1
     Left = 256
-    Top = 280
-  end
-  object IBDatabase1: TIBDatabase
-    Connected = True
-    DatabaseName = '192.168.0.253:b52'
-    Params.Strings = (
-      'user_name=sysdba'
-      'password=211834'
-      'lc_ctype=WIN1251')
-    LoginPrompt = False
-    DefaultTransaction = IBTransaction1
-    SQLDialect = 1
-    Left = 80
-    Top = 280
-  end
-  object IBQuery1: TIBQuery
-    Database = IBDatabase1
-    Transaction = IBTransaction1
-    SQL.Strings = (
-      'select * from test')
-    Left = 192
-    Top = 280
-  end
-  object IBTransaction1: TIBTransaction
-    Active = True
-    Left = 128
     Top = 280
   end
   object frxReport1: TfrxReport
@@ -263,7 +222,6 @@ object Form2: TForm2
     end
   end
   object ClientDataSet1: TClientDataSet
-    Active = True
     Aggregates = <>
     Params = <>
     ProviderName = 'DataSetProvider1'
@@ -272,7 +230,6 @@ object Form2: TForm2
     Top = 368
   end
   object DataSetProvider1: TDataSetProvider
-    DataSet = IBQuery1
     Left = 248
     Top = 400
   end

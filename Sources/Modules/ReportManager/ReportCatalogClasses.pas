@@ -6,14 +6,14 @@ uses Classes, sysutils, ComObj, inifiles, windows, Contnrs, HashLists,Generics.C
 const
   cnstReportManifestFileName = 'ReportManifest.ini';
 
-  TManifestParamEditorNames: array[0..9] of string =
+  TManifestParamEditorNames: array[0..10] of string =
     ('peNone', 'peString', 'peInteger', 'peDate', 'peFloat',
-    'Lookup', 'List', 'peDBList', 'CheckBox', 'PickList');
+    'Lookup', 'List', 'peDBList', 'CheckBox', 'CheckBoxList', 'PickList');
 
 
 type
   TManifestParamEditor = (peNone, peString, peInteger, peDate, peFloat,
-    peLookup, peList, peDBList, peCheckBox, pePickList);
+    peLookup, peList, peDBList, peCheckBox, peCheckBoxList, pePickList);
 
   TManifestParamNode = class(TCollectionItem)
   private
@@ -363,19 +363,29 @@ end;
 procedure TReportCatalogGroups.Open(const ACatalogPath: string);
 var
   sr: TSearchRec;
+  list: TStringList;
+  I: integer;
 begin
   FCatalogPath := ACatalogPath;
 
-  if SysUtils.FindFirst(FCatalogPath + '*.*' , faDirectory, sr) = 0 then
-  begin
-    repeat
-      if (sr.Name = '.') or (sr.Name = '..') then Continue;
-      if (sr.Attr and faDirectory) <> 0 then
-        InternalAdd(sr.Name);
-     until FindNext(sr) <> 0;
-     SysUtils.FindClose(sr);
-  end;
+  list := TStringList.Create;
+  try
+    if SysUtils.FindFirst(FCatalogPath + '*.*' , faDirectory, sr) = 0 then
+    begin
+      repeat
+        if (sr.Name = '.') or (sr.Name = '..') then Continue;
+        if (sr.Attr and faDirectory) <> 0 then
+          list.Add(sr.Name); //InternalAdd(sr.Name);
+       until FindNext(sr) <> 0;
+       SysUtils.FindClose(sr);
+    end;
 
+    list.Sort;
+    for I := 0 to list.Count - 1 do
+      InternalAdd(list[I]);
+  finally
+    list.Free;
+  end;
 end;
 
 { TReportCatalogGroup }
@@ -431,19 +441,28 @@ end;
 procedure TReportCatalogItems.Open(AGroup: TReportCatalogGroup);
 var
   sr: TSearchRec;
+  list: TStringList;
+  I: integer;
 begin
   FGroup := AGroup;
+  list := TStringList.Create;
+  try
+    if SysUtils.FindFirst(FGroup.Path + '*.*' , faDirectory, sr) = 0 then
+    begin
+      repeat
+        if (sr.Name = '.') or (sr.Name = '..') then Continue;
+        if (sr.Attr and faDirectory) <> 0 then
+          list.Add(sr.Name); //InternalAdd(sr.Name);
+       until SysUtils.FindNext(sr) <> 0;
+       SysUtils.FindClose(sr);
+    end;
 
-  if SysUtils.FindFirst(FGroup.Path + '*.*' , faDirectory, sr) = 0 then
-  begin
-    repeat
-      if (sr.Name = '.') or (sr.Name = '..') then Continue;
-      if (sr.Attr and faDirectory) <> 0 then
-        InternalAdd(sr.Name);
-     until SysUtils.FindNext(sr) <> 0;
-     SysUtils.FindClose(sr);
+    list.Sort;
+    for I := 0 to list.Count - 1 do
+      InternalAdd(list[I]);
+  finally
+    list.Free;
   end;
-
 end;
 
 function TReportCatalogItems.InternalAdd(const AName: string): TReportCatalogItem;

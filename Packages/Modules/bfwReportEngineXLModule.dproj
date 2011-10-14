@@ -37,6 +37,7 @@
 			<DCC_K>false</DCC_K>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<DCC_UNSUPPORTED_CONSTRUCT>false</DCC_UNSUPPORTED_CONSTRUCT>
 			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
 			<DCC_Optimize>false</DCC_Optimize>
 			<DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
@@ -55,12 +56,24 @@
 			<DCCReference Include="bfwCore.dcp"/>
 			<DCCReference Include="bfwInterfaces.dcp"/>
 			<DCCReference Include="bfwUI.dcp"/>
-			<DCCReference Include="d15XLR4_R.dcp"/>
-			<DCCReference Include="d15OPack.dcp"/>
 			<DCCReference Include="..\..\Sources\Modules\ReportEngineXL\bfwReportEngineXLModuleInit.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\ReportEngineXL\xlReportClasses.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\ReportEngineXL\xlReportFactory.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\ReportEngineXL\xlReportMetadata.pas"/>
+			<DCCReference Include="..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\Excel8G2.pas"/>
+			<DCCReference Include="..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\Office8G2.pas"/>
+			<DCCReference Include="..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\VBIDE8G2.pas"/>
+			<DCCReference Include="..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\xlAbout.pas">
+				<Form>fxlAbout</Form>
+			</DCCReference>
+			<DCCReference Include="..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\xlcClasses.pas"/>
+			<DCCReference Include="..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\xlcOPack.pas"/>
+			<DCCReference Include="..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\xlcUtils.pas"/>
+			<DCCReference Include="..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\xlEngine.pas"/>
+			<DCCReference Include="..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\xlPivotOPack.pas"/>
+			<DCCReference Include="..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\xlProOPack.pas"/>
+			<DCCReference Include="..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\xlReport.pas"/>
+			<DCCReference Include="..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\xlStdOPack.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

@@ -3,11 +3,11 @@ inherited frfrReportPreviewView: TfrfrReportPreviewView
   ClientHeight = 525
   ClientWidth = 933
   ExplicitWidth = 939
-  ExplicitHeight = 561
+  ExplicitHeight = 553
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
-    ExplicitWidth = 782
+    ExplicitWidth = 933
     ExplicitHeight = 525
     Height = 525
     Width = 933
@@ -24,7 +24,6 @@ inherited frfrReportPreviewView: TfrfrReportPreviewView
       StyleFocused.LookAndFeel.Kind = lfOffice11
       StyleHot.LookAndFeel.Kind = lfOffice11
       TabOrder = 0
-      ExplicitWidth = 778
       Height = 40
       Width = 929
       object btClose: TcxButton
@@ -132,7 +131,6 @@ inherited frfrReportPreviewView: TfrfrReportPreviewView
       OnClick = frxPreviewClick
       OnPageChanged = frxPreviewPageChanged
       UseReportHints = True
-      ExplicitWidth = 778
     end
   end
   inherited ActionList: TActionList
@@ -196,14 +194,11 @@ inherited frfrReportPreviewView: TfrfrReportPreviewView
   object ppmExport: TPopupMenu
     Left = 304
     Top = 56
-    object miExportPDF: TMenuItem
-      Caption = #1044#1086#1082#1091#1084#1077#1085#1090' PDF'
-    end
     object miExportExcel: TMenuItem
       Caption = #1044#1086#1082#1091#1084#1077#1085#1090' Excel'
     end
-    object miExportODS: TMenuItem
-      Caption = #1044#1086#1082#1091#1084#1077#1085#1090' ODS'
+    object miExportPDF: TMenuItem
+      Caption = #1044#1086#1082#1091#1084#1077#1085#1090' PDF'
     end
     object miExportHTML: TMenuItem
       Caption = #1044#1086#1082#1091#1084#1077#1085#1090' HTML'

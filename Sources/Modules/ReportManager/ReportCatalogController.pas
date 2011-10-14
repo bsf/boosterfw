@@ -7,7 +7,7 @@ uses classes, CoreClasses, CustomUIController, sysutils,
   ReportCatalogConst, ReportCatalogClasses,
   ReportCatalogPresenter, ReportCatalogView,
   ReportLauncherPresenter, ReportLauncherView,
-  ReportSetupPresenter, ReportSetupView;
+  ReportSetupPresenter, ReportSetupView, IOUtils;
 
 const
   COMMAND_REPORT_CATALOG_RELOAD = '{04496C3E-9A87-40A5-84BD-CD6E409F4C13}';

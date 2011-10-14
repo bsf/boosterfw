@@ -8,7 +8,8 @@ uses
   cxLookAndFeelPainters, cxContainer, cxEdit, ActnList, cxGroupBox, Menus,
   cxStyles, cxInplaceContainer, cxVGrid, cxDBVGrid, DB, dxmdaset, StdCtrls,
   cxButtons, cxLabel, cxDBLookupComboBox, cxCheckBox, ReportLauncherPresenter,
-  CustomContentView, cxButtonEdit, cxDropDownEdit;
+  CustomContentView, cxButtonEdit, cxDropDownEdit, cxCheckComboBox, cxDBCheckComboBox, cxCheckListBox,
+  cxDBCheckListBox;
 
 
 type
@@ -34,6 +35,7 @@ type
     procedure InitParamEditor_DBLookup(const AParamName: string; ADataSet: TDataSet;
       const AKeyFieldName, AListFieldName: string);
     procedure InitParamEditor_CheckBox(const AParamName: string);
+    procedure InitParamEditor_CheckBoxList(const AParamName: string; AItems: TStrings);
     procedure InitParamEditor_Lookup(const AParamName: string; AItems: TStrings);
     procedure InitParamEditor_ButtonEdit(const AParamName, ACommandName: string);
   public
@@ -125,6 +127,39 @@ begin
     ImmediatePost := true;
     Alignment := taLeftJustify;
     UseAlignmentWhenInplace := true;
+  end;
+
+end;
+
+procedure TfrReportLauncherView.InitParamEditor_CheckBoxList(
+  const AParamName: string; AItems: TStrings);
+var
+  grRow: TcxDBEditorRow;
+  I: integer;
+begin
+  grRow := FindParamEditor(AParamName);
+  if not Assigned(grRow) then Exit;
+
+  {lookupDS := TDataSource.Create(grRow);
+  lookupDS.DataSet := ADataSet;}
+
+  grRow.Properties.EditPropertiesClass := TcxCheckComboBoxProperties;
+  with TcxCheckComboBoxProperties(grRow.Properties.EditProperties) do
+  begin
+
+    if not grRow.Properties.DataBinding.Field.Required then
+      ClearKey := TextToShortCut('Del');
+
+    for I := 0 to AItems.Count - 1 do
+      Items.AddCheckItem(AItems[I]);
+
+    ImmediatePost := true;
+
+    EmptySelectionText := '';
+   { if lookupDS.DataSet.RecordCount < 25 then
+      DropDownRows := lookupDS.DataSet.RecordCount
+    else
+      DropDownRows := 25;}
   end;
 
 end;

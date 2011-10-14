@@ -16,35 +16,31 @@ uses
   frxExportXML, frxExportODF, cxDBEdit, cxListBox, cxVGrid, cxDBVGrid,
   cxInplaceContainer, cxDBExtLookupComboBox, ComCtrls, ShlObj, cxShellCommon,
   cxShellListView, cxShellTreeView, cxShellComboBox, cxImage, StdCtrls, cxMemo,
-  cxRichEdit;
+  cxRichEdit, cxCustomPivotGrid, cxDBPivotGrid, Menus, cxButtons,
+  cxExportPivotGridLink, cxCheckComboBox, cxDBCheckComboBox, cxCheckListBox,
+  cxDBCheckListBox;
 
 type
   TForm2 = class(TForm)
     DataSource1: TDataSource;
-    IBDatabase1: TIBDatabase;
-    IBQuery1: TIBQuery;
-    IBTransaction1: TIBTransaction;
     cxGroupBox1: TcxGroupBox;
-    dxNavBar1: TdxNavBar;
-    dxNavBar1Group1: TdxNavBarGroup;
-    dxNavBar1Group2: TdxNavBarGroup;
-    dxNavBar1Group3: TdxNavBarGroup;
-    dxNavBar1Item1: TdxNavBarItem;
-    dxNavBar1Item2: TdxNavBarItem;
-    dxNavBar1Item3: TdxNavBarItem;
-    dxNavBar1Item4: TdxNavBarItem;
-    dxNavBar1Item5: TdxNavBarItem;
-    dxNavBar1Item6: TdxNavBarItem;
     frxReport1: TfrxReport;
-    cxDBComboBox1: TcxDBComboBox;
-    cxMRUEdit1: TcxMRUEdit;
     Button1: TButton;
     ClientDataSet1: TClientDataSet;
     DBGrid1: TDBGrid;
     DataSetProvider1: TDataSetProvider;
-    cxDBVerticalGrid2: TcxDBVerticalGrid;
-    cxDBVerticalGrid2ID: TcxDBEditorRow;
-    cxDBVerticalGrid2IMG: TcxDBEditorRow;
+    cxDBPivotGrid1: TcxDBPivotGrid;
+    cxDBPivotGrid1NAME: TcxDBPivotGridField;
+    cxDBPivotGrid1GRP: TcxDBPivotGridField;
+    cxDBPivotGrid1WEIGHT: TcxDBPivotGridField;
+    cxGroupBox2: TcxGroupBox;
+    cxButton1: TcxButton;
+    cxButton2: TcxButton;
+    cxButton3: TcxButton;
+    cxDBCheckListBox1: TcxDBCheckListBox;
+    cxDBCheckComboBox1: TcxDBCheckComboBox;
+    cxDBVerticalGrid1: TcxDBVerticalGrid;
+    cxDBVerticalGrid1DBEditorRow1: TcxDBEditorRow;
     procedure dxNavBar1Item1Click(Sender: TObject);
     procedure dxNavBar1Item2Click(Sender: TObject);
     procedure cxMRUEdit1PropertiesInitPopup(Sender: TObject);
@@ -56,6 +52,9 @@ type
       ARowProperties: TcxCustomEditorRowProperties);
     procedure Button1Click(Sender: TObject);
     procedure ClientDataSet1AfterInsert(DataSet: TDataSet);
+    procedure cxButton1Click(Sender: TObject);
+    procedure cxButton2Click(Sender: TObject);
+    procedure cxButton3Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -77,6 +76,21 @@ end;
 procedure TForm2.ClientDataSet1AfterInsert(DataSet: TDataSet);
 begin
 //
+end;
+
+procedure TForm2.cxButton1Click(Sender: TObject);
+begin
+  cxExportPivotGridToExcel('c:\pe1', cxDBPivotGrid1);
+end;
+
+procedure TForm2.cxButton2Click(Sender: TObject);
+begin
+cxExportPivotGridToXML('c:\pe1', cxDBPivotGrid1)
+end;
+
+procedure TForm2.cxButton3Click(Sender: TObject);
+begin
+cxExportPivotGridToText('c:\pe1', cxDBPivotGrid1)
 end;
 
 procedure TForm2.cxMRUEdit1PropertiesDeleteLookupItem(

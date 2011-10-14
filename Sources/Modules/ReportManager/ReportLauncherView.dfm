@@ -4,7 +4,7 @@ inherited frReportLauncherView: TfrReportLauncherView
   Caption = 'frReportLauncherView'
   ClientWidth = 888
   ExplicitWidth = 894
-  ExplicitHeight = 551
+  ExplicitHeight = 543
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
@@ -22,6 +22,7 @@ inherited frReportLauncherView: TfrReportLauncherView
       Align = alClient
       LayoutStyle = lsMultiRecordView
       LookAndFeel.Kind = lfOffice11
+      LookAndFeel.NativeStyle = False
       OptionsView.ShowEditButtons = ecsbAlways
       OptionsView.CategoryExplorerStyle = True
       OptionsView.RowHeaderWidth = 330

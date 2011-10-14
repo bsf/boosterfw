@@ -21,6 +21,8 @@ type
     procedure InitParamEditor_DBLookup(const AParamName: string; ADataSet: TDataSet;
       const AKeyFieldName, AListFieldName: string);
     procedure InitParamEditor_CheckBox(const AParamName: string);
+    procedure InitParamEditor_CheckBoxList(const AParamName: string; AItems: TStrings);
+
     procedure InitParamEditor_Lookup(const AParamName: string; AItems: TStrings);
     procedure InitParamEditor_ButtonEdit(const AParamName, ACommanName: string);
   end;
@@ -361,6 +363,40 @@ procedure TReportLauncherPresenter.InitViewParamEditors;
 
   end;
 
+  procedure InitCheckBoxListEditor(AParamNode: TManifestParamNode);
+   var
+    ds: TDataSet;
+    keyNames: string;
+    listNames: string;
+    data: TStringList;
+    field: TField;
+  begin
+    ds :=  App.Entities[AParamNode.EditorOptions.Values['EntityName']].
+      GetView(AParamNode.EditorOptions.Values['EntityViewName'], WorkItem,
+        'ParamLookupDataSet_' + AParamNode.Name).Load([]);
+
+    data := TStringList.Create;
+    try
+      field := ds.FindField('NAME');
+      if field = nil then
+        field := ds.Fields[0];
+
+      {listNames := AParamNode.EditorOptions.Values['ListFieldNames'];
+      if keyNames = '' then keyNames := 'ID';
+      if listNames = '' then listNames := 'NAME';}
+
+      while not ds.Eof do
+      begin
+        data.Add(ds.Fields[field.Index].Value);
+        ds.Next;
+      end;
+      View.InitParamEditor_CheckBoxList(AParamNode.Name, data);
+
+    finally
+      data.Free;
+    end;
+  end;
+
 var
   I: integer;
   prmItem: TManifestParamNode;
@@ -377,6 +413,8 @@ begin
       peDBList: InitLookupEditor(prmItem);
 
       peCheckBox: View.InitParamEditor_CheckBox(prmItem.Name);
+
+      peCheckBoxList: InitCheckBoxListEditor(prmItem);
 
       peLookup: View.InitParamEditor_Lookup(prmItem.Name, prmItem.Values);
 

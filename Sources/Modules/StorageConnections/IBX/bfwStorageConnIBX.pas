@@ -142,6 +142,7 @@ type
 
   TIBEntityInfo = class(TComponent, IEntityInfo)
   private
+    FNoCache: boolean;
     FEntityName: string;
     FSchemeName: string;
     FDescription: string;
@@ -168,7 +169,7 @@ type
     procedure SetOptions(const AName, AValue: string);
   public
     constructor Create(const AEntityName: string;
-      ADBQueryProc: TExecuteDBQueryProc); reintroduce;
+      ADBQueryProc: TExecuteDBQueryProc; ANoCache: boolean); reintroduce;
     destructor Destroy; override;
     procedure Initialize;
   end;
@@ -266,6 +267,7 @@ type
 
   TIBStorageConnection = class(TComponent, IEntityStorageConnection)
   private
+    FNoCache: boolean;
     FID: string;
     FRemoteServer: TLocalConnection;
     FConnectionBroker:  TConnectionBroker;
@@ -293,6 +295,7 @@ type
       AOwner: TComponent): TComponent;
     function GetEntityOperProvider(const AEntityName, AOperName: string;
       AOwner: TComponent): TComponent;
+
   protected
     //IConnection
     function ID: string;
@@ -422,6 +425,7 @@ begin
   FDataBase.Params.Values['sql_role_name'] := FParams.Values['sql_role_name'];}
   FDataBase.LoginPrompt := false;
 
+  FNoCache := FindCmdLineSwitch('NoCacheMetadata');
 end;
 
 
@@ -446,7 +450,7 @@ end;
 function TIBStorageConnection.GetEntityList: TStringList;
 begin
   Result := FEntityList;
-  if not FEntityListLoaded then
+  if FNoCache or (not FEntityListLoaded)  then
     LoadEntityList;
 end;
 
@@ -515,10 +519,14 @@ begin
   for I := 0 to FEntityInfoList.Count - 1 do
   begin
     Result := TIBEntityInfo(FEntityInfoList[I]);
-    if Result.FEntityName = AName then Exit;
+    if Result.FEntityName = AName then
+    begin
+      if FNoCache then Result.Initialize;
+      Exit;
+    end;
   end;
 
-  Result := TIBEntityInfo.Create(AName, ExecuteDBQuery);
+  Result := TIBEntityInfo.Create(AName, ExecuteDBQuery, FNoCache);
   FEntityInfoList.Add(Result);
   try
     Result.Initialize;
@@ -680,7 +688,11 @@ begin
   for I := 0 to FEntitySchemeInfoList.Count - 1 do
   begin
     Result := TIBEntitySchemeInfo(FEntitySchemeInfoList[I]);
-    if SameText(Result.FSchemeName, AName) then Exit;
+    if SameText(Result.FSchemeName, AName) then
+    begin
+      if FNoCache then Result.Initialize;
+      Exit;
+    end;
   end;
 
   Result := TIBEntitySchemeInfo.Create(AName, ExecuteDBQuery);
@@ -721,10 +733,11 @@ end;
 { TIBEntityInfo }
 
 constructor TIBEntityInfo.Create(const AEntityName: string;
-  ADBQueryProc: TExecuteDBQueryProc);
+  ADBQueryProc: TExecuteDBQueryProc; ANoCache: boolean);
 begin
   inherited Create(nil);
   FEntityName := AEntityName;
+  FNoCache := ANoCache;
   FViewInfoList := TComponentList.Create(true);
   FOperInfoList := TComponentList.Create(true);
   FDBQueryProc := ADBQueryProc;
@@ -754,7 +767,11 @@ begin
   for I := 0 to AList.Count - 1 do
   begin
     Result := TIBEntityAttrInfo(AList[I]);
-    if Result.GetAttrName = AttrName then Exit;
+    if Result.GetAttrName = AttrName then
+    begin
+      if FNoCache then Result.Initialize;
+      Exit;
+    end;
   end;
 
   Result := AttrClass.Create(FEntityName, AttrName, FDBQueryProc);
@@ -821,6 +838,7 @@ begin
   FDBQueryProc(cnstGetEntityInfoSQL, [FEntityName],
     GetInfoDataCallback, nil);
 
+  FFields.Clear;
   FDBQueryProc(cnstGetEntityFieldsDefInfoSQL, [FEntityName],
     GetFieldsInfoCallback, nil);
 
@@ -1072,9 +1090,11 @@ begin
   ExecuteDBQuery(cnstGetEntityViewInfoSQL, [GetEntityName, GetAttrName],
     GetViewInfoCallback, nil);
 
+  FLinks.Clear;
   ExecuteDBQuery(cnstGetEntityViewLinksInfoSQL, [GetEntityName, GetAttrName],
     GetViewLinksInfoCallback, nil);
 
+  FLinkedFields.Clear;
   ExecuteDBQuery(cnstGetEntityViewLinkedFieldsInfoSQL, [GetEntityName, GetAttrName],
     GetViewLinkedFieldsInfoCallback, nil);
 
@@ -1195,6 +1215,7 @@ end;
 
 procedure TIBEntityAttrInfo.Initialize;
 begin
+  FFields.Clear;
   ExecuteDBQuery(cnstGetEntityFieldsInfoSQL, [GetEntityName, GetAttrName],
     GetFieldsInfoCallback, nil);
 end;
@@ -1211,7 +1232,8 @@ end;
 
 procedure TIBEntityAttrInfo.SetOptionsText(const AText: string);
 begin
-  ExtractStrings([';'], [], PWideChar(FOptions.Text + ';' + AText), FOptions);
+  FOptions.Clear;
+  ExtractStrings([';'], [], PWideChar(AText), FOptions);
 end;
 
 
@@ -1272,6 +1294,7 @@ begin
   if _schemeName = '' then
    _schemeName := '-';
 
+  FFields.Clear;
   FDBQueryProc(cnstGetSchemeFieldsInfoSQL, [_schemeName],
     GetFieldsInfoCallback, nil);
 

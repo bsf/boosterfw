@@ -40,6 +40,8 @@ begin
   FdxSkinController.UseSkins := false;
   FdxSkinController.SkinName := '';
   FdxSkinController.Kind := lfOffice11;
+  FdxSkinController.NativeStyle := false;
+  RootLookAndFeel.NativeStyle := false;
   FWorkItem.EventTopics[ET_PROFILE_CHANGED].AddSubscription(Self,
     ProfileChangedEventHandler);
 
