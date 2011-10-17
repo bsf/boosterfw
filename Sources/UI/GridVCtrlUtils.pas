@@ -4,7 +4,7 @@ interface
 uses cxVGrid, cxDBVGrid, Contnrs, controls, CustomView, classes, sysutils, db,
   EntityServiceIntf, cxButtonEdit, cxEdit, CoreClasses, StrUtils, Variants,
   cxInplaceContainer, cxDBLookupComboBox, cxDropDownEdit, menus, cxCheckBox, forms,
-  CommonViewIntf, ViewServiceIntf, cxCalendar, typinfo, cxImage;
+  CommonViewIntf, ViewServiceIntf, cxCalendar, typinfo, cxImage, graphics;
 
 const
   EDITOR_DATA_ENTITY = 'EntityName';
@@ -34,6 +34,7 @@ type
     procedure InitComboBoxEditor(ARow: TcxDBEditorRow; ADataSet: TDataSet);
     procedure InitCheckBoxEditor(ARow: TcxDBEditorRow);
     procedure InitImageEditor(ARow: TcxDBEditorRow);
+    procedure ImageRow_OnAssignPicture(Sender: TObject; const Picture: TPicture);
 
     procedure TuneGridForDataSet(AGrid: TcxDBVerticalGrid;
       ADataSet: TDataSet);
@@ -531,6 +532,28 @@ begin
   end;
 end;
 
+procedure TcxVGridViewHelper.ImageRow_OnAssignPicture(Sender: TObject;
+  const Picture: TPicture);
+var
+  row: TcxDBEditorRow;
+  ds: TDataSet;
+  fieldName: string;
+  fieldDel: TField;
+begin
+  row := TcxDBEditorRow(TcxDBVerticalGrid(TcxImage(Sender).owner).FocusedRow);
+  fieldName := row.Properties.DataBinding.FieldName;
+  ds := row.Properties.DataBinding.DataController.DataSet;
+  fieldDel := ds.FindField(fieldName + '_DEL');
+  if fieldDel <> nil then
+  begin
+    if Picture.Graphic = nil then
+      fieldDel.Value := 1
+    else
+      fieldDel.Value := 0;
+  end;
+
+end;
+
 procedure TcxVGridViewHelper.InitCheckBoxEditor(ARow: TcxDBEditorRow);
 begin
   ARow.Properties.EditPropertiesClass := TcxCheckBoxProperties;
@@ -601,6 +624,7 @@ begin
     Stretch := true;
     //ClearKey := TextToShortCut('Del'); on move to next row and back dont work !
     ImmediatePost := true;
+    OnAssignPicture := ImageRow_OnAssignPicture;
   end;
 
 end;
