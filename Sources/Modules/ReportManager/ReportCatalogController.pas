@@ -124,7 +124,7 @@ end;
 procedure TReportCatalogController.LoadCatalogItem(
   AItem: TReportCatalogItem);
 var
-  reportItem: IReport;
+
   I: integer;
 
   activityItem: IActivity;

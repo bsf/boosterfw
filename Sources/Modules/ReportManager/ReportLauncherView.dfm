@@ -4,7 +4,6 @@ inherited frReportLauncherView: TfrReportLauncherView
   Caption = 'frReportLauncherView'
   ClientWidth = 888
   ExplicitWidth = 894
-  ExplicitHeight = 543
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
@@ -34,7 +33,6 @@ inherited frReportLauncherView: TfrReportLauncherView
       OptionsData.Deleting = False
       OptionsData.Inserting = False
       TabOrder = 1
-      OnEditValueChanged = grParamsEditValueChanged
       DataController.DataSource = ParamDataSource
       Version = 1
       object grParamsCategoryTop: TcxCategoryRow

@@ -17,8 +17,6 @@ type
     ParamDataSource: TDataSource;
     grParams: TcxDBVerticalGrid;
     grParamsCategoryTop: TcxCategoryRow;
-    procedure grParamsEditValueChanged(Sender: TObject;
-      ARowProperties: TcxCustomEditorRowProperties);
   private
 
     function FindParamEditor(AParamName: string): TcxDBEditorRow;
@@ -99,8 +97,6 @@ begin
 end;
 
 procedure TfrReportLauncherView.LinkParamDataSet(const ADataSet: TDataSet);
-var
-  I: Integer;
 begin
 
   ParamDataSource.DataSet := ADataSet;
@@ -193,22 +189,6 @@ begin
       DropDownRows := 25;}
   end;
 
-end;
-
-procedure TfrReportLauncherView.grParamsEditValueChanged(Sender: TObject;
-  ARowProperties: TcxCustomEditorRowProperties);
-var
-  txt: string;
-begin
-{
-  txt := ((ARowProperties as TcxDBEditorRowProperties).DataBinding as
-    TcxDBVerticalGridItemDataBinding).FieldName + ':' +
-    VarToStr((ARowProperties as TcxDBEditorRowProperties).
-    Value);
-
-  ShowMessage(txt);
-
- }
 end;
 
 procedure TfrReportLauncherView.InitParamEditor_ButtonEdit(

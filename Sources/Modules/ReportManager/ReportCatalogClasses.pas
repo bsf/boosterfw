@@ -1,7 +1,7 @@
 unit ReportCatalogClasses;
 
 interface
-uses Classes, sysutils, ComObj, inifiles, windows, Contnrs, HashLists,Generics.Collections;
+uses Classes, sysutils, ComObj, inifiles, windows, Contnrs, HashList, Generics.Collections;
 
 const
   cnstReportManifestFileName = 'ReportManifest.ini';
@@ -79,8 +79,6 @@ type
     FExtendCommands: TStringList;
     FID: string;
     FIsTop: boolean;
-//    FShowParamView: boolean;
-    FImmediateRun: boolean;
     procedure LoadManifest(AManifest: TMemIniFile);
     procedure SaveManifest(AManifest: TMemIniFile);
     function GetExtendCommands: TStrings;
@@ -96,8 +94,7 @@ type
     property Template: string read FTemplate write FTemplate;
     property Description: string read FDescription write FDescription;
     property ID: string read FID write FID;
-//    property ShowParamView: boolean read FShowParamView write FShowParamView;
-    property ImmediateRun: boolean read FImmediateRun write FImmediateRun;
+
     property ParamNodes: TManifestParamNodes read FParamNodes;
     property Layouts: THashObjectList<TReportLayout> read FLayouts;
     property ExtendCommands: TStrings read GetExtendCommands write SetExtendCommands;
@@ -611,7 +608,6 @@ var
   Sections: TStringList;
   nameID: string;
   paramItem: TManifestParamNode;
-  layout: TReportLayout;
 begin
   Sections := TStringList.Create;
 
@@ -621,7 +617,6 @@ begin
   FGroup := AManifest.ReadString('Common', 'Group', '');
   FCaption := AManifest.ReadString('Common', 'Caption', '');
   FTemplate := AManifest.ReadString('Common', 'Template', '');
-  FImmediateRun := AManifest.ReadBool('Common', 'ImmediateRun', false);
   FDescription := AManifest.ReadString('Common', 'Description', '');
 
   {Params}

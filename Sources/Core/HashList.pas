@@ -1,7 +1,7 @@
-unit HashLists;
+unit HashList;
 
 interface
-uses classes, Generics.Collections;
+uses classes, sysutils, Generics.Collections;
 
 type
   THashObjectList<T: class> = class(TComponent)
@@ -24,8 +24,7 @@ type
 
     function GetItem(AIndex: integer): T;
     function GetValue(const Key: string): T;
-    function KeyByIndex(AIndex: integer): string;
-    function IndexByKey(const Key: string): integer;
+
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -36,7 +35,7 @@ type
     procedure Delete(AIndex: integer); overload;
     procedure Delete(const Key: string); overload;
 
-    function IndexOf(const Key: string): integer; overload;
+    function IndexOf(const Key: string): integer;
 
     property Items[AIndex: integer]: T read GetItem;
     property Values[const Key: string]: T read GetValue; default;
@@ -91,8 +90,14 @@ begin
 end;
 
 procedure THashObjectList<T>.Delete(const Key: string);
+var
+  idx: integer;
 begin
-  FItems.Delete(IndexByKey(Key));
+  idx := IndexOf(Key);
+  if idx = -1 then
+    raise Exception.CreateFmt('Value by key %s not found', [Key]);
+
+  FItems.Delete(idx);
 end;
 
 destructor THashObjectList<T>.Destroy;
@@ -113,11 +118,18 @@ end;
 
 
 function THashObjectList<T>.GetValue(const Key: string): T;
+var
+  idx: integer;
 begin
-  Result := FItems[IndexByKey(Key)].Obj;
+  idx := IndexOf(Key);
+  if idx = -1 then
+    raise Exception.CreateFmt('Value by key %s not found', [Key]);
+
+  Result := FItems[idx].Obj;
 end;
 
-function THashObjectList<T>.IndexByKey(const Key: string): integer;
+
+function THashObjectList<T>.IndexOf(const Key: string): integer;
 var
   I: integer;
 begin
@@ -127,17 +139,6 @@ begin
     if FItems[I].Key = Key then Exit;
   end;
   Result := -1;
-end;
-
-
-function THashObjectList<T>.KeyByIndex(AIndex: integer): string;
-begin
-  Result := FItems[AIndex].Key;
-end;
-
-function THashObjectList<T>.IndexOf(const Key: string): integer;
-begin
-  Result := IndexByKey(Key);
 end;
 
 { THashObjectList<T>.TEnumerator }

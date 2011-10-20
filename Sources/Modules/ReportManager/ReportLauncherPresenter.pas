@@ -119,9 +119,9 @@ begin
       GetItem(WorkItem.State['ReportURI']);
 
 
-  if VarIsEmpty(WorkItem.State['ImmediateRun']) and
+  {if VarIsEmpty(WorkItem.State['ImmediateRun']) and
      FReportCatalogItem.Manifest.ImmediateRun  then
-    WorkItem.State['ImmediateRun'] := '1';
+    WorkItem.State['ImmediateRun'] := '1';}
 
   ViewHidden := (not VarIsEmpty(WorkItem.State['ImmediateRun']))
     and (VarToStr(WorkItem.State['ImmediateRun']) <> '0');

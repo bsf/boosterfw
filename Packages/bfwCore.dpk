@@ -43,6 +43,6 @@ contains
   WindowWorkspace in '..\Sources\Core\WindowWorkspace.pas',
   Workspace in '..\Sources\Core\Workspace.pas',
   WorkspacesList in '..\Sources\Core\WorkspacesList.pas',
-  HashLists in '..\Sources\Core\HashLists.pas';
+  HashList in '..\Sources\Core\HashList.pas';
 
 end.
