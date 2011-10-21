@@ -53,9 +53,9 @@ inherited frfrReportPreviewView: TfrfrReportPreviewView
         Top = 9
         Width = 75
         Height = 25
-        Caption = #1069#1082#1089#1087#1086#1088#1090
+        Caption = 'Excel'
         DropDownMenu = ppmExport
-        Kind = cxbkDropDown
+        Kind = cxbkDropDownButton
         LookAndFeel.Kind = lfOffice11
         SpeedButtonOptions.CanBeFocused = False
         TabOrder = 2
@@ -73,31 +73,28 @@ inherited frfrReportPreviewView: TfrfrReportPreviewView
         TabOrder = 3
       end
       object btPagePrior: TcxButton
-        Left = 362
+        Left = 407
         Top = 9
-        Width = 143
+        Width = 39
         Height = 25
-        Caption = #1055#1088#1077#1076#1099#1076#1091#1097#1072#1103' '#1089#1090#1088#1072#1085#1080#1094#1072
+        Caption = '<'
         DropDownMenu = ppmPagePrior
-        Kind = cxbkDropDownButton
         LookAndFeel.Kind = lfOffice11
         SpeedButtonOptions.CanBeFocused = False
         TabOrder = 4
       end
       object btPageNext: TcxButton
-        Left = 511
+        Left = 452
         Top = 9
-        Width = 146
+        Width = 39
         Height = 25
-        Caption = #1057#1083#1077#1076#1091#1102#1097#1072#1103' '#1089#1090#1088#1072#1085#1080#1094#1072
-        DropDownMenu = ppmPageNext
-        Kind = cxbkDropDownButton
+        Caption = '>'
         LookAndFeel.Kind = lfOffice11
         SpeedButtonOptions.CanBeFocused = False
         TabOrder = 5
       end
       object lbPages: TcxLabel
-        Left = 663
+        Left = 542
         Top = 10
         Caption = 'lbPages'
         ParentFont = False
@@ -113,6 +110,26 @@ inherited frfrReportPreviewView: TfrfrReportPreviewView
         StyleFocused.LookAndFeel.Kind = lfOffice11
         StyleHot.LookAndFeel.Kind = lfOffice11
         Transparent = True
+      end
+      object btPageFirst: TcxButton
+        Left = 362
+        Top = 9
+        Width = 39
+        Height = 25
+        Caption = '<<'
+        LookAndFeel.Kind = lfOffice11
+        SpeedButtonOptions.CanBeFocused = False
+        TabOrder = 7
+      end
+      object btPageLast: TcxButton
+        Left = 497
+        Top = 9
+        Width = 39
+        Height = 25
+        Caption = '>>'
+        LookAndFeel.Kind = lfOffice11
+        SpeedButtonOptions.CanBeFocused = False
+        TabOrder = 8
       end
     end
     object frxPreview: TfrxPreview

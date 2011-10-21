@@ -43,6 +43,8 @@ type
     miPageNext: TMenuItem;
     miPageLast: TMenuItem;
     lbPages: TcxLabel;
+    btPageFirst: TcxButton;
+    btPageLast: TcxButton;
     procedure miZoomClick(Sender: TObject);
     procedure miZoomModeClick(Sender: TObject);
     procedure frxPreviewPageChanged(Sender: TfrxPreview; PageNo: Integer);
@@ -118,18 +120,18 @@ begin
   WorkItem.Commands[COMMAND_PRINT_DEF].AddInvoker(miPrintDef, 'OnClick');
   WorkItem.Commands[COMMAND_PRINT].AddInvoker(miPrint, 'OnClick');
 
+  WorkItem.Commands[COMMAND_EXPORT_EXCEL].AddInvoker(btExport, 'OnClick');
+//  WorkItem.Commands[COMMAND_EXPORT_EXCEL].AddInvoker(miExportExcel, 'OnClick');
   WorkItem.Commands[COMMAND_EXPORT_PDF].AddInvoker(miExportPDF, 'OnClick');
-  WorkItem.Commands[COMMAND_EXPORT_EXCEL].AddInvoker(miExportExcel, 'OnClick');
   WorkItem.Commands[COMMAND_EXPORT_HTML].AddInvoker(miExportHTML, 'OnClick');
   WorkItem.Commands[COMMAND_EXPORT_CSV].AddInvoker(miExportCSV, 'OnClick');
 
   WorkItem.Commands[COMMAND_PAGE_PRIOR].AddInvoker(btPagePrior, 'OnClick');
-  WorkItem.Commands[COMMAND_PAGE_PRIOR].AddInvoker(miPagePrior, 'OnClick');
-  WorkItem.Commands[COMMAND_PAGE_FIRST].AddInvoker(miPageFirst, 'OnClick');
+  WorkItem.Commands[COMMAND_PAGE_FIRST].AddInvoker(btPageFirst, 'OnClick');
 
   WorkItem.Commands[COMMAND_PAGE_NEXT].AddInvoker(btPageNext, 'OnClick');
-  WorkItem.Commands[COMMAND_PAGE_NEXT].AddInvoker(miPageNext, 'OnClick');
-  WorkItem.Commands[COMMAND_PAGE_LAST].AddInvoker(miPageLast, 'OnClick');
+//  WorkItem.Commands[COMMAND_PAGE_NEXT].AddInvoker(miPageNext, 'OnClick');
+  WorkItem.Commands[COMMAND_PAGE_LAST].AddInvoker(btPageLast, 'OnClick');
 
 end;
 
