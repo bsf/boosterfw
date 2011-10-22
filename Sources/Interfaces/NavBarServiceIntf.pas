@@ -20,6 +20,9 @@ type
     procedure SetGroup(const Value: string);
     function GetSection: integer;
     procedure SetSection(Value: integer);
+    function GetImage: Graphics.TBitmap;
+    procedure SetImage(Value: Graphics.TBitmap);
+
 
     function Items: INavBarItems;
 
@@ -27,12 +30,12 @@ type
     property Category: string read GetCategory write SetCategory;
     property Group: string read GetGroup write SetGroup;
     property Section: integer read GetSection write SetSection;
-
+    property Image: Graphics.TBitmap read GetImage write SetImage;
   end;
 
   INavBarItems = interface
   ['{36A006DB-8737-4731-B29C-D017DA99C3F3}']
-    function Add(const ID: string): INavBarItem; 
+    function Add(const ID: string): INavBarItem;
     procedure Remove(const ID: string);
     procedure Delete(AIndex: integer);
     function Count: integer;
@@ -48,13 +51,14 @@ type
     function Caption: string;
     function Group: INavBarGroup;
     function SectionIndex: integer;
+    function Image: Graphics.TBitmap;
   end;
 
   INavBarItemLinks = interface
   ['{81E25BA5-1148-4124-BC87-00A86D0F22DB}']
-    function Add(const AItemID, ACaption: string;
-      ASectionIndex: integer = 0): integer;
-    procedure Remove(const AItemID: string);      
+    function Add(const AItemID, ACaption: string; AImage: Graphics.TBitmap;
+       ASectionIndex: integer = 0): integer;
+    procedure Remove(const AItemID: string);
     procedure Delete(AIndex: integer);
     function GetItem(AIndex: integer): INavBarItemLink;
     function Count: integer;

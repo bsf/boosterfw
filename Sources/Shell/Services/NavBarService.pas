@@ -24,15 +24,17 @@ type
     FItemID: string;
     FSectionIndex: integer;
     FCaption: string;
+    FImage: Graphics.TBitmap;
     FLayout: TNavBarLayout;
   protected
     function ItemID: string;
     function Caption: string;
     function Group: INavBarGroup;
     function SectionIndex: integer;
+    function Image: Graphics.TBitmap;
   public
     constructor Create(AOwner: TNavBarGroup; const AItemID, ACaption: string;
-      ASectionIndex: integer; ALayout: TNavBarLayout); reintroduce;
+      ASectionIndex: integer;  AImage: Graphics.TBitmap; ALayout: TNavBarLayout); reintroduce;
     destructor Destroy; override;
   end;
 
@@ -40,9 +42,9 @@ type
   private
     FList: TComponentList;
     FLayout: TNavBarLayout;
-    function Find(const AItemID: string): integer;    
+    function Find(const AItemID: string): integer;
   protected
-    function Add(const AItemID, ACaption: string; ASectionIndex: integer = 0): integer;
+    function Add(const AItemID, ACaption: string; AImage: Graphics.TBitmap; ASectionIndex: integer = 0): integer;
     procedure Remove(const AItemID: string);
     procedure Delete(AIndex: integer);
     function GetItem(AIndex: integer): INavBarItemLink;
@@ -175,7 +177,7 @@ type
     FCategory: string;
     FGroup: string;
     FSection: integer;
-
+    FImage: Graphics.TBitmap;
     FItems: TNavBarItems;
 
   public
@@ -188,6 +190,8 @@ type
     procedure SetGroup(const Value: string);
     function GetSection: integer;
     procedure SetSection(Value: integer);
+    function GetImage: Graphics.TBitmap;
+    procedure SetImage(Value: Graphics.TBitmap);
 
     function Items: INavBarItems;
     constructor Create(AOwner: TComponent; const AID: string); reintroduce;
@@ -274,7 +278,7 @@ end;
 procedure TNavBarService.AddItemLinkDefault(AItem: INavBarItem);
 begin
   FDefaultLayout.Categories[AItem.Category].
-    Groups[AItem.Group].ItemLinks.Add(AItem.ID, AItem.Caption, AItem.Section);
+    Groups[AItem.Group].ItemLinks.Add(AItem.ID, AItem.Caption, AItem.Image, AItem.Section);
 end;
 
 procedure TNavBarService.AddItemLinkHandler(Sender: TNavBarLayoutItem);
@@ -564,11 +568,13 @@ begin
   inherited Create(AOwner);
   FID := AID;
   FItems := TNavBarItems.Create(Self);
+  FImage := Graphics.TBitmap.Create;
 end;
 
 destructor TNavBarItem.Destroy;
 begin
   FItems.Free;
+  FImage.Free;
   inherited;
 end;
 
@@ -585,6 +591,11 @@ end;
 function TNavBarItem.GetGroup: string;
 begin
   Result := FGroup;
+end;
+
+function TNavBarItem.GetImage: Graphics.TBitmap;
+begin
+  Result := FImage;
 end;
 
 function TNavBarItem.GetSection: integer;
@@ -619,6 +630,11 @@ begin
   FGroup := Value;
 end;
 
+procedure TNavBarItem.SetImage(Value: Graphics.TBitmap);
+begin
+  FImage.Assign(Value);
+end;
+
 procedure TNavBarItem.SetSection(Value: integer);
 begin
   FSection := Value;
@@ -627,12 +643,12 @@ end;
 { TNavBarItemLinks }
 
 function TNavBarItemLinks.Add(const AItemID, ACaption: string;
-  ASectionIndex: integer): integer;
+   AImage: Graphics.TBitmap; ASectionIndex: integer): integer;
 var
   LinkItem: TNavBarItemLink;
 begin
   LinkItem := TNavBarItemLink.Create(TNavBarGroup(Owner), AItemID, ACaption,
-    ASectionIndex, FLayout);
+    ASectionIndex, AImage, FLayout);
   try
     if Assigned(FLayout.FOnAddItemLink) then FLayout.FOnAddItemLink(LinkItem);
     Result := FList.Add(LinkItem);
@@ -696,18 +712,20 @@ end;
 { TNavBarItemLink }
 
 constructor TNavBarItemLink.Create(AOwner: TNavBarGroup; const AItemID, ACaption: string;
-  ASectionIndex: integer; ALayout: TNavBarLayout);
+  ASectionIndex: integer; AImage: Graphics.TBitmap; ALayout: TNavBarLayout);
 begin
   inherited Create(AOwner);
   FItemID := AItemID;
   FCaption := ACaption;
   FSectionIndex := ASectionIndex;
   FLayout := ALayout;
+  FImage := Graphics.TBitmap.Create;
+  FImage.Assign(AImage);
 end;
 
 destructor TNavBarItemLink.Destroy;
 begin
-
+  FImage.Free;
   inherited;
 end;
 
@@ -719,6 +737,11 @@ end;
 function TNavBarItemLink.Group: INavBarGroup;
 begin
   Owner.GetInterface(INavBarGroup, Result);
+end;
+
+function TNavBarItemLink.Image: Graphics.TBitmap;
+begin
+  Result := FImage;
 end;
 
 function TNavBarItemLink.ItemID: string;

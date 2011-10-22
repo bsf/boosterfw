@@ -101,6 +101,8 @@ object frMain: TfrMain
     OptionsBehavior.NavigationPane.AllowCustomizing = False
     OptionsBehavior.NavigationPane.Collapsible = True
     OptionsImage.LargeImages = ilNavBarLarge
+    OptionsImage.SmallImages = ilNavBarSmall
+    OptionsView.Common.ShowGroupCaptions = False
     OptionsView.NavigationPane.OverflowPanelUseSmallImages = False
     OptionsView.NavigationPane.ShowActiveGroupCaptionWhenCollapsed = True
     OptionsView.NavigationPane.ShowOverflowPanel = False
@@ -262,5 +264,9 @@ object frMain: TfrMain
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
     end
+  end
+  object ilNavBarSmall: TImageList
+    Left = 128
+    Top = 56
   end
 end

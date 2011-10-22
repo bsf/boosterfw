@@ -140,6 +140,8 @@ begin
 
   FSaveDialog.Filter := 'Τΰιλ Excel (*.xls)|*.xls';
   FSaveDialog.DefaultExt := '.xls';
+  FSaveDialog.FileName := View.GetPreviewObject.Report.ReportOptions.Name;
+
   if FSaveDialog.Execute then
   begin
     FfrxXMLExport.FileName := FSaveDialog.FileName;

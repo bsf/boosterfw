@@ -156,7 +156,7 @@ begin
   FProgressCallback := ProgressCallback;
   try
     FReport.LoadFromFile(GetReportFileName);
-
+    FReport.ReportOptions.Name := ChangeFileExt(ExtractFileName(GetReportFileName), '');
     if FIBXComponents.DefaultDatabase.DefaultTransaction.InTransaction then
       FIBXComponents.DefaultDatabase.DefaultTransaction.Commit;
 

@@ -117,6 +117,11 @@ begin
   else
     dxCategoryNavBar.View := DefExpView;
 
+  dxCategoryNavBar.SmallImages := FNavBar.SmallImages;
+    //TcxImageList.Create(dxCategoryNavBar);
+  //dxCategoryNavBar.SmallImages.BkColor := clNone;
+  //dxCategoryNavBar.SmallImages.BlendColor := clNone;
+
   dxCategoryNavBar.Align := alClient;
   dxCategoryNavBar.Parent := dxCategory.Control;
   dxCategoryNavBar.TabStop := true;
@@ -126,8 +131,11 @@ begin
   dxCategory.Caption := ACategory.Caption;
 
   if not ACategory.GetImage.Empty then
+  begin
     dxCategory.LargeImageIndex :=
       FImageList.AddMasked(ACategory.GetImage, clDefault);
+    FNavBar.SmallImages.AddMasked(ACategory.GetImage, clDefault);
+  end;
 
   ScaleByCategory(dxCategory, FScaleM, FScaleD);
 
@@ -168,6 +176,10 @@ begin
 
   dxItem := dxCategoryNavBar.Items.Add;
   dxItem.Caption := AItemLink.Caption;
+  if not AItemLink.Image.Empty then
+    dxItem.SmallImageIndex :=
+      dxCategoryNavBar.SmallImages.AddMasked(AItemLink.Image, clDefault);
+
   dxGroup.CreateLink(dxItem);
   dxGroup.Visible := true;
 
@@ -524,8 +536,8 @@ var
   ChildGroupID: string;
   ChildGroupSection: string;
 begin
-  FNavBar.ActiveGroupIndex :=
-    AFile.ReadInteger('Common', 'ActiveGroupIndex', 0);
+  FNavBar.ActiveGroupIndex := 0;
+    //AFile.ReadInteger('Common', 'ActiveGroupIndex', 0);
   FNavBar.Width :=
     AFile.ReadInteger('Common', 'Width', 300);
   FNavBar.OptionsBehavior.NavigationPane.Collapsed :=

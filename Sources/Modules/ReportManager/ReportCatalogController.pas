@@ -3,7 +3,7 @@ unit ReportCatalogController;
 interface
 uses classes, CoreClasses, CustomUIController, sysutils,
   ShellIntf, ReportServiceIntf, ViewServiceIntf, ActivityServiceIntf,
-  CommonUtils, ConfigServiceIntf,
+  CommonUtils, ConfigServiceIntf, graphics,
   ReportCatalogConst, ReportCatalogClasses,
   ReportCatalogPresenter, ReportCatalogView,
   ReportLauncherPresenter, ReportLauncherView,
@@ -16,10 +16,13 @@ const
 
   SETTING_REPORTS_LOCATION = 'Reports.Location';
 
+  REPORT_NAVBAR_IMAGE_RES_NAME = 'REPORT_NAVBAR_IMAGE';
+
 type
 
   TReportCatalogController = class(TCustomUIController, IReportCatalogService)
   private
+    FActivityImage: TBitmap;
     FCatalogPath: string;
     FReportCatalog: TReportCatalog;
     FReportService: IReportService;
@@ -34,6 +37,7 @@ type
     procedure CmdReportInfo(Sender: TObject);
     procedure CmdReportSetup(Sender: TObject);
     procedure RegisterSettings;
+    procedure LoadActivityImage;
   protected
    function GetItem(const URI: string): TReportCatalogItem;
     procedure OnInitialize; override;
@@ -121,6 +125,18 @@ begin
   Result := FReportCatalog.GetItem(URI);
 end;
 
+procedure TReportCatalogController.LoadActivityImage;
+var
+  ImgRes: TResourceStream;
+begin
+  ImgRes := TResourceStream.Create(HInstance, 'REPORT_NAVBAR_IMAGE', 'file');
+  try
+    FActivityImage.LoadFromStream(ImgRes);
+  finally
+    ImgRes.Free;
+  end;
+end;
+
 procedure TReportCatalogController.LoadCatalogItem(
   AItem: TReportCatalogItem);
 var
@@ -157,8 +173,10 @@ begin
   activityItem := FActivitySvc.Items.Add(AItem.ID, false);
   activityItem.Data[COMMAND_DATA_REPORTID] := AItem.ID;
   activityItem.Caption := AItem.Caption;
-  activityItem.Category := ACT_CTG_REPORTS;
-  activityItem.Group := AItem.Group.Caption;
+  activityItem.Category := ShellIntf.MAIN_MENU_CATEGORY; // ACT_CTG_REPORTS;
+  activityItem.Group := AItem.Group.Caption; // + ' - מעקועû';
+
+  activityItem.Image := FActivityImage;
 
   activityItem.SetCustomPermissionOptions(
     AItem.ID, SECURITY_PERMISSION_REPORT_EXECUTE);
@@ -222,6 +240,9 @@ end;
 procedure TReportCatalogController.OnInitialize;
 begin
   WorkItem.Root.Services.Add(Self as IReportCatalogService);
+
+  FActivityImage := TBitmap.Create;
+  LoadActivityImage;
 
   RegisterSettings;
   FReportService := IReportService(WorkItem.Services[IReportService]);

@@ -54,6 +54,7 @@ type
     grNotifyListViewID: TcxGridColumn;
     grNotifyListViewSENDER: TcxGridColumn;
     grNotifyListViewHeader: TcxGridColumn;
+    ilNavBarSmall: TImageList;
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormShortCut(var Msg: TWMKey; var Handled: Boolean);
     procedure FormKeyUp(Sender: TObject; var Key: Word;

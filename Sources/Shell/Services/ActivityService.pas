@@ -865,6 +865,7 @@ procedure TActivityLayout.Load;
     navItem.Category := AItemLink.Group.Category.Caption;
     navItem.Group := AItemLink.Group.Caption;
     navItem.Section := item.Section;
+    navItem.Image := item.Image;
 
     NavBarSvc.AddItemLinkDefault(navItem);
 
