@@ -5,12 +5,10 @@ uses SysUtils, classes, CoreClasses, Contnrs;
 
 type
   TModuleEnumeratorEmbeded = class(TInterfacedObject, IModuleEnumeratorEmbeded)
-    procedure Modules(AModules: TClassList; Kind: TModuleKind;
-      RunMode: TAppRunMode);
+    procedure Modules(AModules: TClassList; Kind: TModuleKind);
   end;
 
-procedure RegisterActivator(ActivatorClass: TClass; Kind: TModuleKind;
-  RunModes: TAppRunModes);
+procedure RegisterActivator(ActivatorClass: TClass; Kind: TModuleKind);
 
 implementation
 
@@ -18,14 +16,12 @@ type
   TActivatorInfo = class(TObject)
     FClass: TClass;
     FKind: TModuleKind;
-    FRunModes: TAppRunModes;
   end;
 
 var
   ActivatorInfoList: TObjectList;
 
-procedure RegisterActivator(ActivatorClass: TClass; Kind: TModuleKind;
-  RunModes: TAppRunModes);
+procedure RegisterActivator(ActivatorClass: TClass; Kind: TModuleKind);
 var
   ActivatorInfo: TActivatorInfo;
 begin
@@ -34,7 +30,6 @@ begin
   begin
     FClass := ActivatorClass;
     FKind := Kind;
-    FRunModes := RunModes;
   end;
 
   ActivatorInfoList.Add(ActivatorInfo);
@@ -42,16 +37,14 @@ end;
 
 { TModuleEnumeratorEmbeded }
 
-procedure TModuleEnumeratorEmbeded.Modules(AModules: TClassList;
-  Kind: TModuleKind; RunMode: TAppRunMode);
+procedure TModuleEnumeratorEmbeded.Modules(AModules: TClassList; Kind: TModuleKind);
 var
   I: integer;
 begin
   if ParamStr(0) <> GetModuleName(HInstance) then Exit; //проверка на сборку с bpl
 
   for I := 0 to ActivatorInfoList.Count - 1 do
-    if (TActivatorInfo(ActivatorInfoList[I]).FKind = Kind) and
-       (RunMode in TActivatorInfo(ActivatorInfoList[I]).FRunModes)  then
+    if (TActivatorInfo(ActivatorInfoList[I]).FKind = Kind)  then
       AModules.Add(TActivatorInfo(ActivatorInfoList[I]).FClass);
 end;
 

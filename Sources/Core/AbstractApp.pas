@@ -21,7 +21,6 @@ type
     procedure MakeTemplateConfigFile;
   protected
     procedure OnLoadModule(const AModuleName, AInfo: string; Kind: TModuleKind); virtual;
-    function GetRunMode: TAppRunMode;
     function GetRootWorkItem: TWorkItem;
     function GetWorkItemClass: TWorkItemClass; virtual;
     procedure AddServices; virtual;
@@ -62,16 +61,6 @@ begin
   Result := FRootWorkItem;
 end;
 
-function TAbstractApplication.GetRunMode: TAppRunMode;
-begin
-  if FindCmdLineSwitch(swRunModeConfig) then
-    Result := rmConfiguration
-  else if FindCmdLineSwitch(swRunModeAdmin) then
-    Result := rmAdministration
-  else
-    Result := rmStandard;
-end;
-
 function TAbstractApplication.GetWorkItemClass: TWorkItemClass;
 begin
   Result := TWorkItem;
@@ -91,7 +80,7 @@ begin
     begin
       modInnerList := TClassList.Create;
       try
-        modInnerEnum.Modules(modInnerList, Kind, GetRunMode);
+        modInnerEnum.Modules(modInnerList, Kind);
         loader.LoadEmbeded(RootWorkItem, modInnerList, Kind, OnLoadModule);
       finally
         modInnerList.Free;
@@ -102,7 +91,7 @@ begin
     begin
       modList := TStringList.Create;
       try
-        modEnum.Modules(modList, Kind, GetRunMode);
+        modEnum.Modules(modList, Kind);
         loader.Load(RootWorkItem, modList, Kind, OnLoadModule);
       finally
         modList.Free;

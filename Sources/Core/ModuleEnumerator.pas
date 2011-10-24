@@ -6,15 +6,14 @@ uses Classes, CoreClasses, SysUtils, Contnrs, Windows;
 
 type
   TModuleEnumerator = class(TInterfacedObject, IModuleEnumerator)
-    procedure Modules(AModules: TStrings; Kind: TModuleKind; RunMode: TAppRunMode);
+    procedure Modules(AModules: TStrings; Kind: TModuleKind);
   end;
 
 implementation
 
 { TModuleEnumerator }
 
-procedure TModuleEnumerator.Modules(AModules: TStrings; Kind: TModuleKind;
-  RunMode: TAppRunMode);
+procedure TModuleEnumerator.Modules(AModules: TStrings; Kind: TModuleKind);
 begin
 
   if ParamStr(0) = GetModuleName(HInstance) then Exit;

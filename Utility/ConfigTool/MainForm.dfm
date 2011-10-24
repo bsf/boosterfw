@@ -43,10 +43,10 @@ object Form2: TForm2
       OnClick = Button1Click
     end
     object DBGrid1: TDBGrid
-      Left = 752
-      Top = 224
-      Width = 193
-      Height = 193
+      Left = 654
+      Top = 296
+      Width = 275
+      Height = 233
       DataSource = DataSource1
       TabOrder = 1
       TitleFont.Charset = DEFAULT_CHARSET
@@ -55,50 +55,17 @@ object Form2: TForm2
       TitleFont.Name = 'Tahoma'
       TitleFont.Style = []
     end
-    object cxDBPivotGrid1: TcxDBPivotGrid
-      Left = 2
-      Top = 281
-      Width = 966
-      Height = 269
-      Align = alClient
-      DataSource = DataSource1
-      Groups = <>
-      LookAndFeel.Kind = lfOffice11
-      LookAndFeel.NativeStyle = True
-      TabOrder = 2
-      ExplicitTop = 57
-      ExplicitHeight = 493
-      object cxDBPivotGrid1NAME: TcxDBPivotGridField
-        Area = faRow
-        AreaIndex = 1
-        DataBinding.FieldName = 'NAME'
-        Visible = True
-        Width = 258
-      end
-      object cxDBPivotGrid1GRP: TcxDBPivotGridField
-        Area = faRow
-        AreaIndex = 0
-        DataBinding.FieldName = 'GRP'
-        Visible = True
-      end
-      object cxDBPivotGrid1WEIGHT: TcxDBPivotGridField
-        Area = faData
-        AreaIndex = 0
-        DataBinding.FieldName = 'WEIGHT'
-        Visible = True
-      end
-    end
     object cxGroupBox2: TcxGroupBox
       Left = 2
       Top = 2
       Align = alTop
       Caption = 'cxGroupBox2'
-      TabOrder = 3
-      Height = 279
+      TabOrder = 2
+      Height = 175
       Width = 966
       object cxButton1: TcxButton
         Left = 24
-        Top = 16
+        Top = 15
         Width = 75
         Height = 25
         Caption = 'cxButton1'
@@ -124,8 +91,8 @@ object Form2: TForm2
         OnClick = cxButton3Click
       end
       object cxDBCheckListBox1: TcxDBCheckListBox
-        Left = 512
-        Top = 16
+        Left = 495
+        Top = 57
         Width = 121
         Height = 97
         Items = <>
@@ -143,28 +110,50 @@ object Form2: TForm2
         Text = 'None selected'
         Width = 217
       end
-      object cxDBVerticalGrid1: TcxDBVerticalGrid
-        Left = 232
-        Top = 73
-        Width = 241
-        Height = 200
-        TabOrder = 5
+    end
+    object cxDBVerticalGrid1: TcxDBVerticalGrid
+      Left = 3
+      Top = 183
+      Width = 646
+      Height = 346
+      OptionsView.RowHeaderWidth = 211
+      TabOrder = 3
+      DataController.DataSource = DataSource1
+      Version = 1
+      object cxDBVerticalGrid1ID: TcxDBEditorRow
+        Properties.DataBinding.FieldName = 'ID'
+        ID = 0
+        ParentID = -1
+        Index = 0
         Version = 1
-        object cxDBVerticalGrid1DBEditorRow1: TcxDBEditorRow
-          Properties.EditPropertiesClassName = 'TcxCheckComboBoxProperties'
-          Properties.EditProperties.Items = <>
-          ID = 0
-          ParentID = -1
-          Index = 0
-          Version = 1
-        end
+      end
+      object cxDBVerticalGrid1IMG: TcxDBEditorRow
+        Height = 150
+        Properties.EditPropertiesClassName = 'TcxImageProperties'
+        Properties.EditProperties.ClearKey = 46
+        Properties.EditProperties.GraphicClassName = 'TJPEGImage'
+        Properties.EditProperties.ImmediatePost = True
+        Properties.EditProperties.OnAssignPicture = cxDBVerticalGrid1IMGEditPropertiesAssignPicture
+        Properties.EditProperties.OnEditValueChanged = cxDBVerticalGrid1IMGEditPropertiesEditValueChanged
+        Properties.DataBinding.FieldName = 'IMG'
+        ID = 1
+        ParentID = -1
+        Index = 1
+        Version = 1
+      end
+      object cxDBVerticalGrid1NAME: TcxDBEditorRow
+        Properties.DataBinding.FieldName = 'NAME'
+        ID = 2
+        ParentID = -1
+        Index = 2
+        Version = 1
       end
     end
   end
   object DataSource1: TDataSource
     DataSet = ClientDataSet1
-    Left = 256
-    Top = 280
+    Left = 216
+    Top = 120
   end
   object frxReport1: TfrxReport
     Version = '4.10.5'
@@ -181,8 +170,8 @@ object Form2: TForm2
       'begin'
       ''
       'end.')
-    Left = 128
-    Top = 160
+    Left = 104
+    Top = 104
     Datasets = <>
     Variables = <>
     Style = <>
@@ -222,15 +211,115 @@ object Form2: TForm2
     end
   end
   object ClientDataSet1: TClientDataSet
+    Active = True
     Aggregates = <>
     Params = <>
     ProviderName = 'DataSetProvider1'
     AfterInsert = ClientDataSet1AfterInsert
-    Left = 320
-    Top = 368
+    Left = 312
+    Top = 120
+    object ClientDataSet1ID: TIntegerField
+      FieldName = 'ID'
+      Origin = 'TEST.ID'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+    end
+    object ClientDataSet1IMG: TBlobField
+      FieldName = 'IMG'
+      Origin = 'TEST.IMG'
+      ProviderFlags = [pfInUpdate]
+      Size = 8
+    end
+    object ClientDataSet1NAME: TWideStringField
+      FieldName = 'NAME'
+      Origin = 'TEST.NAME'
+      Size = 50
+    end
   end
   object DataSetProvider1: TDataSetProvider
-    Left = 248
-    Top = 400
+    DataSet = IBQuery1
+    Left = 400
+    Top = 88
+  end
+  object ClientDataSet2: TClientDataSet
+    Aggregates = <>
+    Params = <
+      item
+        DataType = ftBlob
+        ParamType = ptUnknown
+      end>
+    Left = 800
+    Top = 224
+  end
+  object DataSetProvider2: TDataSetProvider
+    Left = 840
+    Top = 160
+  end
+  object IBQuery1: TIBQuery
+    Database = IBDatabase1
+    Transaction = IBTransaction1
+    Active = True
+    CachedUpdates = True
+    SQL.Strings = (
+      'select * from test')
+    UpdateObject = IBUpdateSQL1
+    Left = 672
+    Top = 80
+  end
+  object IBDatabase1: TIBDatabase
+    Connected = True
+    DatabaseName = 'server:b52'
+    Params.Strings = (
+      'user_name=sysdba'
+      'password=211834'
+      'lc_ctype=WIN1251')
+    LoginPrompt = False
+    DefaultTransaction = IBTransaction1
+    SQLDialect = 1
+    Left = 752
+    Top = 80
+  end
+  object IBTransaction1: TIBTransaction
+    Active = True
+    DefaultDatabase = IBDatabase1
+    Left = 832
+    Top = 80
+  end
+  object DataSource2: TDataSource
+    DataSet = IBQuery1
+    Left = 304
+    Top = 64
+  end
+  object IBQuery2: TIBQuery
+    Left = 760
+    Top = 136
+  end
+  object IBUpdateSQL1: TIBUpdateSQL
+    RefreshSQL.Strings = (
+      'Select '
+      '  ID,'
+      '  IMG,'
+      '  NAME'
+      'from test '
+      'where'
+      '  ID = :ID')
+    ModifySQL.Strings = (
+      'update test'
+      'set'
+      '  IMG = :IMG,'
+      '  NAME = :NAME'
+      'where'
+      '  ID = :OLD_ID')
+    InsertSQL.Strings = (
+      'insert into test'
+      '  (IMG, NAME)'
+      'values'
+      '  (:IMG, :NAME)')
+    DeleteSQL.Strings = (
+      'delete from test'
+      'where'
+      '  ID = :OLD_ID')
+    Left = 720
+    Top = 208
   end
 end

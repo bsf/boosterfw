@@ -524,8 +524,7 @@ end;
 
 function TActivity.UsePermission: boolean;
 begin
-  Result := (FUseActivityPermission or (FCustomPermission <> ''))
-             and (App.RunMode <> rmConfiguration);
+  Result := (FUseActivityPermission or (FCustomPermission <> ''));
 end;
 
 function TActivity.InheritPermission: boolean;

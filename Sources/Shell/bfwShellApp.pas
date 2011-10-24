@@ -42,7 +42,6 @@ type
     procedure OnLoadModule(const AModuleName, AInfo: string; Kind: TModuleKind); override;
     //IApp
     function Version: string;
-    function RunMode: TAppRunMode;
     function Settings: ISettings;
     function UserProfile: IProfile;
     function HostProfile: IProfile;
@@ -99,26 +98,23 @@ begin
   RootWorkItem.Services.Add(
     IViewManagerService(TViewManagerService.Create(Self, RootWorkItem)));
 
-  if GetRunMode <> rmConfiguration then
-  begin
-    {Security}
-    FSecurity := TSecurityService.Create(Self, RootWorkItem);
-    RootWorkItem.Services.Add(ISecurityService(FSecurity));
-    RootWorkItem.Services.Add(IAuthenticationService(FSecurity));
+  {Security}
+  FSecurity := TSecurityService.Create(Self, RootWorkItem);
+  RootWorkItem.Services.Add(ISecurityService(FSecurity));
+  RootWorkItem.Services.Add(IAuthenticationService(FSecurity));
 
 
-    Intf := ILoginUserSelectorService(TLoginUserSelectorService.Create(Self, RootWorkItem));
-    RootWorkItem.Services.Add(ILoginUserSelectorService(Intf));
+  Intf := ILoginUserSelectorService(TLoginUserSelectorService.Create(Self, RootWorkItem));
+  RootWorkItem.Services.Add(ILoginUserSelectorService(Intf));
 
-    {DAL}
-    FEntityManager := TEntityManagerService.Create(Self, RootWorkItem);
-    RootWorkItem.Services.Add(IEntityManagerService(FEntityManager));
+  {DAL}
+  FEntityManager := TEntityManagerService.Create(Self, RootWorkItem);
+  RootWorkItem.Services.Add(IEntityManagerService(FEntityManager));
 
-    //Reports
-    RootWorkItem.Services.Add(
-      IReportService(TReportService.Create(Self,
-        IEntityManagerService(FEntityManager), RootWorkItem)));
-  end;
+  //Reports
+  RootWorkItem.Services.Add(
+    IReportService(TReportService.Create(Self,
+      IEntityManagerService(FEntityManager), RootWorkItem)));
 
   //AcritivityService
   RootWorkItem.Services.Add(
@@ -235,11 +231,6 @@ begin
   Result := IApp(AppInstance);
 end;}
 
-
-function TApp.RunMode: TAppRunMode;
-begin
-  Result := inherited GetRunMode;
-end;
 
 function TApp.Views: IViewManagerService;
 begin

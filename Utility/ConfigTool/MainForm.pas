@@ -18,7 +18,7 @@ uses
   cxShellListView, cxShellTreeView, cxShellComboBox, cxImage, StdCtrls, cxMemo,
   cxRichEdit, cxCustomPivotGrid, cxDBPivotGrid, Menus, cxButtons,
   cxExportPivotGridLink, cxCheckComboBox, cxDBCheckComboBox, cxCheckListBox,
-  cxDBCheckListBox;
+  cxDBCheckListBox, IBUpdateSQL;
 
 type
   TForm2 = class(TForm)
@@ -29,18 +29,27 @@ type
     ClientDataSet1: TClientDataSet;
     DBGrid1: TDBGrid;
     DataSetProvider1: TDataSetProvider;
-    cxDBPivotGrid1: TcxDBPivotGrid;
-    cxDBPivotGrid1NAME: TcxDBPivotGridField;
-    cxDBPivotGrid1GRP: TcxDBPivotGridField;
-    cxDBPivotGrid1WEIGHT: TcxDBPivotGridField;
     cxGroupBox2: TcxGroupBox;
     cxButton1: TcxButton;
     cxButton2: TcxButton;
     cxButton3: TcxButton;
     cxDBCheckListBox1: TcxDBCheckListBox;
     cxDBCheckComboBox1: TcxDBCheckComboBox;
+    ClientDataSet2: TClientDataSet;
+    DataSetProvider2: TDataSetProvider;
+    IBQuery1: TIBQuery;
+    IBDatabase1: TIBDatabase;
+    IBTransaction1: TIBTransaction;
+    DataSource2: TDataSource;
     cxDBVerticalGrid1: TcxDBVerticalGrid;
-    cxDBVerticalGrid1DBEditorRow1: TcxDBEditorRow;
+    cxDBVerticalGrid1ID: TcxDBEditorRow;
+    cxDBVerticalGrid1IMG: TcxDBEditorRow;
+    cxDBVerticalGrid1NAME: TcxDBEditorRow;
+    IBQuery2: TIBQuery;
+    IBUpdateSQL1: TIBUpdateSQL;
+    ClientDataSet1ID: TIntegerField;
+    ClientDataSet1IMG: TBlobField;
+    ClientDataSet1NAME: TWideStringField;
     procedure dxNavBar1Item1Click(Sender: TObject);
     procedure dxNavBar1Item2Click(Sender: TObject);
     procedure cxMRUEdit1PropertiesInitPopup(Sender: TObject);
@@ -52,9 +61,13 @@ type
       ARowProperties: TcxCustomEditorRowProperties);
     procedure Button1Click(Sender: TObject);
     procedure ClientDataSet1AfterInsert(DataSet: TDataSet);
-    procedure cxButton1Click(Sender: TObject);
     procedure cxButton2Click(Sender: TObject);
     procedure cxButton3Click(Sender: TObject);
+    procedure cxButton1Click(Sender: TObject);
+    procedure cxDBVerticalGrid1IMGEditPropertiesEditValueChanged(
+      Sender: TObject);
+    procedure cxDBVerticalGrid1IMGEditPropertiesAssignPicture(Sender: TObject;
+      const Picture: TPicture);
   private
     { Private declarations }
   public
@@ -80,17 +93,57 @@ end;
 
 procedure TForm2.cxButton1Click(Sender: TObject);
 begin
-  cxExportPivotGridToExcel('c:\pe1', cxDBPivotGrid1);
+  IBQuery1.ApplyUpdates;
+  IBQuery1.Close;
+  IBQuery1.open;
 end;
 
 procedure TForm2.cxButton2Click(Sender: TObject);
+var
+  f: TBlobField;
+  d: TBytes;
+  s: TMemoryStream;
 begin
-cxExportPivotGridToXML('c:\pe1', cxDBPivotGrid1)
+ s := TMemoryStream.Create;
+ f := TBlobField(ClientDataSet1.FieldByName('IMG'));
+ f.SaveToStream(s);
+ f.Clear;
+ f.LoadFromStream(s);
+ s.Free;
+
+ ClientDataSet1.ApplyUpdates(0);
 end;
 
 procedure TForm2.cxButton3Click(Sender: TObject);
 begin
-cxExportPivotGridToText('c:\pe1', cxDBPivotGrid1)
+  ClientDataSet1.Close;
+  ClientDataSet1.Open;
+end;
+
+procedure TForm2.cxDBVerticalGrid1IMGEditPropertiesAssignPicture(
+  Sender: TObject; const Picture: TPicture);
+var
+  row: TcxCustomRow;
+begin
+  row := TcxDBVerticalGrid(TcxImage(Sender).owner).FocusedRow;
+
+
+  if row is TcxDBEditorRow then
+    ShowMessage(TcxDBEditorRow(row).Properties.DataBinding.FieldName);
+
+
+//  TcxImage(Sender).InternalProperties.
+
+//  ShowMessage(TcxImage(Sender).Properties.GetContainerClass.ClassName);
+end;
+
+procedure TForm2.cxDBVerticalGrid1IMGEditPropertiesEditValueChanged(
+  Sender: TObject);
+begin
+{  if TcxImage(Sender).Picture.Graphic = nil then
+    ShowMessage('Sender empty')
+  else
+    ShowMessage(Sender.ClassName);}
 end;
 
 procedure TForm2.cxMRUEdit1PropertiesDeleteLookupItem(

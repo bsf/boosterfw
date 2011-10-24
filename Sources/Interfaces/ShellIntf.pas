@@ -41,7 +41,6 @@ type
   IApp = interface
   ['{D24C773A-376C-41BA-A955-6FFE5CE62ECE}']
     function Version: string;
-    function RunMode: TAppRunMode;
     function WorkItem: TWorkItem;
     function Settings: ISettings;
     function UserProfile: IProfile;

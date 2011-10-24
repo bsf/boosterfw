@@ -27,13 +27,8 @@ begin
   Result := mkInfrastructure
 end;
 
-function GetModuleRunModes: TAppRunModes;
-begin
-  Result := [Low(TAppRunMode)..High(TAppRunMode)];
-end;
-
 exports
-  GetModuleActivatorClass, GetModuleKind, GetModuleRunModes;
+  GetModuleActivatorClass, GetModuleKind;
 
 { TShellUIModule }
 
@@ -76,6 +71,5 @@ begin
 end;
 
 initialization
-  RegisterEmbededModule(GetModuleActivatorClass, GetModuleKind,
-    [Low(TAppRunMode)..High(TAppRunMode)]);
+  RegisterEmbededModule(GetModuleActivatorClass, GetModuleKind);
 end.

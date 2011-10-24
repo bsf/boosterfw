@@ -8,6 +8,8 @@ const
   etAppStarted = 'Application.Started';
   etAppStoped = 'Application.Stoped';
 
+  EVT_MODULE_LOADED = 'events.OnModuleLoaded';
+
   GetModuleActivatorFunctionName = 'GetModuleActivator';
 
 
@@ -31,10 +33,7 @@ type
 
   TWorkItem = class;
 
-  TAppRunMode = (rmStandard, rmConfiguration, rmAdministration);
-  TAppRunModes = set of TAppRunMode;
-
-  TModuleKind = (mkInfrastructure, mkConfiguration, mkFoundation, mkExtension);
+  TModuleKind = (mkInfrastructure, mkFoundation, mkExtension);
 
   IModule = interface
   ['{C29B7570-168C-4655-AC39-235A06A54D7C}']
@@ -48,12 +47,12 @@ type
 
   IModuleEnumeratorEmbeded = interface
   ['{5E262A6E-C0FF-4441-8F76-C0A53816E6B8}']
-    procedure Modules(Activators: TClassList; Kind: TModuleKind; RunMode: TAppRunMode);
+    procedure Modules(Activators: TClassList; Kind: TModuleKind);
   end;
 
   IModuleEnumerator = interface
   ['{80750273-3990-4E3A-8B79-6B917BEBE3F9}']
-    procedure Modules(AModules: TStrings; Kind: TModuleKind; RunMode: TAppRunMode);
+    procedure Modules(AModules: TStrings; Kind: TModuleKind);
   end;
 
   TModuleLoaderInfoCallback = procedure(const AModuleName, AInfo: string; Kind: TModuleKind) of object;
@@ -398,8 +397,7 @@ type
 
   TWorkItemClass = class of TWorkItem;
 
-procedure RegisterEmbededModule(ActivatorClass: TClass; Kind: TModuleKind;
-  RunModes: TAppRunModes = [rmStandard]);
+procedure RegisterEmbededModule(ActivatorClass: TClass; Kind: TModuleKind);
 
 function FindWorkItem(const AID: string; AParent: TWorkItem): TWorkItem;
 
@@ -411,11 +409,10 @@ uses ModuleEnumeratorEmbeded, EventBroker, ServicesList, CommandsList,
 var
   DebugInfoProc: procedure(const AInfo: string);
 
-procedure RegisterEmbededModule(ActivatorClass: TClass; Kind: TModuleKind;
-  RunModes: TAppRunModes);
+procedure RegisterEmbededModule(ActivatorClass: TClass; Kind: TModuleKind);
 begin
   if HInstance = MainInstance then
-    ModuleEnumeratorEmbeded.RegisterActivator(ActivatorClass, Kind, RunModes);
+    ModuleEnumeratorEmbeded.RegisterActivator(ActivatorClass, Kind);
 end;
 
 function FindWorkItem(const AID: string; AParent: TWorkItem): TWorkItem;
