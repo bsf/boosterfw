@@ -29,42 +29,24 @@ type
       const ArgumentName: string = '');
     class procedure CheckArgumentNotEmpty(AValue: Variant;
       const ArgumentName: string = '');
-  end;                                       
+  end;
 
   TWorkItem = class;
 
   TModuleKind = (mkInfrastructure, mkFoundation, mkExtension);
 
-  IModule = interface
-  ['{C29B7570-168C-4655-AC39-235A06A54D7C}']
-    procedure AddServices(AWorkItem: TWorkItem);
-    procedure Load;
-    procedure UnLoad;
+  TModule = class(TComponent)
+  private
+    FWorkItem: TWorkItem;
+  public
+    constructor Create(AWorkItem: TWorkItem); reintroduce;
+    class function Kind: TModuleKind; virtual;
+    procedure Load; virtual;
+    procedure UnLoad; virtual;
+    property WorkItem: TWorkItem read FWorkItem;
   end;
 
-
-  TGetModuleActivator = function: TClass;
-
-  IModuleEnumeratorEmbeded = interface
-  ['{5E262A6E-C0FF-4441-8F76-C0A53816E6B8}']
-    procedure Modules(Activators: TClassList; Kind: TModuleKind);
-  end;
-
-  IModuleEnumerator = interface
-  ['{80750273-3990-4E3A-8B79-6B917BEBE3F9}']
-    procedure Modules(AModules: TStrings; Kind: TModuleKind);
-  end;
-
-  TModuleLoaderInfoCallback = procedure(const AModuleName, AInfo: string; Kind: TModuleKind) of object;
-
-  IModuleLoaderService = interface
-  ['{F198EE64-F7E8-46EE-B1A6-6ADCA7E1AF9B}']
-    procedure Load(AWorkItem: TWorkItem; AModules: TStrings; Kind: TModuleKind;
-      AInfoCallback: TModuleLoaderInfoCallback);
-    procedure LoadEmbeded(AWorkItem: TWorkItem; AActivators: TClassList;
-      Kind: TModuleKind; AInfoCallback: TModuleLoaderInfoCallback);
-    procedure UnLoadAll;
-  end;
+  TModuleClass = class of TModule;
 
   IAuthenticationService = interface
   ['{220B21AC-CD11-48DF-ADCB-BE6F577EC416}']
@@ -397,22 +379,33 @@ type
 
   TWorkItemClass = class of TWorkItem;
 
-procedure RegisterEmbededModule(ActivatorClass: TClass; Kind: TModuleKind);
+
+procedure RegisterModule(ModuleClass: TModuleClass);
+function ModuleClasses: TClassList;
 
 function FindWorkItem(const AID: string; AParent: TWorkItem): TWorkItem;
 
 implementation
 
-uses ModuleEnumeratorEmbeded, EventBroker, ServicesList, CommandsList,
+uses  EventBroker, ServicesList, CommandsList,
   WorkspacesList, ItemsList, ActionsList;
 
 var
   DebugInfoProc: procedure(const AInfo: string);
 
-procedure RegisterEmbededModule(ActivatorClass: TClass; Kind: TModuleKind);
+  ModuleClassesList: TClassList;
+
+function ModuleClasses: TClassList;
 begin
-  if HInstance = MainInstance then
-    ModuleEnumeratorEmbeded.RegisterActivator(ActivatorClass, Kind);
+  if not Assigned(ModuleClassesList) then
+    ModuleClassesList := TClassList.Create;
+
+  Result := ModuleClassesList;
+end;
+
+procedure RegisterModule(ModuleClass: TModuleClass);
+begin
+  ModuleClasses.Add(ModuleClass);
 end;
 
 function FindWorkItem(const AID: string; AParent: TWorkItem): TWorkItem;
@@ -908,6 +901,30 @@ begin
 end;
 
 procedure DebugInfoProcStub(const AInfo: string);
+begin
+
+end;
+
+
+{ TModule }
+
+constructor TModule.Create(AWorkItem: TWorkItem);
+begin
+  inherited Create(nil);
+  FWorkItem := AWorkItem.WorkItems.Add(Self.ClassName);
+end;
+
+class function TModule.Kind: TModuleKind;
+begin
+  Result := mkExtension;
+end;
+
+procedure TModule.Load;
+begin
+
+end;
+
+procedure TModule.UnLoad;
 begin
 
 end;

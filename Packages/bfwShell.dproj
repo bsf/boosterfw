@@ -58,7 +58,7 @@
 			<DCCReference Include="vclimg.dcp"/>
 			<DCCReference Include="bfwCore.dcp"/>
 			<DCCReference Include="dsnapcon.dcp"/>
-			<DCCReference Include="..\Sources\Shell\bfwShellApp.pas"/>
+			<DCCReference Include="..\Sources\Shell\bfwApp.pas"/>
 			<DCCReference Include="..\Sources\Shell\ShellLock.pas"/>
 			<DCCReference Include="..\Sources\Shell\ShellLogin.pas"/>
 			<DCCReference Include="..\Sources\Shell\ShellLoginForm.pas">

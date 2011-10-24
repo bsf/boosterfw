@@ -1,10 +1,9 @@
-unit bfwShellApp;
+unit bfwApp;
 
 interface
 
 uses windows, classes, forms, sysutils,
-  AbstractApp, CoreClasses, ModuleLoader,
-  ModuleEnumerator, ShellIntf,
+  AbstractApp, CoreClasses, ShellIntf,
   ShellLogin, ShellLock, ShellSplashForm,
   ConfigServiceIntf, ConfigService,
   NavBarServiceIntf, NavBarService,
@@ -87,8 +86,6 @@ var
 begin
 
   RootWorkItem.Services.Add(IConfigurationService(TConfigurationService.Create(Self, RootWorkItem)));
-
-  RootWorkItem.Services.Add(IModuleEnumerator(TModuleEnumerator.Create));
 
   //UI
   RootWorkItem.Services.Add(

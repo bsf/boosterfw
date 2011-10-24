@@ -9,8 +9,8 @@ const
 
 type
   TdxbReportManagerModuleInit = class(TCustomModule)
-  protected
-    //IModule
+  public
+    class function Kind: TModuleKind; override;
     procedure OnLoading; override;
     procedure OnLoaded; override;
   end;
@@ -20,6 +20,11 @@ implementation
 
 
 { TdxbReportManagerModuleInit }
+
+class function TdxbReportManagerModuleInit.Kind: TModuleKind;
+begin
+  Result := mkFoundation;
+end;
 
 procedure TdxbReportManagerModuleInit.OnLoaded;
 begin
@@ -49,6 +54,6 @@ begin
 end;
 
 initialization
-  RegisterEmbededModule(TdxbReportManagerModuleInit, mkFoundation);
+  RegisterModule(TdxbReportManagerModuleInit);
 
 end.

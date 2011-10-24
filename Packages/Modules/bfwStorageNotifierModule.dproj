@@ -1,7 +1,7 @@
 ﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
 			<ProjectGuid>{AC8180A9-6F84-49B0-8449-C0551BA46B24}</ProjectGuid>
-			<MainSource>bfwStorageNotifier.dpk</MainSource>
+			<MainSource>bfwStorageNotifierModule.dpk</MainSource>
 			<ProjectVersion>12.3</ProjectVersion>
 			<Base>True</Base>
 			<Config Condition="'$(Config)'==''">Debug</Config>
@@ -48,7 +48,7 @@
 			<DCC_DebugInformation>false</DCC_DebugInformation>
 		</PropertyGroup>
 		<ItemGroup>
-			<DelphiCompile Include="bfwStorageNotifier.dpk">
+			<DelphiCompile Include="bfwStorageNotifierModule.dpk">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
 			<DCCReference Include="rtl.dcp"/>
@@ -81,7 +81,7 @@
 			<BorlandProject>
 				<Delphi.Personality>
 					<Source>
-						<Source Name="MainSource">bfwStorageNotifier.dpk</Source>
+						<Source Name="MainSource">bfwStorageNotifierModule.dpk</Source>
 					</Source>
 					<VersionInfo>
 						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>

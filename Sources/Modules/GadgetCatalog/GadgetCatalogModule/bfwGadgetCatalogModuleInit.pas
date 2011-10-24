@@ -7,10 +7,7 @@ uses classes, CoreClasses, CustomModule, BarCodeScanerController;
 
 type
   TdxbGadgetCatalogModuleInit = class(TCustomModule)
-  private
-
-  protected
-    //IModule
+  public
     procedure OnLoading; override;
     procedure OnLoaded; override;
   end;
@@ -33,6 +30,6 @@ begin
 end;
 
 initialization
-  RegisterEmbededModule(TdxbGadgetCatalogModuleInit, mkFoundation);
+  RegisterModule(TdxbGadgetCatalogModuleInit);
   
 end.

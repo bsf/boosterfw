@@ -1,24 +1,18 @@
 unit AbstractApp;
 
 interface
-uses Classes, CoreClasses, SysUtils, Contnrs;
-
-const
-  swRunModeStandard = 'runmode:standard';
-  swRunModeConfig = 'runmode:config';
-  swRunModeAdmin = 'runmode:admin';
+uses Classes, CoreClasses, SysUtils, Contnrs, Generics.Collections;
 
 type
   TAbstractApplication = class(TComponent)
   private
     FRootWorkItem: TWorkItem;
+    FModules: TObjectList<TModule>;
     procedure RegisterUnhandledExceptionHandler;
-    procedure AddRequiredServices;
     procedure AuthenticateUser;
+    procedure InstModules;
     procedure LoadModules(Kind: TModuleKind);
     procedure UnLoadModules;
-    procedure NotifyAppState(const AEventName: string);
-    procedure MakeTemplateConfigFile;
   protected
     procedure OnLoadModule(const AModuleName, AInfo: string; Kind: TModuleKind); virtual;
     function GetRootWorkItem: TWorkItem;
@@ -27,20 +21,16 @@ type
     procedure ShellInitialization; virtual;
     procedure Start; virtual; abstract;
   public
+    constructor Create(AOwner: TComponent); override;
     procedure Run;
     property RootWorkItem: TWorkItem read GetRootWorkItem;
   end;
 
 implementation
-uses ModuleLoader, ModuleEnumeratorEmbeded;
+
 
 { TAbstractApplication }
 
-procedure TAbstractApplication.AddRequiredServices;
-begin
-  RootWorkItem.Services.Add(IModuleLoaderService(TModuleLoaderService.Create));
-  RootWorkItem.Services.Add(IModuleEnumeratorEmbeded(TModuleEnumeratorEmbeded.Create));
-end;
 
 procedure TAbstractApplication.AddServices;
 begin
@@ -56,6 +46,12 @@ begin
 end;
 
 
+constructor TAbstractApplication.Create(AOwner: TComponent);
+begin
+  inherited;
+  FModules := TObjectList<TModule>.Create(false);
+end;
+
 function TAbstractApplication.GetRootWorkItem: TWorkItem;
 begin
   Result := FRootWorkItem;
@@ -66,51 +62,20 @@ begin
   Result := TWorkItem;
 end;
 
+procedure TAbstractApplication.InstModules;
+var
+  I: integer;
+begin
+  for I := 0 to CoreClasses.ModuleClasses.Count - 1 do
+    FModules.Add(TModuleClass(CoreClasses.ModuleClasses[I]).Create(RootWorkItem));
+end;
+
 procedure TAbstractApplication.LoadModules(Kind: TModuleKind);
 var
-  loader: IModuleLoaderService;
-  modInnerEnum: IModuleEnumeratorEmbeded;
-  modEnum: IModuleEnumerator;
-  modInnerList: TClassList;
-  modList: TStringList;
+  I: integer;
 begin
-  if RootWorkItem.Services.Query(IModuleLoaderService, loader) then
-  begin
-    if RootWorkItem.Services.Query(IModuleEnumeratorEmbeded, modInnerEnum) then
-    begin
-      modInnerList := TClassList.Create;
-      try
-        modInnerEnum.Modules(modInnerList, Kind);
-        loader.LoadEmbeded(RootWorkItem, modInnerList, Kind, OnLoadModule);
-      finally
-        modInnerList.Free;
-      end;
-    end;
-
-    if RootWorkItem.Services.Query(IModuleEnumerator, modEnum) then
-    begin
-      modList := TStringList.Create;
-      try
-        modEnum.Modules(modList, Kind);
-        loader.Load(RootWorkItem, modList, Kind, OnLoadModule);
-      finally
-        modList.Free;
-      end;
-    end;
-
-
-  end;
-
-end;
-
-procedure TAbstractApplication.MakeTemplateConfigFile;
-begin
-
-end;
-
-procedure TAbstractApplication.NotifyAppState(const AEventName: string);
-begin
-  RootWorkItem.EventTopics[AEventName].Fire;
+  for I := 0 to FModules.Count - 1 do
+    if FModules[I].Kind = Kind then FModules[I].Load;
 end;
 
 procedure TAbstractApplication.OnLoadModule(const AModuleName, AInfo: string;
@@ -129,22 +94,12 @@ begin
 
   RegisterUnhandledExceptionHandler();
 
-  if FindCmdLineSwitch('makeconfig') then
-  begin
-    MakeTemplateConfigFile;
-    Halt(1);
-  end;
-
   // Create RootWorkItem
   FRootWorkItem := GetWorkItemClass.Create(nil, nil, 'RootWorkItem', nil);
 
-//	IVisualizer visualizer = CreateVisualizer();
-//			if (visualizer != null)
-//				visualizer.Initialize(rootWorkItem, builder);
-
-  AddRequiredServices;
-
   AddServices;  //virtual
+
+  InstModules;
 
   LoadModules(mkInfrastructure);
 
@@ -156,17 +111,15 @@ begin
 
   LoadModules(mkExtension);
 
-  NotifyAppState(etAppStarted);
+  RootWorkItem.EventTopics[etAppStarted].Fire;
 
   Start;
 
-  NotifyAppState(etAppStoped);
+  RootWorkItem.EventTopics[etAppStoped].Fire;
 
   UnLoadModules;
 
   FreeAndNil(FRootWorkItem);
-//  if (visualizer != null)
-//	  visualizer.Dispose();
 end;
 
 procedure TAbstractApplication.ShellInitialization;
@@ -176,10 +129,11 @@ end;
 
 procedure TAbstractApplication.UnLoadModules;
 var
-  loader: IModuleLoaderService;
+  I: integer;
 begin
-  if RootWorkItem.Services.Query(IModuleLoaderService, loader) then
-    loader.UnLoadAll;
+  for I := 0 to FModules.Count - 1 do
+    FModules[I].UnLoad;
+
 end;
 
 initialization

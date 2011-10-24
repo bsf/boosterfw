@@ -4,14 +4,11 @@ interface
 uses classes, CoreClasses;
 
 type
-  TCustomModule = class(TComponent, IModule)
-  private
-    FWorkItem: TWorkItem;
-  protected
+  TCustomModule = class(TModule)
+  public
     //IModule
-    procedure AddServices(AWorkItem: TWorkItem);
-    procedure Load;
-    procedure UnLoad;
+    procedure Load; override;
+    procedure UnLoad; override;
 
     function InstantiateController(
       AControllerClass: TControllerClass): TAbstractController;
@@ -20,7 +17,6 @@ type
     procedure OnLoaded; virtual;
     procedure OnUnload; virtual;
 
-    property WorkItem: TWorkItem read FWorkItem;
   end;
 
 implementation
@@ -30,17 +26,12 @@ implementation
 function TCustomModule.InstantiateController(
   AControllerClass: TControllerClass): TAbstractController;
 begin
-  Result := FWorkItem.WorkItems.Add(AControllerClass.ClassName, AControllerClass).Controller;
-end;
-
-procedure TCustomModule.AddServices(AWorkItem: TWorkItem);
-begin
-  FWorkItem := AWorkItem.WorkItems.Add(Self.ClassName);
-  OnLoading;
+  Result := WorkItem.WorkItems.Add(AControllerClass.ClassName, AControllerClass).Controller;
 end;
 
 procedure TCustomModule.Load;
 begin
+  OnLoading;
   OnLoaded;
 end;
 
@@ -62,7 +53,7 @@ end;
 procedure TCustomModule.UnLoad;
 begin
   OnUnload;
-  FWorkItem.Free;
+  WorkItem.Free;
 end;
 
 end.

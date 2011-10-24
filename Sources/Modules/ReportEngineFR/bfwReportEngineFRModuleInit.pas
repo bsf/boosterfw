@@ -6,8 +6,8 @@ uses classes, CoreClasses, CustomModule, ShellIntf, ViewServiceIntf,
 
 type
   TdxbReportEngineFRModuleInit = class(TCustomModule)
-  protected
-    //IModule
+  public
+    class function Kind: TModuleKind; override;
     procedure OnLoading; override;
     procedure OnLoaded; override;
   end;
@@ -17,6 +17,11 @@ implementation
 
 
 { TdxbReportEngineFRModuleInit }
+
+class function TdxbReportEngineFRModuleInit.Kind: TModuleKind;
+begin
+  Result := mkFoundation;
+end;
 
 procedure TdxbReportEngineFRModuleInit.OnLoaded;
 begin
@@ -32,6 +37,6 @@ begin
 end;
 
 initialization
-  RegisterEmbededModule(TdxbReportEngineFRModuleInit, mkFoundation);
+  RegisterModule(TdxbReportEngineFRModuleInit);
 
 end.

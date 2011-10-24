@@ -32,7 +32,7 @@ requires
   dsnapcon;
 
 contains
-  bfwShellApp in '..\Sources\Shell\bfwShellApp.pas',
+  bfwApp in '..\Sources\Shell\bfwApp.pas',
   ShellLock in '..\Sources\Shell\ShellLock.pas',
   ShellLogin in '..\Sources\Shell\ShellLogin.pas',
   ShellLoginForm in '..\Sources\Shell\ShellLoginForm.pas' {fmShellLogin},

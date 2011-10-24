@@ -17,8 +17,8 @@ uses classes, CoreClasses, CustomModule, EntityCatalogIntf, EntityCatalogManager
 type
 
   TdxbEntityCatalogModuleInit = class(TCustomModule)
-  private
-  protected
+  public
+    class function Kind: TModuleKind; override;
     procedure OnLoading; override;
     procedure OnLoaded; override;
   end;
@@ -27,6 +27,11 @@ implementation
 
 
 { dxbEntityCatalogModuleInit }
+
+class function TdxbEntityCatalogModuleInit.Kind: TModuleKind;
+begin
+  Result := mkFoundation;
+end;
 
 procedure TdxbEntityCatalogModuleInit.OnLoaded;
 begin
@@ -46,9 +51,9 @@ begin
   RegisterEntityUIClass(TEntityUIClassPresenter.Create('IEntityDeskView', TEntityDeskPresenter, TfrEntityDeskView));
   RegisterEntityUIClass(TEntityUIClassPresenter.Create('IEntityOrgChartView', TEntityOrgChartPresenter, TfrEntityOrgChartView));
   RegisterEntityUIClass(TEntityUIClassSecurityResProvider.Create('ISecurityResProvider'));}
-end;                                                              
+end;
 
 initialization
-  RegisterEmbededModule(TdxbEntityCatalogModuleInit, mkFoundation);
+  RegisterModule(TdxbEntityCatalogModuleInit);
 
 end.

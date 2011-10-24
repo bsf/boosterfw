@@ -6,35 +6,28 @@ uses classes, CoreClasses, SysUtils, ShellIntf, ShellForm, ActivityServiceIntf, 
 
 
 type
-  TShellUIModule = class(TComponent, IModule)
-  protected
-    //IModule
-    procedure AddServices(AWorkItem: TWorkItem);
-    procedure Load;
-    procedure UnLoad;
+  TShellUIModule = class(TModule)
+  public
+    class function Kind: TModuleKind; override;
+    procedure Load; override;
   end;
 
 implementation
 {$R Shell.res}
 
-function GetModuleActivatorClass: TClass;
-begin
-  Result := TShellUIModule;
-end;
-
-function GetModuleKind: TModuleKind;
-begin
-  Result := mkInfrastructure
-end;
-
-exports
-  GetModuleActivatorClass, GetModuleKind;
 
 { TShellUIModule }
 
-procedure TShellUIModule.AddServices(AWorkItem: TWorkItem);
+
+class function TShellUIModule.Kind: TModuleKind;
+begin
+  Result := mkInfrastructure;
+end;
+
+procedure TShellUIModule.Load;
 const
   NAVBAR_IMAGE_RES_NAME = 'SHELL_NAVBAR_IMAGE';
+
 
 var
   Image: TBitMap;
@@ -53,23 +46,16 @@ begin
       ImgRes.Free;
     end;
 
-    Svc := AWorkItem.Services[INavBarService] as INavBarService;
+    Svc := WorkItem.Services[INavBarService] as INavBarService;
     Svc.DefaultLayout.Categories[MAIN_MENU_CATEGORY].SetImage(Image);
   finally
     Image.Free;
   end;
-end;
 
-procedure TShellUIModule.Load;
-begin
 
 end;
 
-procedure TShellUIModule.UnLoad;
-begin
-
-end;
 
 initialization
-  RegisterEmbededModule(GetModuleActivatorClass, GetModuleKind);
+  RegisterModule(TShellUIModule);
 end.

@@ -1,4 +1,4 @@
-package bfwStorageNotifier;
+package bfwStorageNotifierModule;
 
 {$R *.res}
 {$ALIGN 8}
