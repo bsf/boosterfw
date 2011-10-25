@@ -387,7 +387,7 @@ begin
   instWI := FindPresenterWI(AWorkItem, viewURI + instID);
   if not Assigned(instWI) then
   begin
-    instWI := AWorkItem.WorkItems.Add(ViewURI + instID, Self);
+    instWI := AWorkItem.WorkItems.Add(Self, ViewURI + instID);
     try
       inst := instWI.Controller as TCustomPresenter;
       inst.Initialize(viewURI, Sender);

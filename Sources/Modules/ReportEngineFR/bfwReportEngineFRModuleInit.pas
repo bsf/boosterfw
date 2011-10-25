@@ -1,42 +1,35 @@
 unit bfwReportEngineFRModuleInit;
 
 interface
-uses classes, CoreClasses, CustomModule, ShellIntf, ViewServiceIntf,
+uses classes, CoreClasses, ShellIntf, ViewServiceIntf,
   ReportServiceIntf, frReportFactory, frReportPreviewPresenter, frReportPreviewView;
 
 type
-  TdxbReportEngineFRModuleInit = class(TCustomModule)
+  TReportEngineFRModuleInit = class(TModule)
   public
     class function Kind: TModuleKind; override;
-    procedure OnLoading; override;
-    procedure OnLoaded; override;
+    procedure Load; override;
   end;
 
 
 implementation
 
 
-{ TdxbReportEngineFRModuleInit }
+{ TReportEngineFRModuleInit }
 
-class function TdxbReportEngineFRModuleInit.Kind: TModuleKind;
+class function TReportEngineFRModuleInit.Kind: TModuleKind;
 begin
   Result := mkFoundation;
 end;
 
-procedure TdxbReportEngineFRModuleInit.OnLoaded;
-begin
-
-
-end;
-
-procedure TdxbReportEngineFRModuleInit.OnLoading;
+procedure TReportEngineFRModuleInit.Load;
 begin
   (WorkItem.Services[IViewManagerService] as IViewManagerService).
     RegisterView(VIEW_FR_PREVIEW, TfrfrReportPreviewView, TfrReportPreviewPresenter);
-  InstantiateController(TFastReportFactory);
+  WorkItem.WorkItems.Add(TFastReportFactory);
 end;
 
 initialization
-  RegisterModule(TdxbReportEngineFRModuleInit);
+  RegisterModule(TReportEngineFRModuleInit);
 
 end.

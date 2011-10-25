@@ -15,7 +15,7 @@ implementation
 
 procedure TdxbSecurityManagerModuleInit.Load;
 begin
-  WorkItem.Root.WorkItems.Add(TAdminController.ClassName, TAdminController);
+  WorkItem.Root.WorkItems.Add(TAdminController, TAdminController.ClassName);
 end;
 
 initialization

@@ -1,37 +1,31 @@
 unit bfwReportManagerModuleInit;
 
 interface
-uses classes, CoreClasses, CustomModule, ShellIntf, NavBarServiceIntf,
+uses classes, CoreClasses, ShellIntf, NavBarServiceIntf,
   ReportCatalogController, ReportCatalogConst, Graphics;
 
 const
   NAVBAR_IMAGE_RES_NAME = 'REPORTS_NAVBAR_IMAGE';
 
 type
-  TdxbReportManagerModuleInit = class(TCustomModule)
+  TReportManagerModuleInit = class(TModule)
   public
     class function Kind: TModuleKind; override;
-    procedure OnLoading; override;
-    procedure OnLoaded; override;
+    procedure Load; override;
   end;
 
 implementation
 {$R Reporting.res}
 
 
-{ TdxbReportManagerModuleInit }
+{ TReportManagerModuleInit }
 
-class function TdxbReportManagerModuleInit.Kind: TModuleKind;
+class function TReportManagerModuleInit.Kind: TModuleKind;
 begin
   Result := mkFoundation;
 end;
 
-procedure TdxbReportManagerModuleInit.OnLoaded;
-begin
-  InstantiateController(TReportCatalogController);
-end;
-
-procedure TdxbReportManagerModuleInit.OnLoading;
+procedure TReportManagerModuleInit.Load;
 var
   Image: TBitMap;
   ImgRes: TResourceStream;
@@ -51,9 +45,11 @@ begin
   finally
     Image.Free;
   end;
+  WorkItem.WorkItems.Add(TReportCatalogController);
 end;
 
+
 initialization
-  RegisterModule(TdxbReportManagerModuleInit);
+  RegisterModule(TReportManagerModuleInit);
 
 end.

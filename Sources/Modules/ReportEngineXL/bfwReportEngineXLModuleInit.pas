@@ -1,40 +1,33 @@
 unit bfwReportEngineXLModuleInit;
 
 interface
-uses classes, CoreClasses, CustomModule, ShellIntf,
+uses classes, CoreClasses, ShellIntf,
   ReportServiceIntf, xlReportFactory;
 
 type
-  TdxbReportEngineXLModuleInit = class(TCustomModule)
+  TReportEngineXLModuleInit = class(TModule)
   public
     class function Kind: TModuleKind; override;
-    procedure OnLoading; override;
-    procedure OnLoaded; override;
+    procedure Load; override;
   end;
 
 
 implementation
 
-{ TdxbReportEngineXLModuleInit }
+{ TReportEngineXLModuleInit }
 
-class function TdxbReportEngineXLModuleInit.Kind: TModuleKind;
+class function TReportEngineXLModuleInit.Kind: TModuleKind;
 begin
   Result := mkFoundation;
 end;
 
-procedure TdxbReportEngineXLModuleInit.OnLoaded;
-begin
-
-
-end;
-
-procedure TdxbReportEngineXLModuleInit.OnLoading;
+procedure TReportEngineXLModuleInit.Load;
 begin
   (WorkItem.Services[IReportService] as IReportService).
      RegisterLauncherFactory(TXLReportFactory.Create(Self));
 end;
 
 initialization
-  RegisterModule(TdxbReportEngineXLModuleInit);
+  RegisterModule(TReportEngineXLModuleInit);
 
 end.

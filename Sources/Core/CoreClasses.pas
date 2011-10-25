@@ -307,7 +307,7 @@ type
 
   IWorkItems = interface(ICollection)
   ['{09683504-8734-4CA6-83B9-A2BD006A2CC3}']
-    function Add(const AID: string = ''; AControllerClass: TControllerClass = nil): TWorkItem;
+    function Add(AControllerClass: TControllerClass = nil; const AID: string = ''): TWorkItem;
     function Find(const AID: string): TWorkItem;
     function Get(Index: integer): TWorkItem;
     property WorkItem[Index: integer]: TWorkItem read Get; default;
@@ -430,7 +430,7 @@ end;
 type
   TWorkItems = class(TManagedItemList, IWorkItems)
   public
-    function Add(const AID: string = ''; AControllerClass: TControllerClass = nil): TWorkItem;
+    function Add(AControllerClass: TControllerClass = nil; const AID: string = ''): TWorkItem;
     function Find(const AID: string): TWorkItem;
     function Get(Index: integer): TWorkItem;
   end;
@@ -718,9 +718,15 @@ end;
 
 { TWorkItems }
 
-function TWorkItems.Add(const AID: string; AControllerClass: TControllerClass): TWorkItem;
+function TWorkItems.Add(AControllerClass: TControllerClass; const AID: string): TWorkItem;
+var
+  wID: string;
 begin
-  Result := TWorkItem.Create(Self, TWorkItem(Self.Owner), AID, AControllerClass);
+  wID := AID;
+  if (wID = '') and (AControllerClass <> nil) then
+    wID := AControllerClass.ClassName;
+
+  Result := TWorkItem.Create(Self, TWorkItem(Self.Owner), wID, AControllerClass);
   InternalAdd(Result);
 end;
 
@@ -911,7 +917,7 @@ end;
 constructor TModule.Create(AWorkItem: TWorkItem);
 begin
   inherited Create(nil);
-  FWorkItem := AWorkItem.WorkItems.Add(Self.ClassName);
+  FWorkItem := AWorkItem.WorkItems.Add(nil, Self.ClassName);
 end;
 
 class function TModule.Kind: TModuleKind;

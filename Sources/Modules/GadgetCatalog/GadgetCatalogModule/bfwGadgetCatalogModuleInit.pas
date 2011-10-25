@@ -2,34 +2,27 @@ unit bfwGadgetCatalogModuleInit;
 
 interface
 
-uses classes, CoreClasses, CustomModule, BarCodeScanerController;
+uses classes, CoreClasses, BarCodeScanerController;
 
 
 type
-  TdxbGadgetCatalogModuleInit = class(TCustomModule)
+  TGadgetCatalogModuleInit = class(TModule)
   public
-    procedure OnLoading; override;
-    procedure OnLoaded; override;
+    procedure Load; override;
   end;
 
 implementation
 
 
 
-{ TdxbGadgetCatalogModuleInit }
+{ TGadgetCatalogModuleInit }
 
-procedure TdxbGadgetCatalogModuleInit.OnLoaded;
+procedure TGadgetCatalogModuleInit.Load;
 begin
-  InstantiateController(TBarCodeScanerController);
-end;
-
-procedure TdxbGadgetCatalogModuleInit.OnLoading;
-begin
-  inherited;
-
+  WorkItem.WorkItems.Add(TBarCodeScanerController)
 end;
 
 initialization
-  RegisterModule(TdxbGadgetCatalogModuleInit);
+  RegisterModule(TGadgetCatalogModuleInit);
   
 end.

@@ -1,14 +1,14 @@
 unit bfwEntityCatalogModuleInit;
 
 interface
-uses classes, CoreClasses, CustomModule, EntityCatalogIntf, EntityCatalogManager, EntityUIController,
+uses classes, CoreClasses, EntityCatalogIntf, EntityCatalogManager, EntityUIController,
   EntityCatalogController,
   EntityJournalPresenter, EntityJournalView,
   EntityListPresenter, EntityListView,
   EntityNewPresenter, EntityNewView,
   EntityItemPresenter, EntityItemView,
   EntityComplexPresenter, EntityComplexView,
-  EntityOrgChartPresenter, EntityOrgChartView,  
+  EntityOrgChartPresenter, EntityOrgChartView,
   EntityPickListPresenter, EntityPickListView,
   EntitySelectorPresenter, EntitySelectorView,
   EntityDeskPresenter, EntityDeskView,
@@ -16,44 +16,29 @@ uses classes, CoreClasses, CustomModule, EntityCatalogIntf, EntityCatalogManager
 
 type
 
-  TdxbEntityCatalogModuleInit = class(TCustomModule)
+  TEntityCatalogModuleInit = class(TModule)
   public
     class function Kind: TModuleKind; override;
-    procedure OnLoading; override;
-    procedure OnLoaded; override;
+    procedure Load; override;
   end;
 
 implementation
 
 
-{ dxbEntityCatalogModuleInit }
+{ EntityCatalogModuleInit }
 
-class function TdxbEntityCatalogModuleInit.Kind: TModuleKind;
+class function TEntityCatalogModuleInit.Kind: TModuleKind;
 begin
   Result := mkFoundation;
 end;
 
-procedure TdxbEntityCatalogModuleInit.OnLoaded;
+procedure TEntityCatalogModuleInit.Load;
 begin
- // InstantiateController(TEntityCatalogManager);
-  InstantiateController(TEntityCatalogController);
+  WorkItem.WorkItems.Add(TEntityCatalogController);
 end;
 
-procedure TdxbEntityCatalogModuleInit.OnLoading;
-begin
- { RegisterEntityUIClass(TEntityUIClassPresenter.Create('IEntityNewView', TEntityNewPresenter, TfrEntityNewView));
-  RegisterEntityUIClass(TEntityUIClassPresenter.Create('IEntityItemView', TEntityItemPresenter, TfrEntityItemView));
-  RegisterEntityUIClass(TEntityUIClassPresenter.Create('IEntityComplexView', TEntityComplexPresenter, TfrEntityComplexView));
-  RegisterEntityUIClass(TEntityUIClassPresenter.Create('IEntityListView', TEntityListPresenter, TfrEntityListView));
-  RegisterEntityUIClass(TEntityUIClassPresenter.Create('IEntityPickListView', TEntityPickListPresenter, TfrEntityPickListView));
-  RegisterEntityUIClass(TEntityUIClassPresenter.Create('IEntityJournalView', TEntityJournalPresenter, TfrEntityJournalView));
-  RegisterEntityUIClass(TEntityUIClassPresenter.Create('IEntitySelectorView', TEntitySelectorPresenter, TfrEntitySelectorView));
-  RegisterEntityUIClass(TEntityUIClassPresenter.Create('IEntityDeskView', TEntityDeskPresenter, TfrEntityDeskView));
-  RegisterEntityUIClass(TEntityUIClassPresenter.Create('IEntityOrgChartView', TEntityOrgChartPresenter, TfrEntityOrgChartView));
-  RegisterEntityUIClass(TEntityUIClassSecurityResProvider.Create('ISecurityResProvider'));}
-end;
 
 initialization
-  RegisterModule(TdxbEntityCatalogModuleInit);
+  RegisterModule(TEntityCatalogModuleInit);
 
 end.

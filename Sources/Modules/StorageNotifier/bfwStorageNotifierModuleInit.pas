@@ -15,7 +15,7 @@ implementation
 { TdxbStorageNotifierModuleInit }
 procedure TdxbStorageNotifierModuleInit.Load;
 begin
-  WorkItem.Root.WorkItems.Add(TNotifyReceiver.ClassName, TNotifyReceiver);
+  WorkItem.Root.WorkItems.Add(TNotifyReceiver, TNotifyReceiver.ClassName);
 
   App.Activities.Items.Add(VIEW_NOTIFYSENDER).Init(MAIN_MENU_CATEGORY,
     MAIN_MENU_SERVICE_GROUP, VIEW_NOTIFYSENDER_TITLE);
