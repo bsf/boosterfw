@@ -30,7 +30,6 @@ type
 
   TEntityCollectPresenter = class(TCustomContentPresenter)
   private
-    function UIInfo: IEntityUIInfo;
     function View: IEntityCollectView;
     procedure CmdClose(Sender: TObject);
     procedure CmdReload(Sender: TObject);
@@ -77,12 +76,12 @@ end;
 
 function TEntityCollectPresenter.GetEVList: IEntityView;
 begin
-  Result := GetEView(UIInfo.EntityName, ENT_VIEW_LIST);
+  Result := GetEView(ViewInfo.EntityName, ENT_VIEW_LIST);
 end;
 
 function TEntityCollectPresenter.GetEVInfo: IEntityView;
 begin
-  Result := GetEView(UIInfo.EntityName, ENT_VIEW_INFO);
+  Result := GetEView(ViewInfo.EntityName, ENT_VIEW_INFO);
 end;
 
 function TEntityCollectPresenter.OnGetWorkItemState(
@@ -103,7 +102,7 @@ end;
 
 procedure TEntityCollectPresenter.OnViewReady;
 begin
-  ViewTitle := UIInfo.Title;
+  ViewTitle := ViewInfo.Title;
 
   View.CommandBar.
     AddCommand(COMMAND_CLOSE, COMMAND_CLOSE_CAPTION, COMMAND_CLOSE_SHORTCUT, CmdClose);
@@ -111,12 +110,12 @@ begin
   View.CommandBar.
     AddCommand(COMMAND_RELOAD, COMMAND_RELOAD_CAPTION, COMMAND_RELOAD_SHORTCUT, CmdReload);
 
-  if UIInfo.OptionExists('BulkModeOnly') then
+  if ViewInfo.OptionExists('BulkModeOnly') then
   begin
     View.CommandBar.AddCommand(COMMAND_ADD_BULK, 'Добавить', 'Enter', CmdAddBulk);
     View.SetCommandAddDef(COMMAND_ADD_BULK);
   end
-  else if UIInfo.OptionExists('BulkMode') then
+  else if ViewInfo.OptionExists('BulkMode') then
   begin
     View.CommandBar.AddCommand(COMMAND_ADD_BULK, 'Добавить', 'Enter', CmdAddBulk, 'Добавить');
     View.CommandBar.AddCommand(COMMAND_ADD_ITEM, 'Добавить запись', 'Ins', CmdAddItem, 'Добавить');
@@ -128,12 +127,12 @@ begin
     View.SetCommandAddDef(COMMAND_ADD_ITEM);
   end;
 
-  View.SelectionList.CanMultiSelect := UIInfo.OptionExists('BulkMode') or UIInfo.OptionExists('BulkModeOnly');
+  View.SelectionList.CanMultiSelect := ViewInfo.OptionExists('BulkMode') or ViewInfo.OptionExists('BulkModeOnly');
 
-//  if UIInfo.OptionExists('CanOpenItem')  then
+//  if ViewInfo.OptionExists('CanOpenItem')  then
     View.CommandBar.AddCommand(COMMAND_OPEN, COMMAND_OPEN_CAPTION, COMMAND_OPEN_SHORTCUT, CmdOpen);
 
-  //if UIInfo.OptionExists('CanDelete') or UIInfo.OptionExists('CanEdit') then
+  //if ViewInfo.OptionExists('CanDelete') or ViewInfo.OptionExists('CanEdit') then
   View.CommandBar.AddCommand(COMMAND_DELETE, COMMAND_DELETE_CAPTION, COMMAND_DELETE_SHORTCUT, CmdDelete);
 
   GetEVItems.SynchronizeOnEntityChange(GetEVItems.EntityName, ENT_VIEW_NEW_DEFAULT);
@@ -148,10 +147,6 @@ begin
 
 end;
 
-function TEntityCollectPresenter.UIInfo: IEntityUIInfo;
-begin
-  Result := (WorkItem.Services[IEntityUIManagerService] as IEntityUIManagerService).UIInfo(GetViewURI);
-end;
 
 function TEntityCollectPresenter.View: IEntityCollectView;
 begin
@@ -191,7 +186,7 @@ begin
     end;
   finally
     GetEVInfo.Reload;
-    if UIInfo.OptionExists('ReloadList') then
+    if ViewInfo.OptionExists('ReloadList') then
       GetEVList.Reload;
     ReloadCallerWorkItem;  
   end;
@@ -202,7 +197,7 @@ var
   action: IAction;
 begin
   action := WorkItem.Actions[ACTION_ENTITY_DETAIL_NEW];
-  action.Data.Value['ENTITYNAME'] := UIInfo.EntityName;
+  action.Data.Value['ENTITYNAME'] := ViewInfo.EntityName;
   action.Execute(WorkItem);
 end;
 
@@ -214,7 +209,7 @@ begin
 
   action := WorkItem.Actions[ACTION_ENTITY_DETAIL];
   action.Data.Value['ID'] := WorkItem.State['ITEM_ID'];
-  action.Data.Value['ENTITYNAME'] := UIInfo.EntityName;
+  action.Data.Value['ENTITYNAME'] := ViewInfo.EntityName;
   action.Execute(WorkItem);
 
 end;
@@ -242,7 +237,7 @@ end;
 
 function TEntityCollectPresenter.GetEVItems: IEntityView;
 begin
-  Result := GetEView(UIInfo.EntityName, ENT_VIEW_ITEMS);
+  Result := GetEView(ViewInfo.EntityName, ENT_VIEW_ITEMS);
 end;
 
 procedure TEntityCollectPresenter.CmdItemsSelected(Sender: TObject);
@@ -262,7 +257,7 @@ var
   oper: IEntityOper;
 begin
   try
-    oper := App.Entities[UIInfo.EntityName].GetOper(ENT_OPER_ADD, WorkItem);
+    oper := App.Entities[ViewInfo.EntityName].GetOper(ENT_OPER_ADD, WorkItem);
     for I := 0 to View.SelectionList.Count - 1 do
     begin
       oper.ParamsBind;
@@ -273,7 +268,7 @@ begin
   finally
     GetEVInfo.Reload;
     GetEVItems.Reload;
-    if UIInfo.OptionExists('ReloadList') then
+    if ViewInfo.OptionExists('ReloadList') then
       GetEVList.Reload;
     ReloadCallerWorkItem;
     GetEVItems.ReloadLinksData;  

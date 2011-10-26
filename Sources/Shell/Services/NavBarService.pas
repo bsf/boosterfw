@@ -238,6 +238,8 @@ type
     procedure RemoveItemHandler(Sender: TNavBarItem);
 
     function ItemLinkSubItemsCallback(const AItemID: string): INavBarItems;
+
+    procedure OnActivityLoadedHandler(EventData: variant);
   protected
     function Items: INavBarItems;
     function Layouts: INavBarLayouts;
@@ -255,6 +257,7 @@ type
   end;
 
 implementation
+uses ActivityServiceIntf;
 
 { TNavBarService }
 
@@ -303,6 +306,8 @@ begin
   FDefaultLayout := TNavBarLayout.Create(Self, 'Default');
   FLayouts := TNavBarLayouts.Create(Self);
   InternalLoadLayout(FDefaultLayout);
+
+  FWorkItem.EventTopics[EVT_ACTIVITY_LOADED].AddSubscription(Self, OnActivityLoadedHandler);
 end;
 
 function TNavBarService.CurrentLayout: INavBarLayout;
@@ -426,6 +431,31 @@ end;
 procedure TNavBarService.LoadLayout(AIndex: integer);
 begin
   InternalLoadLayout(FLayouts.GetItemObject(AIndex));
+end;
+
+procedure TNavBarService.OnActivityLoadedHandler(EventData: variant);
+var
+  svc: IActivityService;
+  navItem: INavBarItem;
+  I: integer;
+  activityInfo: IActivityInfo;
+begin
+  svc := FWorkItem.Services[IActivityService] as IActivityService;
+  for I := 0 to svc.Infos.Count - 1 do
+  begin
+    activityInfo := svc.Infos.Item(I);
+
+    if activityInfo.Group <> '' then
+    begin
+      navItem := Items.Add(activityInfo.URI);
+      navItem.Caption := activityInfo.Title;
+      navItem.Group := activityInfo.Group;
+      navItem.Category := 'Главное меню';
+      navItem.Section := activityInfo.GroupSection;
+      navItem.Image := activityInfo.Image;
+      AddItemLinkDefault(navItem);
+    end;
+ end;
 end;
 
 procedure TNavBarService.RegisterControlManager(

@@ -1,19 +1,7 @@
 unit bfwEntityCatalogModuleInit;
 
 interface
-uses classes, CoreClasses, EntityCatalogIntf, EntityCatalogManager, EntityUIController,
-  EntityCatalogController,
-  EntityJournalPresenter, EntityJournalView,
-  EntityListPresenter, EntityListView,
-  EntityNewPresenter, EntityNewView,
-  EntityItemPresenter, EntityItemView,
-  EntityComplexPresenter, EntityComplexView,
-  EntityOrgChartPresenter, EntityOrgChartView,
-  EntityPickListPresenter, EntityPickListView,
-  EntitySelectorPresenter, EntitySelectorView,
-  EntityDeskPresenter, EntityDeskView,
-  EntitySecResProvider;
-
+uses CoreClasses, EntityCatalogController;
 type
 
   TEntityCatalogModuleInit = class(TModule)

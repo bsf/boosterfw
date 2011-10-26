@@ -1,7 +1,7 @@
 unit CommonViewIntf;
 
 interface
-uses classes, db, CoreClasses, sysutils, controls, ViewServiceIntf;
+uses classes, db, CoreClasses, sysutils, controls, ViewServiceIntf, ActivityServiceIntf;
 
 const
   COMMAND_CLOSE = 'commands.view.close';
@@ -185,9 +185,51 @@ type
     property NAME: Variant read GetNAME write SetNAME;
   end;
 
+  TViewActivityBuilder = class(TActivityBuilder)
+  private
+    FWorkItem: TWorkItem;
+    FActivityClass: string;
+    FPresenterClass: TPresenterClass;
+    FViewClass: TViewClass;
+  public
+    constructor Create(AWorkItem: TWorkItem; const AActivityClass: string;
+      APresenterClass: TPresenterClass; AViewClass: TViewClass);
+
+    function ActivityClass: string; override;
+    procedure Build(ActivityInfo: IActivityInfo); override;
+    property WorkItem: TWorkItem read FWorkItem;
+    property PresenterClass: TPresenterClass read FPresenterClass;
+    property ViewClass: TViewClass read FViewClass;
+
+  end;
+
 implementation
 
 
 
+
+{ TViewActivityBuilder }
+
+function TViewActivityBuilder.ActivityClass: string;
+begin
+  Result := FActivityClass;
+end;
+
+procedure TViewActivityBuilder.Build(ActivityInfo: IActivityInfo);
+begin
+  (FWorkItem.Services[IViewManagerService] as IViewManagerService).
+    RegisterView(ActivityInfo.URI, FViewClass, FPresenterClass);
+
+  //RegisterExtension(URI, TEntityViewExtension);
+end;
+
+constructor TViewActivityBuilder.Create(AWorkItem: TWorkItem; const AActivityClass: string;
+      APresenterClass: TPresenterClass; AViewClass: TViewClass);
+begin
+  FWorkItem := AWorkItem;
+  FActivityClass := AActivityClass;
+  FPresenterClass := APresenterClass;
+  FViewClass := AViewClass;
+end;
 
 end.

@@ -59,10 +59,8 @@
 			<DCCReference Include="dxorgcD15.dcp"/>
 			<DCCReference Include="dxdborD15.dcp"/>
 			<DCCReference Include="cxSchedulerD15.dcp"/>
-			<DCCReference Include="..\..\Sources\Modules\EntityCatalog\EntityCatalogModule\EntityUIController.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\EntityCatalog\EntityCatalogModule\EntityCatalogConst.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\EntityCatalog\EntityCatalogModule\EntityCatalogController.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\EntityCatalog\EntityCatalogModule\EntityCatalogManager.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\EntityCatalog\EntityCatalogModule\bfwEntityCatalogModuleInit.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\EntityCatalog\EntityCatalogModule\EntityCollectPresenter.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\EntityCatalog\EntityCatalogModule\EntityCollectView.pas">

@@ -35,10 +35,8 @@ requires
   cxSchedulerD15;
 
 contains
-  EntityUIController in '..\..\Sources\Modules\EntityCatalog\EntityCatalogModule\EntityUIController.pas',
   EntityCatalogConst in '..\..\Sources\Modules\EntityCatalog\EntityCatalogModule\EntityCatalogConst.pas',
   EntityCatalogController in '..\..\Sources\Modules\EntityCatalog\EntityCatalogModule\EntityCatalogController.pas',
-  EntityCatalogManager in '..\..\Sources\Modules\EntityCatalog\EntityCatalogModule\EntityCatalogManager.pas',
   bfwEntityCatalogModuleInit in '..\..\Sources\Modules\EntityCatalog\EntityCatalogModule\bfwEntityCatalogModuleInit.pas',
   EntityCollectPresenter in '..\..\Sources\Modules\EntityCatalog\EntityCatalogModule\EntityCollectPresenter.pas',
   EntityCollectView in '..\..\Sources\Modules\EntityCatalog\EntityCatalogModule\EntityCollectView.pas' {frEntityCollectView},

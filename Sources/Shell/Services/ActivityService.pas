@@ -2,7 +2,7 @@ unit ActivityService;
 
 interface
 uses Classes, CoreClasses, Graphics, ActivityServiceIntf, Contnrs, Sysutils,
-  NavBarServiceIntf, SecurityIntf, ShellIntf, inifiles;
+  NavBarServiceIntf, SecurityIntf, ShellIntf, inifiles, HashList, db, variants;
 
 const
   //SecurityClass
@@ -271,6 +271,109 @@ type
     property WorkItem: TWorkItem read FWorkItem;
   end;
 
+//-----------------------------------------------------------------------------
+ { IActivityInfo = interface
+    function URI: string;
+    function ActivityClass: string;
+    function EntityName: string;
+    function EntityViewName: string;
+    function Params: TStrings;
+    function Outs: TStrings;
+    function Title: string;
+    function Group: string;
+    function GroupSection: integer;
+    function OptionExists(const AName: string): boolean;
+    function OptionValue(const AName: string): string;
+  end;
+
+  IActivityInfos = interface
+    function Count: integer;
+    function Item(AIndex: integer): IActivityInfo;
+  end;
+
+  IActivityClassBuilder = interface
+
+    function ActivityClassName: string;
+    procedure InitializeActivity(ActivityInfo: IActivityInfo);
+  end;
+  }
+
+  TActivityInfo = class(TComponent, IActivityInfo)
+  private
+    FURI: string;
+    FActivityClass: string;
+    FEntityName: string;
+    FEntityViewName: string;
+    FTitle: string;
+    FGroup: string;
+    FGroupSection: integer;
+    FShortCut: string;
+    FImage: Graphics.TBitmap;
+    FOptions: TStringList;
+    FParams: TStringList;
+    FOuts: TStringList;  
+  protected
+    function URI: string;
+
+    procedure SetActivityClass(const Value: string);
+    function GetActivityClass: string;
+    
+    function EntityName: string;
+    function EntityViewName: string;
+    function Params: TStrings;
+    function Outs: TStrings;
+    
+    procedure SetTitle(const Value: string);
+    function GetTitle: string;
+    procedure SetGroup(const Value: string);    
+    function GetGroup: string;
+    procedure SetGroupSection(Value: integer);    
+    function GetGroupSection: integer;
+    function GetShortCut: string;
+    procedure SetShortCut(const Value: string);
+    function GetImage: Graphics.TBitmap;
+    procedure SetImage(Value: Graphics.TBitmap);
+
+    function OptionExists(const AName: string): boolean;
+    function OptionValue(const AName: string): string;
+  public
+    constructor Create(const AURI: string); reintroduce;
+    destructor Destroy; override;
+
+    property ActivityClass: string read GetActivityClass write SetActivityClass;
+    property Title: string read GetTitle write SetTitle;
+    property Group: string read GetGroup write SetGroup;
+    property GroupSection: integer read GetGroupSection write SetGroupSection;
+    property ShortCut: string read GetShortCut write SetShortCut;
+    property Image: Graphics.TBitmap read GetImage write SetImage;
+  end;
+    
+  TActivityService = class(TComponent, IActivityService, IActivityInfos)
+  const
+    ENTC_UI = 'ENTC_UI';
+    ENTC_UI_VIEW_LIST = 'List';
+    ENTC_UI_VIEW_CMD = 'Commands';    
+  private
+    FWorkItem: TWorkItem;
+    FBuilders: THashList<TActivityBuilder>;
+    FInfos: THashList<TActivityInfo>;
+    procedure BuildActivities;
+    procedure OnAppStartedHandler(EventData: Variant);        
+  protected
+    //IActivityService
+    procedure RegisterActivityClass(ABuilder: TActivityBuilder);
+    function RegisterActivityInfo(const URI: string): IActivityInfo;    
+    function ActivityInfo(const URI: string): IActivityInfo;
+    function Infos: IActivityInfos;
+    //IActivityInfos
+    function ActivityInfosCount: integer;
+    function ActivityInfoByIndex(AIndex: integer): IActivityInfo;
+    function IActivityInfos.Count = ActivityInfosCount;
+    function IActivityInfos.Item = ActivityInfoByIndex;
+  public
+    constructor Create(AOwner: TComponent; AWorkItem: TWorkItem); reintroduce;
+    destructor Destroy; override;
+  end;
 implementation
 
 
@@ -633,8 +736,8 @@ begin
 
   (FWorkItem.Services[ISecurityService] as ISecurityService).RegisterResProvider(Self);
 
-  FWorkItem.EventTopics[etAppStarted].AddSubscription(Self, EventAppStartedHandler);
-  FWorkItem.EventTopics[etAppStoped].AddSubscription(Self, EventAppStopedHandler);
+//  FWorkItem.EventTopics[etAppStarted].AddSubscription(Self, EventAppStartedHandler);
+//  FWorkItem.EventTopics[etAppStoped].AddSubscription(Self, EventAppStopedHandler);
 
 end;
 
@@ -1163,6 +1266,224 @@ end;
 procedure TActivityLayoutCategory.SetImage(Value: TBitmap);
 begin
   FImage.Assign(Value);
+end;
+
+{ TActivityService }
+
+function TActivityService.ActivityInfo(const URI: string): IActivityInfo;
+begin
+  Result := FInfos[URI] as IActivityInfo;
+end;
+
+function TActivityService.ActivityInfoByIndex(AIndex: integer): IActivityInfo;
+begin
+  Result := FInfos.Items[AIndex] as IActivityInfo;
+end;
+
+function TActivityService.ActivityInfosCount: integer;
+begin
+  Result := FInfos.Count;
+end;
+
+procedure TActivityService.BuildActivities;
+var
+  list: TDataSet;
+  info: TActivityInfo;
+  builder: TActivityBuilder;
+begin
+
+  list := App.Entities[ENTC_UI].GetView(ENTC_UI_VIEW_LIST, FWorkItem).Load([]);
+  while not list.Eof do
+  begin
+    builder := nil;
+    if FBuilders.IndexOf(list['UIClass']) <> -1 then
+      builder :=  FBuilders[list['UIClass']];
+    if builder = nil then
+    begin
+      list.Next;
+      Continue;
+    end;
+
+    info := TActivityInfo.Create(list['URI']);
+    FInfos.Add(list['URI'], info);
+    with info do
+    begin
+      FActivityClass := list['UIClass'];
+      FEntityName := VarToStr(list['ENTITYNAME']);  
+      FEntityViewName := VarToStr(list['VIEWNAME']);
+      Title := list['Title'];
+      Group := VarToStr(list['GRP']);
+      ExtractStrings([';'], [], PWideChar(VarToStr(list['OPTIONS'])), FOptions);
+      ExtractStrings([',',';'], [], PWideChar(VarToStr(list['PARAMS'])), FParams);
+      ExtractStrings([',',';'], [], PWideChar(VarToStr(list['OUTS'])), FOuts);
+    end;
+
+    list.Next;
+  end;
+
+  for info in FInfos do
+    if FBuilders.IndexOf(info.FActivityClass) <> -1  then    
+      FBuilders[info.ActivityClass].Build(info);
+
+  FWorkItem.EventTopics[EVT_ACTIVITY_LOADED].Fire;    
+end;
+
+constructor TActivityService.Create(AOwner: TComponent; AWorkItem: TWorkItem);
+begin
+  inherited Create(nil);
+  FWorkItem := AWorkItem;
+  FBuilders := THashList<TActivityBuilder>.Create;
+  FInfos := THashList<TActivityInfo>.Create;
+  FWorkItem.EventTopics[etAppStarted].AddSubscription(Self, OnAppStartedHandler);
+end;
+
+destructor TActivityService.Destroy;
+begin
+  FBuilders.Free;
+  FInfos.Free;
+  inherited;
+end;
+
+function TActivityService.Infos: IActivityInfos;
+begin
+  Result := Self;
+end;
+
+procedure TActivityService.OnAppStartedHandler(EventData: Variant);
+begin
+  BuildActivities;
+end;
+
+procedure TActivityService.RegisterActivityClass(ABuilder: TActivityBuilder);
+begin
+  FBuilders.Add(ABuilder.ActivityClass, ABuilder);
+end;
+
+function TActivityService.RegisterActivityInfo(
+  const URI: string): IActivityInfo;
+var
+  info: TActivityInfo;  
+begin
+  info := TActivityInfo.Create(URI);
+  FInfos.Add(URI, info);
+  Result := info;
+end;
+
+{ TActivityInfo }
+
+function TActivityInfo.GetActivityClass: string;
+begin
+  Result := FActivityClass;
+end;
+
+constructor TActivityInfo.Create(const AURI: string);
+begin
+  inherited Create(nil);
+  FURI := AURI;
+  FActivityClass := AURI;
+  FOptions := TStringList.Create;
+  FParams := TStringList.Create;
+  FOuts := TStringList.Create;
+  FImage := Graphics.TBitmap.Create;
+end;
+
+destructor TActivityInfo.Destroy;
+begin
+  FOptions.Free;
+  FParams.Free;
+  FOuts.Free;
+  FImage.Free;
+  inherited;
+end;
+
+function TActivityInfo.EntityName: string;
+begin
+  Result := FEntityName;
+end;
+
+function TActivityInfo.EntityViewName: string;
+begin
+  Result := FEntityViewName;
+end;
+
+function TActivityInfo.GetGroup: string;
+begin
+  Result := FGroup;
+end;
+
+function TActivityInfo.GetGroupSection: integer;
+begin
+  Result := FGroupSection;
+end;
+
+function TActivityInfo.GetImage: Graphics.TBitmap;
+begin
+  Result := FImage;
+end;
+
+function TActivityInfo.GetShortCut: string;
+begin
+  Result := FShortCut;
+end;
+
+function TActivityInfo.OptionExists(const AName: string): boolean;
+begin
+  Result := (FOptions.IndexOfName(AName) <> -1) or (FOptions.IndexOf(AName) <> -1);
+end;
+
+function TActivityInfo.OptionValue(const AName: string): string;
+begin
+  Result := FOptions.Values[AName];
+end;
+
+function TActivityInfo.Outs: TStrings;
+begin
+  Result := FOuts;
+end;
+
+function TActivityInfo.Params: TStrings;
+begin
+  Result := FParams;
+end;
+
+procedure TActivityInfo.SetActivityClass(const Value: string);
+begin
+  FActivityClass := Value;
+end;
+
+procedure TActivityInfo.SetGroup(const Value: string);
+begin
+  FGroup := Value;
+end;
+
+procedure TActivityInfo.SetGroupSection(Value: integer);
+begin
+  FGroupSection := Value;
+end;
+
+procedure TActivityInfo.SetImage(Value: Graphics.TBitmap);
+begin
+  FImage.Assign(Value);
+end;
+
+procedure TActivityInfo.SetShortCut(const Value: string);
+begin
+  FShortCut := Value;
+end;
+
+procedure TActivityInfo.SetTitle(const Value: string);
+begin
+  FTitle := Value;
+end;
+
+function TActivityInfo.GetTitle: string;
+begin
+  Result := FTitle;
+end;
+
+function TActivityInfo.URI: string;
+begin
+  Result := FURI;
 end;
 
 end.

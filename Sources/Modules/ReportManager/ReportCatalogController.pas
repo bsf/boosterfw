@@ -3,7 +3,7 @@ unit ReportCatalogController;
 interface
 uses classes, CoreClasses, CustomUIController, sysutils,
   ShellIntf, ReportServiceIntf, ViewServiceIntf, ActivityServiceIntf,
-  CommonUtils, ConfigServiceIntf, graphics,
+  CommonUtils, ConfigServiceIntf, graphics, CommonViewIntf,
   ReportCatalogConst, ReportCatalogClasses,
   ReportCatalogPresenter, ReportCatalogView,
   ReportLauncherPresenter, ReportLauncherView,
@@ -19,7 +19,6 @@ const
   REPORT_NAVBAR_IMAGE_RES_NAME = 'REPORT_NAVBAR_IMAGE';
 
 type
-
   TReportCatalogController = class(TCustomUIController, IReportCatalogService)
   private
     FActivityImage: TBitmap;
@@ -146,6 +145,8 @@ var
   activityItem: IActivity;
   activityItemChild: IActivity;
   layout: TReportLayout;
+  svc: IActivityService;
+  activityInfo: IActivityInfo;
 begin
 
   //Layouts
@@ -158,18 +159,23 @@ begin
       if layout.ID <> AItem.ID then
         Caption := Caption + ' [' + layout.Caption + ']';
     end;
-
-{  reportItem := FReportService.Add(AItem.ID);
-  reportItem.Template := AItem.Path + AItem.Manifest.Template;
-  reportItem.Group  := AItem.Group.Caption;
-  reportItem.Caption := AItem.Caption;
- }
   WorkItem.Root.Actions[AItem.ID].SetHandler(ActionReportLaunch);
   WorkItem.Root.Actions[AItem.ID].SetDataClass(TReportLaunchData);
 
 
   if not AItem.IsTop then Exit;
 
+  svc := WorkItem.Services[IActivityService] as IActivityService;
+  activityInfo := svc.RegisterActivityInfo(AItem.ID);
+  with activityInfo do
+  begin
+    //activityItem.Data[COMMAND_DATA_REPORTID] := AItem.ID;
+    Title := AItem.Caption;
+    Group := AItem.Group.Caption; // + ' - отчеты';
+    Image := FActivityImage;
+  end;
+
+  {
   activityItem := FActivitySvc.Items.Add(AItem.ID, false);
   activityItem.Data[COMMAND_DATA_REPORTID] := AItem.ID;
   activityItem.Caption := AItem.Caption;
@@ -181,10 +187,10 @@ begin
   activityItem.SetCustomPermissionOptions(
     AItem.ID, SECURITY_PERMISSION_REPORT_EXECUTE);
   activityItem.SetHandler(CmdReportLaunch);
-
+   }
 
   {Subitems}
-
+ {
   for I := 0 to AItem.Manifest.ExtendCommands.Count - 1 do
   begin
     activityItemChild := activityItem.Items.
@@ -206,7 +212,7 @@ begin
   activityItemChild.SetCustomPermissionOptions(
     AItem.ID, SECURITY_PERMISSION_REPORT_SETUP);
   activityItemChild.SetHandler(CmdReportSetup);
-
+  }
 end;
 
 procedure TReportCatalogController.LoadCatalogItems;
@@ -238,6 +244,9 @@ begin
 end;
 
 procedure TReportCatalogController.OnInitialize;
+var
+  activitySvc: IActivityService;
+  activityInfo: IActivityInfo;
 begin
   WorkItem.Root.Services.Add(Self as IReportCatalogService);
 
@@ -257,7 +266,13 @@ begin
   RegisterActivity(COMMAND_REPORT_CATALOG_RELOAD, MAIN_MENU_CATEGORY, MAIN_MENU_SERVICE_GROUP,
     'Обновить список отчетов', ActionReportCatalogReload, false);
 
-  RegisterView(VIEW_REPORT_LAUNCHER, TReportLauncherPresenter, TfrReportLauncherView);
+  ActivitySvc := WorkItem.Services[IActivityService] as IActivityService;
+
+  ActivitySvc.RegisterActivityInfo(VIEW_REPORT_LAUNCHER);
+  ActivitySvc.RegisterActivityClass(TViewActivityBuilder.Create(WorkItem,
+    VIEW_REPORT_LAUNCHER, TReportLauncherPresenter, TfrReportLauncherView));
+
+//  RegisterView(VIEW_REPORT_LAUNCHER, TReportLauncherPresenter, TfrReportLauncherView);
 
   RegisterView(VIEW_RPT_ITEM_SETUP, TReportSetupPresenter, TfrReportSetupView);
 
@@ -287,6 +302,7 @@ begin
   FReportService.Remove(AItem.ID);
   FActivitySvc.Items.Remove(AItem.ID);
 end;
+
 
 
 end.

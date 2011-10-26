@@ -70,7 +70,7 @@ type
     BASE_REPORT_LAYOUT_CAPTION = 'Основной макет';
   private
     FParamNodes: TManifestParamNodes;
-    FLayouts: THashObjectList<TReportLayout>;
+    FLayouts: THashList<TReportLayout>;
 
     FGroup: string;
     FCaption: string;
@@ -96,7 +96,7 @@ type
     property ID: string read FID write FID;
 
     property ParamNodes: TManifestParamNodes read FParamNodes;
-    property Layouts: THashObjectList<TReportLayout> read FLayouts;
+    property Layouts: THashList<TReportLayout> read FLayouts;
     property ExtendCommands: TStrings read GetExtendCommands write SetExtendCommands;
   end;
 
@@ -556,11 +556,12 @@ begin
   inherited Create(AOwner);
   FParamNodes := TManifestParamNodes.Create;
   FExtendCommands := TStringList.Create;
-  FLayouts := THashObjectList<TReportLayout>.Create(Self);
+  FLayouts := THashList<TReportLayout>.Create;
 end;
 
 destructor TReportCatalogManifest.Destroy;
 begin
+  FLayouts.Free;
   FParamNodes.Free;
   FExtendCommands.Free;
   inherited;

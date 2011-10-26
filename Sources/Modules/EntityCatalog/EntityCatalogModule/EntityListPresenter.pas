@@ -19,7 +19,6 @@ type
   TEntityListPresenter = class(TCustomContentPresenter)
   private
     FSelectorInitialized: boolean;
-    function UIInfo: IEntityUIInfo;
     function UseSelector: boolean;
     function GetSelectorEntityName: string;
     procedure InitializeSelector;
@@ -128,11 +127,11 @@ end;
 procedure TEntityListPresenter.OnViewReady;
 begin
   FreeOnViewClose := true;
-  ViewTitle := UIInfo.Title;
+  ViewTitle := ViewInfo.Title;
 
-  if UIInfo.OptionExists('Title') then
+  if ViewInfo.OptionExists('Title') then
      ViewTitle :=
-       VarToStr(GetEView(UIInfo.EntityName, UIInfo.OptionValue('Title')).DataSet.Fields[0].Value);
+       VarToStr(GetEView(ViewInfo.EntityName, ViewInfo.OptionValue('Title')).DataSet.Fields[0].Value);
 
 {  if Assigned(GetEVList.DataSet.FindField('VIEW_TITLE')) then
     ViewTitle := VarToStr(GetEVList.DataSet.FindField('VIEW_TITLE').Value);}
@@ -146,13 +145,13 @@ begin
   if UseSelector then
     View.CommandBar.AddCommand(COMMAND_SELECTOR, 'Отбор', '', CmdSelector);
 
-  if UIInfo.OptionExists('CanAdd') or UIInfo.OptionExists('CanEdit') then
+  if ViewInfo.OptionExists('CanAdd') or ViewInfo.OptionExists('CanEdit') then
     View.CommandBar.AddCommand(COMMAND_NEW, COMMAND_NEW_CAPTION, COMMAND_NEW_SHORTCUT, CmdNew);
 
-  if UIInfo.OptionExists('CanOpen') or UIInfo.OptionExists('CanEdit') then
+  if ViewInfo.OptionExists('CanOpen') or ViewInfo.OptionExists('CanEdit') then
     View.CommandBar.AddCommand(COMMAND_OPEN, COMMAND_OPEN_CAPTION, COMMAND_OPEN_SHORTCUT, CmdOpen);
 
-  if UIInfo.OptionExists('CanDelete') or UIInfo.OptionExists('CanEdit') then
+  if ViewInfo.OptionExists('CanDelete') or ViewInfo.OptionExists('CanEdit') then
     View.CommandBar.AddCommand(COMMAND_DELETE, COMMAND_DELETE_CAPTION, COMMAND_DELETE_SHORTCUT, CmdDelete);
 
   GetEVList.SynchronizeOnEntityChange(GetEVList.EntityName, ENT_VIEW_NEW_DEFAULT);
@@ -178,9 +177,9 @@ begin
     FSelectorInitialized := true;
   end;
 
-  evName := UIInfo.EntityViewName;
+  evName := ViewInfo.EntityViewName;
   if evName = '' then evName := ENT_VIEW_LIST;
-  Result := GetEView(UIInfo.EntityName, evName);
+  Result := GetEView(ViewInfo.EntityName, evName);
 end;
 
 procedure TEntityListPresenter.EViewListChangedHandler(
@@ -199,7 +198,7 @@ var
   action: IAction;
 begin
   action := WorkItem.Actions[ACTION_ENTITY_NEW];
-  action.Data.Value['ENTITYNAME'] := UIInfo.EntityName;
+  action.Data.Value['ENTITYNAME'] := ViewInfo.EntityName;
   action.Execute(WorkItem);
 end;
 
@@ -211,15 +210,11 @@ begin
 
   action := WorkItem.Actions[ACTION_ENTITY_ITEM];
   action.Data.Value['ID'] := WorkItem.State['ITEM_ID'];
-  action.Data.Value['ENTITYNAME'] := UIInfo.EntityName;
+  action.Data.Value['ENTITYNAME'] := ViewInfo.EntityName;
   action.Execute(WorkItem);
 end;
 
 
-function TEntityListPresenter.UIInfo: IEntityUIInfo;
-begin
-  Result := (WorkItem.Services[IEntityUIManagerService] as IEntityUIManagerService).UIInfo(GetViewURI);
-end;
 
 procedure TEntityListPresenter.CmdSelector(Sender: TObject);
 const
@@ -228,7 +223,7 @@ const
 var
   action: IAction;
 begin
-  action := WorkItem.Actions[format(FMT_VIEW_SELECTOR, [UIInfo.EntityName])];
+  action := WorkItem.Actions[format(FMT_VIEW_SELECTOR, [ViewInfo.EntityName])];
   action.Data.Assign(WorkItem);
   action.Execute(WorkItem);
   if (action.Data as TEntitySelectorPresenterData).ModalResult = mrOk then
@@ -274,14 +269,14 @@ end;
 
 function TEntityListPresenter.UseSelector: boolean;
 begin
-  Result := UIInfo.OptionExists('UseSelector');
+  Result := ViewInfo.OptionExists('UseSelector');
 end;
 
 function TEntityListPresenter.GetSelectorEntityName: string;
 begin
-  Result := UIInfo.OptionValue('UseSelector');
+  Result := ViewInfo.OptionValue('UseSelector');
   if Result = '' then
-    Result := UIInfo.EntityName;
+    Result := ViewInfo.EntityName;
 end;
 
 end.

@@ -19,8 +19,7 @@ begin
 
   App.Activities.Items.Add(VIEW_NOTIFYSENDER).Init(MAIN_MENU_CATEGORY,
     MAIN_MENU_SERVICE_GROUP, VIEW_NOTIFYSENDER_TITLE);
- {RegisterActivity(VIEW_NOTIFYSENDER, MAIN_MENU_CATEGORY, MAIN_MENU_SERVICE_GROUP,
-    VIEW_NOTIFYSENDER_TITLE, TNotifySenderPresenter, TfrNotifySenderView);}
+
 
   App.Views.RegisterView(VIEW_NOTIFYSENDER, TfrNotifySenderView, TNotifySenderPresenter);
 

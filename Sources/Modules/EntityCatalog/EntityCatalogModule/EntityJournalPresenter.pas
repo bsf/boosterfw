@@ -24,7 +24,6 @@ type
     procedure InitializeSelector;
     procedure UpdateInfoText;
     function GetSelectorEntityName: string;
-    function UIInfo: IEntityUIInfo;
     procedure TabChangedHandler;
     procedure SelectionChangedHandler;
     procedure CmdStateChange(Sender: TObject);
@@ -78,7 +77,7 @@ var
   action: IAction;
 begin
   action := WorkItem.Actions[ACTION_ENTITY_NEW];
-  action.Data.Value['ENTITYNAME'] := UIInfo.EntityName;
+  action.Data.Value['ENTITYNAME'] := ViewInfo.EntityName;
   action.Execute(WorkItem);
 end;
 
@@ -90,7 +89,7 @@ begin
 
   action := WorkItem.Actions[ACTION_ENTITY_ITEM];
   action.Data.Value['ID'] := WorkItem.State['ITEM_ID'];
-  action.Data.Value['ENTITYNAME'] := UIInfo.EntityName;
+  action.Data.Value['ENTITYNAME'] := ViewInfo.EntityName;
   action.Execute(WorkItem);
 
 end;
@@ -156,7 +155,7 @@ procedure TEntityJournalPresenter.OnViewReady;
 var
   dsStates: TDataSet;
 begin
-  ViewTitle := UIInfo.Title;
+  ViewTitle := ViewInfo.Title;
   FreeOnViewClose := false;
   
   dsStates := GetEVStates.DataSet;
@@ -217,14 +216,14 @@ begin
     FSelectorInitialized := true;
   end;
 
-  evName := UIInfo.EntityViewName;
+  evName := ViewInfo.EntityViewName;
   if evName = '' then evName := ENT_VIEW_JOURNAL;
-  Result := GetEView(UIInfo.EntityName, evName);
+  Result := GetEView(ViewInfo.EntityName, evName);
 end;
 
 function TEntityJournalPresenter.GetEVStates: IEntityView;
 begin
-  Result := GetEView(UIInfo.EntityName, ENT_VIEW_STATES, []);
+  Result := GetEView(ViewInfo.EntityName, ENT_VIEW_STATES, []);
 end;
 
 procedure TEntityJournalPresenter.InitializeSelector;
@@ -312,11 +311,6 @@ begin
   UpdateInfoText;
 end;
 
-function TEntityJournalPresenter.UIInfo: IEntityUIInfo;
-begin
-  Result := (WorkItem.Services[IEntityUIManagerService] as IEntityUIManagerService).UIInfo(GetViewURI);
-end;
-
 function TEntityJournalPresenter.View: IEntityJournalView;
 begin
   Result := GetView as IEntityJournalView;
@@ -324,9 +318,9 @@ end;
 
 function TEntityJournalPresenter.GetSelectorEntityName: string;
 begin
-  Result := UIInfo.OptionValue('UseSelector');
-  if (Result = '') and App.Entities.EntityViewExists(UIInfo.EntityName, 'Selector') then
-    Result := UIInfo.EntityName
+  Result := ViewInfo.OptionValue('UseSelector');
+  if (Result = '') and App.Entities.EntityViewExists(ViewInfo.EntityName, 'Selector') then
+    Result := ViewInfo.EntityName
   else
     Result := 'UTL_JRN';
 end;

@@ -325,10 +325,8 @@ end;
 procedure TdxNavBarControlManager.NavBarLinkClickHandler(Sender: TObject;
   ALink: TdxNavBarItemLink);
 begin
-  if not IsControlKeyDown then
-    FWorkItem.Commands[GetItemLinkInfo(ALink).FItemID].Execute
-  else
-    ShowItemLinkSubItems(ALink);
+  FWorkItem.Actions[GetItemLinkInfo(ALink).FItemID].Execute(FWorkItem);
+
 end;
 
 procedure TdxNavBarControlManager.OnCustomDrawGroupCaption(Sender: TObject;

@@ -17,7 +17,6 @@ type
 
   TEntityOrgChartPresenter = class(TCustomContentPresenter)
   private
-    function UIInfo: IEntityUIInfo;
     procedure CmdReload(Sender: TObject);
     procedure CmdRotate(Sender: TObject);
     procedure CmdZoom(Sender: TObject);
@@ -65,10 +64,10 @@ function TEntityOrgChartPresenter.GetEVChart: IEntityView;
 var
   evName: string;
 begin
-  evName := UIInfo.EntityViewName;
+  evName := ViewInfo.EntityViewName;
   if evName = '' then evName := ENT_VIEW_ORGCHART;
 
-   Result := GetEView(UIInfo.EntityName, evName);
+   Result := GetEView(ViewInfo.EntityName, evName);
 end;
 
 function TEntityOrgChartPresenter.OnGetWorkItemState(
@@ -81,7 +80,7 @@ end;
 procedure TEntityOrgChartPresenter.OnViewReady;
 begin
   FreeOnViewClose := true;
-  ViewTitle := UIInfo.Title;
+  ViewTitle := ViewInfo.Title;
 
   View.CommandBar.
     AddCommand(COMMAND_CLOSE, COMMAND_CLOSE_CAPTION, COMMAND_CLOSE_SHORTCUT, CmdClose);
@@ -102,11 +101,6 @@ begin
 
   View.LinkData(GetEVChart.DataSet);
 
-end;
-
-function TEntityOrgChartPresenter.UIInfo: IEntityUIInfo;
-begin
-  Result := (WorkItem.Services[IEntityUIManagerService] as IEntityUIManagerService).UIInfo(GetViewURI);
 end;
 
 function TEntityOrgChartPresenter.View: IEntityOrgChartView;

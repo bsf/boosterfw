@@ -8,10 +8,7 @@ const
   etAppStarted = 'Application.Started';
   etAppStoped = 'Application.Stoped';
 
-  EVT_MODULE_LOADED = 'events.OnModuleLoaded';
-
-  GetModuleActivatorFunctionName = 'GetModuleActivator';
-
+  EVT_MODULE_LOAD = 'events.OnModuleLoad';
 
 type
   EArgumentError = class(Exception);
@@ -145,7 +142,7 @@ type
     procedure AddOut(const AName: string);
     function IsEmbedded(const AName: string): boolean;
   public
-    constructor Create(const ActionURI: string); reintroduce; virtual; 
+    constructor Create(const ActionURI: string); reintroduce; virtual;
     destructor Destroy; override;
     function ValueName(AIndex: integer): string;
     function Count: integer;
@@ -211,7 +208,7 @@ type
     procedure RegisterCondition(ACondition: TCommandConditionMethod);
     procedure RemoveCondition(ACondition: TCommandConditionMethod);
 
-    procedure Init(const ACaption, AShortCut: string; AHandler: TNotifyEvent); 
+    procedure Init(const ACaption, AShortCut: string; AHandler: TNotifyEvent);
     property Caption: string read GetCaption write SetCaption;
     property ShortCut: string read GetShortCut write SetShortCut;
     property Status: TCommandStatus read GetStatus write SetStatus;
@@ -387,8 +384,8 @@ function FindWorkItem(const AID: string; AParent: TWorkItem): TWorkItem;
 
 implementation
 
-uses  EventBroker, ServicesList, CommandsList,
-  WorkspacesList, ItemsList, ActionsList;
+uses  EventBroker, ServicesList, CommandsList, WorkspacesList, ItemsList,
+  ActionsList;
 
 var
   DebugInfoProc: procedure(const AInfo: string);

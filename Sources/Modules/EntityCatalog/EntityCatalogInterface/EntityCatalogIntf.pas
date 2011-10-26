@@ -41,8 +41,6 @@ type
   end;
 
   TEntityPresenterData = class(TPresenterData)
-  public
-    constructor Create(const ActionURI: string); override;
   end;
 
   TEntityPickListPresenterData = class(TEntityPresenterData, IPickListPresenterData)
@@ -167,23 +165,6 @@ begin
   PresenterID := VarToStr(Value);
 end;
 
-
-{ TEntityPresenterData }
-
-constructor TEntityPresenterData.Create(const ActionURI: string);
-var
-  uiInfo: IEntityUIInfo;
-  I: integer;
-begin
-  inherited Create(ActionURI);
-  uiInfo := (App.WorkItem.Services[IEntityUIManagerService] as IEntityUIManagerService).UIInfo(ActionURI);
-
-  for I := 0 to uiInfo.Params.Count - 1 do
-    Add(uiInfo.Params[I]);
-
-  for I := 0 to uiInfo.Outs.Count - 1 do
-    AddOut(uiInfo.Outs[I]);
-end;
 
 { TEntityPickListPresenterData }
 

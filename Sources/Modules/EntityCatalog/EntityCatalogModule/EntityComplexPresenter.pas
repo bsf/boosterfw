@@ -29,7 +29,6 @@ type
 
   TEntityComplexPresenter = class(TCustomContentPresenter)
   private
-    function UIInfo: IEntityUIInfo;
     procedure CmdHeadEdit(Sender: TObject);
     procedure CmdDetailCollect(Sender: TObject);
     procedure CmdDetailNew(Sender: TObject);
@@ -59,7 +58,7 @@ var
   action: IAction;
   actionName: string;
 begin
-  actionName := format(VIEW_HEAD_EDIT, [UIInfo.EntityName]);
+  actionName := format(VIEW_HEAD_EDIT, [ViewInfo.EntityName]);
   action := WorkItem.Actions[actionName];
   if action.Data is TEntityItemPresenterData then
     (action.Data as TEntityItemPresenterData).ID := WorkItem.State['HID'];
@@ -90,9 +89,9 @@ procedure TEntityComplexPresenter.CmdDetailNew(Sender: TObject);
   var
     actionURI: IAction;
   begin
-    if App.Entities.EntityViewExists(UIInfo.EntityName, 'DetailNewURI') then
+    if App.Entities.EntityViewExists(ViewInfo.EntityName, 'DetailNewURI') then
     begin
-      actionURI := WorkItem.Actions[format(VIEW_DETAIL_NEW_URI, [UIInfo.EntityName])];
+      actionURI := WorkItem.Actions[format(VIEW_DETAIL_NEW_URI, [ViewInfo.EntityName])];
       actionURI.Execute(WorkItem);
       if (actionURI.Data as TEntityPickListPresenterData).ModalResult = mrOk then
         Result := actionURI.Data.Value['URI']
@@ -100,7 +99,7 @@ procedure TEntityComplexPresenter.CmdDetailNew(Sender: TObject);
         Result := '';
     end
     else
-      Result := format(VIEW_DETAIL_NEW, [UIInfo.EntityName]);
+      Result := format(VIEW_DETAIL_NEW, [ViewInfo.EntityName]);
   end;
 
 var
@@ -121,11 +120,11 @@ procedure TEntityComplexPresenter.CmdDetailOpen(Sender: TObject);
 
   function GetItemViewURI: string;
   begin
-    if App.Entities.EntityViewExists(UIInfo.EntityName, 'DetailURI') then
-      Result := App.Entities[UIInfo.EntityName].GetView('DetailURI', WorkItem).
+    if App.Entities.EntityViewExists(ViewInfo.EntityName, 'DetailURI') then
+      Result := App.Entities[ViewInfo.EntityName].GetView('DetailURI', WorkItem).
             Load([WorkItem.State['DETAIL_ID']])['URI']
     else
-      Result := format(VIEW_DETAIL_ITEM, [UIInfo.EntityName]);
+      Result := format(VIEW_DETAIL_ITEM, [ViewInfo.EntityName]);
   end;
 
 var
@@ -134,7 +133,7 @@ var
 begin
   if VarIsEmpty(WorkItem.State['DETAIL_ID']) then Exit;
 
-  actionName := GetItemViewURI;//format(VIEW_DETAIL_ITEM, [UIInfo.EntityName]);
+  actionName := GetItemViewURI;//format(VIEW_DETAIL_ITEM, [ViewInfo.EntityName]);
   action := WorkItem.Actions[actionName];
   if action.Data is TEntityItemPresenterData then
     (action.Data as TEntityItemPresenterData).ID := WorkItem.State['DETAIL_ID'];
@@ -148,12 +147,12 @@ end;
 
 function TEntityComplexPresenter.GetEVHead: IEntityView;
 begin
-  Result := GetEView(UIInfo.EntityName, ENT_VIEW_HEAD_DEFAULT);
+  Result := GetEView(ViewInfo.EntityName, ENT_VIEW_HEAD_DEFAULT);
 end;
 
 function TEntityComplexPresenter.GetEVDetails: IEntityView;
 begin
-  Result := GetEView(UIInfo.EntityName, ENT_VIEW_DETAILS_DEFAULT);
+  Result := GetEView(ViewInfo.EntityName, ENT_VIEW_DETAILS_DEFAULT);
 end;
 
 function TEntityComplexPresenter.OnGetWorkItemState(
@@ -172,7 +171,7 @@ procedure TEntityComplexPresenter.OnViewReady;
 var
   fieldTitle: TField;
 begin
-  ViewTitle := UIInfo.Title;
+  ViewTitle := ViewInfo.Title;
 
   fieldTitle := GetEVHead.DataSet.FindField('VIEW_TITLE');
   if not Assigned(fieldTitle) then
@@ -187,16 +186,16 @@ begin
   View.CommandBar.
     AddCommand(COMMAND_CLOSE, COMMAND_CLOSE_CAPTION, COMMAND_CLOSE_SHORTCUT, CmdClose);
 
-  if UIInfo.OptionExists('CanHeadEdit') then
+  if ViewInfo.OptionExists('CanHeadEdit') then
     View.CommandBar.
       AddCommand(COMMAND_HEAD_OPEN, 'Изменить заголовок', 'Ctrl+H', CmdHeadEdit);
 
-  if UIInfo.OptionExists('CanAdd') or UIInfo.OptionExists('CanDetailsEdit') then
+  if ViewInfo.OptionExists('CanAdd') or ViewInfo.OptionExists('CanDetailsEdit') then
   begin
-    if UIInfo.OptionExists('UseCollectOnly') then
+    if ViewInfo.OptionExists('UseCollectOnly') then
       View.CommandBar.
         AddCommand(COMMAND_DETAIL_COLLECT, 'Добавить записи', 'Ins', CmdDetailCollect)
-    else if UIInfo.OptionExists('UseCollect') then
+    else if ViewInfo.OptionExists('UseCollect') then
     begin
       View.CommandBar.
         AddCommand(COMMAND_DETAIL_COLLECT, 'Подбор', 'Ins', CmdDetailCollect, 'Добавить', true);
@@ -208,11 +207,11 @@ begin
         AddCommand(COMMAND_DETAIL_NEW, 'Добавить запись', 'Ins', CmdDetailNew);
   end;
 
-  if UIInfo.OptionExists('CanOpen') or UIInfo.OptionExists('CanDetailsEdit') then
+  if ViewInfo.OptionExists('CanOpen') or ViewInfo.OptionExists('CanDetailsEdit') then
     View.CommandBar.
       AddCommand(COMMAND_DETAIL_OPEN, 'Открыть запись', 'Ctrl+Enter', CmdDetailOpen);
 
-  if UIInfo.OptionExists('CanDelete') or UIInfo.OptionExists('CanDetailsEdit') then
+  if ViewInfo.OptionExists('CanDelete') or ViewInfo.OptionExists('CanDetailsEdit') then
     View.CommandBar.
       AddCommand(COMMAND_DETAIL_DELETE, 'Удалить запись', 'Ctrl+Del', CmdDetailDel);
 
@@ -232,11 +231,6 @@ begin
   DetailSelectionChangedHandler;
 end;
 
-
-function TEntityComplexPresenter.UIInfo: IEntityUIInfo;
-begin
-  Result := (WorkItem.Services[IEntityUIManagerService] as IEntityUIManagerService).UIInfo(GetViewURI);
-end;
 
 function TEntityComplexPresenter.View: IEntityComplexView;
 begin
@@ -270,7 +264,7 @@ procedure TEntityComplexPresenter.CmdDetailCollect(Sender: TObject);
 var
   action: IAction;
 begin
-  action := WorkItem.Actions[format(VIEW_DETAIL_COLLECT, [UIInfo.EntityName])];
+  action := WorkItem.Actions[format(VIEW_DETAIL_COLLECT, [ViewInfo.EntityName])];
   (action.Data as TEntityItemPresenterData).ID := WorkItem.State['ID'];
   action.Execute(WorkItem);
 end;

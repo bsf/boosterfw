@@ -55,7 +55,6 @@ contains
   CommonViewIntf in '..\Sources\UI\CommonViewIntf.pas',
   CustomContentPresenter in '..\Sources\UI\CustomContentPresenter.pas',
   CustomDialogPresenter in '..\Sources\UI\CustomDialogPresenter.pas',
-  CustomModule in '..\Sources\UI\CustomModule.pas',
   CustomPresenter in '..\Sources\UI\CustomPresenter.pas',
   CustomUIController in '..\Sources\UI\CustomUIController.pas',
   CustomView in '..\Sources\UI\CustomView.pas' {frCustomView},

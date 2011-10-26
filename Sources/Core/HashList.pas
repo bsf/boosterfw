@@ -1,32 +1,34 @@
 unit HashList;
 
 interface
-uses classes, sysutils, Generics.Collections;
+uses classes, sysutils, Generics.Collections, typInfo;
 
 type
-  THashObjectList<T: class> = class(TComponent)
+
+  THashList<T> = class(TObject)
   private
 
     type
       TItem = class(TObject)
       private
-        FObj: T;
+        FOwnsObject: boolean;
+        FVal: T;
         FKey: string;
       public
-        constructor Create(const AKey: string; const AObj: T);
+        constructor Create(const AKey: string; const AVal: T; AOwnsObject: boolean);
         destructor Destroy; override;
-        property Obj: T read FObj;
+        property Obj: T read FVal;
         property Key: string read FKey;
       end;
 
   private
+    FOwnsObjects: boolean;
     FItems: TObjectList<TItem>;
-
     function GetItem(AIndex: integer): T;
     function GetValue(const Key: string): T;
 
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create(AOwnsObjects: boolean = true);
     destructor Destroy; override;
 
     function Count: integer;
@@ -59,37 +61,39 @@ type
     function GetEnumerator: TEnumerator;
   end;
 
+
+
 implementation
 
 { THashObjectList<T> }
 
-function THashObjectList<T>.Add(const Key: string; const Value: T): integer;
+function THashList<T>.Add(const Key: string; const Value: T): integer;
 begin
-  Result := FItems.Add(TItem.Create(Key, Value));
+  Result := FItems.Add(TItem.Create(Key, Value, FOwnsObjects));
 end;
 
-procedure THashObjectList<T>.Clear;
+procedure THashList<T>.Clear;
 begin
   FItems.Clear;
 end;
 
-function THashObjectList<T>.Count: integer;
+function THashList<T>.Count: integer;
 begin
   Result := FItems.Count;
 end;
 
-constructor THashObjectList<T>.Create(AOwner: TComponent);
+constructor THashList<T>.Create(AOwnsObjects: boolean);
 begin
-  inherited Create(AOwner);
   FItems := TObjectList<TItem>.Create(true);
+  FOwnsObjects := AOwnsObjects;
 end;
 
-procedure THashObjectList<T>.Delete(AIndex: integer);
+procedure THashList<T>.Delete(AIndex: integer);
 begin
   FItems.Delete(AIndex);
 end;
 
-procedure THashObjectList<T>.Delete(const Key: string);
+procedure THashList<T>.Delete(const Key: string);
 var
   idx: integer;
 begin
@@ -100,24 +104,24 @@ begin
   FItems.Delete(idx);
 end;
 
-destructor THashObjectList<T>.Destroy;
+destructor THashList<T>.Destroy;
 begin
   FItems.Free;
   inherited;
 end;
 
-function THashObjectList<T>.GetEnumerator: TEnumerator;
+function THashList<T>.GetEnumerator: TEnumerator;
 begin
   Result := TEnumerator.Create(FItems);
 end;
 
-function THashObjectList<T>.GetItem(AIndex: integer): T;
+function THashList<T>.GetItem(AIndex: integer): T;
 begin
   Result := FItems[AIndex].Obj;
 end;
 
 
-function THashObjectList<T>.GetValue(const Key: string): T;
+function THashList<T>.GetValue(const Key: string): T;
 var
   idx: integer;
 begin
@@ -129,7 +133,7 @@ begin
 end;
 
 
-function THashObjectList<T>.IndexOf(const Key: string): integer;
+function THashList<T>.IndexOf(const Key: string): integer;
 var
   I: integer;
 begin
@@ -143,29 +147,29 @@ end;
 
 { THashObjectList<T>.TEnumerator }
 
-constructor THashObjectList<T>.TEnumerator.Create(AList: TObjectList<TItem>);
+constructor THashList<T>.TEnumerator.Create(AList: TObjectList<TItem>);
 begin
   inherited Create;
   FList := AList;
   FIndex := -1;
 end;
 
-function THashObjectList<T>.TEnumerator.DoGetCurrent: T;
+function THashList<T>.TEnumerator.DoGetCurrent: T;
 begin
   Result := GetCurrent;
 end;
 
-function THashObjectList<T>.TEnumerator.DoMoveNext: Boolean;
+function THashList<T>.TEnumerator.DoMoveNext: Boolean;
 begin
   Result := MoveNext;
 end;
 
-function THashObjectList<T>.TEnumerator.GetCurrent: T;
+function THashList<T>.TEnumerator.GetCurrent: T;
 begin
   Result := FList[FIndex].Obj;
 end;
 
-function THashObjectList<T>.TEnumerator.MoveNext: Boolean;
+function THashList<T>.TEnumerator.MoveNext: Boolean;
 begin
   if FIndex >= FList.Count then
     Exit(False);
@@ -175,16 +179,18 @@ end;
 
 { THashObjectList<T>.TItem }
 
-constructor THashObjectList<T>.TItem.Create(const AKey: string;
-  const AObj: T);
+constructor THashList<T>.TItem.Create(const AKey: string;
+  const AVal: T; AOwnsObject: boolean);
 begin
   FKey := AKey;
-  FObj := AObj;
+  FVal := AVal;
+  FOwnsObject := AOwnsObject;
 end;
 
-destructor THashObjectList<T>.TItem.Destroy;
+destructor THashList<T>.TItem.Destroy;
 begin
-  FObj.Free;
+  if FOwnsObject and (PTypeInfo(TypeInfo(T))^.Kind = tkClass) then
+    (FVal as TObject).Free;
   inherited;
 end;
 

@@ -29,7 +29,7 @@ type
     FShell: TForm;
     FEntityManager: TEntityManagerService;
     FSecurity: TSecurityService;
-    procedure CmdAppLock(Sender: TObject);
+    procedure AppLockHandler(Sender: IAction);
     procedure SplashShow;
     procedure SplashHide;
     procedure SplashUpdate;
@@ -108,6 +108,10 @@ begin
   FEntityManager := TEntityManagerService.Create(Self, RootWorkItem);
   RootWorkItem.Services.Add(IEntityManagerService(FEntityManager));
 
+  //Activity
+  RootWorkItem.Services.Add(
+    IActivityService(TActivityService.Create(Self, RootWorkItem)));
+
   //Reports
   RootWorkItem.Services.Add(
     IReportService(TReportService.Create(Self,
@@ -117,12 +121,18 @@ begin
   RootWorkItem.Services.Add(
     IActivityManagerService(TActivityManagerService.Create(Self, RootWorkItem)));
 
+
   RootWorkItem.Services.Add(
     INavBarService(TNavBarService.Create(Self, RootWorkItem)));
 
-  RootWorkItem.Commands[COMMAND_LOCK_APP].SetHandler(CmdAppLock);
+  RootWorkItem.Actions[COMMAND_LOCK_APP].SetHandler(AppLockHandler);
 end;
 
+
+procedure TApp.AppLockHandler(Sender: IAction);
+begin
+  ShellLock.DoShellLock;
+end;
 
 function TApp.Settings: ISettings;
 begin
@@ -232,11 +242,6 @@ end;}
 function TApp.Views: IViewManagerService;
 begin
   Result := IViewManagerService(RootWorkItem.Services[IViewManagerService]);
-end;
-
-procedure TApp.CmdAppLock(Sender: TObject);
-begin
-  ShellLock.DoShellLock;
 end;
 
 function TApp.Version: string;

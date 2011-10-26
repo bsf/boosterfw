@@ -16,7 +16,7 @@ uses
   ViewStyleController, cxPC, cxDropDownEdit,
   cxBarEditItem, cxButtonEdit, dxBarExtItems, EntityServiceIntf,
   cxLookAndFeels, cxLookAndFeelPainters, TabbedWorkspace, ShellAbout,
-  ActivityServiceIntf,
+  ActivityServiceIntf, CommonViewIntf,
   UserPreferencesPresenter, UserPreferencesView,
   CommonUtils, dxGDIPlusClasses, cxGroupBox, cxStyles, cxCustomData,
   cxFilter, cxData, cxDataStorage, DB, cxDBData, cxGridLevel,
@@ -96,9 +96,8 @@ type
 
     //Shell Commands
     procedure RegisterShellCommands;
-    procedure CmdCloseApp(Sender: TObject);
-    procedure CmdShowAbout(Sender: TObject);
-    procedure CmdShowPreferences(Sender: TObject);
+    procedure CloseAppHandler(Sender: IAction);
+    procedure ShowAboutHandler(Sender: IAction);
   public
     constructor Create(AOwner: TComponent); override;
     procedure Initialize(AWorkItem: TWorkItem); override;
@@ -140,6 +139,11 @@ begin
     end;
     if not Result then Exit;
   end
+end;
+
+procedure TfrMain.CloseAppHandler(Sender: IAction);
+begin
+  Close;
 end;
 
 constructor TfrMain.Create(AOwner: TComponent);
@@ -249,48 +253,39 @@ end;
 
 procedure TfrMain.RegisterShellCommands;
 var
-  activity: IActivity;
+  svc: IActivityService;
 begin
-  activity := App.Activities.Items.Add(COMMAND_LOCK_APP, false);
-  activity.Caption := 'Блокировка';
-  activity.Category := MAIN_MENU_CATEGORY;
-  activity.Group := MAIN_MENU_FILE_GROUP;
-  activity.ShortCut := 'Ctrl+L';
+  svc := WorkItem.Services[IActivityService] as IActivityService;
 
-  activity := App.Activities.Items.Add(COMMAND_CLOSE_APP, false);
-  activity.Caption := 'Закрыть';
-  activity.Category := MAIN_MENU_CATEGORY;
-  activity.Group := MAIN_MENU_FILE_GROUP;
-  activity.SetHandler(CmdCloseApp);
+  with svc.RegisterActivityInfo(COMMAND_LOCK_APP) do
+  begin
+    Title := 'Блокировка';
+    Group := MAIN_MENU_FILE_GROUP;
+    ShortCut := 'Ctrl+L';
+  end;
 
-  activity := App.Activities.Items.Add(COMMAND_SHOW_ABOUT, false);
-  activity.Caption := 'О программе...';
-  activity.Category := MAIN_MENU_CATEGORY;
-  activity.Group := MAIN_MENU_FILE_GROUP;
-  activity.SetHandler(CmdShowAbout);
+  with svc.RegisterActivityInfo(COMMAND_CLOSE_APP) do
+  begin
+    Title := 'Закрыть';
+    Group := MAIN_MENU_FILE_GROUP;
+  end;
+  WorkItem.Actions[COMMAND_CLOSE_APP].SetHandler(CloseAppHandler);
 
-  activity := App.Activities.Items.Add(URI_USERPREFERENCES, false);
-  activity.Caption := 'Предпочтения';
-  activity.Category := MAIN_MENU_CATEGORY;
-  activity.Group := MAIN_MENU_SERVICE_GROUP;
-  activity.SetHandler(CmdShowPreferences);
-  App.Views.RegisterView(URI_USERPREFERENCES, TfrUserPreferencesView, TUserPreferencesPresenter);
+  with svc.RegisterActivityInfo(COMMAND_SHOW_ABOUT) do
+  begin
+    Title := 'О программе...';
+    Group := MAIN_MENU_FILE_GROUP;
+  end;
+  WorkItem.Actions[COMMAND_SHOW_ABOUT].SetHandler(ShowAboutHandler);
 
-end;
+  with svc.RegisterActivityInfo(URI_USERPREFERENCES) do
+  begin
+    Title := 'Предпочтения';
+    Group := MAIN_MENU_SERVICE_GROUP;
+  end;
+  svc.RegisterActivityClass(TViewActivityBuilder.Create(WorkItem,
+    URI_USERPREFERENCES, TUserPreferencesPresenter, TfrUserPreferencesView));
 
-procedure TfrMain.CmdCloseApp(Sender: TObject);
-begin
-  Close;
-end;
-
-procedure TfrMain.CmdShowAbout(Sender: TObject);
-begin
-  ShellAboutShow;
-end;
-
-procedure TfrMain.CmdShowPreferences(Sender: TObject);
-begin
-  WorkItem.Actions[URI_USERPREFERENCES].Execute(WorkItem);
 end;
 
 
@@ -337,6 +332,11 @@ procedure TfrMain.CloseNotifyPanel;
 begin
   SplitterNotifyPanel.CloseSplitter;
   SplitterNotifyPanel.Visible := false;
+end;
+
+procedure TfrMain.ShowAboutHandler(Sender: IAction);
+begin
+  ShellAboutShow;
 end;
 
 procedure TfrMain.ShowNotifyPanel;

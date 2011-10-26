@@ -1,8 +1,8 @@
 unit CustomPresenter;
 
 interface
-uses Classes, CoreClasses, ShellIntf, Controls, ViewServiceIntf, CommonViewIntf,
-  SysUtils, EntityServiceIntf, Variants, db, StrUtils, typinfo;
+uses Classes, CoreClasses, ShellIntf, Controls, ActivityServiceIntf, ViewServiceIntf,
+  CommonViewIntf, SysUtils, EntityServiceIntf, Variants, db, StrUtils, typinfo;
 
 type
   TCustomPresenter = class;
@@ -56,6 +56,7 @@ type
     //
     function GetViewURI: string;
     function GetView: ICustomView;
+    function ViewInfo: IActivityInfo;
     procedure ShowView(const WorkspaceID: string);
     procedure CloseView(ABackToCaller: boolean = true);
 
@@ -121,6 +122,11 @@ begin
   Result := nil;
   if Assigned(FView) then
     FView.QueryInterface(ICustomView, Result);
+end;
+
+function TCustomPresenter.ViewInfo: IActivityInfo;
+begin
+  Result := (WorkItem.Services[IActivityService] as IActivityService).ActivityInfo(FViewURI);
 end;
 
 procedure TCustomPresenter.OnViewShow;

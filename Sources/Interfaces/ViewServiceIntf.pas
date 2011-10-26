@@ -71,10 +71,6 @@ type
 
   TViewExtensionClass = class of TViewExtension;
 
-  IViewManifes = interface
-  ['{F67FF5A8-E863-436B-A0B8-34DF9C2DEA0E}']
-
-  end;
 
 
   IMessageBox = interface
@@ -127,6 +123,7 @@ type
   end;
 
 implementation
+uses ActivityServiceIntf, ShellIntf;
 
 { TView }
 
@@ -190,9 +187,22 @@ end;
 { TPresenterData }
 
 constructor TPresenterData.Create(const ActionURI: string);
+var
+  viewInfo: IActivityInfo;
+  I: integer;
 begin
-  inherited;
+  inherited Create(ActionURI);
   AddOut('ModalResult');
+
+  viewInfo := (App.WorkItem.Services[IActivityService] as IActivityService).ActivityInfo(ActionURI);
+
+  for I := 0 to viewInfo.Params.Count - 1 do
+    Add(viewInfo.Params[I]);
+
+  for I := 0 to viewInfo.Outs.Count - 1 do
+    AddOut(viewInfo.Outs[I]);
+
+
 end;
 
 end.

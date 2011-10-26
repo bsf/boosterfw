@@ -22,7 +22,6 @@ type
 
   TEntityDeskPresenter = class(TCustomContentPresenter)
   private
-    function UIInfo: IEntityUIInfo;
     function View: IEntityDeskView;
     procedure CmdClose(Sender: TObject);
     procedure CmdReload(Sender: TObject);
@@ -65,12 +64,12 @@ end;
 
 function TEntityDeskPresenter.GetEVList: IEntityView;
 begin
-  Result := GetEView(UIInfo.EntityName, 'List');
+  Result := GetEView(ViewInfo.EntityName, 'List');
 end;
 
 function TEntityDeskPresenter.GetEVParams: IEntityView;
 begin
-  Result := App.Entities[UIInfo.EntityName].GetView('Params', WorkItem);
+  Result := App.Entities[ViewInfo.EntityName].GetView('Params', WorkItem);
 end;
 
 function TEntityDeskPresenter.OnGetWorkItemState(
@@ -100,7 +99,7 @@ procedure TEntityDeskPresenter.OnViewReady;
 var
   dsStates: TDataSet;
 begin
-  ViewTitle := UIInfo.Title;
+  ViewTitle := ViewInfo.Title;
 
   dsStates := GetEVStates.DataSet;
   while not dsStates.Eof do
@@ -115,13 +114,13 @@ begin
   View.CommandBar.
     AddCommand(COMMAND_RELOAD, COMMAND_RELOAD_CAPTION, COMMAND_RELOAD_SHORTCUT, CmdReload);
 
-  if UIInfo.OptionExists('CanAdd') or UIInfo.OptionExists('CanEdit') then
+  if ViewInfo.OptionExists('CanAdd') or ViewInfo.OptionExists('CanEdit') then
     View.CommandBar.AddCommand(COMMAND_NEW, COMMAND_NEW_CAPTION, COMMAND_NEW_SHORTCUT, CmdNew);
 
-  if UIInfo.OptionExists('CanOpen') or UIInfo.OptionExists('CanEdit') then
+  if ViewInfo.OptionExists('CanOpen') or ViewInfo.OptionExists('CanEdit') then
     View.CommandBar.AddCommand(COMMAND_OPEN, COMMAND_OPEN_CAPTION, COMMAND_OPEN_SHORTCUT, CmdOpen);
 
-  if UIInfo.OptionExists('CanDelete') or UIInfo.OptionExists('CanEdit') then
+  if ViewInfo.OptionExists('CanDelete') or ViewInfo.OptionExists('CanEdit') then
     View.CommandBar.AddCommand(COMMAND_DELETE, COMMAND_DELETE_CAPTION, COMMAND_DELETE_SHORTCUT, CmdDelete);
 
 
@@ -142,11 +141,6 @@ begin
   View.Tabs.SetTabChangedHandler(TabChangedHandler);
   View.Selection.SetSelectionChangedHandler(SelectionChangedHandler);
   TabChangedHandler;
-end;
-
-function TEntityDeskPresenter.UIInfo: IEntityUIInfo;
-begin
-  Result := (WorkItem.Services[IEntityUIManagerService] as IEntityUIManagerService).UIInfo(GetViewURI);
 end;
 
 function TEntityDeskPresenter.View: IEntityDeskView;
@@ -181,7 +175,7 @@ var
   action: IAction;
 begin
   action := WorkItem.Actions[ACTION_ENTITY_NEW];
-  action.Data.Value['ENTITYNAME'] := UIInfo.EntityName;
+  action.Data.Value['ENTITYNAME'] := ViewInfo.EntityName;
   action.Execute(WorkItem);
 end;
 
@@ -193,7 +187,7 @@ begin
 
   action := WorkItem.Actions[ACTION_ENTITY_ITEM];
   action.Data.Value['ID'] := WorkItem.State['ITEM_ID'];
-  action.Data.Value['ENTITYNAME'] := UIInfo.EntityName;
+  action.Data.Value['ENTITYNAME'] := ViewInfo.EntityName;
   action.Execute(WorkItem);
 
 end;
@@ -237,7 +231,7 @@ end;
 
 function TEntityDeskPresenter.GetEVStates: IEntityView;
 begin
-  Result := GetEView(UIInfo.EntityName, 'States');
+  Result := GetEView(ViewInfo.EntityName, 'States');
 end;
 
 procedure TEntityDeskPresenter.CmdStateChange(Sender: TObject);
@@ -259,7 +253,7 @@ begin
 
     for I := 0 to View.Selection.Count - 1 do
     begin
-      App.Entities[UIInfo.EntityName].
+      App.Entities[ViewInfo.EntityName].
         GetOper(ENT_OPER_STATE_CHANGE_DEFAULT, WorkItem).
           Execute([View.Selection[I], direction]);
     end;

@@ -2,7 +2,7 @@ unit AdminController;
 
 interface
 uses classes, CoreClasses, ShellIntf, CustomUIController,
-  //SettingsPresenter, SettingsView,
+  ActivityServiceIntf, CommonViewIntf,
   SecurityPoliciesPresenter, SecurityPoliciesView,
   SecurityPolicyPresenter, SecurityPolicyView,
   SecurityPolicyResPresenter, SecurityPolicyResView,
@@ -21,12 +21,19 @@ implementation
 { TAdminController }
 
 procedure TAdminController.OnInitialize;
+var
+  svc: IActivityService;
 begin
-  {RegisterActivity(VIEW_SETTINGS, MAIN_MENU_CATEGORY, MAIN_MENU_SERVICE_GROUP,
-    VIEW_SETTINGS_CAPTION, TSettingsPresenter, TfrSettingsView);}
+  svc := WorkItem.Services[IActivityService] as IActivityService;
 
-  RegisterActivity(VIEW_SECURITYPOLICIES, MAIN_MENU_CATEGORY, MAIN_MENU_SERVICE_GROUP,
-    VIEW_SECURITYPOLICIES_TITLE, TSecurityPoliciesPresenter, TfrSecurityPoliciesView);
+  with svc.RegisterActivityInfo(VIEW_SECURITYPOLICIES) do
+  begin
+    Title := VIEW_SECURITYPOLICIES_TITLE;
+    Group := MAIN_MENU_SERVICE_GROUP;
+  end;
+  svc.RegisterActivityClass(TViewActivityBuilder.Create(WorkItem,
+    VIEW_SECURITYPOLICIES, TSecurityPoliciesPresenter, TfrSecurityPoliciesView));
+
 
   RegisterView(VIEW_SECURITYPOLICY, TSecurityPolicyPresenter, TfrSecurityPolicyView);
 

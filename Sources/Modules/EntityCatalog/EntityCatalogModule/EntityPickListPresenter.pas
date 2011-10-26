@@ -15,7 +15,6 @@ type
 
   TEntityPickListPresenter = class(TCustomDialogPresenter)
   private
-    function UIInfo: IEntityUIInfo;
     procedure SetFilter(const AText: string);
   protected
     function View: IEntityPickListView;
@@ -73,7 +72,7 @@ end;
 
 procedure TEntityPickListPresenter.OnViewReady;
 begin
-  ViewTitle := UIInfo.Title;
+  ViewTitle := ViewInfo.Title;
   WorkItem.State['ModalResult'] := mrCancel;
 
   WorkItem.Commands[COMMAND_CANCEL].SetHandler(CmdCancel);
@@ -106,9 +105,9 @@ function TEntityPickListPresenter.GetEVList: IEntityView;
 var
   evName: string;
 begin
-  evName := UIInfo.EntityViewName;
+  evName := ViewInfo.EntityViewName;
   if evName = '' then evName := ENT_VIEW_PICKLIST;
-  Result := GetEView(UIInfo.EntityName, evName);
+  Result := GetEView(ViewInfo.EntityName, evName);
 end;
 
 procedure TEntityPickListPresenter.OnViewShow;
@@ -145,11 +144,6 @@ begin
 
   View.SetFilterText(searchText);
 
-end;
-
-function TEntityPickListPresenter.UIInfo: IEntityUIInfo;
-begin
-  Result := (WorkItem.Services[IEntityUIManagerService] as IEntityUIManagerService).UIInfo(GetViewURI);
 end;
 
 function TEntityPickListPresenter.View: IEntityPickListView;

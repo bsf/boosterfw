@@ -2,6 +2,7 @@ unit EntityCatalogController;
 
 interface
 uses classes, CoreClasses, CustomUIController,  ShellIntf, Variants, db, Contnrs,
+  ActivityServiceIntf,
   EntityCatalogIntf, EntityServiceIntf, ViewServiceIntf, CommonViewIntf, sysutils,
   StrUtils, EntitySecResProvider, SecurityIntf, controls,
   EntityJournalPresenter, EntityJournalView,
@@ -86,6 +87,31 @@ type
   public
     constructor Create(AOwner: TComponent; const AURI, AUIClassName, AEntityName: string); reintroduce;
     destructor Destroy; override;
+  end;
+
+  TEntityActivityBuilder = class(TActivityBuilder)
+  private
+    FWorkItem: TWorkItem;
+  public
+    constructor Create(AWorkItem: TWorkItem);
+    function ActivityClass: string; override;
+    procedure Build(ActivityInfo: IActivityInfo); override;
+  end;
+
+  TEntityViewActivityBuilder = class(TViewActivityBuilder)
+  public
+    procedure Build(ActivityInfo: IActivityInfo); override;
+  end;
+
+  TSecurityResActivityBuilder = class(TActivityBuilder)
+  private
+    FProvider: TEntitySecurityResProvider;
+    FWorkItem: TWorkItem;
+  public
+    constructor Create(WorkItem: TWorkItem);
+    destructor Destroy; override;
+    function ActivityClass: string; override;
+    procedure Build(ActivityInfo: IActivityInfo); override;
   end;
 
   TEntityCatalogController = class(TCustomUIController, IEntityUIManagerService)
@@ -353,19 +379,49 @@ begin
 end;
 
 procedure TEntityCatalogController.RegisterUIClasses;
+var
+  svc: IActivityService;
 begin
-  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityNewView', TEntityNewPresenter, TfrEntityNewView));
-  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityItemView', TEntityItemPresenter, TfrEntityItemView));
-  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityComplexView', TEntityComplexPresenter, TfrEntityComplexView));
-  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityCollectView', TEntityCollectPresenter, TfrEntityCollectView));
-  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityListView', TEntityListPresenter, TfrEntityListView));
-  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityPickListView', TEntityPickListPresenter, TfrEntityPickListView));
-  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityJournalView', TEntityJournalPresenter, TfrEntityJournalView));
-  RegisterUIClass(TEntityUIClassPresenter.Create('IEntitySelectorView', TEntitySelectorPresenter, TfrEntitySelectorView));
-  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityDeskView', TEntityDeskPresenter, TfrEntityDeskView));
-  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityOrgChartView', TEntityOrgChartPresenter, TfrEntityOrgChartView));
-  RegisterUIClass(TEntityUIClassActivity.Create('IEntityActivity'));
-  RegisterUIClass(TEntityUIClassSecurityResProvider.Create('ISecurityResProvider'));
+  svc := WorkItem.Services[IActivityService] as IActivityService;
+
+  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
+    'IEntityListView', TEntityListPresenter, TfrEntityListView));
+  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
+    'IEntityNewView', TEntityNewPresenter, TfrEntityNewView));
+  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
+    'IEntityItemView', TEntityItemPresenter, TfrEntityItemView));
+  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
+    'IEntityComplexView', TEntityComplexPresenter, TfrEntityComplexView));
+  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
+    'IEntityCollectView', TEntityCollectPresenter, TfrEntityCollectView));
+  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
+    'IEntityListView', TEntityListPresenter, TfrEntityListView));
+  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
+    'IEntityPickListView', TEntityPickListPresenter, TfrEntityPickListView));
+  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
+    'IEntityJournalView', TEntityJournalPresenter, TfrEntityJournalView));
+  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
+    'IEntitySelectorView', TEntitySelectorPresenter, TfrEntitySelectorView));
+  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
+    'IEntityDeskView', TEntityDeskPresenter, TfrEntityDeskView));
+  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
+    'IEntityOrgChartView', TEntityOrgChartPresenter, TfrEntityOrgChartView));
+
+  svc.RegisterActivityClass(TEntityActivityBuilder.Create(WorkItem));
+  svc.RegisterActivityClass(TSecurityResActivityBuilder.Create(WorkItem));
+
+//  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityNewView', TEntityNewPresenter, TfrEntityNewView));
+//  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityItemView', TEntityItemPresenter, TfrEntityItemView));
+//  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityComplexView', TEntityComplexPresenter, TfrEntityComplexView));
+//  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityCollectView', TEntityCollectPresenter, TfrEntityCollectView));
+//  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityListView', TEntityListPresenter, TfrEntityListView));
+//  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityPickListView', TEntityPickListPresenter, TfrEntityPickListView));
+//  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityJournalView', TEntityJournalPresenter, TfrEntityJournalView));
+//  RegisterUIClass(TEntityUIClassPresenter.Create('IEntitySelectorView', TEntitySelectorPresenter, TfrEntitySelectorView));
+//  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityDeskView', TEntityDeskPresenter, TfrEntityDeskView));
+//  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityOrgChartView', TEntityOrgChartPresenter, TfrEntityOrgChartView));
+//  RegisterUIClass(TEntityUIClassActivity.Create('IEntityActivity'));
+//  RegisterUIClass(TEntityUIClassSecurityResProvider.Create('ISecurityResProvider'));
 end;
 
 procedure TEntityCatalogController.RegisterUIItems;
@@ -679,6 +735,59 @@ end;
 constructor TEntityUIClass.Create(const AName: string);
 begin
   FName := AName;
+end;
+
+{ TEntityActivityBuilder }
+
+function TEntityActivityBuilder.ActivityClass: string;
+begin
+  Result := 'IEntityActivity';
+end;
+
+procedure TEntityActivityBuilder.Build(ActivityInfo: IActivityInfo);
+begin
+  (FWorkItem.Services[IViewManagerService] as IViewManagerService).
+    RegisterExtension(ActivityInfo.URI, TEntityViewExtension);
+end;
+
+constructor TEntityActivityBuilder.Create(AWorkItem: TWorkItem);
+begin
+  FWorkItem := AWorkItem;
+end;
+
+{ TEntityViewActivityBuilder }
+
+procedure TEntityViewActivityBuilder.Build(ActivityInfo: IActivityInfo);
+begin
+  inherited;
+  (WorkItem.Services[IViewManagerService] as IViewManagerService).
+    RegisterExtension(ActivityInfo.URI, TEntityViewExtension);
+end;
+
+{ TSecurityResActivityBuilder }
+
+function TSecurityResActivityBuilder.ActivityClass: string;
+begin
+  Result := 'ISecurityResProvider';
+end;
+
+procedure TSecurityResActivityBuilder.Build(ActivityInfo: IActivityInfo);
+begin
+  FProvider := TEntitySecurityResProvider.Create(nil, ActivityInfo.URI, FWorkItem);
+  (FWorkItem.Services[ISecurityService] as ISecurityService).
+    RegisterResProvider(FProvider);
+end;
+
+constructor TSecurityResActivityBuilder.Create(WorkItem: TWorkItem);
+begin
+  FWorkItem := WorkItem;
+end;
+
+destructor TSecurityResActivityBuilder.Destroy;
+begin
+  if Assigned(FProvider) then
+    FProvider.Free;
+  inherited;
 end;
 
 end.

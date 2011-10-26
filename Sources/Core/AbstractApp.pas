@@ -75,7 +75,10 @@ var
   I: integer;
 begin
   for I := 0 to FModules.Count - 1 do
-    if FModules[I].Kind = Kind then FModules[I].Load;
+    if FModules[I].Kind = Kind then
+    begin
+      FModules[I].Load;
+    end;
 end;
 
 procedure TAbstractApplication.OnLoadModule(const AModuleName, AInfo: string;

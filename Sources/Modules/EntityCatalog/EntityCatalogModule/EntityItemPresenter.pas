@@ -12,7 +12,6 @@ const
 type
   TEntityItemPresenter = class(TCustomContentPresenter)
   private
-    function UIInfo: IEntityUIInfo;
     procedure CmdCancel(Sender: TObject);
     procedure CmdSave(Sender: TObject);
     function View: IEntityItemView;
@@ -47,7 +46,7 @@ begin
 
   GetEVItem.Save;
 
-  if UIInfo.OptionExists('ReloadCaller') then
+  if ViewInfo.OptionExists('ReloadCaller') then
     ReloadCallerWorkItem;
 
   nextActionID := WorkItem.State['NEXT_ACTION'];
@@ -74,7 +73,7 @@ procedure TEntityItemPresenter.OnViewReady;
 var
   fieldAux: TField;
 begin
-  ViewTitle := UIInfo.Title;
+  ViewTitle := ViewInfo.Title;
 
   fieldAux := GetEVItem.DataSet.FindField('VIEW_TITLE');
   if not Assigned(fieldAux) then
@@ -104,13 +103,13 @@ begin
     if Assigned(fieldAux) then
       WorkItem.State['FOCUS_FIELD'] := VarToStr(fieldAux.Value)
     else
-      WorkItem.State['FOCUS_FIELD'] := UIInfo.OptionValue('Focus');
+      WorkItem.State['FOCUS_FIELD'] := ViewInfo.OptionValue('Focus');
   end;
   View.FocusDataSetControl(GetEVItem.DataSet, VarToStr(WorkItem.State['FOCUS_FIELD']));
 
 
-  if UIInfo.OptionExists('Next') then
-    WorkItem.State['NEXT_ACTION'] := UIInfo.OptionValue('Next');
+  if ViewInfo.OptionExists('Next') then
+    WorkItem.State['NEXT_ACTION'] := ViewInfo.OptionValue('Next');
 
   if WorkItem.State['NEXT_ACTION'] <> '' then
     WorkItem.Commands[COMMAND_SAVE].Caption := 'ƒ‡ÎÂÂ >>';
@@ -125,9 +124,9 @@ function TEntityItemPresenter.GetEVItem: IEntityView;
 var
   evName: string;
 begin
-  evName := UIInfo.EntityViewName;
+  evName := ViewInfo.EntityViewName;
   if evName = '' then evName := ENT_VIEW_ITEM;
-  Result := GetEView(UIInfo.EntityName, evName);
+  Result := GetEView(ViewInfo.EntityName, evName);
 end;
 
 function TEntityItemPresenter.OnGetWorkItemState(
@@ -135,11 +134,6 @@ function TEntityItemPresenter.OnGetWorkItemState(
 begin
   {if SameText(AName, 'ID') then
     Result := GetEVItem.Values['ID']; –≈ ”–—»ﬂ !!!}
-end;
-
-function TEntityItemPresenter.UIInfo: IEntityUIInfo;
-begin
-  Result := (WorkItem.Services[IEntityUIManagerService] as IEntityUIManagerService).UIInfo(GetViewURI);
 end;
 
 function TEntityItemPresenter.View: IEntityItemView;

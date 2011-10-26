@@ -18,7 +18,6 @@ type
 
   TEntityNewPresenter = class(TCustomContentPresenter)
   private
-    function UIInfo: IEntityUIInfo;
     procedure CmdCancel(Sender: TObject);
     procedure CmdSave(Sender: TObject);
     function View: IEntityNewView;
@@ -53,7 +52,7 @@ begin
 
   GetEVItem.Save;
 
-  if UIInfo.OptionExists('ReloadCaller') then
+  if ViewInfo.OptionExists('ReloadCaller') then
     ReloadCallerWorkItem;
 
   nextActionID := WorkItem.State['NEXT_ACTION'];
@@ -80,7 +79,7 @@ var
   NextOption: string;
   NextAction: string;
 begin
-  ViewTitle := UIInfo.Title;
+  ViewTitle := ViewInfo.Title;
 
   fieldAux := GetEVItem.DataSet.FindField('VIEW_TITLE');
   if not Assigned(fieldAux) then
@@ -104,20 +103,20 @@ begin
     if Assigned(fieldAux) then
       WorkItem.State['FOCUS_FIELD'] := VarToStr(fieldAux.Value)
     else
-      WorkItem.State['FOCUS_FIELD'] := UIInfo.OptionValue('Focus');
+      WorkItem.State['FOCUS_FIELD'] := ViewInfo.OptionValue('Focus');
   end;
   View.FocusDataSetControl(GetEVItem.DataSet, VarToStr(WorkItem.State['FOCUS_FIELD']));
 
 
-  if UIInfo.OptionExists('Next') then
+  if ViewInfo.OptionExists('Next') then
   begin
-    nextOption := UIInfo.OptionValue('Next');
+    nextOption := ViewInfo.OptionValue('Next');
 
     if (nextOption = '') or (SameText(nextOption, 'Item'))then
-      NextAction := format(VIEW_ITEM, [UIInfo.EntityName])
+      NextAction := format(VIEW_ITEM, [ViewInfo.EntityName])
 
     else if SameText(nextOption, 'Collect') then
-      NextAction := format(VIEW_COLLECT, [UIInfo.EntityName])
+      NextAction := format(VIEW_COLLECT, [ViewInfo.EntityName])
 
     else
       NextAction := NextOption;
@@ -139,9 +138,9 @@ var
   mField: TField;
   evName: string;
 begin
-  evName := UIInfo.EntityViewName;
+  evName := ViewInfo.EntityViewName;
   if evName = '' then evName := ENT_VIEW_NEW;
-  Result := GetEView(UIInfo.EntityName, evName);
+  Result := GetEView(ViewInfo.EntityName, evName);
   
   if Result.IsLoaded and (not Result.IsModified) then
   begin
@@ -160,11 +159,6 @@ function TEntityNewPresenter.OnGetWorkItemState(
 begin
   {if SameText(AName, 'ID') then
     Result := GetEVItem.Values['ID']; пейспяхъ !!!}
-end;
-
-function TEntityNewPresenter.UIInfo: IEntityUIInfo;
-begin
-  Result := (WorkItem.Services[IEntityUIManagerService] as IEntityUIManagerService).UIInfo(GetViewURI);
 end;
 
 function TEntityNewPresenter.View: IEntityNewView;

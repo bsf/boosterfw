@@ -79,7 +79,6 @@
 			<DCCReference Include="..\Sources\UI\CommonViewIntf.pas"/>
 			<DCCReference Include="..\Sources\UI\CustomContentPresenter.pas"/>
 			<DCCReference Include="..\Sources\UI\CustomDialogPresenter.pas"/>
-			<DCCReference Include="..\Sources\UI\CustomModule.pas"/>
 			<DCCReference Include="..\Sources\UI\CustomPresenter.pas"/>
 			<DCCReference Include="..\Sources\UI\CustomUIController.pas"/>
 			<DCCReference Include="..\Sources\UI\CustomView.pas">

@@ -12,7 +12,6 @@ type
 
   TEntitySelectorPresenter = class(TCustomDialogPresenter)
   private
-    function UIInfo: IEntityUIInfo;
     function View: IEntitySelectorView;
     procedure CmdCancel(Sender: TObject);
     procedure CmdOK(Sender: TObject);
@@ -52,27 +51,20 @@ begin
   Result := TEntitySelectorPresenterData;
 end;
 
-
 function TEntitySelectorPresenter.GetEVList: IEntityView;
 begin
-  Result := GetEView(UIInfo.EntityName, 'Selector');
+  Result := GetEView(ViewInfo.EntityName, 'Selector');
 end;
-
 
 procedure TEntitySelectorPresenter.OnViewReady;
 begin
-  ViewTitle := UIInfo.Title;
+  ViewTitle := ViewInfo.Title;
   WorkItem.State['ModalResult'] := mrCancel;
 
   View.CommandBar.AddCommand(COMMAND_CANCEL, COMMAND_CANCEL_CAPTION, 'Esc', cmdCancel);
   View.CommandBar.AddCommand(COMMAND_OK, COMMAND_OK_CAPTION, 'Enter', cmdOK);
 
   View.LinkData(GetEVList.DataSet);
-end;
-
-function TEntitySelectorPresenter.UIInfo: IEntityUIInfo;
-begin
-  Result := (WorkItem.Services[IEntityUIManagerService] as IEntityUIManagerService).UIInfo(GetViewURI);
 end;
 
 function TEntitySelectorPresenter.View: IEntitySelectorView;
