@@ -445,13 +445,18 @@ begin
   begin
     activityInfo := svc.Infos.Item(I);
 
-    if activityInfo.Group <> '' then
+    if (activityInfo.Group <> '') and (activityInfo.MenuIndex > -1) then
     begin
       navItem := Items.Add(activityInfo.URI);
       navItem.Caption := activityInfo.Title;
       navItem.Group := activityInfo.Group;
       navItem.Category := 'Главное меню';
-      navItem.Section := activityInfo.GroupSection;
+
+       if activityInfo.OptionExists('BeginSection') then
+        navItem.Section := 1
+      else
+        navItem.Section := 0;
+
       navItem.Image := activityInfo.Image;
       AddItemLinkDefault(navItem);
     end;

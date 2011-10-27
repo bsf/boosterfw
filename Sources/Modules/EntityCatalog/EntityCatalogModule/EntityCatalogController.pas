@@ -303,7 +303,7 @@ procedure TEntityCatalogController.InstUIClassActivity(
 var
   ctg: string;
 begin
-  with UIInfo do
+{  with UIInfo do
   begin
     ctg := Category;
     if ctg = '' then
@@ -312,7 +312,7 @@ begin
     RegisterActivity(URI, ctg, Group, Title);
 
     RegisterExtension(URI, TEntityViewExtension);
-  end;
+  end;}
 end;
 
 procedure TEntityCatalogController.InstUIClassPresenter(UIInfo: IEntityUIInfo);
@@ -321,7 +321,7 @@ var
   uiInfoClass: TEntityUIClass;
   BeginSection: integer;
 begin
-  with UIInfo do
+{  with UIInfo do
   begin
     uiInfoClass := GetUIClass(UIInfo.UIClassName);
     if (Group <> '') then
@@ -334,7 +334,7 @@ begin
         BeginSection := 1
       else
         BeginSection := 0;
-      RegisterActivity(URI, ctg{Category}, Group, Title,
+      RegisterActivity(URI, ctg, Group, Title,
        (uiInfoClass as TEntityUIClassPresenter).PresenterClass,
        (uiInfoClass as TEntityUIClassPresenter).ViewClass, BeginSection)
     end
@@ -344,7 +344,7 @@ begin
        (uiInfoClass as TEntityUIClassPresenter).ViewClass);
 
     RegisterExtension(URI, TEntityViewExtension);
-  end;
+  end;}
 end;
 
 procedure TEntityCatalogController.InstUIClassSecResProvider(
@@ -362,12 +362,36 @@ begin
   FUIInfoList := TComponentList.Create(true);
   WorkItem.Root.Services.Add(Self as IEntityUIManagerService);
   RegisterUIClasses;
-  RegisterUIItems;
-  RegisterAction(ACTION_ENTITY_ITEM, ActionEntityItem, TEntityItemActionData);
+
+  with WorkItem.Root.Actions[ACTION_ENTITY_ITEM] do
+  begin
+    SetHandler(ActionEntityItem);
+    SetDataClass(TEntityItemActionData);
+  end;
+
+  with WorkItem.Root.Actions[ACTION_ENTITY_NEW] do
+  begin
+    SetHandler(ActionEntityNew);
+    SetDataClass(TEntityNewActionData);
+  end;
+
+  with WorkItem.Root.Actions[ACTION_ENTITY_DETAIL] do
+  begin
+    SetHandler(ActionEntityDetail);
+    SetDataClass(TEntityItemActionData);
+  end;
+
+  with WorkItem.Root.Actions[ACTION_ENTITY_DETAIL_NEW] do
+  begin
+    SetHandler(ActionEntityDetailNew);
+    SetDataClass(TEntityNewActionData);
+  end;
+
+ { RegisterAction(ACTION_ENTITY_ITEM, ActionEntityItem, TEntityItemActionData);
   RegisterAction(ACTION_ENTITY_NEW, ActionEntityNew, TEntityNewActionData);
   RegisterAction(ACTION_ENTITY_DETAIL, ActionEntityDetail, TEntityItemActionData);
   RegisterAction(ACTION_ENTITY_DETAIL_NEW, ActionEntityDetailNew, TEntityNewActionData);
-
+  }
 
 end;
 

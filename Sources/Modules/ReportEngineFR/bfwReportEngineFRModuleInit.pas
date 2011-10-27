@@ -1,8 +1,7 @@
 unit bfwReportEngineFRModuleInit;
 
 interface
-uses classes, CoreClasses, ShellIntf, ViewServiceIntf,
-  ReportServiceIntf, frReportFactory, frReportPreviewPresenter, frReportPreviewView;
+uses classes, CoreClasses, frReportFactory;
 
 type
   TReportEngineFRModuleInit = class(TModule)
@@ -24,8 +23,6 @@ end;
 
 procedure TReportEngineFRModuleInit.Load;
 begin
-  (WorkItem.Services[IViewManagerService] as IViewManagerService).
-    RegisterView(VIEW_FR_PREVIEW, TfrfrReportPreviewView, TfrReportPreviewPresenter);
   WorkItem.WorkItems.Add(TFastReportFactory);
 end;
 

@@ -1,26 +1,34 @@
 unit bfwSettingManagerModuleInit;
 
 interface
-uses classes, CoreClasses,  ShellIntf, SettingsPresenter, SettingsView;
+uses classes, CoreClasses, ActivityServiceIntf, CommonViewIntf, ShellIntf,
+     SettingsPresenter, SettingsView;
 
 type
-  TdxbSecurityManagerModuleInit = class(TModule)
+  TSettingManagerModuleInit = class(TModule)
   public
     procedure Load; override;
   end;
 
 implementation
 
-{ TdxbSecurityManagerModuleInit }
+{ TSettingManagerModuleInit }
 
-procedure TdxbSecurityManagerModuleInit.Load;
+procedure TSettingManagerModuleInit.Load;
 begin
-  App.Activities.Items.Add(VIEW_SETTINGS).Init(MAIN_MENU_CATEGORY, MAIN_MENU_SERVICE_GROUP,
-    VIEW_SETTINGS_CAPTION);
-  App.Views.RegisterView(VIEW_SETTINGS, TfrSettingsView, TSettingsPresenter);
+  with WorkItem.Services[IActivityService] as IActivityService do
+  begin
+    with RegisterActivityInfo(VIEW_SETTINGS) do
+    begin
+      Title := VIEW_SETTINGS_CAPTION;
+      Group := MAIN_MENU_SERVICE_GROUP;
+    end;
+    RegisterActivityClass(TViewActivityBuilder.Create(WorkItem,
+      VIEW_SETTINGS, TSettingsPresenter, TfrSettingsView));
+  end;
 end;
 
 initialization
-  RegisterModule(TdxbSecurityManagerModuleInit);
+  RegisterModule(TSettingManagerModuleInit);
 
 end.

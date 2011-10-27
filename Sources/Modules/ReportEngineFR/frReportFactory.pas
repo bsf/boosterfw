@@ -4,7 +4,9 @@ interface
 uses windows, classes, CoreClasses, ReportServiceIntf, EntityServiceIntf,
   SysUtils, db, ibdatabase, CustomUIController, ComObj, controls,
   frxClass, frxExportXML, frxExportXLS, frxExportCSV, frxIBXComponents, frxDesgn,
-  frxChBox, frxCross, frxBarCode, frxDCtrl, variants, frReportPreviewPresenter;
+  frxChBox, frxCross, frxBarCode, frxDCtrl, variants,
+  frReportPreviewPresenter, frReportPreviewView,
+  ActivityServiceIntf, CommonViewIntf;
 
 const
   VIEW_FASTREPORT_PREVIEW = 'views.reports.fastreport.preview';
@@ -68,6 +70,13 @@ begin
   inherited;
   FWorkItem := AOwner;
   (WorkItem.Services[IReportService] as IReportService).RegisterLauncherFactory(Self);
+
+  with WorkItem.Services[IActivityService] as IActivityService do
+  begin
+    RegisterActivityInfo(VIEW_FR_PREVIEW);
+    RegisterActivityClass(TViewActivityBuilder.Create(WorkItem,
+     VIEW_FR_PREVIEW, TfrReportPreviewPresenter, TfrfrReportPreviewView));
+  end
 end;
 
 function TFastReportFactory.GetLauncher(AConnection: IEntityStorageConnection;

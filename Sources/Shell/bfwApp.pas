@@ -49,7 +49,7 @@ type
     function Entities: IEntityManagerService;
     function Reports: IReportService;
     function Security: ISecurityService;
-    function Activities: IActivityManagerService;
+    function Activities: IActivityService;
     function ContentWorkspace: IWorkspace;
     function DialogWorkspace: IWorkspace;
     function WorkItem: TWorkItem;
@@ -116,11 +116,6 @@ begin
   RootWorkItem.Services.Add(
     IReportService(TReportService.Create(Self,
       IEntityManagerService(FEntityManager), RootWorkItem)));
-
-  //AcritivityService
-  RootWorkItem.Services.Add(
-    IActivityManagerService(TActivityManagerService.Create(Self, RootWorkItem)));
-
 
   RootWorkItem.Services.Add(
     INavBarService(TNavBarService.Create(Self, RootWorkItem)));
@@ -225,9 +220,9 @@ begin
   Result := RootWorkItem.Workspaces[WS_DIALOG];
 end;
 
-function TApp.Activities: IActivityManagerService;
+function TApp.Activities: IActivityService;
 begin
-  Result := IActivityManagerService(RootWorkItem.Services[IActivityManagerService]);
+  Result := RootWorkItem.Services[IActivityService] as IActivityService;
 end;
 
 

@@ -25,18 +25,14 @@ type
     FCatalogPath: string;
     FReportCatalog: TReportCatalog;
     FReportService: IReportService;
-    FActivitySvc: IActivityManagerService;
     procedure LoadCatalogItems;
     procedure LoadCatalogItem(AItem: TReportCatalogItem);
     procedure UnLoadCatalogItem(AItem: TReportCatalogItem);
 
-    procedure ActionReportCatalogReload(Sender: IAction);
     procedure ActionReportLaunch(Sender: IAction);
-    procedure CmdReportLaunch(Sender: TObject);
-    procedure CmdReportInfo(Sender: TObject);
-    procedure CmdReportSetup(Sender: TObject);
     procedure RegisterSettings;
     procedure LoadActivityImage;
+    procedure OnActivityLoadingHandler(EventData: Variant);
   protected
    function GetItem(const URI: string): TReportCatalogItem;
     procedure OnInitialize; override;
@@ -46,12 +42,6 @@ type
 implementation
 
 { TReportCatalogController }
-
-procedure TReportCatalogController.ActionReportCatalogReload(
-  Sender: IAction);
-begin
-  LoadCatalogItems;
-end;
 
 procedure TReportCatalogController.ActionReportLaunch(Sender: IAction);
 var
@@ -70,52 +60,6 @@ begin
   launcherData.ImmediateRun := launchData.ImmediateRun;
   launcherData.AssignLaunchData(launchData);
   action.Execute(Sender.Caller);
-end;
-
-procedure TReportCatalogController.CmdReportInfo(Sender: TObject);
-var
-  Intf: ICommand;
-  ItemID: string;
-  rcItem: TReportCatalogItem;
-begin
-  Sender.GetInterface(ICommand, Intf);
-  ItemID := Intf.Data[COMMAND_DATA_REPORTID];
-  rcItem := FReportCatalog.GetItem(ItemID);
-
-  if rcItem.LoadErrorCode = 0 then
-    App.Views.MessageBox.InfoMessage(rcItem.ID + #10#13 + rcItem.Manifest.Description)
-  else
-    App.Views.MessageBox.ErrorMessage(rcItem.ID + #10#13 + rcItem.LoadErrorInfo);
-
-end;
-
-procedure TReportCatalogController.CmdReportLaunch(Sender: TObject);
-var
-  Intf: ICommand;
-  _ReportID: string;
-begin
-  Sender.GetInterface(ICommand, Intf);
-  _ReportID := Intf.Name;
-  Intf := nil;
-  WorkItem.Actions[_ReportID].Execute(WorkItem);
-end;
-
-procedure TReportCatalogController.CmdReportSetup(Sender: TObject);
-var
-  Intf: ICommand;
-  _ReportID: string;
-  action: IAction;
-begin
-  Sender.GetInterface(ICommand, Intf);
-  _ReportID := Intf.Data[COMMAND_DATA_REPORTID];
-  Intf := nil;
-
-  App.Security.DemandPermission(SECURITY_PERMISSION_REPORT_SETUP, _ReportID);
-
-  action := WorkItem.Actions[VIEW_RPT_ITEM_SETUP];
-  (action.Data as TReportSetupPresenterData).ReportID := _ReportID;
-  action.Execute(WorkItem);
-
 end;
 
 function TReportCatalogController.GetItem(
@@ -139,18 +83,14 @@ end;
 procedure TReportCatalogController.LoadCatalogItem(
   AItem: TReportCatalogItem);
 var
-
-  I: integer;
-
-  activityItem: IActivity;
-  activityItemChild: IActivity;
   layout: TReportLayout;
-  svc: IActivityService;
-  activityInfo: IActivityInfo;
+  activitySvc: IActivityService;
 begin
+  activitySvc := WorkItem.Services[IActivityService] as IActivityService;
 
   //Layouts
   for layout in AItem.Manifest.Layouts do
+  begin
     with FReportService.Add(layout.ID) do
     begin
       Template := AItem.Path + layout.Template;
@@ -159,60 +99,29 @@ begin
       if layout.ID <> AItem.ID then
         Caption := Caption + ' [' + layout.Caption + ']';
     end;
+
+    with activitySvc.RegisterActivityInfo(layout.ID) do
+    begin
+      if layout.ID <> AItem.ID then
+      begin
+        Title := AItem.Caption + ' [' + layout.Caption + ']';
+        MenuIndex := -1;
+      end
+      else
+      begin
+        Title := AItem.Caption;
+        if not AItem.IsTop then
+          MenuIndex := -1;
+      end;
+      Group := AItem.Group.Caption;
+      Image := FActivityImage;
+      UsePermission := true;
+    end;
+  end;
   WorkItem.Root.Actions[AItem.ID].SetHandler(ActionReportLaunch);
   WorkItem.Root.Actions[AItem.ID].SetDataClass(TReportLaunchData);
 
 
-  if not AItem.IsTop then Exit;
-
-  svc := WorkItem.Services[IActivityService] as IActivityService;
-  activityInfo := svc.RegisterActivityInfo(AItem.ID);
-  with activityInfo do
-  begin
-    //activityItem.Data[COMMAND_DATA_REPORTID] := AItem.ID;
-    Title := AItem.Caption;
-    Group := AItem.Group.Caption; // + ' - отчеты';
-    Image := FActivityImage;
-  end;
-
-  {
-  activityItem := FActivitySvc.Items.Add(AItem.ID, false);
-  activityItem.Data[COMMAND_DATA_REPORTID] := AItem.ID;
-  activityItem.Caption := AItem.Caption;
-  activityItem.Category := ShellIntf.MAIN_MENU_CATEGORY; // ACT_CTG_REPORTS;
-  activityItem.Group := AItem.Group.Caption; // + ' - отчеты';
-
-  activityItem.Image := FActivityImage;
-
-  activityItem.SetCustomPermissionOptions(
-    AItem.ID, SECURITY_PERMISSION_REPORT_EXECUTE);
-  activityItem.SetHandler(CmdReportLaunch);
-   }
-
-  {Subitems}
- {
-  for I := 0 to AItem.Manifest.ExtendCommands.Count - 1 do
-  begin
-    activityItemChild := activityItem.Items.
-      Add(AItem.Manifest.ExtendCommands.ValueFromIndex[I]);
-    activityItemChild.Caption := AItem.Manifest.ExtendCommands.Names[I];
-    activityItemChild.Data[COMMAND_DATA_REPORTID] := AItem.ID;
-  end;
-
-  activityItemChild := activityItem.Items.Add('ReportInfo_' + AItem.ID, false);
-  activityItemChild.Data[COMMAND_DATA_REPORTID] := AItem.ID;
-  activityItemChild.Caption := 'Описание отчета';
-  activityItemChild.Section := 99;
-  activityItemChild.SetHandler(CmdReportInfo);
-
-  activityItemChild := activityItem.Items.Add('ReportSetup_' + AItem.ID, false);
-  activityItemChild.Data[COMMAND_DATA_REPORTID] := AItem.ID;
-  activityItemChild.Caption := 'Настройка отчета';
-  activityItemChild.Section := 99;
-  activityItemChild.SetCustomPermissionOptions(
-    AItem.ID, SECURITY_PERMISSION_REPORT_SETUP);
-  activityItemChild.SetHandler(CmdReportSetup);
-  }
 end;
 
 procedure TReportCatalogController.LoadCatalogItems;
@@ -243,10 +152,14 @@ begin
       LoadCatalogItem(FReportCatalog.Groups[I].Items[Y]);
 end;
 
+procedure TReportCatalogController.OnActivityLoadingHandler(EventData: Variant);
+begin
+  LoadCatalogItems;
+end;
+
 procedure TReportCatalogController.OnInitialize;
 var
   activitySvc: IActivityService;
-  activityInfo: IActivityInfo;
 begin
   WorkItem.Root.Services.Add(Self as IReportCatalogService);
 
@@ -255,29 +168,32 @@ begin
 
   RegisterSettings;
   FReportService := IReportService(WorkItem.Services[IReportService]);
-  FActivitySvc := IActivityManagerService(WorkItem.Services[IActivityManagerService]);
+
   FReportCatalog := TReportCatalog.Create(Self);
 
   FCatalogPath := App.Settings[SETTING_REPORTS_LOCATION];
 
-  RegisterActivity(VIEW_RPT_CATALOG, MAIN_MENU_CATEGORY, MAIN_MENU_SERVICE_GROUP,
-    VIEW_RPT_CATALOG_CAPTION, TReportCatalogPresenter, TfrReportCatalogView);
-
-  RegisterActivity(COMMAND_REPORT_CATALOG_RELOAD, MAIN_MENU_CATEGORY, MAIN_MENU_SERVICE_GROUP,
-    'Обновить список отчетов', ActionReportCatalogReload, false);
-
   ActivitySvc := WorkItem.Services[IActivityService] as IActivityService;
+
+  with ActivitySvc.RegisterActivityInfo(VIEW_RPT_CATALOG) do
+  begin
+    Title := VIEW_RPT_CATALOG_CAPTION;
+    Group := MAIN_MENU_SERVICE_GROUP;
+  end;
+
+  ActivitySvc.RegisterActivityClass(TViewActivityBuilder.Create(WorkItem,
+    VIEW_RPT_CATALOG, TReportCatalogPresenter, TfrReportCatalogView));
 
   ActivitySvc.RegisterActivityInfo(VIEW_REPORT_LAUNCHER);
   ActivitySvc.RegisterActivityClass(TViewActivityBuilder.Create(WorkItem,
     VIEW_REPORT_LAUNCHER, TReportLauncherPresenter, TfrReportLauncherView));
 
-//  RegisterView(VIEW_REPORT_LAUNCHER, TReportLauncherPresenter, TfrReportLauncherView);
+  ActivitySvc.RegisterActivityInfo(VIEW_RPT_ITEM_SETUP);
+  ActivitySvc.RegisterActivityClass(TViewActivityBuilder.Create(WorkItem,
+    VIEW_RPT_ITEM_SETUP, TReportSetupPresenter, TfrReportSetupView));
 
-  RegisterView(VIEW_RPT_ITEM_SETUP, TReportSetupPresenter, TfrReportSetupView);
 
-  LoadCatalogItems;
-
+  WorkItem.Root.EventTopics[EVT_ACTIVITY_LOADING].AddSubscription(Self, OnActivityLoadingHandler);
 end;
 
 procedure TReportCatalogController.RegisterSettings;
@@ -300,7 +216,6 @@ procedure TReportCatalogController.UnLoadCatalogItem(
   AItem: TReportCatalogItem);
 begin
   FReportService.Remove(AItem.ID);
-  FActivitySvc.Items.Remove(AItem.ID);
 end;
 
 

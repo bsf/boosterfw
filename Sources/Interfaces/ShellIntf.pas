@@ -50,7 +50,7 @@ type
     function Entities: IEntityManagerService;
     function Reports: IReportService;
     function Security: ISecurityService;
-    function Activities: IActivityManagerService;
+    function Activities: IActivityService;
     function ContentWorkspace: IWorkspace;
     function DialogWorkspace: IWorkspace;
   end;
