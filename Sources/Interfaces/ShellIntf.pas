@@ -3,8 +3,8 @@ unit ShellIntf;
 interface
 
 uses  windows, graphics, forms, jpeg, CoreClasses, ConfigServiceIntf,
-  NavBarServiceIntf, EntityServiceIntf, ReportServiceIntf, SecurityIntf,
-  ActivityServiceIntf, ViewServiceIntf, UIServiceIntf;
+  EntityServiceIntf, ReportServiceIntf, SecurityIntf,
+  ActivityServiceIntf, UIServiceIntf;
 
 const
   strAboutText: string = 'HELLO !!!';
@@ -46,7 +46,6 @@ type
     function UserProfile: IProfile;
     function HostProfile: IProfile;
     function UI: IUIService;
-    function Views: IViewManagerService;
     function Entities: IEntityManagerService;
     function Reports: IReportService;
     function Security: ISecurityService;

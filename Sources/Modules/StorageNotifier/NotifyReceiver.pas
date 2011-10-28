@@ -1,7 +1,7 @@
 unit NotifyReceiver;
 
 interface
-uses CoreClasses, ExtCtrls, windows, EntityServiceIntf, ViewServiceIntf,
+uses CoreClasses, ExtCtrls, windows, EntityServiceIntf, UIServiceIntf,
   db, variants, ConfigServiceIntf, ShellIntf, sysutils;
 
 const
@@ -20,7 +20,7 @@ type
     FLastMessageID: Variant;
     FRunningFlag: THandle;
     FAppInstanceID: string;
-    FViewSvc: IViewManagerService;
+    FUISvc: IUIService;
     FEntitySvc: IEntityManagerService;
     FTimer: TTimer;
     function CanInstanceReceive: boolean;
@@ -74,7 +74,7 @@ begin
   FTimer.OnTimer := OnTimer;
 
   FEntitySvc := (WorkItem.Services[IEntityManagerService] as IEntityManagerService);
-  FViewSvc := (WorkItem.Services[IViewManagerService] as IViewManagerService);
+  FUISvc := (WorkItem.Services[IUIService] as IUIService);
 
   FAppInstanceID := format(const_AppInstanceID, [App.Settings.CurrentAlias, App.Settings.UserID]);
   FRunningFlag := 0;
@@ -107,7 +107,7 @@ begin
   ds := FEntitySvc.Entity[ENT_MSG_BOX].GetOper(ENT_MSG_BOX_OPER_POP, WorkItem).Execute([FLastMessageID]);
   while not ds.Eof do
   begin
-    FViewSvc.NotifyExt(VarToStr(ds['ID']), VarToStr(ds['SENDER']), VarToStr(ds['TXT']), ds['SDAT']);
+    FUISvc.NotifyExt(VarToStr(ds['ID']), VarToStr(ds['SENDER']), VarToStr(ds['TXT']), ds['SDAT']);
     FLastMessageID := ds['ID'];
     ds.Next;
   end

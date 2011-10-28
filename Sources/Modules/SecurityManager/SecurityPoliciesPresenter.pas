@@ -117,7 +117,7 @@ begin
   if VarIsEmpty(polID) then exit;
 
   policy := App.Security.FindPolicy(polID);
-  if App.Views.MessageBox.
+  if App.UI.MessageBox.
       ConfirmYesNo(
         format('”далить все установленные разрешени€ дл€ политики%s- %s ?', [#10#13, policy.Name])) then
   begin

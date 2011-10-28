@@ -3,7 +3,7 @@ unit EntityItemPresenter;
 interface
 
 uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, CommonViewIntf,
-  SysUtils, Variants, ShellIntf, CustomContentPresenter, db, ViewServiceIntf,
+  SysUtils, Variants, ShellIntf, CustomContentPresenter, db,
   EntityCatalogIntf, EntityCatalogConst;
 
 const

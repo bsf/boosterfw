@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, cxLookAndFeelPainters, cxControls, cxContainer,  Menus,
   cxGroupBox, CoreClasses, CustomPresenter, ShellIntf,
-  ImgList, cxGraphics, ActnList, cxButtons, ViewServiceIntf,
+  ImgList, cxGraphics, ActnList, cxButtons,
   CommonViewIntf, db, Contnrs, cxEdit, Typinfo, cxLookAndFeels, dxSkinsCore,
   dxSkinsDefaultPainters, CommonUtils, inifiles;
 

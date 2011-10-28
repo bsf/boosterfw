@@ -612,7 +612,7 @@ begin
       Workspace.DoViewClose(FView);
   except
     on E: Exception do
-      App.Views.MessageBox.InfoMessage(
+      App.UI.MessageBox.InfoMessage(
         format('Ошибка закрытия: %s', [E.Message]));
   end;
 

@@ -3,7 +3,7 @@ unit EntityCatalogController;
 interface
 uses classes, CoreClasses, CustomUIController,  ShellIntf, Variants, db, Contnrs,
   ActivityServiceIntf,
-  EntityCatalogIntf, EntityServiceIntf, ViewServiceIntf, CommonViewIntf, sysutils,
+  EntityCatalogIntf, EntityServiceIntf, CommonViewIntf, sysutils,
   StrUtils, EntitySecResProvider, SecurityIntf, controls,
   EntityJournalPresenter, EntityJournalView,
   EntityListPresenter, EntityListView,
@@ -114,26 +114,16 @@ type
     procedure Build(ActivityInfo: IActivityInfo); override;
   end;
 
-  TEntityCatalogController = class(TCustomUIController, IEntityUIManagerService)
+  TEntityCatalogController = class(TCustomUIController)
   private
-    FUIClassList: TStringList;
-    FUIInfoList: TComponentList;
-    function GetUIClass(const AName: string; EnsureExists: boolean = true): TEntityUIClass;
-    procedure RegisterUIClass(AInstance: TEntityUIClass);
-    procedure RegisterUIClasses;
-    procedure RegisterUIItems;
 
-    procedure InstUIClassPresenter(UIInfo: IEntityUIInfo);
-    procedure InstUIClassActivity(UIInfo: IEntityUIInfo);
-    procedure InstUIClassSecResProvider(UIInfo: IEntityUIInfo);
+    procedure RegisterUIClasses;
     //
     procedure ActionEntityItem(Sender: IAction);
     procedure ActionEntityNew(Sender: IAction);
     procedure ActionEntityDetailNew(Sender: IAction);
     procedure ActionEntityDetail(Sender: IAction);
   protected
-    //IEntityUIManager
-    function UIInfo(const URI: string): IEntityUIInfo;
     //
     procedure OnInitialize; override;
     procedure Terminate; override;
@@ -279,88 +269,13 @@ end;
 
 destructor TEntityCatalogController.Destroy;
 begin
-  FUIClassList.Free;
-  FUIInfoList.Free;
   inherited;
 end;
 
-function TEntityCatalogController.GetUIClass(const AName: string;
-  EnsureExists: boolean): TEntityUIClass;
-var
-  idx: integer;
-begin
-  Result := nil;
-  idx := FUIClassList.IndexOf(AName);
-  if idx <> -1 then
-    Result := FUIClassList.Objects[idx] as TEntityUIClass;
-
-  if EnsureExists and (Result = nil) then
-    raise Exception.CreateFmt('EntityUIClass %s not registered', [AName]);
-end;
-
-procedure TEntityCatalogController.InstUIClassActivity(
-  UIInfo: IEntityUIInfo);
-var
-  ctg: string;
-begin
-{  with UIInfo do
-  begin
-    ctg := Category;
-    if ctg = '' then
-      ctg := MAIN_MENU_CATEGORY;
-
-    RegisterActivity(URI, ctg, Group, Title);
-
-    RegisterExtension(URI, TEntityViewExtension);
-  end;}
-end;
-
-procedure TEntityCatalogController.InstUIClassPresenter(UIInfo: IEntityUIInfo);
-var
-  ctg: string;
-  uiInfoClass: TEntityUIClass;
-  BeginSection: integer;
-begin
-{  with UIInfo do
-  begin
-    uiInfoClass := GetUIClass(UIInfo.UIClassName);
-    if (Group <> '') then
-    begin
-      ctg := Category;
-      if ctg = '' then
-        ctg := MAIN_MENU_CATEGORY;
-
-      if UIInfo.OptionExists('BeginSection') then
-        BeginSection := 1
-      else
-        BeginSection := 0;
-      RegisterActivity(URI, ctg, Group, Title,
-       (uiInfoClass as TEntityUIClassPresenter).PresenterClass,
-       (uiInfoClass as TEntityUIClassPresenter).ViewClass, BeginSection)
-    end
-    else
-      RegisterView(URI,
-       (uiInfoClass as TEntityUIClassPresenter).PresenterClass,
-       (uiInfoClass as TEntityUIClassPresenter).ViewClass);
-
-    RegisterExtension(URI, TEntityViewExtension);
-  end;}
-end;
-
-procedure TEntityCatalogController.InstUIClassSecResProvider(
-  UIInfo: IEntityUIInfo);
-var
-  inst: TEntitySecurityResProvider;
-begin
-  inst := TEntitySecurityResProvider.Create(Self, UIInfo.URI, WorkItem);
-  (WorkItem.Services[ISecurityService] as ISecurityService).RegisterResProvider(inst);
-end;
 
 procedure TEntityCatalogController.OnInitialize;
 begin
-  FUIClassList := TStringList.Create;
-  FUIInfoList := TComponentList.Create(true);
-  WorkItem.Root.Services.Add(Self as IEntityUIManagerService);
+
   RegisterUIClasses;
 
   with WorkItem.Root.Actions[ACTION_ENTITY_ITEM] do
@@ -395,12 +310,6 @@ begin
 
 end;
 
-
-procedure TEntityCatalogController.RegisterUIClass(
-  AInstance: TEntityUIClass);
-begin
-  FUIClassList.AddObject(AInstance.Name, AInstance);
-end;
 
 procedure TEntityCatalogController.RegisterUIClasses;
 var
@@ -448,68 +357,10 @@ begin
 //  RegisterUIClass(TEntityUIClassSecurityResProvider.Create('ISecurityResProvider'));
 end;
 
-procedure TEntityCatalogController.RegisterUIItems;
-var
-  list: TDataSet;
-  UIInfo: TEntityUIInfo;
-  UIClass: TEntityUIClass;
-begin
-  list := App.Entities[ENTC_UI].GetView(ENTC_UI_VIEW_LIST, WorkItem).Load([]);
-  while not list.Eof do
-  begin
-    UIClass := GetUIClass(list['UIClass'], false);
-    if UIClass = nil then
-    begin
-      list.Next;
-      Continue;
-    end;
-
-    UIInfo := TEntityUIInfo.Create(Self, list['URI'], list['UIClass'], list['EntityName']);
-    FUIInfoList.Add(UIInfo);
-    with UIInfo do
-    begin
-      FEntityViewName := VarToStr(list['VIEWNAME']);
-      FTitle := list['Title'];
-      FCategory := VarToStr(list['CATEGORY']);
-      FGroup := VarToStr(list['GRP']);
-      ExtractStrings([';'], [], PWideChar(VarToStr(list['OPTIONS'])), FOptions);
-      ExtractStrings([',',';'], [], PWideChar(VarToStr(list['PARAMS'])), FParams);
-      ExtractStrings([',',';'], [], PWideChar(VarToStr(list['OUTS'])), FOuts);
-    end;
-
-    if UIClass is TEntityUIClassPresenter then
-      InstUIClassPresenter(UIInfo)
-    else if UIClass is TEntityUIClassActivity then
-      InstUIClassActivity(UIInfo)
-    else if UIClass is TEntityUIClassSecurityResProvider then
-      InstUIClassSecResProvider(UIInfo);
-
-    list.Next;
-  end;
-
-end;
 
 procedure TEntityCatalogController.Terminate;
 begin
-  WorkItem.Root.Services.Remove(Self as IEntityUIManagerService);
-end;
 
-function TEntityCatalogController.UIInfo(const URI: string): IEntityUIInfo;
-var
-  I, idx: integer;
-begin
-  idx := -1;
-  for I := 0 to FUIInfoList.Count - 1 do
-    if SameText(URI, (FUIInfoList[I] as TEntityUIInfo).URI) then
-    begin
-      idx := I;
-      break;
-    end;
-
-  if idx = -1 then
-    raise Exception.CreateFmt('EntityUI for URI %s not registered', [URI]);
-
-  Result := FUIInfoList[idx] as IEntityUIInfo;
 end;
 
 { TEntityViewExtension }
@@ -531,7 +382,7 @@ begin
   operName := intf.Data['OPER'];
   confirmText := intf.Data['CONFIRM'];
   if (confirmText <> '') then
-    confirm := App.Views.MessageBox.ConfirmYesNo(confirmText)
+    confirm := App.UI.MessageBox.ConfirmYesNo(confirmText)
   else
     confirm := true;
 
@@ -541,11 +392,11 @@ begin
     for I := 0 to oper.Params.Count - 1 do
       oper.Params[I].Value := GetDataValue(intf.Data[oper.Params[I].Name]);
 
-    App.Views.WaitBox.StartWait;
+    App.UI.WaitBox.StartWait;
     try
       oper.Execute;
     finally
-      App.Views.WaitBox.StopWait;
+      App.UI.WaitBox.StopWait;
       WorkItem.Commands[COMMAND_RELOAD].Execute;
     end;  
   end;
@@ -770,8 +621,8 @@ end;
 
 procedure TEntityActivityBuilder.Build(ActivityInfo: IActivityInfo);
 begin
-  (FWorkItem.Services[IViewManagerService] as IViewManagerService).
-    RegisterExtension(ActivityInfo.URI, TEntityViewExtension);
+//  (FWorkItem.Services[IViewManagerService] as IViewManagerService).
+    RegisterViewExtension(ActivityInfo.URI, TEntityViewExtension);
 end;
 
 constructor TEntityActivityBuilder.Create(AWorkItem: TWorkItem);
@@ -784,8 +635,8 @@ end;
 procedure TEntityViewActivityBuilder.Build(ActivityInfo: IActivityInfo);
 begin
   inherited;
-  (WorkItem.Services[IViewManagerService] as IViewManagerService).
-    RegisterExtension(ActivityInfo.URI, TEntityViewExtension);
+ // (WorkItem.Services[IViewManagerService] as IViewManagerService).
+  RegisterViewExtension(ActivityInfo.URI, TEntityViewExtension);
 end;
 
 { TSecurityResActivityBuilder }

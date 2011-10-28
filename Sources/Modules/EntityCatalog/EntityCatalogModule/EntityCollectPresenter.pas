@@ -2,7 +2,7 @@ unit EntityCollectPresenter;
 
 interface
 uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, CommonViewIntf,
-  SysUtils, Variants, ShellIntf, CustomContentPresenter, db, ViewServiceIntf,
+  SysUtils, Variants, ShellIntf, CustomContentPresenter, db,
   EntityCatalogIntf, EntityCatalogConst;
 
 const
@@ -158,7 +158,7 @@ var
   I: integer;
 begin
 
-  if not App.Views.MessageBox.ConfirmYesNo('Удалить выделенные записи?') then Exit;
+  if not App.UI.MessageBox.ConfirmYesNo('Удалить выделенные записи?') then Exit;
 
   try
     if View.SelectionItems.Count = 1 then

@@ -1,7 +1,7 @@
 unit frReportPreviewPresenter;
 
 interface
-uses windows, sysutils, CustomPresenter, CoreClasses, ViewServiceIntf, frxClass, classes,
+uses windows, sysutils, CustomPresenter, CoreClasses, frxClass, classes,
   controls, CommonViewIntf, frxPreview, ShellIntf,
   frxExportCSV, frxExportHTML, frxExportPDF, frxExportXML, frxExportODF,
   dialogs, shellapi;

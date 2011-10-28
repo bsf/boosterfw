@@ -3,7 +3,7 @@ unit ReportSetupPresenter;
 interface
 
 uses classes, CoreClasses, CustomPresenter, Variants, ReportCatalogConst,
-  EntityServiceIntf, Sysutils, DB, ShellIntf, CommonViewIntf, ViewServiceIntf;
+  EntityServiceIntf, Sysutils, DB, ShellIntf, CommonViewIntf;
 
 type
 

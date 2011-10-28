@@ -2,7 +2,7 @@ unit ReportLauncherPresenter;
 
 interface
 uses classes, CoreClasses, CustomPresenter, ShellIntf, CommonViewIntf, SysUtils,
-  dxmdaset, db, ReportCatalogClasses, EntityServiceIntf, ViewServiceIntf,
+  dxmdaset, db, ReportCatalogClasses, EntityServiceIntf,
   variants, StrUtils, controls, ReportCatalogConst, CommonUtils,
   cxDateUtils, Generics.Collections;
 
@@ -90,12 +90,12 @@ begin
 
   if FParamDataSet.State in [dsEdit] then FParamDataSet.Post;
 
-  App.Views.MessageBox.StatusBarMessage('Формирование отчета: ' + FReportCatalogItem.Caption);
+  App.UI.MessageBox.StatusBarMessage('Формирование отчета: ' + FReportCatalogItem.Caption);
   try
     App.Reports[FLayouts[WorkItem.State[REPORT_LAYOUT_PARAM]]].Execute(WorkItem);
 //    App.Reports[FReportCatalogItem.ID].Execute(WorkItem);
   finally
-    App.Views.MessageBox.StatusBarMessage('Готово');
+    App.UI.MessageBox.StatusBarMessage('Готово');
   end;
 
   reportID := FReportCatalogItem.ID;

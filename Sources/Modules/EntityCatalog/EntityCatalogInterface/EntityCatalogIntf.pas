@@ -1,7 +1,7 @@
 unit EntityCatalogIntf;
 
 interface
-uses ViewServiceIntf, CommonViewIntf, db, Classes, ShellIntf, CoreClasses,
+uses CommonViewIntf, db, Classes, ShellIntf, CoreClasses,
   variants;
 
 const

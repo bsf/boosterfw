@@ -43,10 +43,8 @@ contains
   ConfigService in '..\Sources\Shell\Services\ConfigService.pas',
   ConfigStorage in '..\Sources\Shell\Services\ConfigStorage.pas',
   EntityManagerService in '..\Sources\Shell\Services\EntityManagerService.pas',
-  NavBarService in '..\Sources\Shell\Services\NavBarService.pas',
   ReportService in '..\Sources\Shell\Services\ReportService.pas',
   SecurityService in '..\Sources\Shell\Services\SecurityService.pas',
-  ViewManagerService in '..\Sources\Shell\Services\ViewManagerService.pas',
   UIService in '..\Sources\Shell\Services\UIService.pas';
 
 end.

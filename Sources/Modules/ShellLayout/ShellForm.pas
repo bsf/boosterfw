@@ -10,8 +10,8 @@ uses
   dxNavBarCollns, dxNavBar, cxSplitter, dxBar, dxNavBarGroupItems,
   cxContainer, cxEdit, cxLabel, cxTextEdit, cxHyperLinkEdit, StdActns,
   dxNavBarStyles, CoreClasses, WindowWorkspace,
-  cxProgressBar, ShellNavBar, NavBarServiceIntf,
-  ReportServiceIntf, ViewServiceIntf, ImgList, UILocalization,
+  cxProgressBar, ShellNavBar,
+  ReportServiceIntf,  ImgList, UILocalization,
   ShellWaitBox,
   ViewStyleController, cxPC, cxDropDownEdit,
   cxBarEditItem, cxButtonEdit, dxBarExtItems, EntityServiceIntf,
@@ -21,7 +21,7 @@ uses
   CommonUtils, dxGDIPlusClasses, cxGroupBox, cxStyles, cxCustomData,
   cxFilter, cxData, cxDataStorage, DB, cxDBData, cxGridLevel,
   cxGridCustomView, cxGridCustomTableView, cxGridTableView,
-  cxGridDBTableView, cxGrid, dxOffice11;
+  cxGridDBTableView, cxGrid, dxOffice11, UIServiceIntf;
 
 const
   STATUSBAR_INFO_PANEL = 0;
@@ -114,7 +114,7 @@ uses NumLockDotHook; //Linked only
 
 procedure TfrMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-  CanClose := App.Views.MessageBox.ConfirmYesNo('Закрыть программу ?');
+  CanClose := App.UI.MessageBox.ConfirmYesNo('Закрыть программу ?');
   if CanClose then
     CanClose := CloseAllContentView;
 end;
@@ -159,7 +159,7 @@ begin
   pcMain.Color := Self.Color;
   FWorkItem := AWorkItem;
 
-  FScale := (FWorkItem.Services[IViewManagerService] as IViewManagerService).ViewStyle.Scale;
+  FScale := (FWorkItem.Services[IUIService] as IUIService).ViewStyle.Scale;
   ScaleBy(FScale, 100);
 
   FViewStyleController := TViewStyleController.Create(Self, FWorkItem);
@@ -168,7 +168,6 @@ begin
 
   // Add NavBar Service
   FNavBarControlManager := TdxNavBarControlManager.Create(Self, NavBar, FWorkItem);
-  INavBarService(FWorkItem.Services[INavBarService]).RegisterControlManager(FNavBarControlManager);
   FNavBarControlManager.ScaleBy(FScale, 100);
 
   //AddWorkspace
@@ -362,7 +361,7 @@ var
 begin
   nID := VarToStr(grNotifyListView.DataController.Values[ARecordIndex, grNotifyListViewID.Index]);
   if nID <> '' then
-    App.Views.NotifyAccept(nID);
+    App.UI.NotifyAccept(nID);
 end;
 
 end.

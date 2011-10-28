@@ -3,7 +3,7 @@ unit EntityDeskPresenter;
 interface
 
 uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, CommonViewIntf,
-  SysUtils, Variants, ShellIntf, CustomContentPresenter, db, ViewServiceIntf,
+  SysUtils, Variants, ShellIntf, CustomContentPresenter, db,
   EntityCatalogIntf, EntityCatalogConst;
 
 const
@@ -152,7 +152,7 @@ procedure TEntityDeskPresenter.CmdDelete(Sender: TObject);
 var
   cResult: boolean;
 begin
-  cResult := App.Views.MessageBox.ConfirmYesNo('Удалить выделенную запись?');
+  cResult := App.UI.MessageBox.ConfirmYesNo('Удалить выделенную запись?');
   if cResult then
   begin
     try
@@ -247,7 +247,7 @@ begin
   else
     direction := -1;
 
-  if not App.Views.MessageBox.ConfirmYesNo('Сменить текущее состояние ?') then Exit;
+  if not App.UI.MessageBox.ConfirmYesNo('Сменить текущее состояние ?') then Exit;
 
   try
 

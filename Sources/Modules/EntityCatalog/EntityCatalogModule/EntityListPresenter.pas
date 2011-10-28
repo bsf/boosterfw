@@ -58,7 +58,7 @@ procedure TEntityListPresenter.CmdDelete(Sender: TObject);
 var
   cResult: boolean;
 begin
-  cResult := App.Views.MessageBox.ConfirmYesNo('Удалить выделенные записи?');
+  cResult := App.UI.MessageBox.ConfirmYesNo('Удалить выделенные записи?');
   if cResult then
   begin
     try

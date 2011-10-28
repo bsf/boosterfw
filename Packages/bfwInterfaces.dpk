@@ -35,11 +35,9 @@ contains
   ActivityServiceIntf in '..\Sources\Interfaces\ActivityServiceIntf.pas',
   ConfigServiceIntf in '..\Sources\Interfaces\ConfigServiceIntf.pas',
   EntityServiceIntf in '..\Sources\Interfaces\EntityServiceIntf.pas',
-  NavBarServiceIntf in '..\Sources\Interfaces\NavBarServiceIntf.pas',
   ReportServiceIntf in '..\Sources\Interfaces\ReportServiceIntf.pas',
   SecurityIntf in '..\Sources\Interfaces\SecurityIntf.pas',
   ShellIntf in '..\Sources\Interfaces\ShellIntf.pas',
-  ViewServiceIntf in '..\Sources\Interfaces\ViewServiceIntf.pas',
   UIServiceIntf in '..\Sources\Interfaces\UIServiceIntf.pas';
 
 end.

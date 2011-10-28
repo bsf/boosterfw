@@ -2,7 +2,7 @@ unit CustomUIController;
 
 interface
 uses Classes, CoreClasses, ShellIntf, Controls, CustomPresenter, Variants,
-  ViewServiceIntf, ActivityServiceIntf, sysutils;
+   ActivityServiceIntf, sysutils;
 
 type
   TCustomUIController = class(TAbstractController)

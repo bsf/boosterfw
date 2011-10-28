@@ -4,7 +4,7 @@ interface
 uses cxVGrid, cxDBVGrid, Contnrs, controls, CustomView, classes, sysutils, db,
   EntityServiceIntf, cxButtonEdit, cxEdit, CoreClasses, StrUtils, Variants,
   cxInplaceContainer, cxDBLookupComboBox, cxDropDownEdit, menus, cxCheckBox, forms,
-  CommonViewIntf, ViewServiceIntf, cxCalendar, typinfo, cxImage, graphics;
+  CommonViewIntf, cxCalendar, typinfo, cxImage, graphics;
 
 const
   EDITOR_DATA_ENTITY = 'EntityName';

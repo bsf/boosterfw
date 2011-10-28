@@ -98,7 +98,7 @@ procedure TUserAccountsPresenter.FillRoleUsersList(const ARoleID: string);
 var
   I: integer;
 begin
-  App.Views.WaitBox.StartWait;
+  App.UI.WaitBox.StartWait;
   try
     for I := 0 to FAccounts.Count - 1 do
       if not FAccounts.Get(I).IsRole then
@@ -107,7 +107,7 @@ begin
           FAccounts.Get(I).RoleCheck(ARoleID));
       end;
   finally
-    App.Views.WaitBox.StopWait;
+    App.UI.WaitBox.StopWait;
   end;
 end;
 
@@ -125,7 +125,7 @@ var
   I: integer;
   uAccount: IUserAccount;
 begin
-  App.Views.WaitBox.StartWait;
+  App.UI.WaitBox.StartWait;
   try
     uAccount := FAccounts.GetByID(AUserID);
     for I := 0 to FAccounts.Count - 1 do
@@ -135,7 +135,7 @@ begin
           uAccount.RoleCheck(FAccounts.Get(I).ID));
       end;
   finally
-    App.Views.WaitBox.StopWait;
+    App.UI.WaitBox.StopWait;
   end;
 end;
 

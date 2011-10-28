@@ -69,7 +69,7 @@ procedure TEntityComplexPresenter.CmdDetailDel(Sender: TObject);
 var
   cResult: boolean;
 begin
-  cResult := App.Views.MessageBox.ConfirmYesNo('Удалить выделеную запись?');
+  cResult := App.UI.MessageBox.ConfirmYesNo('Удалить выделеную запись?');
   if cResult then
   begin
     try

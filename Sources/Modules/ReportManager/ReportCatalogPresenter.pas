@@ -66,7 +66,7 @@ procedure TReportCatalogPresenter.CmdGroupAdd(Sender: TObject);
 var
   _groupName: string;
 begin
-  if not App.Views.InputBox.InputString('Наименование группы', _groupName) then Exit;
+  if not App.UI.InputBox.InputString('Наименование группы', _groupName) then Exit;
 
   FCatalog.Groups.Add(_groupName);
   View.GroupAdd(_groupName);
@@ -107,7 +107,7 @@ begin
   _groupName := View.GetGroupSelected;
   if _groupName = '' then Exit;
 
-  if not App.Views.InputBox.InputString('Наименование отчета', _itemName) then Exit;
+  if not App.UI.InputBox.InputString('Наименование отчета', _itemName) then Exit;
 
   _group := FCatalog.Groups.Find(_groupName);
 
@@ -154,7 +154,7 @@ var
 begin
   _groupName := View.GetGroupSelected;
   if _groupName = '' then Exit;
-  if not App.Views.MessageBox.ConfirmYesNo('Удалить группу отчетов?') then Exit;
+  if not App.UI.MessageBox.ConfirmYesNo('Удалить группу отчетов?') then Exit;
 
   FCatalog.Groups.Delete(FCatalog.Groups.Find(_groupName).Index);
   View.GroupDelete(_groupName);
@@ -169,7 +169,7 @@ begin
   _itemName := View.GetItemSelected;
 
   if _itemName = '' then Exit;
-  if not App.Views.MessageBox.ConfirmYesNo('Удалить отчет?') then Exit;
+  if not App.UI.MessageBox.ConfirmYesNo('Удалить отчет?') then Exit;
 
   _group := FCatalog.Groups.Find(View.GetGroupSelected);
 

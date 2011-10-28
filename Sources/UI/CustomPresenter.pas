@@ -1,8 +1,9 @@
 unit CustomPresenter;
 
 interface
-uses Classes, CoreClasses, ShellIntf, Controls, ActivityServiceIntf, ViewServiceIntf,
-  CommonViewIntf, SysUtils, EntityServiceIntf, Variants, db, StrUtils, typinfo;
+uses Classes, CoreClasses, ShellIntf, Controls, ActivityServiceIntf,
+  CommonViewIntf, SysUtils, EntityServiceIntf, Variants, db, StrUtils, typinfo,
+  UIServiceIntf, forms;
 
 type
   TCustomPresenter = class;
@@ -23,7 +24,8 @@ type
     FCallerURI: string;
     procedure SetViewTitle(const Value: string);
 
-    procedure Initialize(const AViewURI: string; Sender: IAction);
+    function InstantiateView(const AViewURI: string; AViewClass: TViewClass): IView;
+    procedure Initialize(const AViewURI: string; Sender: IAction; AViewClass: TViewClass);
     procedure Reintialize(Sender: IAction);
 
     procedure ViewShowHandler;
@@ -77,7 +79,7 @@ type
     procedure UpdateCommandStatus;
     procedure OnUpdateCommandStatus; virtual;
   public
-    class procedure Execute(Sender: IAction; AWorkItem: TWorkItem); override;
+    class procedure Execute(Sender: IAction; AWorkItem: TWorkItem; AViewClass: TViewClass); override;
     class function ExecuteDataClass: TActionDataClass; override;
 
   end;
@@ -166,7 +168,8 @@ begin
 end;
 
 
-procedure TCustomPresenter.Initialize(const AViewURI: string; Sender: IAction);
+procedure TCustomPresenter.Initialize(const AViewURI: string; Sender: IAction;
+  AViewClass: TViewClass);
 var
   I: integer;
   extensions: TInterfaceList;
@@ -178,10 +181,6 @@ begin
   FViewURI := AViewURI;
   FCallerURI := Sender.Caller.ID;
 
-  {WorkItem.Context := Sender.Caller.Context;
-  if (WorkItem.Context = '') and (Sender.Caller.Controller is TCustomPresenter) then
-    WorkItem.Context := Sender.Caller.ID;}
-
   WorkItem.Context := Sender.Caller.Context;
   if (WorkItem.Context = '')  then WorkItem.Context := WorkItem.ID;
 
@@ -190,8 +189,10 @@ begin
 
   Sender.Data.AssignTo(WorkItem);
 
-  FView := (WorkItem.Services[IViewManagerService] as IViewManagerService).
-    GetView(GetViewURI, Self);
+  {FView := (WorkItem.Services[IViewManagerService] as IViewManagerService).
+    GetView(GetViewURI, Self);}
+
+  FView := InstantiateView(AViewURI, AViewClass);
 
   if not Supports(FView, ICustomView) then
   begin
@@ -217,6 +218,39 @@ begin
     (extensions[I] as IExtensionCommand).CommandExtend;
 
   FInitialized := True;
+end;
+
+function TCustomPresenter.InstantiateView(const AViewURI: string;
+  AViewClass: TViewClass): IView;
+var
+  view: TObject;
+  viewID: string;
+begin
+  viewID := 'View_' + AViewURI;
+  view := WorkItem.Items[viewID, TView];
+  if Assigned(view) then
+  begin
+    Result := TView(view) as IView;
+    Exit;
+  end;
+
+  view := AViewClass.Create(WorkItem, AViewURI);
+  Result := (view as TView) as IView;
+  if not Assigned(Result) then
+  begin
+    view.Free;
+    raise Exception.CreateFmt('ViewClass %s not implement %s interface',
+      [AViewClass.ClassName, 'IView'{GUIDToString(IView)}]);
+  end;
+
+  WorkItem.Items.Add(viewID, view);
+
+  CommonViewIntf.InstantiateViewExtensions(view as TView);
+
+  (view as TForm).ScaleBy(
+    (WorkItem.Services[IUIService] as IUIService).ViewStyle.Scale, 100);
+
+
 end;
 
 procedure TCustomPresenter.ViewCloseHandler;
@@ -365,7 +399,8 @@ begin
 
 end;
 
-class procedure TCustomPresenter.Execute(Sender: IAction; AWorkItem: TWorkItem);
+class procedure TCustomPresenter.Execute(Sender: IAction; AWorkItem: TWorkItem;
+  AViewClass: TViewClass);
 
   function FindPresenterWI(AWorkItem: TWorkItem;
     const PresenterID: string): TWorkItem;
@@ -396,7 +431,7 @@ begin
     instWI := AWorkItem.WorkItems.Add(Self, ViewURI + instID);
     try
       inst := instWI.Controller as TCustomPresenter;
-      inst.Initialize(viewURI, Sender);
+      inst.Initialize(viewURI, Sender, AViewClass);
     except
       instWI.Free;
       raise;

@@ -77,10 +77,8 @@
 			<DCCReference Include="..\Sources\Shell\Services\ConfigService.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\ConfigStorage.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\EntityManagerService.pas"/>
-			<DCCReference Include="..\Sources\Shell\Services\NavBarService.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\ReportService.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\SecurityService.pas"/>
-			<DCCReference Include="..\Sources\Shell\Services\ViewManagerService.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\UIService.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>

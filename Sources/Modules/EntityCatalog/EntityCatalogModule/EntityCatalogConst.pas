@@ -1,7 +1,7 @@
 unit EntityCatalogConst;
 
 interface
-uses db, sysutils, ViewServiceIntf, EntityCatalogIntf, ShellIntf;
+uses db, sysutils, EntityCatalogIntf, ShellIntf;
 
 
 

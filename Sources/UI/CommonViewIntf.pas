@@ -1,7 +1,8 @@
 unit CommonViewIntf;
 
 interface
-uses classes, db, CoreClasses, sysutils, controls, ViewServiceIntf, ActivityServiceIntf;
+uses classes, db, CoreClasses, sysutils, controls, ShellIntf,
+  ActivityServiceIntf, Contnrs, forms;
 
 const
   COMMAND_CLOSE = 'commands.view.close';
@@ -58,6 +59,66 @@ const
   COMMAND_STATE_CHANGE_PREV_CAPTION = 'Предыдущее состояние';
 
 type
+
+  IView = interface
+  ['{D75B8CB7-65A8-45FC-841A-9AA02F6A8EEB}']
+    function GetViewControl: TControl;
+    function WorkItem: TWorkItem;
+    function ViewURI: string;
+    function Extensions(const AExtensionInterface: TGUID): TInterfaceList;
+  end;
+
+  TView = class(TForm, IView)
+  private
+    FViewURI: string;
+    FWorkItem: TWorkItem;
+    FExtensions: TComponentList;
+  protected
+    function GetViewControl: TControl; virtual; abstract;
+    function ViewURI: string;
+    function Extensions(const AExtensionInterface: TGUID): TInterfaceList;
+  public
+    constructor Create(AWorkItem: TWorkItem; // PresenterWorkItem
+      const AViewURI: string); reintroduce; virtual;
+    destructor Destroy; override;
+    function WorkItem: TWorkItem;
+  end;
+
+  TViewClass = class of TView;
+
+  TPresenterData = class(TActionData)
+  private
+    FPresenterID: string;
+    FWorkspace: string;
+    FModalResult: TModalResult;
+    FViewTitle: string;
+    FBackViewUri: string;
+  public
+    constructor Create(const ActionURI: string); override;
+  published
+    property PresenterID: string read FPresenterID write FPresenterID;
+    property Workspace: string read FWorkspace write FWorkspace;
+    property ModalResult: TModalResult read FModalResult write FModalResult;
+    property ViewTitle: string read FViewTitle write FViewTitle;
+    property BackViewUri: string read FBackViewUri write FBackViewUri;
+  end;
+
+  TPresenter = class(TAbstractController)
+  public
+    // called by ViewActivityBuilder
+    class procedure Execute(Sender: IAction; AWorkItem: TWorkItem; AViewClass: TViewClass); virtual; abstract;
+    class function ExecuteDataClass: TActionDataClass; virtual;
+  end;
+
+  TPresenterClass = class of TPresenter;
+
+  TViewExtension = class(TComponent)
+  protected
+    function GetView: IView;
+    function WorkItem: TWorkItem;
+  end;
+
+  TViewExtensionClass = class of TViewExtension;
 
   TViewActivateHandler = procedure of object;
   TViewDeactivateHandler = procedure of object;
@@ -191,6 +252,7 @@ type
     FActivityClass: string;
     FPresenterClass: TPresenterClass;
     FViewClass: TViewClass;
+    procedure ExecuteHandler(Sender: IAction);
   public
     constructor Create(AWorkItem: TWorkItem; const AActivityClass: string;
       APresenterClass: TPresenterClass; AViewClass: TViewClass);
@@ -203,9 +265,50 @@ type
 
   end;
 
+procedure RegisterViewExtension(const ViewURI: string; AExtensionClass: TViewExtensionClass);
+
+procedure InstantiateViewExtensions(AView: TView);
+
 implementation
 
+type
+  TExtensionInfo = class(TObject)
+    ViewURI: string;
+    ExtensionClass: TViewExtensionClass;
+  end;
 
+var
+  ExtensionInfos: TObjectList;
+
+function GetExtensionInfos: TObjectList;
+begin
+  if not Assigned(ExtensionInfos) then
+    ExtensionInfos := TObjectList.Create(true);
+  Result := ExtensionInfos;
+end;
+
+procedure RegisterViewExtension(const ViewURI: string; AExtensionClass: TViewExtensionClass);
+var
+  info: TExtensionInfo;
+begin
+  info := TExtensionInfo.Create;
+  info.ExtensionClass := AExtensionClass;
+  info.ViewURI := ViewURI;
+  GetExtensionInfos.Add(info);
+end;
+
+procedure InstantiateViewExtensions(AView: TView);
+var
+  info: TExtensionInfo;
+  I: integer;
+begin
+  for I := 0 to GetExtensionInfos.Count - 1 do
+  begin
+    info := (ExtensionInfos[I] as TExtensionInfo);
+    if info.ViewURI = (AView as IView).ViewURI then
+      info.ExtensionClass.Create(AView);
+  end;
+end;
 
 
 { TViewActivityBuilder }
@@ -217,10 +320,8 @@ end;
 
 procedure TViewActivityBuilder.Build(ActivityInfo: IActivityInfo);
 begin
-  (FWorkItem.Services[IViewManagerService] as IViewManagerService).
-    RegisterView(ActivityInfo.URI, FViewClass, FPresenterClass);
-
-  //RegisterExtension(URI, TEntityViewExtension);
+  FWorkItem.Root.Actions[ActivityInfo.URI].SetHandler(ExecuteHandler);
+  FWorkItem.Root.Actions[ActivityInfo.URI].SetDataClass(FPresenterClass.ExecuteDataClass);
 end;
 
 constructor TViewActivityBuilder.Create(AWorkItem: TWorkItem; const AActivityClass: string;
@@ -230,6 +331,87 @@ begin
   FActivityClass := AActivityClass;
   FPresenterClass := APresenterClass;
   FViewClass := AViewClass;
+end;
+
+procedure TViewActivityBuilder.ExecuteHandler(Sender: IAction);
+begin
+  FPresenterClass.Execute(Sender, FWorkItem, FViewClass);
+end;
+
+{ TViewExtension }
+
+function TViewExtension.GetView: IView;
+begin
+  Result := Owner as IView;
+end;
+
+function TViewExtension.WorkItem: TWorkItem;
+begin
+  Result := GetView.WorkItem;
+end;
+
+{ TPresenter }
+
+class function TPresenter.ExecuteDataClass: TActionDataClass;
+begin
+  Result := nil;
+end;
+
+{ TPresenterData }
+
+constructor TPresenterData.Create(const ActionURI: string);
+var
+  viewInfo: IActivityInfo;
+  I: integer;
+begin
+  inherited Create(ActionURI);
+  AddOut('ModalResult');
+
+  viewInfo := (App.WorkItem.Services[IActivityService] as IActivityService).ActivityInfo(ActionURI);
+
+  for I := 0 to viewInfo.Params.Count - 1 do
+    Add(viewInfo.Params[I]);
+
+  for I := 0 to viewInfo.Outs.Count - 1 do
+    AddOut(viewInfo.Outs[I]);
+end;
+
+{ TView }
+
+constructor TView.Create(AWorkItem: TWorkItem; const AViewURI: string);
+begin
+  inherited Create(nil);
+  FViewURI := AViewURI;
+  FWorkItem := AWorkItem;
+  FExtensions := TComponentList.Create(true);
+end;
+
+destructor TView.Destroy;
+begin
+  FExtensions.Free;
+  inherited;
+end;
+
+function TView.Extensions(const AExtensionInterface: TGUID): TInterfaceList;
+var
+  I: integer;
+  Intf: IInterface;
+begin
+  Result := TInterfaceList.Create;
+  for I := 0 to ComponentCount - 1 do
+    if (Components[I] is TViewExtension) and
+        Components[I].GetInterface(AExtensionInterface, Intf) then
+      Result.Add(Intf);
+end;
+
+function TView.ViewURI: string;
+begin
+  Result := FViewURI;
+end;
+
+function TView.WorkItem: TWorkItem;
+begin
+  Result := FWorkItem;
 end;
 
 end.

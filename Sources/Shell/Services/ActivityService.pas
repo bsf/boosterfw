@@ -2,7 +2,7 @@ unit ActivityService;
 
 interface
 uses Classes, CoreClasses, Graphics, ActivityServiceIntf, Contnrs, Sysutils,
-  NavBarServiceIntf, SecurityIntf, ShellIntf, inifiles, HashList, db, variants;
+ SecurityIntf, ShellIntf, inifiles, HashList, db, variants;
 
 type
   TActivityInfo = class(TComponent, IActivityInfo, ISecurityResNode)

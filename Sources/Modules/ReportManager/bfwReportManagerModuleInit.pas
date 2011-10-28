@@ -1,8 +1,8 @@
 unit bfwReportManagerModuleInit;
 
 interface
-uses classes, CoreClasses, ShellIntf, NavBarServiceIntf,
-  ReportCatalogController, ReportCatalogConst, Graphics;
+uses classes, CoreClasses, ShellIntf,
+  ReportCatalogController, ReportCatalogConst;
 
 const
   NAVBAR_IMAGE_RES_NAME = 'REPORTS_NAVBAR_IMAGE';
@@ -26,25 +26,7 @@ begin
 end;
 
 procedure TReportManagerModuleInit.Load;
-var
-  Image: TBitMap;
-  ImgRes: TResourceStream;
-  Svc: INavBarService;
 begin
-  Image := TBitMap.Create;
-  try
-    ImgRes := TResourceStream.Create(HInstance, NAVBAR_IMAGE_RES_NAME, 'file');
-    try
-      Image.LoadFromStream(ImgRes);
-    finally
-      ImgRes.Free;
-    end;
-
-    Svc := WorkItem.Services[INavBarService] as INavBarService;
-    Svc.DefaultLayout.Categories[ACT_CTG_REPORTS].SetImage(Image);
-  finally
-    Image.Free;
-  end;
   WorkItem.WorkItems.Add(TReportCatalogController);
 end;
 

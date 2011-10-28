@@ -6,12 +6,10 @@ uses windows, classes, forms, sysutils,
   AbstractApp, CoreClasses, ShellIntf,
   ShellLogin, ShellLock, ShellSplashForm,
   ConfigServiceIntf, ConfigService,
-  NavBarServiceIntf, NavBarService,
   SecurityIntf, SecurityService,
   EntityServiceIntf, EntityManagerService,
   ReportServiceIntf, ReportService,
   UIServiceIntf, UIService,
-  ViewServiceIntf, ViewManagerService,
   ActivityServiceIntf, ActivityService;
 
 const
@@ -45,7 +43,6 @@ type
     function UserProfile: IProfile;
     function HostProfile: IProfile;
     function UI: IUIService;
-    function Views: IViewManagerService;
     function Entities: IEntityManagerService;
     function Reports: IReportService;
     function Security: ISecurityService;
@@ -91,10 +88,6 @@ begin
   RootWorkItem.Services.Add(
     TUIService.Create(Self, RootWorkItem) as IUIService);
 
-  //Views
-  RootWorkItem.Services.Add(
-    IViewManagerService(TViewManagerService.Create(Self, RootWorkItem)));
-
   {Security}
   FSecurity := TSecurityService.Create(Self, RootWorkItem);
   RootWorkItem.Services.Add(ISecurityService(FSecurity));
@@ -116,9 +109,6 @@ begin
   RootWorkItem.Services.Add(
     IReportService(TReportService.Create(Self,
       IEntityManagerService(FEntityManager), RootWorkItem)));
-
-  RootWorkItem.Services.Add(
-    INavBarService(TNavBarService.Create(Self, RootWorkItem)));
 
   RootWorkItem.Actions[COMMAND_LOCK_APP].SetHandler(AppLockHandler);
 end;
@@ -233,11 +223,6 @@ begin
   Result := IApp(AppInstance);
 end;}
 
-
-function TApp.Views: IViewManagerService;
-begin
-  Result := IViewManagerService(RootWorkItem.Services[IViewManagerService]);
-end;
 
 function TApp.Version: string;
 var

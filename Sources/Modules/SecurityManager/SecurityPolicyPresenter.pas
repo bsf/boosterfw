@@ -94,7 +94,7 @@ var
   pState: TPermissionState;
   userAccount: IUserAccount;
 begin
-  App.Views.WaitBox.StartWait;
+  App.UI.WaitBox.StartWait;
   try
     for I := 0 to App.Security.Accounts.Count - 1 do
     begin
@@ -103,7 +103,7 @@ begin
       View.AddUser(userAccount.ID, userAccount.Name, userAccount.IsRole, pState);
     end;
   finally
-    App.Views.WaitBox.StopWait;
+    App.UI.WaitBox.StopWait;
   end;
 end;
 

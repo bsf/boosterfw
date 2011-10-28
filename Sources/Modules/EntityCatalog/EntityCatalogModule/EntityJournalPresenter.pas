@@ -55,7 +55,7 @@ procedure TEntityJournalPresenter.CmdDelete(Sender: TObject);
 var
   cResult: boolean;
 begin
-  cResult := App.Views.MessageBox.ConfirmYesNo('Удалить выделенную запись?');
+  cResult := App.UI.MessageBox.ConfirmYesNo('Удалить выделенную запись?');
   if cResult then
   begin
     try
@@ -134,7 +134,7 @@ begin
   else
     direction := -1;
 
-  if not App.Views.MessageBox.ConfirmYesNo('Сменить текущее состояние ?') then Exit;
+  if not App.UI.MessageBox.ConfirmYesNo('Сменить текущее состояние ?') then Exit;
 
   try
     IDList := VarArrayCreate([0, View.Selection.Count - 1], varVariant);

@@ -148,7 +148,7 @@ var
   pStates: array of TPermissionState;
   userAccount: IUserAccount;
 begin
-  App.Views.WaitBox.StartWait;
+  App.UI.WaitBox.StartWait;
   try
     SetLength(pStates, FPolicy.Permissions.Count);
     for I := 0 to App.Security.Accounts.Count - 1 do
@@ -160,7 +160,7 @@ begin
       View.AddUser(userAccount.ID, userAccount.Name, userAccount.IsRole, pStates);
     end;
   finally
-    App.Views.WaitBox.StopWait;
+    App.UI.WaitBox.StopWait;
   end;
 end;
 
