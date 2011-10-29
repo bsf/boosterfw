@@ -2,13 +2,14 @@ inherited frEntityComplexView: TfrEntityComplexView
   Left = 801
   Top = 309
   Caption = 'frEntityComplexView'
+  ExplicitWidth = 320
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
     object grHeader: TcxDBVerticalGrid
       Left = 2
       Top = 42
-      Width = 769
+      Width = 761
       Height = 201
       Align = alTop
       LayoutStyle = lsMultiRecordView
@@ -25,24 +26,28 @@ inherited frEntityComplexView: TfrEntityComplexView
       OptionsData.Inserting = False
       TabOrder = 1
       DataController.DataSource = HeadDataSource
+      ExplicitWidth = 769
       Version = 1
     end
     object cxSplitter1: TcxSplitter
       Left = 2
       Top = 243
-      Width = 769
+      Width = 761
       Height = 8
       AlignSplitter = salTop
       Control = grHeader
+      ExplicitWidth = 769
     end
     object grDetails: TcxGrid
       Left = 2
       Top = 251
-      Width = 769
-      Height = 270
+      Width = 761
+      Height = 262
       Align = alClient
       TabOrder = 3
       LookAndFeel.Kind = lfOffice11
+      ExplicitWidth = 769
+      ExplicitHeight = 270
       object grDetailsView: TcxGridDBTableView
         NavigatorButtons.ConfirmDelete = False
         FilterBox.Position = fpTop

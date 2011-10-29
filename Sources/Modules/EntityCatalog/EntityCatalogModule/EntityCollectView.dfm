@@ -2,6 +2,7 @@ inherited frEntityCollectView: TfrEntityCollectView
   Left = 665
   Top = 386
   Caption = 'frEntityCollectView'
+  ExplicitWidth = 320
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
@@ -16,16 +17,20 @@ inherited frEntityCollectView: TfrEntityCollectView
       StyleFocused.LookAndFeel.Kind = lfOffice11
       StyleHot.LookAndFeel.Kind = lfOffice11
       TabOrder = 1
-      Height = 185
-      Width = 769
+      ExplicitWidth = 769
+      ExplicitHeight = 185
+      Height = 177
+      Width = 761
       object grList: TcxGrid
         Left = 303
         Top = 2
-        Width = 464
-        Height = 181
+        Width = 456
+        Height = 173
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
+        ExplicitWidth = 464
+        ExplicitHeight = 181
         object grListView: TcxGridDBTableView
           NavigatorButtons.ConfirmDelete = False
           FilterBox.Position = fpTop
@@ -51,15 +56,16 @@ inherited frEntityCollectView: TfrEntityCollectView
         Left = 295
         Top = 2
         Width = 8
-        Height = 181
+        Height = 173
         HotZoneClassName = 'TcxXPTaskBarStyle'
         Control = grInfo
+        ExplicitHeight = 181
       end
       object grInfo: TcxDBVerticalGrid
         Left = 2
         Top = 2
         Width = 293
-        Height = 181
+        Height = 173
         Align = alLeft
         LookAndFeel.Kind = lfOffice11
         OptionsView.ShowEditButtons = ecsbAlways
@@ -75,25 +81,30 @@ inherited frEntityCollectView: TfrEntityCollectView
         Styles.Background = cxStyle1
         TabOrder = 2
         DataController.DataSource = InfoDataSource
+        ExplicitHeight = 181
         Version = 1
       end
     end
     object cxSplitter1: TcxSplitter
       Left = 2
-      Top = 227
-      Width = 769
+      Top = 219
+      Width = 761
       Height = 8
       AlignSplitter = salBottom
       Control = grItems
+      ExplicitTop = 227
+      ExplicitWidth = 769
     end
     object grItems: TcxGrid
       Left = 2
-      Top = 235
-      Width = 769
+      Top = 227
+      Width = 761
       Height = 286
       Align = alBottom
       TabOrder = 3
       LookAndFeel.Kind = lfOffice11
+      ExplicitTop = 235
+      ExplicitWidth = 769
       object grItemsView: TcxGridDBTableView
         NavigatorButtons.ConfirmDelete = False
         FilterBox.Position = fpTop

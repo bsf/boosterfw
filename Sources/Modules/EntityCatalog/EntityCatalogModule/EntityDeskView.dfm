@@ -2,13 +2,14 @@ inherited frEntityDeskView: TfrEntityDeskView
   Left = 613
   Top = 171
   Caption = 'frEntityDeskView'
+  ExplicitWidth = 320
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
     object grParams: TcxDBVerticalGrid
       Left = 2
       Top = 42
-      Width = 769
+      Width = 761
       Height = 153
       Align = alTop
       LayoutStyle = lsMultiRecordView
@@ -27,29 +28,33 @@ inherited frEntityDeskView: TfrEntityDeskView
       TabOrder = 1
       OnEditValueChanged = grParamsEditValueChanged
       DataController.DataSource = ParamsDataSource
+      ExplicitWidth = 769
       Version = 1
     end
     object cxSplitter1: TcxSplitter
       Left = 2
       Top = 195
-      Width = 769
+      Width = 761
       Height = 8
       HotZoneClassName = 'TcxXPTaskBarStyle'
       AlignSplitter = salTop
       Control = grParams
+      ExplicitWidth = 8
     end
     object tcStates: TcxTabControl
       Left = 2
       Top = 203
-      Width = 769
-      Height = 318
+      Width = 761
+      Height = 310
       Align = alClient
       LookAndFeel.Kind = lfOffice11
       LookAndFeel.NativeStyle = False
       Style = 8
       TabOrder = 3
-      ClientRectBottom = 318
-      ClientRectRight = 769
+      ExplicitWidth = 769
+      ExplicitHeight = 318
+      ClientRectBottom = 310
+      ClientRectRight = 761
       ClientRectTop = 0
       object grList: TcxGrid
         Left = 0

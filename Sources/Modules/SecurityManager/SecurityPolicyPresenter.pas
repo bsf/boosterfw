@@ -1,7 +1,7 @@
 unit SecurityPolicyPresenter;
 
 interface
-uses CustomContentPresenter, CommonViewIntf, coreClasses, ShellIntf, SecurityIntf,
+uses CustomContentPresenter, UIClasses, coreClasses, ShellIntf, SecurityIntf,
   AdminConst, sysutils, classes, variants;
 
 const

@@ -2,7 +2,7 @@ unit EntityComplexPresenter;
 
 interface
 uses CoreClasses, CustomContentPresenter, ShellIntf, EntityServiceIntf, SysUtils,
-  variants, db,  CommonViewIntf, EntityCatalogIntf, StrUtils, controls;
+  variants, db,  UIClasses, EntityCatalogIntf, StrUtils, controls;
 
 const
 

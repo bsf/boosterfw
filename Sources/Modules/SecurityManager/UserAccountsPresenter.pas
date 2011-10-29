@@ -1,7 +1,7 @@
 unit UserAccountsPresenter;
 
 interface
-uses coreClasses, CustomContentPresenter, CommonViewIntf, ShellIntf,
+uses coreClasses, CustomContentPresenter, UIClasses, ShellIntf,
   sysutils, Contnrs, classes, SecurityIntf;
 
 const

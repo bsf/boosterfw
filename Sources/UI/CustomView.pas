@@ -7,7 +7,7 @@ uses
   Dialogs, cxLookAndFeelPainters, cxControls, cxContainer,  Menus,
   cxGroupBox, CoreClasses, CustomPresenter, ShellIntf,
   ImgList, cxGraphics, ActnList, cxButtons,
-  CommonViewIntf, db, Contnrs, cxEdit, Typinfo, cxLookAndFeels, dxSkinsCore,
+  UIClasses, db, Contnrs, cxEdit, Typinfo, cxLookAndFeels, dxSkinsCore,
   dxSkinsDefaultPainters, CommonUtils, inifiles;
 
 const

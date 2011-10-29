@@ -9,7 +9,7 @@ uses
   SecurityPolicyPresenter, cxStyles, cxCustomData, cxFilter, cxData,
   cxDataStorage, cxSplitter, cxGridLevel, cxGridCustomTableView,
   cxGridTableView, cxClasses, cxGridCustomView, cxGrid, cxCheckBox,
-  CommonViewIntf, SecurityIntf, cxDropDownEdit, Menus, StdCtrls, cxButtons;
+  UIClasses, SecurityIntf, cxDropDownEdit, Menus, StdCtrls, cxButtons;
 
 type
   TfrSecurityPolicyView = class(TfrCustomContentView, ISecurityPolicyView)

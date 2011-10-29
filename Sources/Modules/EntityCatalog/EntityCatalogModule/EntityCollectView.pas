@@ -9,7 +9,7 @@ uses
   EntityCollectPresenter, cxStyles, cxCustomData, cxFilter, cxData,
   cxDataStorage, DB, cxDBData, cxInplaceContainer, cxVGrid, cxDBVGrid,
   cxGridLevel, cxClasses, cxGridCustomView, cxGridCustomTableView,
-  cxGridTableView, cxGridDBTableView, cxGrid, cxSplitter, CommonViewIntf;
+  cxGridTableView, cxGridDBTableView, cxGrid, cxSplitter, UIClasses;
 
 type
   TfrEntityCollectView = class(TfrCustomContentView, IEntityCollectView)

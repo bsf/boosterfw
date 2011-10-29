@@ -6,7 +6,7 @@ uses windows, classes, CoreClasses, ReportServiceIntf, EntityServiceIntf,
   frxClass, frxExportXML, frxExportXLS, frxExportCSV, frxIBXComponents, frxDesgn,
   frxChBox, frxCross, frxBarCode, frxDCtrl, variants,
   frReportPreviewPresenter, frReportPreviewView,
-  ActivityServiceIntf, CommonViewIntf;
+  ActivityServiceIntf, UIClasses;
 
 const
   VIEW_FASTREPORT_PREVIEW = 'views.reports.fastreport.preview';

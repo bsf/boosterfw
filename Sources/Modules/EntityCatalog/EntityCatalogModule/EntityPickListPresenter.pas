@@ -1,7 +1,7 @@
 unit EntityPickListPresenter;
 
 interface
-uses CustomDialogPresenter, CommonViewIntf, CoreClasses, EntityServiceIntf,
+uses CustomDialogPresenter, UIClasses, CoreClasses, EntityServiceIntf,
   CustomPresenter, sysutils, db, EntityCatalogIntf, EntityCatalogConst, controls;
 
 const

@@ -2,7 +2,7 @@ unit ICommandBarImpl;
 
 interface
 uses classes, cxGroupBox, cxButtons, ActnList, sysutils, CoreClasses, ShellIntf,
-  CommonViewIntf, Menus, types, windows, Graphics, forms, controls, CommonUtils;
+  UIClasses, Menus, types, windows, Graphics, forms, controls, CommonUtils;
 
 const
   const_TopMargin: integer = 8;

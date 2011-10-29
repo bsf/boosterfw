@@ -1,7 +1,7 @@
 unit EntityJournalPresenter;
 
 interface
-uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, CommonViewIntf,
+uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
   SysUtils, Variants, ShellIntf, Controls,
   EntityCatalogIntf, EntityCatalogConst, CommonUtils, db, StrUtils;
 

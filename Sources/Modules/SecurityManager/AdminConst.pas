@@ -1,7 +1,7 @@
 unit AdminConst;
 
 interface
-uses CommonViewIntf, variants;
+uses UIClasses, variants;
 
 const
   VIEW_SECURITYPOLICY = 'views.security.policy';

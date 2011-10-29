@@ -11,6 +11,7 @@ inherited frEntityPickListView: TfrEntityPickListView
       Top = 2
       Align = alTop
       PanelStyle.Active = True
+      ParentBackground = False
       ParentColor = False
       Style.BorderStyle = ebsNone
       Style.Color = clInfoBk
@@ -20,17 +21,18 @@ inherited frEntityPickListView: TfrEntityPickListView
       StyleHot.LookAndFeel.Kind = lfOffice11
       TabOrder = 2
       DesignSize = (
-        674
+        666
         29)
       Height = 29
-      Width = 674
+      Width = 666
       object edFilter: TcxTextEdit
         Left = 50
         Top = 4
         Anchors = [akLeft, akTop, akRight, akBottom]
         Properties.OnChange = edFilterPropertiesChange
         TabOrder = 0
-        Width = 619
+        ExplicitWidth = 619
+        Width = 611
       end
       object cxLabel1: TcxLabel
         Left = 2
@@ -46,11 +48,13 @@ inherited frEntityPickListView: TfrEntityPickListView
     object grList: TcxGrid
       Left = 2
       Top = 31
-      Width = 674
-      Height = 453
+      Width = 666
+      Height = 445
       Align = alClient
       TabOrder = 0
       LookAndFeel.Kind = lfOffice11
+      ExplicitWidth = 674
+      ExplicitHeight = 453
       object grListView: TcxGridDBTableView
         NavigatorButtons.ConfirmDelete = False
         OnCellDblClick = grListViewCellDblClick

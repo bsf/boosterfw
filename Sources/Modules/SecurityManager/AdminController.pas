@@ -2,7 +2,7 @@ unit AdminController;
 
 interface
 uses classes, CoreClasses, ShellIntf,
-  ActivityServiceIntf, CommonViewIntf,
+  ActivityServiceIntf, UIClasses,
   SecurityPoliciesPresenter, SecurityPoliciesView,
   SecurityPolicyPresenter, SecurityPolicyView,
   SecurityPolicyResPresenter, SecurityPolicyResView,

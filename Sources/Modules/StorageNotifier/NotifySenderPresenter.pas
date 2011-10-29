@@ -2,7 +2,7 @@ unit NotifySenderPresenter;
 
 interface
 
-uses CustomDialogPresenter, CommonViewIntf, CoreClasses, EntityServiceIntf,
+uses CustomDialogPresenter, UIClasses, CoreClasses, EntityServiceIntf,
   CustomPresenter, sysutils, db, ShellIntf, controls, classes;
 
 const

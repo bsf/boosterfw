@@ -3,7 +3,7 @@ unit ReportCatalogController;
 interface
 uses classes, CoreClasses,  sysutils,
   ShellIntf, ReportServiceIntf,  ActivityServiceIntf,
-  CommonUtils, ConfigServiceIntf, graphics, CommonViewIntf,
+  CommonUtils, ConfigServiceIntf, graphics, UIClasses,
   ReportCatalogConst, ReportCatalogClasses,
   ReportCatalogPresenter, ReportCatalogView,
   ReportLauncherPresenter, ReportLauncherView,

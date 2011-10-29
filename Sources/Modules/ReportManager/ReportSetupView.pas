@@ -8,7 +8,7 @@ uses
   cxContainer, cxEdit, cxGroupBox, cxStyles, cxGraphics,
   cxInplaceContainer, cxVGrid, cxDBVGrid, cxPC, cxCustomData, cxFilter,
   cxData, cxDataStorage, DB, cxDBData, cxSplitter, cxGridLevel, cxClasses,
-  cxGridCustomView, cxGridCustomTableView, cxGridTableView, CommonViewIntf,
+  cxGridCustomView, cxGridCustomTableView, cxGridTableView, UIClasses,
   cxGridDBTableView, cxGrid,  cxDBLookupComboBox, cxTextEdit, cxMemo,
   cxLookAndFeels, ReportSetupPresenter;
 

@@ -1,7 +1,7 @@
 unit bfwSettingManagerModuleInit;
 
 interface
-uses classes, CoreClasses, ActivityServiceIntf, CommonViewIntf, ShellIntf,
+uses classes, CoreClasses, ActivityServiceIntf, UIClasses, ShellIntf,
      SettingsPresenter, SettingsView;
 
 type

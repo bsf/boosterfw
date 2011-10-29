@@ -1,7 +1,7 @@
 unit EntitySelectorPresenter;
 
 interface
-uses CustomDialogPresenter, CoreClasses, EntityCatalogIntf, CommonViewIntf,
+uses CustomDialogPresenter, CoreClasses, EntityCatalogIntf, UIClasses,
   controls, db, EntityServiceIntf;
 
 type

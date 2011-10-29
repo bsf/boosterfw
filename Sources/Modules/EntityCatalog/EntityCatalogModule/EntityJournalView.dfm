@@ -1,21 +1,24 @@
 inherited frEntityJournalView: TfrEntityJournalView
   Left = 629
   Caption = 'frEntityJournalView'
+  ExplicitWidth = 320
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
     object tcStates: TcxTabControl
       Left = 2
       Top = 42
-      Width = 769
-      Height = 479
+      Width = 761
+      Height = 471
       Align = alClient
       LookAndFeel.Kind = lfOffice11
       LookAndFeel.NativeStyle = False
       Style = 8
       TabOrder = 1
-      ClientRectBottom = 479
-      ClientRectRight = 769
+      ExplicitWidth = 769
+      ExplicitHeight = 479
+      ClientRectBottom = 471
+      ClientRectRight = 761
       ClientRectTop = 0
       object pnInfo: TcxGroupBox
         Left = 0
@@ -24,6 +27,7 @@ inherited frEntityJournalView: TfrEntityJournalView
         PanelStyle.Active = True
         PanelStyle.CaptionIndent = 5
         PanelStyle.OfficeBackgroundKind = pobkStyleColor
+        ParentBackground = False
         ParentColor = False
         ParentFont = False
         Style.BorderStyle = ebsNone
@@ -43,16 +47,18 @@ inherited frEntityJournalView: TfrEntityJournalView
         TabOrder = 0
         Visible = False
         Height = 30
-        Width = 769
+        Width = 761
       end
       object grList: TcxGrid
         Left = 0
         Top = 30
-        Width = 769
-        Height = 449
+        Width = 761
+        Height = 441
         Align = alClient
         TabOrder = 1
         LookAndFeel.Kind = lfOffice11
+        ExplicitWidth = 769
+        ExplicitHeight = 449
         object grJrnView: TcxGridDBTableView
           NavigatorButtons.ConfirmDelete = False
           FilterBox.Position = fpTop

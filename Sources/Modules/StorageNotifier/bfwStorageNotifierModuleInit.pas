@@ -1,7 +1,7 @@
 unit bfwStorageNotifierModuleInit;
 
 interface
-uses classes, CoreClasses,  ShellIntf, ActivityServiceIntf, CommonViewIntf,
+uses classes, CoreClasses,  ShellIntf, ActivityServiceIntf, UIClasses,
   NotifyReceiver, NotifySenderPresenter, NotifySenderView;
 
 type

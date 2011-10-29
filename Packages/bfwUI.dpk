@@ -52,7 +52,7 @@ requires
 
 contains
   CommonUtils in '..\Sources\UI\CommonUtils.pas',
-  CommonViewIntf in '..\Sources\UI\CommonViewIntf.pas',
+  UIClasses in '..\Sources\UI\UIClasses.pas',
   CustomContentPresenter in '..\Sources\UI\CustomContentPresenter.pas',
   CustomDialogPresenter in '..\Sources\UI\CustomDialogPresenter.pas',
   CustomPresenter in '..\Sources\UI\CustomPresenter.pas',

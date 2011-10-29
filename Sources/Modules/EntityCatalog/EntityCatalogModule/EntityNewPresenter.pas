@@ -1,7 +1,7 @@
 unit EntityNewPresenter;
 
 interface
-uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, CommonViewIntf,
+uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
   SysUtils, Variants, ShellIntf, CustomContentPresenter, db,
   EntityCatalogIntf, EntityCatalogConst;
 

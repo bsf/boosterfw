@@ -1,7 +1,7 @@
 unit ISelectionGridImpl;
 
 interface
-uses classes, CommonViewIntf, CustomView, cxGrid, cxGridCustomTableView, cxGridTableView,
+uses classes, UIClasses, CustomView, cxGrid, cxGridCustomTableView, cxGridTableView,
   Variants, sysutils, contnrs, cxGridDBTableView, cxGridDBBandedTableView,
   CoreClasses;
 

@@ -1,7 +1,7 @@
 unit ReportLauncherPresenter;
 
 interface
-uses classes, CoreClasses, CustomPresenter, ShellIntf, CommonViewIntf, SysUtils,
+uses classes, CoreClasses, CustomPresenter, ShellIntf, UIClasses, SysUtils,
   dxmdaset, db, ReportCatalogClasses, EntityServiceIntf,
   variants, StrUtils, controls, ReportCatalogConst, CommonUtils,
   cxDateUtils, Generics.Collections;

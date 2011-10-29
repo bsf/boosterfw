@@ -1,4 +1,4 @@
-unit CommonViewIntf;
+unit UIClasses;
 
 interface
 uses classes, db, CoreClasses, sysutils, controls, ShellIntf,

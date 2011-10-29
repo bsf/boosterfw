@@ -16,7 +16,7 @@ uses
   ViewStyleController, cxPC, cxDropDownEdit,
   cxBarEditItem, cxButtonEdit, dxBarExtItems, EntityServiceIntf,
   cxLookAndFeels, cxLookAndFeelPainters, TabbedWorkspace, ShellAbout,
-  ActivityServiceIntf, CommonViewIntf,
+  ActivityServiceIntf, UIClasses,
   UserPreferencesPresenter, UserPreferencesView,
   CommonUtils, dxGDIPlusClasses, cxGroupBox, cxStyles, cxCustomData,
   cxFilter, cxData, cxDataStorage, DB, cxDBData, cxGridLevel,

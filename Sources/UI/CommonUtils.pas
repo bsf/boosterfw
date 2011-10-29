@@ -1,7 +1,7 @@
 unit CommonUtils;
 
 interface
-uses SysUtils, windows, classes, CommonViewIntf, variants, forms, controls,
+uses SysUtils, windows, classes, UIClasses, variants, forms, controls,
   Graphics;
 
 

@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, CustomView, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxContainer, cxEdit, ActnList, cxGroupBox,
-  CommonViewIntf, ICommandBarImpl;
+  UIClasses, ICommandBarImpl;
 
 type
   TfrCustomDialogView = class(TfrCustomView)

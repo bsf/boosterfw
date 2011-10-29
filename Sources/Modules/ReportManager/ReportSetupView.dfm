@@ -7,22 +7,29 @@ inherited frReportSetupView: TfrReportSetupView
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
+    ExplicitWidth = 838
     Width = 838
     object pcMain: TcxPageControl
       Left = 2
       Top = 2
       Width = 834
-      Height = 519
+      Height = 511
       ActivePage = tsParams
       Align = alClient
       LookAndFeel.Kind = lfOffice11
       TabOrder = 0
-      ClientRectBottom = 519
-      ClientRectRight = 834
+      ExplicitHeight = 519
+      ClientRectBottom = 507
+      ClientRectLeft = 4
+      ClientRectRight = 830
       ClientRectTop = 24
       object tcNoSetup: TcxTabSheet
         Caption = 'tcNoSetup'
         ImageIndex = 2
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object cxMemo1: TcxMemo
           Left = 0
           Top = 0
@@ -37,13 +44,18 @@ inherited frReportSetupView: TfrReportSetupView
           StyleFocused.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.Kind = lfOffice11
           TabOrder = 0
+          ExplicitWidth = 834
           Height = 35
-          Width = 834
+          Width = 826
         end
       end
       object tsParams: TcxTabSheet
         Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099
         ImageIndex = 1
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object cxSplitter1: TcxSplitter
           Left = 326
           Top = 33
@@ -63,16 +75,18 @@ inherited frReportSetupView: TfrReportSetupView
           StyleFocused.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.Kind = lfOffice11
           TabOrder = 1
-          Height = 462
-          Width = 502
+          Height = 450
+          Width = 494
           object grItemLinks: TcxGrid
             Left = 2
             Top = 2
-            Width = 498
-            Height = 458
+            Width = 490
+            Height = 446
             Align = alClient
             TabOrder = 0
             LookAndFeel.Kind = lfOffice11
+            ExplicitWidth = 498
+            ExplicitHeight = 458
             object grItemLinksView: TcxGridDBTableView
               NavigatorButtons.ConfirmDelete = False
               DataController.DataSource = ItemLinksDataSource
@@ -125,8 +139,9 @@ inherited frReportSetupView: TfrReportSetupView
           StyleFocused.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.Kind = lfOffice11
           TabOrder = 2
+          ExplicitWidth = 834
           Height = 33
-          Width = 834
+          Width = 826
           object mmInfo: TcxMemo
             Left = 2
             Top = 2
@@ -139,8 +154,9 @@ inherited frReportSetupView: TfrReportSetupView
             StyleFocused.LookAndFeel.Kind = lfOffice11
             StyleHot.LookAndFeel.Kind = lfOffice11
             TabOrder = 0
+            ExplicitWidth = 830
             Height = 29
-            Width = 830
+            Width = 822
           end
         end
         object cxGroupBox4: TcxGroupBox
@@ -155,17 +171,19 @@ inherited frReportSetupView: TfrReportSetupView
           StyleFocused.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.Kind = lfOffice11
           TabOrder = 3
-          Height = 462
+          ExplicitHeight = 462
+          Height = 450
           Width = 326
           object grItems: TcxGrid
             Left = 2
             Top = 2
             Width = 322
-            Height = 458
+            Height = 446
             Align = alClient
             TabOrder = 0
             LookAndFeel.Kind = lfOffice11
             LookAndFeel.NativeStyle = False
+            ExplicitHeight = 458
             object grItemsView: TcxGridDBTableView
               NavigatorButtons.ConfirmDelete = False
               OnFocusedRecordChanged = grItemsViewFocusedRecordChanged

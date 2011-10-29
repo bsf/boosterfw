@@ -1,7 +1,7 @@
 unit SettingsPresenter;
 
 interface
-uses coreClasses, CustomContentPresenter, CommonViewIntf, ShellIntf,
+uses coreClasses, CustomContentPresenter, UIClasses, ShellIntf,
   sysutils, Contnrs, classes, ConfigServiceIntf, db, CommonUtils,
   dxmdaset, EntityServiceIntf, variants;
 

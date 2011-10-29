@@ -1,7 +1,7 @@
 unit ReportCatalogPresenter;
 
 interface
-uses classes, CoreClasses, CustomPresenter, ShellIntf, CommonViewIntf, SysUtils,
+uses classes, CoreClasses, CustomPresenter, ShellIntf, UIClasses, SysUtils,
   db, ReportCatalogConst, ReportCatalogClasses, dxMdaset,
   CommonUtils, ReportServiceIntf;
 

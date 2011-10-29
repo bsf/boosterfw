@@ -2,7 +2,7 @@ unit EntityOrgChartPresenter;
 
 interface
 uses CustomContentPresenter, EntityCatalogIntf, EntityServiceIntf, CoreClasses,
-  CommonViewIntf, db, sysutils;
+  UIClasses, db, sysutils;
 
 const
   ENT_VIEW_ORGCHART = 'OrgChart';

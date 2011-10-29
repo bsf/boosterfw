@@ -2,7 +2,7 @@ unit CustomPresenter;
 
 interface
 uses Classes, CoreClasses, ShellIntf, Controls, ActivityServiceIntf,
-  CommonViewIntf, SysUtils, EntityServiceIntf, Variants, db, StrUtils, typinfo,
+  UIClasses, SysUtils, EntityServiceIntf, Variants, db, StrUtils, typinfo,
   UIServiceIntf, forms;
 
 type
@@ -245,7 +245,7 @@ begin
 
   WorkItem.Items.Add(viewID, view);
 
-  CommonViewIntf.InstantiateViewExtensions(view as TView);
+  UIClasses.InstantiateViewExtensions(view as TView);
 
   (view as TForm).ScaleBy(
     (WorkItem.Services[IUIService] as IUIService).ViewStyle.Scale, 100);

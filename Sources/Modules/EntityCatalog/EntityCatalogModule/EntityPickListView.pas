@@ -9,7 +9,7 @@ uses
   EntityCatalogConst, cxStyles, cxCustomData, cxFilter, cxData,
   cxDataStorage, DB, cxDBData, cxGridLevel, cxClasses, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
-  cxLabel, cxTextEdit, EntityCatalogIntf, EntityPickListPresenter, CommonViewIntf;
+  cxLabel, cxTextEdit, EntityCatalogIntf, EntityPickListPresenter, UIClasses;
 
 type
   TfrEntityPickListView = class(TfrCustomDialogView, IEntityPickListView)

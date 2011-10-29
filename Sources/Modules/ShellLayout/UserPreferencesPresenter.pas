@@ -1,6 +1,6 @@
 unit UserPreferencesPresenter;
 interface
-uses coreClasses, CustomContentPresenter, CommonViewIntf, cxCustomData, ShellIntf,
+uses coreClasses, CustomContentPresenter, UIClasses, cxCustomData, ShellIntf,
   cxVGrid, sysutils, Contnrs, classes, ConfigServiceIntf, db, CommonUtils,
   dxmdaset, EntityServiceIntf, variants;
 

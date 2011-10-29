@@ -9,7 +9,7 @@ uses
   cxStyles, cxCustomData, cxFilter, cxData, cxDataStorage, DB, cxDBData,
   cxGridLevel, cxClasses, cxGridCustomView, cxGridCustomTableView,
   cxGridTableView, cxGridBandedTableView, cxGridDBBandedTableView, cxGrid,
-  cxPC, coreClasses, EntityCatalogIntf, EntityCatalogConst, CommonViewIntf,
+  cxPC, coreClasses, EntityCatalogIntf, EntityCatalogConst, UIClasses,
   cxGridDBTableView;
 
 type

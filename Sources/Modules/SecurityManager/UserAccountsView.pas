@@ -9,7 +9,7 @@ uses
   UserAccountsPresenter, cxStyles, cxCustomData, cxFilter, cxData,
   cxDataStorage, cxCheckBox, cxSplitter, cxGridLevel,
   cxGridCustomTableView, cxGridTableView, cxClasses, cxGridCustomView,
-  cxGrid, cxPC, CommonViewIntf;
+  cxGrid, cxPC, UIClasses;
 
 type
   TfrUserAccountsView = class(TfrCustomContentView, IUserAccountsView)

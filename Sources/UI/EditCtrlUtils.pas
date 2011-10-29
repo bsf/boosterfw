@@ -1,7 +1,7 @@
 unit EditCtrlUtils;
 
 interface
-uses classes, CustomView, CommonViewIntf, cxEdit, controls, Typinfo,
+uses classes, CustomView, UIClasses, cxEdit, controls, Typinfo,
   cxDropDownEdit, cxDateUtils, sysutils, strUtils;
 
 type

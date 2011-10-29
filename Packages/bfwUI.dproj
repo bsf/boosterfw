@@ -76,7 +76,7 @@
 			<DCCReference Include="dxSkinsCoreD15.dcp"/>
 			<DCCReference Include="cxVerticalGridD15.dcp"/>
 			<DCCReference Include="..\Sources\UI\CommonUtils.pas"/>
-			<DCCReference Include="..\Sources\UI\CommonViewIntf.pas"/>
+			<DCCReference Include="..\Sources\UI\UIClasses.pas"/>
 			<DCCReference Include="..\Sources\UI\CustomContentPresenter.pas"/>
 			<DCCReference Include="..\Sources\UI\CustomDialogPresenter.pas"/>
 			<DCCReference Include="..\Sources\UI\CustomPresenter.pas"/>

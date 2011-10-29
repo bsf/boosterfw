@@ -7,7 +7,7 @@ uses classes, forms, cxGridPopupMenu, cxGrid, menus, inifiles, variants,
   db, cxGridDBDataDefinitions, Contnrs, cxGridTableView, cxGridDBTableView,
   cxGridStdPopupMenu, cxGridMenuOperations, cxGridHeaderPopupMenuItems,
   cxGridDBBandedTableView, EntityServiceIntf, cxCustomData, cxFilter, cxGraphics,
-  cxDBLookupComboBox, cxCheckBox, CommonViewIntf, ShellIntf;
+  cxDBLookupComboBox, cxCheckBox, UIClasses, ShellIntf;
 
 
 resourcestring
