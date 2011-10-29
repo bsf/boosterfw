@@ -13,8 +13,6 @@ uses
   bfwReportManagerModuleInit,
   bfwReportEngineXLModuleInit,
   bfwReportEngineFRModuleInit,
-  bfwGadgetCatalogModuleInit,
-
 
   //Infrastructure addons
   bfwStorageConnIBXModuleInit,
