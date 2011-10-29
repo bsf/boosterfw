@@ -71,7 +71,7 @@ type
   TActivityService = class(TComponent, IActivityService, IActivityInfos, ISecurityResProvider)
   const
     ENTC_UI = 'ENTC_UI';
-    ENTC_UI_VIEW_LIST = 'List2';
+    ENTC_UI_VIEW_LIST = 'List';
     ENTC_UI_VIEW_CMD = 'Commands';
 
     //SecurityClass
