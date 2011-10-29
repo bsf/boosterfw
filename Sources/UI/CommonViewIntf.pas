@@ -103,7 +103,7 @@ type
     property BackViewUri: string read FBackViewUri write FBackViewUri;
   end;
 
-  TPresenter = class(TAbstractController)
+  TPresenter = class(TWorkItemController)
   public
     // called by ViewActivityBuilder
     class procedure Execute(Sender: IAction; AWorkItem: TWorkItem; AViewClass: TViewClass); virtual; abstract;

@@ -28,7 +28,7 @@ type
     constructor Create(AOwner: TComponent); override;
   end;
 
-  TBarCodeScanerController = class(TAbstractController)
+  TBarCodeScanerController = class(TWorkItemController)
   private
     FBarScanKeyboard: TBarScanKeyboard;
   public
@@ -143,7 +143,7 @@ end;
 
 function TBarScanKeyboard.WorkItem: TWorkItem;
 begin
-  Result := TAbstractController(Owner).WorkItem;
+  Result := TWorkItemController(Owner).WorkItem;
 end;
 
 end.

@@ -284,7 +284,7 @@ type
 {TWorkItem}
   TWorkItemStatus = (wisActive, wisInactive, wisTerminated);
 
-  TAbstractController = class(TComponent)
+  TWorkItemController = class(TComponent)
   private
     function GetWorkItem: TWorkItem;
   protected
@@ -294,13 +294,13 @@ type
     procedure Run; virtual;
     procedure Activate; virtual;
     procedure Deactivate; virtual;
-    procedure Instantiate; virtual;
+    procedure Initialize; virtual;
   public
     constructor Create(AOwner: TWorkItem); reintroduce; virtual;
     property WorkItem: TWorkItem read GetWorkItem;
   end;
 
-  TControllerClass = class of TAbstractController;
+  TControllerClass = class of TWorkItemController;
 
   IWorkItems = interface(ICollection)
   ['{09683504-8734-4CA6-83B9-A2BD006A2CC3}']
@@ -315,7 +315,7 @@ type
     FParent: TWorkItem;
     FStatus: TWorkItemStatus;
     FControllerClass: TControllerClass;
-    FController: TAbstractController;
+    FController: TWorkItemController;
     FEventTopics: TComponent;
     FServices: TComponent;
     FWorkItems: TComponent;
@@ -365,7 +365,7 @@ type
     property Workspaces: IWorkspaces read GetWorkspaces;
     property Items: IItems read GetItems;
     property State[const AName: string]: Variant read GetState write SetState;
-    property Controller: TAbstractController read FController;
+    property Controller: TWorkItemController read FController;
     property Status: TWorkItemStatus read FStatus;
     property Parent: TWorkItem read FParent;
     //можно использовать как хочешь
@@ -516,6 +516,7 @@ begin
   begin
     FController := FControllerClass.Create(Self);
     FController.FreeNotification(Self);
+    FController.Initialize;
   end;
 
 end;
@@ -648,50 +649,49 @@ end;
 
 { AbstractTController }
 
-procedure TAbstractController.Activate;
+procedure TWorkItemController.Activate;
 begin
 
 end;
 
-constructor TAbstractController.Create(AOwner: TWorkItem);
+constructor TWorkItemController.Create(AOwner: TWorkItem);
 begin
   inherited Create(AOwner);
-  Instantiate;
 end;
 
-procedure TAbstractController.Deactivate;
+procedure TWorkItemController.Deactivate;
 begin
 
 end;
 
-function TAbstractController.GetWorkItem: TWorkItem;
+function TWorkItemController.GetWorkItem: TWorkItem;
 begin
   Result := TWorkItem(Owner);
 end;
 
-procedure TAbstractController.Instantiate;
+procedure TWorkItemController.Initialize;
 begin
 
 end;
 
-function TAbstractController.OnGetWorkItemState(
+function TWorkItemController.OnGetWorkItemState(
   const AName: string): Variant;
 begin
 
 end;
 
-procedure TAbstractController.OnSetWorkItemState(const AName: string;
+procedure TWorkItemController.OnSetWorkItemState(const AName: string;
   const Value: Variant);
 begin
 
 end;
 
-procedure TAbstractController.Run;
+procedure TWorkItemController.Run;
 begin
 
 end;
 
-procedure TAbstractController.Terminate;
+procedure TWorkItemController.Terminate;
 begin
 
 end;

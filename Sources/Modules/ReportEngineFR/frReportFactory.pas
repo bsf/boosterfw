@@ -2,7 +2,7 @@ unit frReportFactory;
 
 interface
 uses windows, classes, CoreClasses, ReportServiceIntf, EntityServiceIntf,
-  SysUtils, db, ibdatabase, CustomUIController, ComObj, controls,
+  SysUtils, db, ibdatabase,  ComObj, controls,
   frxClass, frxExportXML, frxExportXLS, frxExportCSV, frxIBXComponents, frxDesgn,
   frxChBox, frxCross, frxBarCode, frxDCtrl, variants,
   frReportPreviewPresenter, frReportPreviewView,
@@ -49,7 +49,7 @@ type
     property Template: string read FTemplate write FTemplate;
   end;
 
-  TFastReportFactory = class(TCustomUIController, IReportLauncherFactory)
+  TFastReportFactory = class(TWorkItemController, IReportLauncherFactory)
   private
     FWorkItem: TWorkItem;
     FLauncher: TFastReportLauncher;

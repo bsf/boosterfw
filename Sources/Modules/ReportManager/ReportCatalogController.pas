@@ -1,7 +1,7 @@
 unit ReportCatalogController;
 
 interface
-uses classes, CoreClasses, CustomUIController, sysutils,
+uses classes, CoreClasses,  sysutils,
   ShellIntf, ReportServiceIntf,  ActivityServiceIntf,
   CommonUtils, ConfigServiceIntf, graphics, CommonViewIntf,
   ReportCatalogConst, ReportCatalogClasses,
@@ -19,7 +19,7 @@ const
   REPORT_NAVBAR_IMAGE_RES_NAME = 'REPORT_NAVBAR_IMAGE';
 
 type
-  TReportCatalogController = class(TCustomUIController, IReportCatalogService)
+  TReportCatalogController = class(TWorkItemController, IReportCatalogService)
   private
     FActivityImage: TBitmap;
     FCatalogPath: string;
@@ -35,7 +35,7 @@ type
     procedure OnActivityLoadingHandler(EventData: Variant);
   protected
    function GetItem(const URI: string): TReportCatalogItem;
-    procedure OnInitialize; override;
+    procedure Initialize; override;
     procedure Terminate; override;
   end;
 
@@ -157,7 +157,7 @@ begin
   LoadCatalogItems;
 end;
 
-procedure TReportCatalogController.OnInitialize;
+procedure TReportCatalogController.Initialize;
 var
   activitySvc: IActivityService;
 begin

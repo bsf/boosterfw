@@ -1,7 +1,7 @@
 unit AdminController;
 
 interface
-uses classes, CoreClasses, ShellIntf, CustomUIController,
+uses classes, CoreClasses, ShellIntf,
   ActivityServiceIntf, CommonViewIntf,
   SecurityPoliciesPresenter, SecurityPoliciesView,
   SecurityPolicyPresenter, SecurityPolicyView,
@@ -11,16 +11,16 @@ uses classes, CoreClasses, ShellIntf, CustomUIController,
   AdminConst;
 
 type
-  TAdminController = class(TCustomUIController)
+  TAdminController = class(TWorkItemController)
   protected
-    procedure OnInitialize; override;
+    procedure Initialize; override;
   end;
 
 implementation
 
 { TAdminController }
 
-procedure TAdminController.OnInitialize;
+procedure TAdminController.Initialize;
 var
   svc: IActivityService;
 begin

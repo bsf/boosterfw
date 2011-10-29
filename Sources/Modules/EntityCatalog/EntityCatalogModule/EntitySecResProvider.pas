@@ -1,7 +1,7 @@
 unit EntitySecResProvider;
 
 interface
-uses SecurityIntf, CoreClasses, classes, EntityCatalogIntf, EntityServiceIntf,
+uses SecurityIntf, CoreClasses, classes, ActivityServiceIntf, EntityServiceIntf,
   ShellIntf, db;
 
 type
@@ -20,7 +20,7 @@ type
   private
     FWorkItem: TWorkItem;
     FID: string;
-    function UIInfo: IEntityUIInfo;
+    function UIInfo: IActivityInfo;
   protected
     function ID: string;
     function GetTopRes: IInterfaceList;
@@ -113,9 +113,9 @@ begin
   Result := FID;
 end;
 
-function TEntitySecurityResProvider.UIInfo: IEntityUIInfo;
+function TEntitySecurityResProvider.UIInfo: IActivityInfo;
 begin
-  Result := (FWorkItem.Services[IEntityUIManagerService] as IEntityUIManagerService).UIInfo(FID);
+  Result := (FWorkItem.Services[IActivityService] as IActivityService).ActivityInfo(FID);
 end;
 
 { TEntitySecurityResNode }

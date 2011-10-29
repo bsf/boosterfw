@@ -1,7 +1,7 @@
 unit EntityCatalogController;
 
 interface
-uses classes, CoreClasses, CustomUIController,  ShellIntf, Variants, db, Contnrs,
+uses classes, CoreClasses,  ShellIntf, Variants, db, Contnrs,
   ActivityServiceIntf,
   EntityCatalogIntf, EntityServiceIntf, CommonViewIntf, sysutils,
   StrUtils, EntitySecResProvider, SecurityIntf, controls,
@@ -16,36 +16,8 @@ uses classes, CoreClasses, CustomUIController,  ShellIntf, Variants, db, Contnrs
   EntitySelectorPresenter, EntitySelectorView,
   EntityDeskPresenter, EntityDeskView;
 
-const
-  ENTC_UI = 'ENTC_UI';
-  ENTC_UI_VIEW_LIST = 'List';
-  ENTC_UI_VIEW_CMD = 'Commands';
 
 type
-  TEntityUIClass = class(TObject)
-  private
-    FName: string;
-  public
-    constructor Create(const AName: string); virtual;
-    property Name: string read FName;
-  end;
-
-  TEntityUIClassPresenter = class(TEntityUIClass)
-  private
-    FPresenterClass: TPresenterClass;
-    FViewClass: TViewClass;
-  public
-    constructor Create(const AName: string; APresenterClass: TPresenterClass;
-      AViewClass: TViewClass); reintroduce;
-    property PresenterClass: TPresenterClass read FPresenterClass;
-    property ViewClass: TViewClass read FViewClass;
-  end;
-
-  TEntityUIClassSecurityResProvider = class(TEntityUIClass)
-  end;
-
-  TEntityUIClassActivity = class(TEntityUIClass)
-  end;
 
   TEntityViewExtension = class(TViewExtension, IExtensionCommand)
   private
@@ -58,36 +30,6 @@ type
     procedure CommandUpdate;
   end;
 
-
-  TEntityUIInfo = class(TComponent, IEntityUIInfo)
-  private
-    FURI: string;
-    FUIClassName: string;
-    FEntityName: string;
-    FEntityViewName: string;
-    FTitle: string;
-    FCategory: string;
-    FGroup: string;
-    FOptions: TStringList;
-    FParams: TStringList;
-    FOuts: TStringList;
-  protected
-    //IEntityUIInfo
-    function URI: string;
-    function UIClassName: string;
-    function EntityName: string;
-    function EntityViewName: string;
-    function Params: TStrings;
-    function Outs: TStrings;
-    function Title: string;
-    function Category: string;
-    function Group: string;
-    function OptionValue(const AName: string): string;
-    function OptionExists(const AName: string): boolean;
-  public
-    constructor Create(AOwner: TComponent; const AURI, AUIClassName, AEntityName: string); reintroduce;
-    destructor Destroy; override;
-  end;
 
   TEntityActivityBuilder = class(TActivityBuilder)
   private
@@ -114,7 +56,7 @@ type
     procedure Build(ActivityInfo: IActivityInfo); override;
   end;
 
-  TEntityCatalogController = class(TCustomUIController)
+  TEntityCatalogController = class(TWorkItemController)
   private
 
     procedure RegisterUIClasses;
@@ -125,7 +67,7 @@ type
     procedure ActionEntityDetail(Sender: IAction);
   protected
     //
-    procedure OnInitialize; override;
+    procedure Initialize; override;
     procedure Terminate; override;
   public
     destructor Destroy; override;
@@ -273,7 +215,7 @@ begin
 end;
 
 
-procedure TEntityCatalogController.OnInitialize;
+procedure TEntityCatalogController.Initialize;
 begin
 
   RegisterUIClasses;
@@ -459,6 +401,8 @@ end;
 procedure TEntityViewExtension.CommandExtend;
 const
   COMMAND_ENTITY_OPER_EXEC = 'view.commands.EntityOperExec';
+  ENTC_UI = 'ENTC_UI';
+  ENTC_UI_VIEW_CMD = 'Commands';
 
 var
   list: TDataSet;
@@ -515,101 +459,6 @@ begin
   end
   else
     Result := AValue;
-end;
-
-{ TEntityUIInfo }
-
-function TEntityUIInfo.Category: string;
-begin
-  Result := FCategory;
-end;
-
-constructor TEntityUIInfo.Create(AOwner: TComponent;
-  const AURI, AUIClassName, AEntityName: string);
-begin
-  inherited Create(AOwner);
-  FURI := AURI;
-  FUIClassName := AUIClassName;
-  FEntityName := AEntityName;
-  FOptions := TStringList.Create;
-  FParams := TStringList.Create;
-  FOuts := TStringList.Create;
-end;
-
-destructor TEntityUIInfo.Destroy;
-begin
-  FOuts.Free;
-  FParams.Free;
-  FOptions.Free;
-  inherited;
-end;
-
-function TEntityUIInfo.EntityName: string;
-begin
-  Result := FEntityName;
-end;
-
-function TEntityUIInfo.EntityViewName: string;
-begin
-  Result := FEntityViewName;
-end;
-
-function TEntityUIInfo.Params: TStrings;
-begin
-  Result := FParams;
-end;
-
-function TEntityUIInfo.OptionValue(const AName: string): string;
-begin
-  Result := FOptions.Values[AName];
-end;
-
-function TEntityUIInfo.Group: string;
-begin
-  Result := FGroup;
-end;
-
-function TEntityUIInfo.Title: string;
-begin
-  Result := FTitle;
-end;
-
-function TEntityUIInfo.UIClassName: string;
-begin
-  Result := FUIClassName; //(Owner as TEntityCatalogController).GetUIClass(FUIClassName, true);
-end;
-
-
-function TEntityUIInfo.URI: string;
-begin
-  Result := FURI;
-end;
-
-function TEntityUIInfo.Outs: TStrings;
-begin
-  Result := FOuts;
-end;
-
-function TEntityUIInfo.OptionExists(const AName: string): boolean;
-begin
-  Result := (FOptions.IndexOfName(AName) <> -1) or (FOptions.IndexOf(AName) <> -1);
-end;
-
-{ TEntityUIClassPresenter }
-
-constructor TEntityUIClassPresenter.Create(const AName: string;
-  APresenterClass: TPresenterClass; AViewClass: TViewClass);
-begin
-  inherited Create(AName);
-  FPresenterClass := APresenterClass;
-  FViewClass := AViewClass;
-end;
-
-{ TEntityUIClass }
-
-constructor TEntityUIClass.Create(const AName: string);
-begin
-  FName := AName;
 end;
 
 { TEntityActivityBuilder }

@@ -130,28 +130,6 @@ type
   end;
 
 
-  IEntityUIInfo = interface
-  ['{43BA3D20-BF38-4245-8406-41211B6B6AA6}']
-    function URI: string;
-    function UIClassName: string;
-    function EntityName: string;
-    function EntityViewName: string;
-    function Params: TStrings;
-    function Outs: TStrings;
-    function Title: string;
-    function Category: string;
-    function Group: string;
-    function OptionExists(const AName: string): boolean;
-    function OptionValue(const AName: string): string;
-  end;
-
-  IEntityUIManagerService = interface
-  ['{04806C89-25B5-46CC-919A-070E3602D22A}']
-    function UIInfo(const URI: string): IEntityUIInfo;
-  end;
-
-
-
 implementation
 
 uses SysUtils;

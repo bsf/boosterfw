@@ -56,7 +56,6 @@ contains
   CustomContentPresenter in '..\Sources\UI\CustomContentPresenter.pas',
   CustomDialogPresenter in '..\Sources\UI\CustomDialogPresenter.pas',
   CustomPresenter in '..\Sources\UI\CustomPresenter.pas',
-  CustomUIController in '..\Sources\UI\CustomUIController.pas',
   CustomView in '..\Sources\UI\CustomView.pas' {frCustomView},
   EditCtrlUtils in '..\Sources\UI\EditCtrlUtils.pas',
   GridCtrlUtils in '..\Sources\UI\GridCtrlUtils.pas',

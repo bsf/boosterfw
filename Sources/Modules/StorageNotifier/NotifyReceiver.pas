@@ -15,7 +15,7 @@ const
   SETTING_RECEIVER_ENABLED = 'NotifyReceiver.Enabled';
 
 type
-  TNotifyReceiver = class(TAbstractController)
+  TNotifyReceiver = class(TWorkItemController)
   private
     FLastMessageID: Variant;
     FRunningFlag: THandle;
@@ -30,7 +30,7 @@ type
     procedure NotifyAcceptHandler(EventData: Variant);
   protected
     procedure Terminate; override;
-    procedure Instantiate; override;
+    procedure Initialize; override;
   end;
 
 implementation
@@ -52,12 +52,12 @@ begin
       CloseHandle(FRunningFlag);
       FRunningFlag := 0;
     end
-  end  
+  end
   else
     Result := true;
 end;
 
-procedure TNotifyReceiver.Instantiate;
+procedure TNotifyReceiver.Initialize;
 var
   intervalR: integer;
 begin

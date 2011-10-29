@@ -15,7 +15,6 @@ type
     FViewTitle: string;
     FWorkspaceID: string;
     FWorkspace: IWorkspace;
-    FInitialized: boolean;
     FView: IView;
     FFreeOnViewClose: boolean;
     FViewVisible: boolean;
@@ -25,8 +24,9 @@ type
     procedure SetViewTitle(const Value: string);
 
     function InstantiateView(const AViewURI: string; AViewClass: TViewClass): IView;
-    procedure Initialize(const AViewURI: string; Sender: IAction; AViewClass: TViewClass);
-    procedure Reintialize(Sender: IAction);
+
+    procedure Init(const AViewURI: string; Sender: IAction; AViewClass: TViewClass);
+    procedure ReInit(Sender: IAction);
 
     procedure ViewShowHandler;
     procedure ViewCloseHandler;
@@ -70,7 +70,7 @@ type
     property ViewTitle: string read FViewTitle write SetViewTitle;
     property FreeOnViewClose: boolean read FFreeOnViewClose write FFreeOnViewClose;
     property ViewHidden: boolean read FViewHidden write FViewHidden;
-    property Initialized: boolean read FInitialized;
+
     property CallerURI: string read FCallerURI write SetCallerURI;
     property ViewVisible: boolean read FViewVisible write FViewVisible;
     //
@@ -168,13 +168,13 @@ begin
 end;
 
 
-procedure TCustomPresenter.Initialize(const AViewURI: string; Sender: IAction;
+procedure TCustomPresenter.Init(const AViewURI: string; Sender: IAction;
   AViewClass: TViewClass);
 var
   I: integer;
   extensions: TInterfaceList;
 begin
-  FInitialized := false;
+
   FViewHidden := false;
   FFreeOnViewClose := true;
 
@@ -217,7 +217,7 @@ begin
   for I := 0 to extensions.Count - 1 do
     (extensions[I] as IExtensionCommand).CommandExtend;
 
-  FInitialized := True;
+
 end;
 
 function TCustomPresenter.InstantiateView(const AViewURI: string;
@@ -334,7 +334,7 @@ begin
 
 end;
 
-procedure TCustomPresenter.Reintialize(Sender: IAction);
+procedure TCustomPresenter.ReInit(Sender: IAction);
 begin
   Sender.Data.AssignTo(WorkItem);
   OnReinit(Sender);
@@ -431,7 +431,7 @@ begin
     instWI := AWorkItem.WorkItems.Add(Self, ViewURI + instID);
     try
       inst := instWI.Controller as TCustomPresenter;
-      inst.Initialize(viewURI, Sender, AViewClass);
+      inst.Init(viewURI, Sender, AViewClass);
     except
       instWI.Free;
       raise;
@@ -440,7 +440,7 @@ begin
   else
   begin
     inst := instWI.Controller as TCustomPresenter;
-    inst.Reintialize(Sender);
+    inst.ReInit(Sender);
   end;
 
   if not inst.ViewHidden then

@@ -47,7 +47,7 @@ type
     FReportCatalogItem: TReportCatalogItem;
     FLayouts: TDictionary<string, string>;
     FLayoutCaptions: TStringList;
-
+    FInitialized: boolean;
     procedure InitParamDataSet;
     procedure InitViewParamEditors;
     procedure InitParamDefaultValues;
@@ -142,6 +142,7 @@ begin
   InitParamDataSet;
   InitParamDefaultValues;
   InitParamValues;
+  FInitialized := true;
 end;
 
 procedure TReportLauncherPresenter.OnViewShow;
@@ -529,7 +530,7 @@ procedure TReportLauncherPresenter.OnSetWorkItemState(const AName: string;
 var
   field: TField;
 begin
-  if Self.Initialized then
+  if FInitialized then
   begin
     FParamDataSet.Edit;
     field := FParamDataSet.FindField(AName);
