@@ -9,7 +9,7 @@ uses
 
   //
   bfwStorageNotifierModuleInit,
-  bfwEntityCatalogModuleInit,
+  bfwEntityUIModuleInit,
   bfwReportManagerModuleInit,
   bfwReportEngineXLModuleInit,
   bfwReportEngineFRModuleInit,
