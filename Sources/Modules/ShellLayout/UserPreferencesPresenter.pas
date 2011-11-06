@@ -26,7 +26,7 @@ type
     procedure AppPreferencesChangedHandler(AField: TField);
     procedure LoadAppPreferenceValue(AField: TField);
   protected
-    procedure OnInit(Sender: IAction); override;
+    procedure OnInit(Activity: IActivity); override;
     procedure OnViewReady; override;
     procedure OnViewClose; override;
   end;
@@ -129,7 +129,7 @@ begin
   end;
 end;
 
-procedure TUserPreferencesPresenter.OnInit(Sender: IAction);
+procedure TUserPreferencesPresenter.OnInit(Activity: IActivity);
 begin
   FreeOnViewClose := true;
   InitAppPreferencesData;

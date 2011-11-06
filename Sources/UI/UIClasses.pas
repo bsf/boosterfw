@@ -2,7 +2,7 @@ unit UIClasses;
 
 interface
 uses classes, db, CoreClasses, sysutils, controls, ShellIntf,
-  ActivityServiceIntf, Contnrs, forms;
+  Contnrs, forms;
 
 const
   COMMAND_CLOSE = 'commands.view.close';
@@ -86,28 +86,10 @@ type
 
   TViewClass = class of TView;
 
-  TPresenterData = class(TActionData)
-  private
-    FPresenterID: string;
-    FWorkspace: string;
-    FModalResult: TModalResult;
-    FViewTitle: string;
-    FBackViewUri: string;
-  public
-    constructor Create(const ActionURI: string); override;
-  published
-    property PresenterID: string read FPresenterID write FPresenterID;
-    property Workspace: string read FWorkspace write FWorkspace;
-    property ModalResult: TModalResult read FModalResult write FModalResult;
-    property ViewTitle: string read FViewTitle write FViewTitle;
-    property BackViewUri: string read FBackViewUri write FBackViewUri;
-  end;
-
   TPresenter = class(TWorkItemController)
   public
     // called by ViewActivityBuilder
-    class procedure Execute(Sender: IAction; AWorkItem: TWorkItem; AViewClass: TViewClass); virtual; abstract;
-    class function ExecuteDataClass: TActionDataClass; virtual;
+    class procedure Execute(Sender: TWorkItem; Activity: IActivity; AViewClass: TViewClass); virtual; abstract;
   end;
 
   TPresenterClass = class of TPresenter;
@@ -233,33 +215,39 @@ type
   end;
 
 //------------------------------------------------------------------------------
-  IPickListPresenterData = interface
-  ['{BE5EEC85-24BF-4BB8-9EC1-3C9A5BD43C22}']
-    function GetFilter: string;
-    function GetID: Variant;
-    function GetName: Variant;
-    procedure SetFilter(Value: string);
-    procedure SetID(Value: Variant);
-    procedure SetName(Value: Variant);
-    property Filter: string read GetFilter write SetFilter;
-    property ID: Variant read GetID write SetID;
-    property NAME: Variant read GetNAME write SetNAME;
+  TViewActivityParams = record
+    const
+      PresenterID = 'PRESENTERID';
+      Workspace = 'WORKSPACE';
+      Title = 'TITLE';
   end;
 
-  TViewActivityBuilder = class(TActivityBuilder)
+  TViewActivityOuts = record
+    const
+      ModalResult = 'ModalResult';
+  end;
+
+  TPickListActivityParams = record
+    const
+      Filter = 'FILTER';
+  end;
+
+  TPickListActivityOuts = record
+    const
+      ID = 'ID';
+      NAME = 'NAME';
+  end;
+
+  TViewActivityHandler = class(TActivityHandler)
   private
-    FWorkItem: TWorkItem;
-    FActivityClass: string;
     FPresenterClass: TPresenterClass;
     FViewClass: TViewClass;
-    procedure ExecuteHandler(Sender: IAction);
   public
-    constructor Create(AWorkItem: TWorkItem; const AActivityClass: string;
-      APresenterClass: TPresenterClass; AViewClass: TViewClass);
+    constructor Create(APresenterClass: TPresenterClass; AViewClass: TViewClass);
 
-    function ActivityClass: string; override;
-    procedure Build(ActivityInfo: IActivityInfo); override;
-    property WorkItem: TWorkItem read FWorkItem;
+    //IActivityHandler
+    procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
+    //
     property PresenterClass: TPresenterClass read FPresenterClass;
     property ViewClass: TViewClass read FViewClass;
 
@@ -272,6 +260,20 @@ procedure InstantiateViewExtensions(AView: TView);
 implementation
 
 type
+ IPickListPresenterData = interface
+  ['{BE5EEC85-24BF-4BB8-9EC1-3C9A5BD43C22}']
+    function GetFilter: string;
+    function GetID: Variant;
+    function GetName: Variant;
+    procedure SetFilter(Value: string);
+    procedure SetID(Value: Variant);
+    procedure SetName(Value: Variant);
+    property Filter: string read GetFilter write SetFilter;
+    property ID: Variant read GetID write SetID;
+    property NAME: Variant read GetNAME write SetNAME;
+  end;
+
+
   TExtensionInfo = class(TObject)
     ViewURI: string;
     ExtensionClass: TViewExtensionClass;
@@ -313,29 +315,16 @@ end;
 
 { TViewActivityBuilder }
 
-function TViewActivityBuilder.ActivityClass: string;
+procedure TViewActivityHandler.Execute(Sender: TWorkItem; Activity: IActivity);
 begin
-  Result := FActivityClass;
+  FPresenterClass.Execute(Sender, Activity, FViewClass);
 end;
 
-procedure TViewActivityBuilder.Build(ActivityInfo: IActivityInfo);
+constructor TViewActivityHandler.Create(APresenterClass: TPresenterClass;
+  AViewClass: TViewClass);
 begin
-  FWorkItem.Root.Actions[ActivityInfo.URI].SetHandler(ExecuteHandler);
-  FWorkItem.Root.Actions[ActivityInfo.URI].SetDataClass(FPresenterClass.ExecuteDataClass);
-end;
-
-constructor TViewActivityBuilder.Create(AWorkItem: TWorkItem; const AActivityClass: string;
-      APresenterClass: TPresenterClass; AViewClass: TViewClass);
-begin
-  FWorkItem := AWorkItem;
-  FActivityClass := AActivityClass;
   FPresenterClass := APresenterClass;
   FViewClass := AViewClass;
-end;
-
-procedure TViewActivityBuilder.ExecuteHandler(Sender: IAction);
-begin
-  FPresenterClass.Execute(Sender, FWorkItem, FViewClass);
 end;
 
 { TViewExtension }
@@ -348,32 +337,6 @@ end;
 function TViewExtension.WorkItem: TWorkItem;
 begin
   Result := GetView.WorkItem;
-end;
-
-{ TPresenter }
-
-class function TPresenter.ExecuteDataClass: TActionDataClass;
-begin
-  Result := nil;
-end;
-
-{ TPresenterData }
-
-constructor TPresenterData.Create(const ActionURI: string);
-var
-  viewInfo: IActivityInfo;
-  I: integer;
-begin
-  inherited Create(ActionURI);
-  AddOut('ModalResult');
-
-  viewInfo := (App.WorkItem.Services[IActivityService] as IActivityService).ActivityInfo(ActionURI);
-
-  for I := 0 to viewInfo.Params.Count - 1 do
-    Add(viewInfo.Params[I]);
-
-  for I := 0 to viewInfo.Outs.Count - 1 do
-    AddOut(viewInfo.Outs[I]);
 end;
 
 { TView }

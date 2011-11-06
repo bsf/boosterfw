@@ -73,7 +73,6 @@
 			<DCCReference Include="..\Sources\Shell\ShellUnlockForm.pas">
 				<Form>fmShellUnlock</Form>
 			</DCCReference>
-			<DCCReference Include="..\Sources\Shell\Services\ActivityService.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\ConfigService.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\ConfigStorage.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\EntityManagerService.pas"/>

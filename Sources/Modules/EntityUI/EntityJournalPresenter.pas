@@ -18,7 +18,7 @@ const
 
 
 type
-  TEntityJournalPresenter = class(TCustomPresenter)
+  TEntityJournalPresenter = class(TEntityContentPresenter)
   private
     FSelectorInitialized: boolean;
     procedure InitializeSelector;
@@ -73,25 +73,24 @@ begin
 end;
 
 procedure TEntityJournalPresenter.CmdNew(Sender: TObject);
-var
-  action: IAction;
 begin
-  action := WorkItem.Actions[ACTION_ENTITY_NEW];
-  action.Data.Value['ENTITYNAME'] := ViewInfo.EntityName;
-  action.Execute(WorkItem);
+  with WorkItem.Activities[ACTION_ENTITY_NEW] do
+  begin
+    Params[TEntityNewActionParams.EntityName] := EntityName;
+    Execute(WorkItem);
+  end;
 end;
 
 procedure TEntityJournalPresenter.CmdOpen(Sender: TObject);
-var
-  action: IAction;
 begin
   if VarIsEmpty(WorkItem.State['ITEM_ID']) then Exit;
 
-  action := WorkItem.Actions[ACTION_ENTITY_ITEM];
-  action.Data.Value['ID'] := WorkItem.State['ITEM_ID'];
-  action.Data.Value['ENTITYNAME'] := ViewInfo.EntityName;
-  action.Execute(WorkItem);
-
+  with WorkItem.Activities[ACTION_ENTITY_ITEM] do
+  begin
+    Params[TEntityItemActionParams.ID] := WorkItem.State['ITEM_ID'];
+    Params[TEntityItemActionParams.EntityName] := EntityName;
+    Execute(WorkItem);
+  end;
 end;
 
 procedure TEntityJournalPresenter.CmdReload(Sender: TObject);
@@ -103,21 +102,21 @@ procedure TEntityJournalPresenter.CmdSelector(Sender: TObject);
 const
   FMT_VIEW_SELECTOR = 'Views.%s.Selector';
 var
-  action: IAction;
   actionName: string;
 begin
   actionName := format(FMT_VIEW_SELECTOR, [GetSelectorEntityName]);
 
-  action := WorkItem.Actions[actionName];
-  action.Data.Assign(WorkItem);
-  action.Execute(WorkItem);
-  if (action.Data as TEntitySelectorPresenterData).ModalResult = mrOk then
+  with WorkItem.Activities[actionName] do
   begin
-    action.Data.AssignTo(WorkItem);
-    UpdateInfoText;
-    WorkItem.Commands[COMMAND_RELOAD].Execute;
-  end;
-
+    Params.Assign(WorkItem);
+    Execute(WorkItem);
+    if Params[TViewActivityOuts.ModalResult] = mrOk then
+    begin
+      Outs.AssignTo(WorkItem);
+      UpdateInfoText;
+      WorkItem.Commands[COMMAND_RELOAD].Execute;
+    end;
+  end
 end;
 
 procedure TEntityJournalPresenter.CmdStateChange(Sender: TObject);
@@ -216,14 +215,14 @@ begin
     FSelectorInitialized := true;
   end;
 
-  evName := ViewInfo.EntityViewName;
+  evName := EntityViewName;
   if evName = '' then evName := ENT_VIEW_JOURNAL;
-  Result := GetEView(ViewInfo.EntityName, evName);
+  Result := GetEView(EntityName, evName);
 end;
 
 function TEntityJournalPresenter.GetEVStates: IEntityView;
 begin
-  Result := GetEView(ViewInfo.EntityName, ENT_VIEW_STATES, []);
+  Result := GetEView(EntityName, ENT_VIEW_STATES, []);
 end;
 
 procedure TEntityJournalPresenter.InitializeSelector;
@@ -234,7 +233,7 @@ begin
   ds := App.Entities[GetSelectorEntityName].GetView('Selector', WorkItem).Load(WorkItem);
   for I := 0 to ds.FieldCount - 1 do
     WorkItem.State[ds.Fields[I].FieldName] := ds.Fields[I].Value;
-  UpdateInfoText;  
+  UpdateInfoText;
 end;
 
 function TEntityJournalPresenter.OnGetWorkItemState(
@@ -319,8 +318,8 @@ end;
 function TEntityJournalPresenter.GetSelectorEntityName: string;
 begin
   Result := ViewInfo.OptionValue('UseSelector');
-  if (Result = '') and App.Entities.EntityViewExists(ViewInfo.EntityName, 'Selector') then
-    Result := ViewInfo.EntityName
+  if (Result = '') and App.Entities.EntityViewExists(EntityName, 'Selector') then
+    Result := EntityName
   else
     Result := 'UTL_JRN';
 end;

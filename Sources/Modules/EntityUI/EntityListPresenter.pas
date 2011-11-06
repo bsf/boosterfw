@@ -16,7 +16,7 @@ const
 
 
 type
-  TEntityListPresenter = class(TCustomContentPresenter)
+  TEntityListPresenter = class(TEntityContentPresenter)
   private
     FSelectorInitialized: boolean;
     function UseSelector: boolean;
@@ -40,8 +40,6 @@ type
     procedure OnViewReady; override;
     //
     function GetSelectedIDList: Variant;
-  public
-    class function ExecuteDataClass: TActionDataClass; override;
   end;
 
 implementation
@@ -131,7 +129,7 @@ begin
 
   if ViewInfo.OptionExists('Title') then
      ViewTitle :=
-       VarToStr(GetEView(ViewInfo.EntityName, ViewInfo.OptionValue('Title')).DataSet.Fields[0].Value);
+       VarToStr(GetEView(EntityName, ViewInfo.OptionValue('Title')).DataSet.Fields[0].Value);
 
 {  if Assigned(GetEVList.DataSet.FindField('VIEW_TITLE')) then
     ViewTitle := VarToStr(GetEVList.DataSet.FindField('VIEW_TITLE').Value);}
@@ -177,9 +175,9 @@ begin
     FSelectorInitialized := true;
   end;
 
-  evName := ViewInfo.EntityViewName;
+  evName := EntityViewName;
   if evName = '' then evName := ENT_VIEW_LIST;
-  Result := GetEView(ViewInfo.EntityName, evName);
+  Result := GetEView(EntityName, evName);
 end;
 
 procedure TEntityListPresenter.EViewListChangedHandler(
@@ -194,24 +192,24 @@ begin
 end;
 
 procedure TEntityListPresenter.CmdNew(Sender: TObject);
-var
-  action: IAction;
 begin
-  action := WorkItem.Actions[ACTION_ENTITY_NEW];
-  action.Data.Value['ENTITYNAME'] := ViewInfo.EntityName;
-  action.Execute(WorkItem);
+  with WorkItem.Activities[ACTION_ENTITY_NEW] do
+  begin
+    Params[TEntityNewActionParams.EntityName] := EntityName;
+    Execute(WorkItem);
+  end;
 end;
 
 procedure TEntityListPresenter.CmdOpen(Sender: TObject);
-var
-  action: IAction;
 begin
   if VarIsEmpty(WorkItem.State['ITEM_ID']) then Exit;
 
-  action := WorkItem.Actions[ACTION_ENTITY_ITEM];
-  action.Data.Value['ID'] := WorkItem.State['ITEM_ID'];
-  action.Data.Value['ENTITYNAME'] := ViewInfo.EntityName;
-  action.Execute(WorkItem);
+  with WorkItem.Activities[ACTION_ENTITY_ITEM] do
+  begin
+    Params[TEntityItemActionParams.ID] := WorkItem.State['ITEM_ID'];
+    Params[TEntityItemActionParams.EntityName] := EntityName;
+    Execute(WorkItem);
+  end;
 end;
 
 
@@ -219,25 +217,20 @@ end;
 procedure TEntityListPresenter.CmdSelector(Sender: TObject);
 const
   FMT_VIEW_SELECTOR = 'Views.%s.Selector';
-
-var
-  action: IAction;
 begin
-  action := WorkItem.Actions[format(FMT_VIEW_SELECTOR, [ViewInfo.EntityName])];
-  action.Data.Assign(WorkItem);
-  action.Execute(WorkItem);
-  if (action.Data as TEntitySelectorPresenterData).ModalResult = mrOk then
+  with WorkItem.Activities[format(FMT_VIEW_SELECTOR, [EntityName])] do
   begin
-    action.Data.AssignTo(WorkItem);
-    UpdateInfoText;
-    WorkItem.Commands[COMMAND_RELOAD].Execute;
+    Params.Assign(WorkItem);
+    Execute(WorkItem);
+    if Outs[TViewActivityOuts.ModalResult] = mrOk then
+    begin
+      Outs.AssignTo(WorkItem);
+      UpdateInfoText;
+      WorkItem.Commands[COMMAND_RELOAD].Execute;
+    end;
   end;
 end;
 
-class function TEntityListPresenter.ExecuteDataClass: TActionDataClass;
-begin
-  Result := TEntityListPresenterData;
-end;
 
 function TEntityListPresenter.View: IEntityListView;
 begin
@@ -276,7 +269,7 @@ function TEntityListPresenter.GetSelectorEntityName: string;
 begin
   Result := ViewInfo.OptionValue('UseSelector');
   if Result = '' then
-    Result := ViewInfo.EntityName;
+    Result := EntityName;
 end;
 
 end.

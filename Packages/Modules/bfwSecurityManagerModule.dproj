@@ -79,6 +79,7 @@
 				<Form>frUserAccountsView</Form>
 			</DCCReference>
 			<DCCReference Include="..\..\Sources\Modules\SecurityManager\bfwSecurityManagerModuleInit.pas"/>
+			<DCCReference Include="..\..\Sources\Modules\SecurityManager\SecurityResProvider.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

@@ -2,7 +2,7 @@ unit CoreClasses;
 
 interface
 uses SysUtils, Classes, Contnrs, Controls, Messages, ManagedList, Variants,
-  typinfo, windows;
+  typinfo, windows, graphics;
 
 const
   etAppStarted = 'Application.Started';
@@ -122,8 +122,91 @@ type
     property Workspace[const AName: string]: IWorkspace read GetWorkspace; default;
   end;
 
-{Actions}
+{Activities}
+  IActivity = interface;
 
+  TActivityHandler = class(TObject)
+  public
+    procedure Execute(Sender: TWorkItem; Activity: IActivity); virtual; abstract;
+  end;
+
+  IActivityData = interface
+  ['{3890884F-D4DB-4E57-AECB-D432BA6CA6A8}']
+    function Count: integer;
+    function ValueName(AIndex: integer): string;
+    function IndexOf(const AName: string): integer;
+    procedure Assign(Source: TPersistent);
+    procedure AssignTo(Dest: TPersistent);
+    procedure SetValue(const AName: string; AValue: Variant);
+    function GetValue(const AName: string): Variant;
+    property Value[const AName: string]: Variant read GetValue write SetValue; default;
+  end;
+
+
+  IActivity = interface
+  ['{D9404645-31DF-4505-8972-BD29B4D5F85F}']
+    function URI: string;
+
+    procedure SetActivityClass(const Value: string);
+    function GetActivityClass: string;
+    property ActivityClass: string read GetActivityClass write SetActivityClass;
+
+    procedure SetTitle(const Value: string);
+    function GetTitle: string;
+    property Title: string read GetTitle write SetTitle;
+
+    procedure SetGroup(const Value: string);
+    function GetGroup: string;
+    property Group: string read GetGroup write SetGroup;
+
+    procedure SetMenuIndex(Value: integer);
+    function GetMenuIndex: integer;
+    property MenuIndex: integer read GetMenuIndex write SetMenuIndex;
+
+    function GetShortCut: string;
+    procedure SetShortCut(const Value: string);
+    property ShortCut: string read GetShortCut write SetShortCut;
+
+    function GetImage: Graphics.TBitmap;
+    procedure SetImage(Value: Graphics.TBitmap);
+    property Image: Graphics.TBitmap read GetImage write SetImage;
+
+    procedure SetUsePermission(Value: boolean);
+    function GetUsePermission: boolean;
+    property UsePermission: boolean read GetUsePermission write SetUsePermission;
+    function HavePermission: boolean;
+
+    function Options: TStrings;
+    function OptionExists(const AName: string): boolean;
+    function OptionValue(const AName: string): string;
+
+    function Params: IActivityData;
+    function Outs: IActivityData;
+
+    procedure RegisterHandler(AHandler: TActivityHandler);
+
+    procedure Execute(Sender: TWorkItem);
+
+  end;
+
+  IActivityPermissionHandler = interface
+  ['{87BFE264-2CB4-4DA1-BA4F-A90FE230BF2F}']
+    function CheckPermission(Activity: IActivity): boolean;
+    procedure DemandPermission(Activity: IActivity);
+  end;
+
+  IActivities = interface
+  ['{135F7738-1BD9-4562-B9F3-EBA335B3CC3A}']
+    procedure RegisterHandler(const ActivityClass: string; AHandler: TActivityHandler);
+    procedure RegisterPermissionHandler(AHandler: IActivityPermissionHandler);
+    function Count: integer;
+    function GetItem(AIndex: integer): IActivity;
+    function IndexOf(const URI: string): integer;
+    function FindOrCreate(const URI: string): IActivity;
+    property Activity[const URI: string]: IActivity read FindOrCreate; default;
+  end;
+
+{Actions}
 
   IAction = interface;
 
@@ -320,6 +403,7 @@ type
     FServices: TComponent;
     FWorkItems: TComponent;
     FCommands: TComponent;
+    FActivities: TComponent;
     FActions: TComponent;
     FWorkspaces: TComponent;
     FItems: TComponent;
@@ -332,11 +416,13 @@ type
     function GetEventTopics: IEventTopics;
     function GetWorkItems: IWorkItems;
     function GetCommands: ICommands;
+    function GetActivities: IActivities;
     function GetActions: IActions;
     function GetWorkspaces: IWorkspaces;
     function GetItems: IItems;
     function GetState(const AName: string): Variant;
     procedure SetState(const AName: string; const Value: Variant);
+
      //отключено за ненадобностью
     //function GetApplication: IInterface;
   protected
@@ -346,6 +432,7 @@ type
 
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
+    property Actions: IActions read GetActions;
   public
     procedure DebugInfo(const AInfoText: string);
 
@@ -361,7 +448,8 @@ type
     property WorkItems: IWorkItems read GetWorkItems;
     property EventTopics: IEventTopics read GetEventTopics;
     property Commands: ICommands read GetCommands;
-    property Actions: IActions read GetActions;
+    property Activities: IActivities read GetActivities;
+
     property Workspaces: IWorkspaces read GetWorkspaces;
     property Items: IItems read GetItems;
     property State[const AName: string]: Variant read GetState write SetState;
@@ -384,7 +472,7 @@ function FindWorkItem(const AID: string; AParent: TWorkItem): TWorkItem;
 
 implementation
 
-uses  EventBroker, ServicesList, CommandsList, WorkspacesList, ItemsList,
+uses  EventBroker, ServicesList, CommandsList, Activities, WorkspacesList, ItemsList,
   ActionsList;
 
 var
@@ -495,6 +583,9 @@ begin
     ParentList := TManagedItemList(FParent.FCommands);
   FCommands := TCommands.Create(Self, lsmLocal{lsmUp}, ParentList);
 
+  if FParent = nil then
+    FActivities := TActivities.Create(Self);
+
   ParentList := nil;
   if FParent <> nil then
     ParentList := TManagedItemList(FParent.FActions);
@@ -567,6 +658,11 @@ end;
 function TWorkItem.GetActions: IActions;
 begin
   FActions.GetInterface(IActions, Result);
+end;
+
+function TWorkItem.GetActivities: IActivities;
+begin
+  Result := Root.FActivities as IActivities;
 end;
 
 {function TWorkItem.GetApplication: IInterface;

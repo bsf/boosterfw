@@ -1,7 +1,7 @@
 unit bfwSettingManagerModuleInit;
 
 interface
-uses classes, CoreClasses, ActivityServiceIntf, UIClasses, ShellIntf,
+uses classes, CoreClasses, UIClasses, ShellIntf,
      SettingsPresenter, SettingsView;
 
 type
@@ -16,15 +16,12 @@ implementation
 
 procedure TSettingManagerModuleInit.Load;
 begin
-  with WorkItem.Services[IActivityService] as IActivityService do
+  with WorkItem.Activities[VIEW_SETTINGS] do
   begin
-    with RegisterActivityInfo(VIEW_SETTINGS) do
-    begin
-      Title := VIEW_SETTINGS_CAPTION;
-      Group := MAIN_MENU_SERVICE_GROUP;
-    end;
-    RegisterActivityClass(TViewActivityBuilder.Create(WorkItem,
-      VIEW_SETTINGS, TSettingsPresenter, TfrSettingsView));
+    Title := VIEW_SETTINGS_CAPTION;
+    Group := MAIN_MENU_SERVICE_GROUP;
+    UsePermission := true;
+    RegisterHandler(TViewActivityHandler.Create(TSettingsPresenter, TfrSettingsView));
   end;
 end;
 

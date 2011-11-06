@@ -1,19 +1,25 @@
 unit AdminController;
 
 interface
-uses classes, CoreClasses, ShellIntf,
-  ActivityServiceIntf, UIClasses,
+uses classes, CoreClasses, ShellIntf, SecurityIntf, UIClasses, db,
   SecurityPoliciesPresenter, SecurityPoliciesView,
   SecurityPolicyPresenter, SecurityPolicyView,
   SecurityPolicyResPresenter, SecurityPolicyResView,
   SecurityPermEffectivePresenter, SecurityPermEffectiveView,
-  UserAccountsPresenter, UserAccountsView,
+  UserAccountsPresenter, UserAccountsView, SecurityResProvider,
   AdminConst;
 
 type
   TAdminController = class(TWorkItemController)
   protected
     procedure Initialize; override;
+    type
+      TSecurityPolicyActivityHandler = class(TViewActivityHandler)
+        procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
+      end;
+      TSecurityPermEffectiveActivityHandler = class(TViewActivityHandler)
+        procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
+      end;
   end;
 
 implementation
@@ -21,42 +27,77 @@ implementation
 { TAdminController }
 
 procedure TAdminController.Initialize;
-var
-  svc: IActivityService;
-begin
-  svc := WorkItem.Services[IActivityService] as IActivityService;
+  procedure RegisterSecurityResourceProviders;
+  const
+    ENT = 'SEC_PROV';
+  var
+    svc: ISecurityService;
+    list: TDataSet;
+  begin
+    svc := WorkItem.Services[ISecurityService] as ISecurityService;
 
-  with svc.RegisterActivityInfo(VIEW_SECURITYPOLICIES) do
+    svc.RegisterResProvider(TActivitySecurityResProvider.Create(Self, WorkItem));
+
+    list := App.Entities[ENT].GetView('List', WorkItem).Load([]);
+    while not list.Eof do
+    begin
+      svc.RegisterResProvider(
+        TEntitySecurityResProvider.Create(Self, list['URI'], list['ENTITYNAME'], WorkItem));
+      list.Next;
+    end;
+
+  end;
+begin
+
+  with WorkItem.Activities[VIEW_SECURITYPOLICIES] do
   begin
     Title := VIEW_SECURITYPOLICIES_TITLE;
     Group := MAIN_MENU_SERVICE_GROUP;
     UsePermission := true;
+    RegisterHandler(TViewActivityHandler.Create(TSecurityPoliciesPresenter, TfrSecurityPoliciesView));
   end;
-  svc.RegisterActivityClass(TViewActivityBuilder.Create(WorkItem,
-    VIEW_SECURITYPOLICIES, TSecurityPoliciesPresenter, TfrSecurityPoliciesView));
 
-  with svc.RegisterActivityInfo(VIEW_USERACCOUNTS) do
+  with WorkItem.Activities[VIEW_USERACCOUNTS] do
   begin
     Title := VIEW_USERACCOUNTS_CAPTION;
     Group := MAIN_MENU_SERVICE_GROUP;
     UsePermission := true;
+    RegisterHandler(TViewActivityHandler.Create(TUserAccountsPresenter, TfrUserAccountsView));
   end;
-  svc.RegisterActivityClass(TViewActivityBuilder.Create(WorkItem,
-    VIEW_USERACCOUNTS, TUserAccountsPresenter, TfrUserAccountsView));
 
-  svc.RegisterActivityInfo(VIEW_SECURITYPOLICY);
-  svc.RegisterActivityClass(TViewActivityBuilder.Create(WorkItem,
-   VIEW_SECURITYPOLICY, TSecurityPolicyPresenter, TfrSecurityPolicyView));
+  WorkItem.Activities[VIEW_SECURITYPOLICY].RegisterHandler(
+    TSecurityPolicyActivityHandler.Create(TSecurityPolicyPresenter, TfrSecurityPolicyView));
 
-  svc.RegisterActivityInfo(VIEW_SECURITYPOLICYRES);
-  svc.RegisterActivityClass(TViewActivityBuilder.Create(WorkItem,
-    VIEW_SECURITYPOLICYRES, TSecurityPolicyResPresenter, TfrSecurityPolicyResView));
+  WorkItem.Activities[VIEW_SECURITYPOLICYRES].RegisterHandler(
+    TSecurityPolicyActivityHandler.Create(TSecurityPolicyResPresenter, TfrSecurityPolicyResView));
 
-  svc.RegisterActivityInfo(VIEW_SECURITYPERMEFFECTIVE);
-  svc.RegisterActivityClass(TViewActivityBuilder.Create(WorkItem,
-    VIEW_SECURITYPERMEFFECTIVE, TSecurityPermEffectivePresenter, TfrSecurityPermEffectiveView));
+  WorkItem.Activities[VIEW_SECURITYPERMEFFECTIVE].RegisterHandler(
+    TSecurityPermEffectiveActivityHandler.Create(TSecurityPermEffectivePresenter, TfrSecurityPermEffectiveView));
 
+  RegisterSecurityResourceProviders;
 
+end;
+
+{ TAdminController.TSecurityPolicyActivityHandler }
+
+procedure TAdminController.TSecurityPolicyActivityHandler.Execute(
+  Sender: TWorkItem; Activity: IActivity);
+begin
+  Activity.Params[TViewActivityParams.PresenterID] :=
+    Activity.Params[TSecurityPolicyActivityParams.PolID];
+  inherited Execute(Sender, Activity);
+end;
+
+{ TAdminController.TSecurityPermEffectiveActivityHandler }
+
+procedure TAdminController.TSecurityPermEffectiveActivityHandler.Execute(
+  Sender: TWorkItem; Activity: IActivity);
+begin
+  Activity.Params[TViewActivityParams.PresenterID] :=
+    Activity.Params[TSecurityPermEffectiveActivityParams.PolID] +
+    Activity.Params[TSecurityPermEffectiveActivityParams.PermID] +
+    Activity.Params[TSecurityPermEffectiveActivityParams.ResID];
+  inherited;
 end;
 
 end.

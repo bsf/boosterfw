@@ -82,6 +82,11 @@
 			</DCCReference>
 			<DCCReference Include="..\..\Sources\Modules\ShellLayout\ViewStyleController.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\ShellLayout\NumLockDotHook.pas"/>
+			<DCCReference Include="..\..\Sources\Modules\ShellLayout\NotifyReceiver.pas"/>
+			<DCCReference Include="..\..\Sources\Modules\ShellLayout\NotifySenderPresenter.pas"/>
+			<DCCReference Include="..\..\Sources\Modules\ShellLayout\NotifySenderView.pas">
+				<Form>frNotifySenderView</Form>
+			</DCCReference>
 			<RcCompile Include="..\..\Sources\Modules\ShellLayout\Shell.rc">
 				<Form>Shell.res</Form>
 			</RcCompile>

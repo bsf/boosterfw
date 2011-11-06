@@ -2,7 +2,6 @@ unit EntityCatalogController;
 
 interface
 uses classes, CoreClasses,  ShellIntf, Variants, db, Contnrs,
-  ActivityServiceIntf,
   EntityCatalogIntf, EntityServiceIntf, UIClasses, sysutils,
   StrUtils, EntitySecResProvider, SecurityIntf, controls,
   EntityJournalPresenter, EntityJournalView,
@@ -31,20 +30,7 @@ type
   end;
 
 
-  TEntityActivityBuilder = class(TActivityBuilder)
-  private
-    FWorkItem: TWorkItem;
-  public
-    constructor Create(AWorkItem: TWorkItem);
-    function ActivityClass: string; override;
-    procedure Build(ActivityInfo: IActivityInfo); override;
-  end;
-
-  TEntityViewActivityBuilder = class(TViewActivityBuilder)
-  public
-    procedure Build(ActivityInfo: IActivityInfo); override;
-  end;
-
+{
   TSecurityResActivityBuilder = class(TActivityBuilder)
   private
     FProvider: TEntitySecurityResProvider;
@@ -55,28 +41,37 @@ type
     function ActivityClass: string; override;
     procedure Build(ActivityInfo: IActivityInfo); override;
   end;
+}
 
   TEntityCatalogController = class(TWorkItemController)
-  private
-
-    procedure RegisterUIClasses;
-    //
-    procedure ActionEntityItem(Sender: IAction);
-    procedure ActionEntityNew(Sender: IAction);
-    procedure ActionEntityDetailNew(Sender: IAction);
-    procedure ActionEntityDetail(Sender: IAction);
   protected
     //
     procedure Initialize; override;
-    procedure Terminate; override;
-  public
-    destructor Destroy; override;
+    type
+      TEntityItemActionHandler = class(TActivityHandler)
+        procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
+      end;
+      TEntityNewActionHandler = class(TActivityHandler)
+        procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
+      end;
+      TEntityDetailNewActionHandler = class(TActivityHandler)
+        procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
+      end;
+      TEntityDetailActionHandler = class(TActivityHandler)
+        procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
+      end;
+      TEntityViewActivityHandler = class(TViewActivityHandler)
+      private
+        FInitialized: boolean;
+      public
+        procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
+      end;
   end;
 
 implementation
 
 { TEntityCatalogController }
-
+(*
 procedure TEntityCatalogController.ActionEntityDetail(Sender: IAction);
 const
   FMT_VIEW_ITEM = 'Views.%s.Detail';
@@ -138,7 +133,7 @@ begin
   if actionName <> '' then
   begin
     WorkItem.Actions[actionName].Data.Assign(Sender.Caller);
-    //WorkItem.Actions[actionName].Data.HID := (Sender.Data as TEntityNewActionData).HID;    
+    //WorkItem.Actions[actionName].Data.HID := (Sender.Data as TEntityNewActionData).HID;
     WorkItem.Actions[actionName].Execute(Sender.Caller);
   end;
 
@@ -208,102 +203,40 @@ begin
     WorkItem.Actions[actionName].Execute(Sender.Caller);
   end;
 end;
-
-destructor TEntityCatalogController.Destroy;
-begin
-  inherited;
-end;
-
-
+ *)
 procedure TEntityCatalogController.Initialize;
 begin
 
-  RegisterUIClasses;
 
-  with WorkItem.Root.Actions[ACTION_ENTITY_ITEM] do
+  WorkItem.Activities[ACTION_ENTITY_ITEM].
+    RegisterHandler(TEntityItemActionHandler.Create);
+
+  WorkItem.Activities[ACTION_ENTITY_NEW].
+    RegisterHandler(TEntityNewActionHandler.Create);
+
+  WorkItem.Activities[ACTION_ENTITY_DETAIL].
+    RegisterHandler(TEntityDetailActionHandler.Create);
+
+  WorkItem.Activities[ACTION_ENTITY_DETAIL_NEW].
+    RegisterHandler(TEntityDetailNewActionHandler.Create);
+
+  with WorkItem.Activities do
   begin
-    SetHandler(ActionEntityItem);
-    SetDataClass(TEntityItemActionData);
+    RegisterHandler('IEntityListView', TEntityViewActivityHandler.Create(TEntityListPresenter, TfrEntityListView));
+    RegisterHandler('IEntityNewView', TEntityViewActivityHandler.Create(TEntityNewPresenter, TfrEntityNewView));
+    RegisterHandler('IEntityItemView', TEntityViewActivityHandler.Create(TEntityItemPresenter, TfrEntityItemView));
+    RegisterHandler('IEntityComplexView', TEntityViewActivityHandler.Create(TEntityComplexPresenter, TfrEntityComplexView));
+    RegisterHandler('IEntityCollectView', TEntityViewActivityHandler.Create(TEntityCollectPresenter, TfrEntityCollectView));
+    RegisterHandler('IEntityListView', TEntityViewActivityHandler.Create(TEntityListPresenter, TfrEntityListView));
+    RegisterHandler('IEntityPickListView', TEntityViewActivityHandler.Create(TEntityPickListPresenter, TfrEntityPickListView));
+    RegisterHandler('IEntityJournalView', TEntityViewActivityHandler.Create(TEntityJournalPresenter, TfrEntityJournalView));
+    RegisterHandler('IEntitySelectorView', TEntityViewActivityHandler.Create(TEntitySelectorPresenter, TfrEntitySelectorView));
+    RegisterHandler('IEntityDeskView', TEntityViewActivityHandler.Create(TEntityDeskPresenter, TfrEntityDeskView));
+    RegisterHandler('IEntityOrgChartView', TEntityViewActivityHandler.Create(TEntityOrgChartPresenter, TfrEntityOrgChartView));
   end;
-
-  with WorkItem.Root.Actions[ACTION_ENTITY_NEW] do
-  begin
-    SetHandler(ActionEntityNew);
-    SetDataClass(TEntityNewActionData);
-  end;
-
-  with WorkItem.Root.Actions[ACTION_ENTITY_DETAIL] do
-  begin
-    SetHandler(ActionEntityDetail);
-    SetDataClass(TEntityItemActionData);
-  end;
-
-  with WorkItem.Root.Actions[ACTION_ENTITY_DETAIL_NEW] do
-  begin
-    SetHandler(ActionEntityDetailNew);
-    SetDataClass(TEntityNewActionData);
-  end;
-
- { RegisterAction(ACTION_ENTITY_ITEM, ActionEntityItem, TEntityItemActionData);
-  RegisterAction(ACTION_ENTITY_NEW, ActionEntityNew, TEntityNewActionData);
-  RegisterAction(ACTION_ENTITY_DETAIL, ActionEntityDetail, TEntityItemActionData);
-  RegisterAction(ACTION_ENTITY_DETAIL_NEW, ActionEntityDetailNew, TEntityNewActionData);
-  }
-
 end;
 
 
-procedure TEntityCatalogController.RegisterUIClasses;
-var
-  svc: IActivityService;
-begin
-  svc := WorkItem.Services[IActivityService] as IActivityService;
-
-  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
-    'IEntityListView', TEntityListPresenter, TfrEntityListView));
-  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
-    'IEntityNewView', TEntityNewPresenter, TfrEntityNewView));
-  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
-    'IEntityItemView', TEntityItemPresenter, TfrEntityItemView));
-  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
-    'IEntityComplexView', TEntityComplexPresenter, TfrEntityComplexView));
-  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
-    'IEntityCollectView', TEntityCollectPresenter, TfrEntityCollectView));
-  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
-    'IEntityListView', TEntityListPresenter, TfrEntityListView));
-  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
-    'IEntityPickListView', TEntityPickListPresenter, TfrEntityPickListView));
-  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
-    'IEntityJournalView', TEntityJournalPresenter, TfrEntityJournalView));
-  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
-    'IEntitySelectorView', TEntitySelectorPresenter, TfrEntitySelectorView));
-  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
-    'IEntityDeskView', TEntityDeskPresenter, TfrEntityDeskView));
-  svc.RegisterActivityClass(TEntityViewActivityBuilder.Create(WorkItem,
-    'IEntityOrgChartView', TEntityOrgChartPresenter, TfrEntityOrgChartView));
-
-  svc.RegisterActivityClass(TEntityActivityBuilder.Create(WorkItem));
-  svc.RegisterActivityClass(TSecurityResActivityBuilder.Create(WorkItem));
-
-//  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityNewView', TEntityNewPresenter, TfrEntityNewView));
-//  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityItemView', TEntityItemPresenter, TfrEntityItemView));
-//  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityComplexView', TEntityComplexPresenter, TfrEntityComplexView));
-//  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityCollectView', TEntityCollectPresenter, TfrEntityCollectView));
-//  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityListView', TEntityListPresenter, TfrEntityListView));
-//  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityPickListView', TEntityPickListPresenter, TfrEntityPickListView));
-//  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityJournalView', TEntityJournalPresenter, TfrEntityJournalView));
-//  RegisterUIClass(TEntityUIClassPresenter.Create('IEntitySelectorView', TEntitySelectorPresenter, TfrEntitySelectorView));
-//  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityDeskView', TEntityDeskPresenter, TfrEntityDeskView));
-//  RegisterUIClass(TEntityUIClassPresenter.Create('IEntityOrgChartView', TEntityOrgChartPresenter, TfrEntityOrgChartView));
-//  RegisterUIClass(TEntityUIClassActivity.Create('IEntityActivity'));
-//  RegisterUIClass(TEntityUIClassSecurityResProvider.Create('ISecurityResProvider'));
-end;
-
-
-procedure TEntityCatalogController.Terminate;
-begin
-
-end;
 
 { TEntityViewExtension }
 
@@ -348,7 +281,7 @@ procedure TEntityViewExtension.CmdHandlerAction(Sender: TObject);
 var
   intf: ICommand;
   actionName: string;
-  action: IAction;
+  action: IActivity;
   cmdData: string;
   dataList: TStringList;
   I: integer;
@@ -358,13 +291,13 @@ begin
   actionName := intf.Data['HANDLER'];
   intf := nil;
 
-  action := WorkItem.Actions[actionName];
+  action := WorkItem.Activities[actionName];
 
   dataList := TStringList.Create;
   try
     ExtractStrings([';'], [], PWideChar(cmdData), dataList);
     for I := 0 to dataList.Count - 1 do
-      action.Data.SetValue(dataList.Names[I], GetDataValue(dataList.ValueFromIndex[I]));
+      action.Params[dataList.Names[I]] :=  GetDataValue(dataList.ValueFromIndex[I]);
   finally
     dataList.Free;
   end;
@@ -461,35 +394,9 @@ begin
     Result := AValue;
 end;
 
-{ TEntityActivityBuilder }
-
-function TEntityActivityBuilder.ActivityClass: string;
-begin
-  Result := 'IEntityActivity';
-end;
-
-procedure TEntityActivityBuilder.Build(ActivityInfo: IActivityInfo);
-begin
-//  (FWorkItem.Services[IViewManagerService] as IViewManagerService).
-    RegisterViewExtension(ActivityInfo.URI, TEntityViewExtension);
-end;
-
-constructor TEntityActivityBuilder.Create(AWorkItem: TWorkItem);
-begin
-  FWorkItem := AWorkItem;
-end;
-
-{ TEntityViewActivityBuilder }
-
-procedure TEntityViewActivityBuilder.Build(ActivityInfo: IActivityInfo);
-begin
-  inherited;
- // (WorkItem.Services[IViewManagerService] as IViewManagerService).
-  RegisterViewExtension(ActivityInfo.URI, TEntityViewExtension);
-end;
 
 { TSecurityResActivityBuilder }
-
+{
 function TSecurityResActivityBuilder.ActivityClass: string;
 begin
   Result := 'ISecurityResProvider';
@@ -511,6 +418,164 @@ destructor TSecurityResActivityBuilder.Destroy;
 begin
   if Assigned(FProvider) then
     FProvider.Free;
+  inherited;
+end;
+ }
+{ TEntityCatalogController.TEntityItemActionHandler }
+
+procedure TEntityCatalogController.TEntityItemActionHandler.Execute(
+  Sender: TWorkItem; Activity: IActivity);
+const
+  FMT_VIEW_ITEM = 'Views.%s.Item';
+var
+  actionName: string;
+  dsItemURI: TDataSet;
+  itemID: variant;
+  entityName: string;
+begin
+
+  itemID := Activity.Params[TEntityItemActionParams.ID];
+  entityName := Activity.Params[TEntityItemActionParams.EntityName];
+
+  if App.Entities.EntityViewExists(entityName, 'ItemURI') then
+  begin
+    dsItemURI := App.Entities[entityName].GetView('ItemURI', Sender).Load([itemID]);
+    actionName := dsItemURI['URI'];
+    if dsItemURI.FindField('ITEM_ID') <> nil then
+      itemID := dsItemURI['ITEM_ID'];
+  end
+  else
+    actionName := format(FMT_VIEW_ITEM, [entityName]);
+
+  if actionName <> '' then
+    with Sender.Activities[actionName] do
+    begin
+      Params.Assign(Sender);
+      Params[TEntityItemActivityParams.ID] := itemID;
+      Params[TViewActivityParams.PresenterID] := VarToStr(itemID);
+      Execute(Sender);
+    end;
+
+end;
+
+{ TEntityCatalogController.TEntityNewActionHandler }
+
+procedure TEntityCatalogController.TEntityNewActionHandler.Execute(
+  Sender: TWorkItem; Activity: IActivity);
+const
+  FMT_VIEW_NEW_URI = 'Views.%s.NewURI';
+  FMT_VIEW_NEW = 'Views.%s.New';
+
+var
+  actionURI: IActivity;
+  actionName: string;
+  entityName: string;
+begin
+  entityName := Activity.Params[TEntityNewActionParams.EntityName];
+
+  if App.Entities.EntityViewExists(entityName, 'NewURI') then
+  begin
+    actionURI := Sender.Activities[format(FMT_VIEW_NEW_URI, [entityName])];
+    actionURI.Execute(Sender);
+    if actionURI.Outs[TViewActivityOuts.ModalResult] = mrOk then
+      actionName := actionURI.Outs['URI']
+    else
+      actionName := '';
+  end
+  else
+    actionName := format(FMT_VIEW_NEW, [entityName]);
+
+  if actionName <> '' then
+    with Sender.Activities[actionName] do
+    begin
+      Params.Assign(Sender);
+      Execute(Sender);
+    end;
+
+end;
+
+{ TEntityCatalogController.TEntityDetailNewActionHandler }
+
+procedure TEntityCatalogController.TEntityDetailNewActionHandler.Execute(
+  Sender: TWorkItem; Activity: IActivity);
+const
+  FMT_VIEW_NEW_URI = 'Views.%s.DetailNewURI';
+  FMT_VIEW_NEW = 'Views.%s.DetailNew';
+
+var
+  actionURI: IActivity;
+  actionName: string;
+  entityName: string;
+begin
+  entityName := Activity.Params['EntityName'];
+
+  if App.Entities.EntityViewExists(entityName, 'DetailNewURI') then
+  begin
+    actionURI := Sender.Activities[format(FMT_VIEW_NEW_URI, [entityName])];
+    actionURI.Execute(Sender);
+    if actionURI.Outs[TViewActivityOuts.ModalResult] = mrOk then
+      actionName := actionURI.Outs['URI']
+    else
+      actionName := '';
+  end
+  else
+    actionName := format(FMT_VIEW_NEW, [entityName]);
+
+  if actionName <> '' then
+    with Sender.Activities[actionName] do
+    begin
+      Params.Assign(Sender);
+      Execute(Sender);
+    end;
+
+end;
+
+{ TEntityCatalogController.TEntityDetailActionHandler }
+
+procedure TEntityCatalogController.TEntityDetailActionHandler.Execute(
+  Sender: TWorkItem; Activity: IActivity);
+const
+  FMT_VIEW_ITEM = 'Views.%s.Detail';
+var
+  actionName: string;
+  dsItemURI: TDataSet;
+  itemID: variant;
+  entityName: string;
+begin
+
+  itemID := Activity.Params['ID'];
+  entityName := Activity.Params[TEntityItemActionParams.EntityName];
+
+  if App.Entities.EntityViewExists(entityName, 'DetailURI') then
+  begin
+    dsItemURI := App.Entities[entityName].GetView('DetailURI', Sender).Load([itemID]);
+    actionName := dsItemURI['URI'];
+    if dsItemURI.FindField('ITEM_ID') <> nil then
+      itemID := dsItemURI['ITEM_ID'];
+  end
+  else
+    actionName := format(FMT_VIEW_ITEM, [entityName]);
+
+  if actionName <> '' then
+    with Sender.Activities[actionName] do
+    begin
+      Params.Assign(Sender);
+      Params[TEntityItemActionParams.ID] := itemID;
+      Execute(Sender);
+    end;
+
+end;
+
+{ TEntityCatalogController.TEntitiyViewActivityHandler }
+
+procedure TEntityCatalogController.TEntityViewActivityHandler.Execute(
+  Sender: TWorkItem; Activity: IActivity);
+begin
+  if not FInitialized then
+  begin
+    RegisterViewExtension(Activity.URI, TEntityViewExtension);
+    FInitialized := true;
+  end;
   inherited;
 end;
 

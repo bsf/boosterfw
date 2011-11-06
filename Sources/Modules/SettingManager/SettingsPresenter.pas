@@ -29,7 +29,7 @@ type
     procedure AppSettingsChangedHandler(AField: TField );
     procedure LoadAppSettingValue(AField: TField; ALevel: TSettingStorageLevel);
   protected
-    procedure OnInit(Sender: IAction); override;
+    procedure OnInit(Sender: IActivity); override;
     procedure OnViewReady; override;
     procedure OnViewClose; override;
   end;
@@ -177,7 +177,7 @@ begin
   end;
 end;
 
-procedure TSettingsPresenter.OnInit(Sender: IAction);
+procedure TSettingsPresenter.OnInit(Sender: IActivity);
 begin
   InitAppSettingsData;
   FDBSettingsData := App.Entities.Settings.GetCommonSettings(WorkItem);

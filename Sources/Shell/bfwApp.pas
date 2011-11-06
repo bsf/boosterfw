@@ -9,8 +9,7 @@ uses windows, classes, forms, sysutils,
   SecurityIntf, SecurityService,
   EntityServiceIntf, EntityManagerService,
   ReportServiceIntf, ReportService,
-  UIServiceIntf, UIService,
-  ActivityServiceIntf, ActivityService;
+  UIServiceIntf, UIService;
 
 const
   APP_VERSION = 'ver 1.0';
@@ -31,6 +30,11 @@ type
     procedure SplashShow;
     procedure SplashHide;
     procedure SplashUpdate;
+    type
+      TAppLockActivityHandler = class(TActivityHandler)
+      public
+        procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
+      end;
   protected
     function GetWorkItemClass: TWorkItemClass; override;
     procedure AddServices; override;
@@ -46,7 +50,6 @@ type
     function Entities: IEntityManagerService;
     function Reports: IReportService;
     function Security: ISecurityService;
-    function Activities: IActivityService;
     function ContentWorkspace: IWorkspace;
     function DialogWorkspace: IWorkspace;
     function WorkItem: TWorkItem;
@@ -101,16 +104,14 @@ begin
   FEntityManager := TEntityManagerService.Create(Self, RootWorkItem);
   RootWorkItem.Services.Add(IEntityManagerService(FEntityManager));
 
-  //Activity
-  RootWorkItem.Services.Add(
-    IActivityService(TActivityService.Create(Self, RootWorkItem)));
 
   //Reports
   RootWorkItem.Services.Add(
     IReportService(TReportService.Create(Self,
       IEntityManagerService(FEntityManager), RootWorkItem)));
 
-  RootWorkItem.Actions[COMMAND_LOCK_APP].SetHandler(AppLockHandler);
+  RootWorkItem.Activities.RegisterHandler(COMMAND_LOCK_APP, TAppLockActivityHandler.Create);
+//  RootWorkItem.Actions[COMMAND_LOCK_APP].SetHandler(AppLockHandler);
 end;
 
 
@@ -210,12 +211,6 @@ begin
   Result := RootWorkItem.Workspaces[WS_DIALOG];
 end;
 
-function TApp.Activities: IActivityService;
-begin
-  Result := RootWorkItem.Services[IActivityService] as IActivityService;
-end;
-
-
 { TRootWorkItem }
 
 {function TRootWorkItem.OnGetApplication: IInterface;
@@ -262,5 +257,13 @@ begin
   Result := GetRootWorkItem;
 end;
 
+
+{ TApp.TAppLockHanler }
+
+procedure TApp.TAppLockActivityHandler.Execute(Sender: TWorkItem;
+   Activity: IActivity);
+begin
+  ShellLock.DoShellLock;
+end;
 
 end.

@@ -39,7 +39,6 @@ contains
   ShellLoginParamForm in '..\Sources\Shell\ShellLoginParamForm.pas' {frShellLoginParam},
   ShellSplashForm in '..\Sources\Shell\ShellSplashForm.pas' {frShellSplash},
   ShellUnlockForm in '..\Sources\Shell\ShellUnlockForm.pas' {fmShellUnlock},
-  ActivityService in '..\Sources\Shell\Services\ActivityService.pas',
   ConfigService in '..\Sources\Shell\Services\ConfigService.pas',
   ConfigStorage in '..\Sources\Shell\Services\ConfigStorage.pas',
   EntityManagerService in '..\Sources\Shell\Services\EntityManagerService.pas',

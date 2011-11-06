@@ -4,7 +4,7 @@ interface
 
 uses classes, types, ViewStyleController, dxNavBar, dxNavBarGroupItems, dxNavBarCollns,
   sysutils, controls, CoreClasses, Graphics, cxGraphics, IniFiles,
-   ActivityServiceIntf, windows, menus, cxLookAndFeels, ShellIntf;
+  windows, menus, cxLookAndFeels, ShellIntf;
 
 const
   DefNavView = 13;
@@ -40,8 +40,6 @@ type
     function FindOrCreateCategory(const ACaption: string): TdxNavBarGroup;
     function FindOrCreateGroup(const ACaption: string; ACategory: TdxNavBarGroup): TdxNavBarGroup;
 
-    procedure BuildMainMenu;
-    procedure OnActivityLoadedHandler(EventData: variant);
   public
     constructor Create(AOwner: TComponent; ANavBar: TdxNavBar;
       AWorkItem: TWorkItem); reintroduce;
@@ -49,6 +47,7 @@ type
     procedure ScaleBy(M, D: integer);
     procedure SavePreference;
     procedure LoadPreference;
+    procedure BuildMainMenu;
   end;
 
 
@@ -81,13 +80,12 @@ begin
   FScaleM := 100;
   FScaleD := 100;
 
-  FWorkItem.EventTopics[EVT_ACTIVITY_LOADED].AddSubscription(Self, OnActivityLoadedHandler);
 end;
 
 
 procedure TdxNavBarControlManager.BuildMainMenu;
 
-  procedure AddItem(AInfo: IActivityInfo; Group: TdxNavBarGroup);
+  procedure AddItem(Activity: IActivity; Group: TdxNavBarGroup);
   var
     categoryNavBar: TdxNavBar;
     dxItem: TdxNavBarItem;
@@ -95,41 +93,39 @@ procedure TdxNavBarControlManager.BuildMainMenu;
   begin
     categoryNavBar := TdxNavBar(Group.Collection.Owner);
 
-    if (Group.LinkCount > 0) and AInfo.OptionExists('BeginSection') then
+    if (Group.LinkCount > 0) and Activity.OptionExists('BeginSection') then
     begin
       dxItem := categoryNavBar.Items.Add(TdxNavBarSeparator);
       Group.CreateLink(dxItem);
     end;
 
     dxItem := categoryNavBar.Items.Add;
-    dxItem.Caption := AInfo.Title;
-    if not AInfo.Image.Empty then
+    dxItem.Caption := Activity.Title;
+    if not Activity.Image.Empty then
       dxItem.SmallImageIndex :=
-        categoryNavBar.SmallImages.AddMasked(AInfo.Image, clDefault);
+        categoryNavBar.SmallImages.AddMasked(Activity.Image, clDefault);
 
     Group.CreateLink(dxItem);
 
     ItemInfo := TNavBarItemInfo.Create(dxItem);
     ItemInfo.Name := TNavBarItemInfo.INSTANCE_NAME;
-    ItemInfo.URI := AInfo.URI;
+    ItemInfo.URI := Activity.URI;
   end;
 
 var
-  activityInfo: IActivityInfo;
-  svc: IActivityService;
+  activity: IActivity;
   I: integer;
   category: TdxNavBarGroup;
 begin
 
   category := FindOrCreateCategory('Главное меню');
 
-  svc := FWorkItem.Services[IActivityService] as IActivityService;
-  for I := 0 to svc.Infos.Count - 1 do
+  for I := 0 to FWorkItem.Activities.Count - 1 do
   begin
-    activityInfo := svc.Infos.Item(I);
+    activity := FWorkItem.Activities.GetItem(I);
 
-    if (activityInfo.Group <> '') and (activityInfo.MenuIndex > -1) then
-      AddItem(activityInfo, FindOrCreateGroup(activityInfo.Group, category));
+    if (activity.Group <> '') and (activity.MenuIndex > -1) and activity.HavePermission then
+      AddItem(activity, FindOrCreateGroup(activity.Group, category));
   end;
 end;
 
@@ -205,13 +201,8 @@ var
   uri: string;
 begin
   uri := TNavBarItemInfo(ALink.Item.FindComponent(TNavBarItemInfo.INSTANCE_NAME)).URI;
-  FWorkItem.Actions[uri].Execute(FWorkItem);
-end;
-
-
-procedure TdxNavBarControlManager.OnActivityLoadedHandler(EventData: variant);
-begin
-  BuildMainMenu;
+//  FWorkItem.Actions[uri].Execute(FWorkItem);
+  FWorkItem.Activities[uri].Execute(FWorkItem);
 end;
 
 

@@ -13,7 +13,7 @@ const
   
 type
 
-  TEntityPickListPresenter = class(TCustomDialogPresenter)
+  TEntityPickListPresenter = class(TEntityDialogPresenter)
   private
     procedure SetFilter(const AText: string);
   protected
@@ -26,8 +26,6 @@ type
     procedure CmdDataReload(Sender: TObject); virtual;
     procedure SelectionChangedHandler; virtual;
     function GetEVList: IEntityView; virtual;
-  public
-    class function ExecuteDataClass: TActionDataClass; override;
   end;
 
 
@@ -79,7 +77,7 @@ begin
   WorkItem.Commands[COMMAND_CANCEL].Caption := COMMAND_CANCEL_CAPTION;
   WorkItem.Commands[COMMAND_CANCEL].ShortCut := 'Esc';
   View.CommandBar.AddCommand(COMMAND_CANCEL);
-  
+
   WorkItem.Commands[COMMAND_OK].SetHandler(CmdOK);
   WorkItem.Commands[COMMAND_OK].Caption := COMMAND_OK_CAPTION;
   WorkItem.Commands[COMMAND_OK].ShortCut := 'Enter';
@@ -96,18 +94,13 @@ begin
 
 end;
 
-class function TEntityPickListPresenter.ExecuteDataClass: TActionDataClass;
-begin
-  Result := TEntityPickListPresenterData;
-end;
-
 function TEntityPickListPresenter.GetEVList: IEntityView;
 var
   evName: string;
 begin
-  evName := ViewInfo.EntityViewName;
+  evName := EntityViewName;
   if evName = '' then evName := ENT_VIEW_PICKLIST;
-  Result := GetEView(ViewInfo.EntityName, evName);
+  Result := GetEView(EntityName, evName);
 end;
 
 procedure TEntityPickListPresenter.OnViewShow;

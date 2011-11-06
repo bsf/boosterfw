@@ -32,7 +32,6 @@ requires
   vclimg;
 
 contains
-  ActivityServiceIntf in '..\Sources\Interfaces\ActivityServiceIntf.pas',
   ConfigServiceIntf in '..\Sources\Interfaces\ConfigServiceIntf.pas',
   EntityServiceIntf in '..\Sources\Interfaces\EntityServiceIntf.pas',
   ReportServiceIntf in '..\Sources\Interfaces\ReportServiceIntf.pas',

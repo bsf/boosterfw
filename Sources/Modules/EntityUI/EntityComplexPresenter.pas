@@ -27,7 +27,7 @@ type
     function DetailSelection: ISelection;
   end;
 
-  TEntityComplexPresenter = class(TCustomContentPresenter)
+  TEntityComplexPresenter = class(TEntityContentPresenter)
   private
     procedure CmdHeadEdit(Sender: TObject);
     procedure CmdDetailCollect(Sender: TObject);
@@ -40,12 +40,10 @@ type
   protected
     procedure OnUpdateCommandStatus; override;
     function OnGetWorkItemState(const AName: string): Variant; override;
-    procedure OnInit(Sender: IAction); override;
+    procedure OnInit(Sender: IActivity); override;
     procedure OnViewReady; override;
     function GetEVHead: IEntityView;
     function GetEVDetails: IEntityView;
-  public
-    class function ExecuteDataClass: TActionDataClass; override;
   end;
 
 
@@ -55,14 +53,14 @@ implementation
 
 procedure TEntityComplexPresenter.CmdHeadEdit(Sender: TObject);
 var
-  action: IAction;
   actionName: string;
 begin
-  actionName := format(VIEW_HEAD_EDIT, [ViewInfo.EntityName]);
-  action := WorkItem.Actions[actionName];
-  if action.Data is TEntityItemPresenterData then
-    (action.Data as TEntityItemPresenterData).ID := WorkItem.State['HID'];
-  action.Execute(WorkItem);
+  actionName := format(VIEW_HEAD_EDIT, [EntityName]);
+  with WorkItem.Activities[actionName] do
+  begin
+    Params['ID'] := WorkItem.State['HID'];
+    Execute(WorkItem);
+  end;
 end;
 
 procedure TEntityComplexPresenter.CmdDetailDel(Sender: TObject);
@@ -87,72 +85,65 @@ procedure TEntityComplexPresenter.CmdDetailNew(Sender: TObject);
 
   function GetNewViewURI: string;
   var
-    actionURI: IAction;
+    actionURI: IActivity;
   begin
-    if App.Entities.EntityViewExists(ViewInfo.EntityName, 'DetailNewURI') then
+    if App.Entities.EntityViewExists(EntityName, 'DetailNewURI') then
     begin
-      actionURI := WorkItem.Actions[format(VIEW_DETAIL_NEW_URI, [ViewInfo.EntityName])];
+      actionURI := WorkItem.Activities[format(VIEW_DETAIL_NEW_URI, [EntityName])];
       actionURI.Execute(WorkItem);
-      if (actionURI.Data as TEntityPickListPresenterData).ModalResult = mrOk then
-        Result := actionURI.Data.Value['URI']
+      if actionURI.Params[TViewActivityOuts.ModalResult] = mrOk then
+        Result := actionURI.Params['URI']
       else
         Result := '';
     end
     else
-      Result := format(VIEW_DETAIL_NEW, [ViewInfo.EntityName]);
+      Result := format(VIEW_DETAIL_NEW, [EntityName]);
   end;
 
 var
-  action: IAction;
   actionName: string;
 begin
   actionName := GetNewViewURI;
   if actionName <> '' then
-  begin
-    action := WorkItem.Actions[actionName];
-    if action.Data is TEntityNewPresenterData then
-      (action.Data as TEntityNewPresenterData).HID := WorkItem.State['HID'];
-    action.Execute(WorkItem);
-  end;
+    with WorkItem.Activities[actionName] do
+    begin
+      Params['HID'] := WorkItem.State['HID'];
+      Execute(WorkItem);
+    end;
 end;
 
 procedure TEntityComplexPresenter.CmdDetailOpen(Sender: TObject);
 
   function GetItemViewURI: string;
   begin
-    if App.Entities.EntityViewExists(ViewInfo.EntityName, 'DetailURI') then
-      Result := App.Entities[ViewInfo.EntityName].GetView('DetailURI', WorkItem).
+    if App.Entities.EntityViewExists(EntityName, 'DetailURI') then
+      Result := App.Entities[EntityName].GetView('DetailURI', WorkItem).
             Load([WorkItem.State['DETAIL_ID']])['URI']
     else
-      Result := format(VIEW_DETAIL_ITEM, [ViewInfo.EntityName]);
+      Result := format(VIEW_DETAIL_ITEM, [EntityName]);
   end;
 
 var
-  action: IAction;
   actionName: string;
 begin
   if VarIsEmpty(WorkItem.State['DETAIL_ID']) then Exit;
 
   actionName := GetItemViewURI;//format(VIEW_DETAIL_ITEM, [ViewInfo.EntityName]);
-  action := WorkItem.Actions[actionName];
-  if action.Data is TEntityItemPresenterData then
-    (action.Data as TEntityItemPresenterData).ID := WorkItem.State['DETAIL_ID'];
-  action.Execute(WorkItem);
-end;
-
-class function TEntityComplexPresenter.ExecuteDataClass: TActionDataClass;
-begin
-  Result := TEntityItemPresenterData;
+  with WorkItem.Activities[actionName] do
+  begin
+    Params['ID'] := WorkItem.State['DETAIL_ID'];
+    Execute(WorkItem);
+  end;
 end;
 
 function TEntityComplexPresenter.GetEVHead: IEntityView;
 begin
-  Result := GetEView(ViewInfo.EntityName, ENT_VIEW_HEAD_DEFAULT);
+  Result := GetEView(EntityName, ENT_VIEW_HEAD_DEFAULT);
 end;
 
 function TEntityComplexPresenter.GetEVDetails: IEntityView;
 begin
-  Result := GetEView(ViewInfo.EntityName, ENT_VIEW_DETAILS_DEFAULT);
+  Result := GetEView(EntityName, ENT_VIEW_DETAILS_DEFAULT);
 end;
 
 function TEntityComplexPresenter.OnGetWorkItemState(
@@ -162,7 +153,7 @@ begin
     Result := (GetView as IEntityComplexView).DetailSelection.First;
 end;
 
-procedure TEntityComplexPresenter.OnInit(Sender: IAction);
+procedure TEntityComplexPresenter.OnInit(Sender: IActivity);
 begin
   WorkItem.State['HID'] := WorkItem.State['ID'];
 end;
@@ -261,12 +252,12 @@ begin
 end;
 
 procedure TEntityComplexPresenter.CmdDetailCollect(Sender: TObject);
-var
-  action: IAction;
 begin
-  action := WorkItem.Actions[format(VIEW_DETAIL_COLLECT, [ViewInfo.EntityName])];
-  (action.Data as TEntityItemPresenterData).ID := WorkItem.State['ID'];
-  action.Execute(WorkItem);
+  with WorkItem.Activities[format(VIEW_DETAIL_COLLECT, [EntityName])] do
+  begin
+    Params['ID']:= WorkItem.State['ID'];
+    Execute(WorkItem);
+  end;
 end;
 
 end.

@@ -10,19 +10,17 @@ const
   ENT_VIEW_ITEM = 'Item';
 
 type
-  TEntityItemPresenter = class(TCustomContentPresenter)
+  TEntityItemPresenter = class(TEntityContentPresenter)
   private
     procedure CmdCancel(Sender: TObject);
     procedure CmdSave(Sender: TObject);
     function View: IEntityItemView;
-    procedure ReloadCallerWorkItem;    
+    procedure ReloadCallerWorkItem;
   protected
     function OnGetWorkItemState(const AName: string): Variant; override;
     function GetEVItem: IEntityView; virtual;
     //
     procedure OnViewReady; override;
-  public
-    class function ExecuteDataClass: TActionDataClass; override;
   end;
 
 implementation
@@ -37,7 +35,7 @@ end;
 procedure TEntityItemPresenter.CmdSave(Sender: TObject);
 var
   nextActionID: string;
-  nextAction: IAction;
+  nextAction: IActivity;
   callerID: string;
   callerWI: TWorkItem;
 
@@ -52,9 +50,8 @@ begin
   nextActionID := WorkItem.State['NEXT_ACTION'];
   if nextActionID <> '' then
   begin
-    nextAction := WorkItem.Actions[nextActionID];
-    if nextAction.Data is TEntityItemPresenterData then
-      (nextAction.Data as TEntityItemPresenterData).ID := GetEVItem.Values['ID'];
+    nextAction := WorkItem.Activities[nextActionID];
+    nextAction.Params['ID'] := GetEVItem.Values['ID'];
 
     callerID := WorkItem.State['CALLER_ID'];
     if callerID <> '' then
@@ -115,18 +112,13 @@ begin
     WorkItem.Commands[COMMAND_SAVE].Caption := 'Далее >>';
 end;
 
-class function TEntityItemPresenter.ExecuteDataClass: TActionDataClass;
-begin
-  Result := TEntityItemPresenterData;
-end;
-
 function TEntityItemPresenter.GetEVItem: IEntityView;
 var
   evName: string;
 begin
-  evName := ViewInfo.EntityViewName;
+  evName := EntityViewName;
   if evName = '' then evName := ENT_VIEW_ITEM;
-  Result := GetEView(ViewInfo.EntityName, evName);
+  Result := GetEView(EntityName, evName);
 end;
 
 function TEntityItemPresenter.OnGetWorkItemState(

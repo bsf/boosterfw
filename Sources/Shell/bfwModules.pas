@@ -7,12 +7,8 @@ uses
   bfwSettingManagerModuleInit,
   bfwSecurityManagerModuleInit,
 
-  //
-  bfwStorageNotifierModuleInit,
   bfwEntityUIModuleInit,
-  bfwReportManagerModuleInit,
-  bfwReportEngineXLModuleInit,
-  bfwReportEngineFRModuleInit,
+  bfwReportingModuleInit,
 
   //Infrastructure addons
   bfwStorageConnIBXModuleInit,

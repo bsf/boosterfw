@@ -16,7 +16,7 @@ type
     procedure SetData(ADataSet: TDataSet);
   end;
 
-  TEntityNewPresenter = class(TCustomContentPresenter)
+  TEntityNewPresenter = class(TEntityContentPresenter)
   private
     procedure CmdCancel(Sender: TObject);
     procedure CmdSave(Sender: TObject);
@@ -27,8 +27,6 @@ type
     function GetEVItem: IEntityView; virtual;
     //
     procedure OnViewReady; override;
-  public
-    class function ExecuteDataClass: TActionDataClass; override;
   end;
 
 implementation
@@ -43,7 +41,7 @@ end;
 procedure TEntityNewPresenter.CmdSave(Sender: TObject);
 var
   nextActionID: string;
-  nextAction: IAction;
+  nextAction: IActivity;
   callerID: string;
   callerWI: TWorkItem;
 begin
@@ -58,8 +56,8 @@ begin
   nextActionID := WorkItem.State['NEXT_ACTION'];
   if nextActionID <> '' then
   begin
-    nextAction := WorkItem.Actions[nextActionID];
-    nextAction.Data.Value['ID'] := GetEVItem.Values['ID'];
+    nextAction := WorkItem.Activities[nextActionID];
+    nextAction.Params['ID'] := GetEVItem.Values['ID'];
     callerID := WorkItem.State['CALLER_ID'];
     if callerID <> '' then
       callerWI := FindWorkItem(callerID, WorkItem.Root);
@@ -113,10 +111,10 @@ begin
     nextOption := ViewInfo.OptionValue('Next');
 
     if (nextOption = '') or (SameText(nextOption, 'Item'))then
-      NextAction := format(VIEW_ITEM, [ViewInfo.EntityName])
+      NextAction := format(VIEW_ITEM, [EntityName])
 
     else if SameText(nextOption, 'Collect') then
-      NextAction := format(VIEW_COLLECT, [ViewInfo.EntityName])
+      NextAction := format(VIEW_COLLECT, [EntityName])
 
     else
       NextAction := NextOption;
@@ -128,20 +126,15 @@ begin
     WorkItem.Commands[COMMAND_SAVE].Caption := 'Далее >>';
 end;
 
-class function TEntityNewPresenter.ExecuteDataClass: TActionDataClass;
-begin
-  Result := TEntityNewPresenterData;
-end;
-
 function TEntityNewPresenter.GetEVItem: IEntityView;
 var
   mField: TField;
   evName: string;
 begin
-  evName := ViewInfo.EntityViewName;
+  evName := EntityViewName;
   if evName = '' then evName := ENT_VIEW_NEW;
-  Result := GetEView(ViewInfo.EntityName, evName);
-  
+  Result := GetEView(EntityName, evName);
+
   if Result.IsLoaded and (not Result.IsModified) then
   begin
     mField := Result.DataSet.FindField('MODIFIED');

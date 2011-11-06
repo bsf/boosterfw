@@ -233,11 +233,11 @@ end;
 
 procedure TFastReportLauncher.Preview(const ATitle: string);
 var
-  actionData: TfrReportPreviewData;
+  actionData: TfrReportPreviewActivityData;
   action: IAction;
 begin
   action := FCallerWI.Actions[VIEW_FR_PREVIEW];
-  actionData := action.Data as TfrReportPreviewData;
+  actionData := action.Data as TfrReportPreviewActivityData;
   actionData.PresenterID := CreateClassID;
   actionData.ViewTitle := ATitle;
   actionData.ClearReportStream;

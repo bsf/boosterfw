@@ -10,7 +10,7 @@ type
     procedure LinkData(AData: TDataSet);
   end;
 
-  TEntitySelectorPresenter = class(TCustomDialogPresenter)
+  TEntitySelectorPresenter = class(TEntityDialogPresenter)
   private
     function View: IEntitySelectorView;
     procedure CmdCancel(Sender: TObject);
@@ -18,8 +18,6 @@ type
     function GetEVList: IEntityView;
   protected
     procedure OnViewReady; override;
-  public
-    class function ExecuteDataClass: TActionDataClass; override;
   end;
 
 implementation
@@ -46,14 +44,9 @@ begin
   CloseView;
 end;
 
-class function TEntitySelectorPresenter.ExecuteDataClass: TActionDataClass;
-begin
-  Result := TEntitySelectorPresenterData;
-end;
-
 function TEntitySelectorPresenter.GetEVList: IEntityView;
 begin
-  Result := GetEView(ViewInfo.EntityName, 'Selector');
+  Result := GetEView(EntityName, 'Selector');
 end;
 
 procedure TEntitySelectorPresenter.OnViewReady;

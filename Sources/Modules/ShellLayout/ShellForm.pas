@@ -16,12 +16,13 @@ uses
   ViewStyleController, cxPC, cxDropDownEdit,
   cxBarEditItem, cxButtonEdit, dxBarExtItems, EntityServiceIntf,
   cxLookAndFeels, cxLookAndFeelPainters, TabbedWorkspace, ShellAbout,
-  ActivityServiceIntf, UIClasses,
+   UIClasses,
   UserPreferencesPresenter, UserPreferencesView,
   CommonUtils, dxGDIPlusClasses, cxGroupBox, cxStyles, cxCustomData,
   cxFilter, cxData, cxDataStorage, DB, cxDBData, cxGridLevel,
   cxGridCustomView, cxGridCustomTableView, cxGridTableView,
-  cxGridDBTableView, cxGrid, dxOffice11, UIServiceIntf;
+  cxGridDBTableView, cxGrid, dxOffice11, UIServiceIntf,
+  NotifyReceiver, NotifySenderPresenter, NotifySenderView;
 
 const
   STATUSBAR_INFO_PANEL = 0;
@@ -96,8 +97,22 @@ type
 
     //Shell Commands
     procedure RegisterShellCommands;
-    procedure CloseAppHandler(Sender: IAction);
-    procedure ShowAboutHandler(Sender: IAction);
+
+
+    type
+      TCloseAppHandler = class(TActivityHandler)
+      private
+        FMainForm: TForm;
+      public
+        constructor Create(AMainForm: TForm);
+        procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
+      end;
+
+    type
+      TShowAboutHandler = class(TActivityHandler)
+        procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
+      end;
+
   public
     constructor Create(AOwner: TComponent); override;
     procedure Initialize(AWorkItem: TWorkItem); override;
@@ -139,11 +154,6 @@ begin
     end;
     if not Result then Exit;
   end
-end;
-
-procedure TfrMain.CloseAppHandler(Sender: IAction);
-begin
-  Close;
 end;
 
 constructor TfrMain.Create(AOwner: TComponent);
@@ -229,6 +239,8 @@ end;
 procedure TfrMain.AppStartedHandler(EventData: Variant);
 begin
   FViewStyleController.LoadPreferences;
+
+  FNavBarControlManager.BuildMainMenu;
   FNavBarControlManager.LoadPreference;
 
   FWorkItem.EventTopics[ET_ENTITY_VIEW_OPEN_START].AddSubscription(Self, WaitProgressStartHandler);
@@ -251,40 +263,49 @@ begin
 end;
 
 procedure TfrMain.RegisterShellCommands;
-var
-  svc: IActivityService;
 begin
-  svc := WorkItem.Services[IActivityService] as IActivityService;
-
-  with svc.RegisterActivityInfo(COMMAND_LOCK_APP) do
+{
+  with WorkItem.Activities.Infos.Add(COMMAND_LOCK_APP) do
   begin
     Title := 'Блокировка';
     Group := MAIN_MENU_FILE_GROUP;
     ShortCut := 'Ctrl+L';
   end;
-
-  with svc.RegisterActivityInfo(COMMAND_CLOSE_APP) do
+ }
+  with WorkItem.Activities[COMMAND_CLOSE_APP] do
   begin
     Title := 'Закрыть';
     Group := MAIN_MENU_FILE_GROUP;
   end;
-  WorkItem.Actions[COMMAND_CLOSE_APP].SetHandler(CloseAppHandler);
+  WorkItem.Activities.RegisterHandler(COMMAND_CLOSE_APP, TCloseAppHandler.Create(Self));
 
-  with svc.RegisterActivityInfo(COMMAND_SHOW_ABOUT) do
+//  WorkItem.Actions[COMMAND_CLOSE_APP].SetHandler(CloseAppHandler);
+
+  with WorkItem.Activities[COMMAND_SHOW_ABOUT] do
   begin
     Title := 'О программе...';
     Group := MAIN_MENU_FILE_GROUP;
   end;
-  WorkItem.Actions[COMMAND_SHOW_ABOUT].SetHandler(ShowAboutHandler);
+  WorkItem.Activities.RegisterHandler(COMMAND_SHOW_ABOUT, TShowAboutHandler.Create);
 
-  with svc.RegisterActivityInfo(URI_USERPREFERENCES) do
+  with WorkItem.Activities[URI_USERPREFERENCES] do
   begin
     Title := 'Предпочтения';
     Group := MAIN_MENU_SERVICE_GROUP;
   end;
-  svc.RegisterActivityClass(TViewActivityBuilder.Create(WorkItem,
-    URI_USERPREFERENCES, TUserPreferencesPresenter, TfrUserPreferencesView));
+  WorkItem.Activities.RegisterHandler(URI_USERPREFERENCES,
+    TViewActivityHandler.Create(TUserPreferencesPresenter, TfrUserPreferencesView));
 
+  WorkItem.Root.WorkItems.Add(TNotifyReceiver, TNotifyReceiver.ClassName);
+
+  with WorkItem.Activities[VIEW_NOTIFYSENDER] do
+  begin
+    Title := VIEW_NOTIFYSENDER_TITLE;
+    Group := MAIN_MENU_SERVICE_GROUP;
+    UsePermission := true;
+  end;
+  WorkItem.Activities.RegisterHandler(VIEW_NOTIFYSENDER,
+    TViewActivityHandler.Create(TNotifySenderPresenter, TfrNotifySenderView));
 end;
 
 
@@ -333,11 +354,6 @@ begin
   SplitterNotifyPanel.Visible := false;
 end;
 
-procedure TfrMain.ShowAboutHandler(Sender: IAction);
-begin
-  ShellAboutShow;
-end;
-
 procedure TfrMain.ShowNotifyPanel;
 begin
   SplitterNotifyPanel.Visible := true;
@@ -362,6 +378,25 @@ begin
   nID := VarToStr(grNotifyListView.DataController.Values[ARecordIndex, grNotifyListViewID.Index]);
   if nID <> '' then
     App.UI.NotifyAccept(nID);
+end;
+
+{ TfrMain.TCloseAppHandler }
+
+constructor TfrMain.TCloseAppHandler.Create(AMainForm: TForm);
+begin
+  FMainForm := AMainForm;
+end;
+
+procedure TfrMain.TCloseAppHandler.Execute(Sender: TWorkItem; Activity: IActivity);
+begin
+  FMainForm.Close;
+end;
+
+{ TfrMain.TShowAboutHandler }
+
+procedure TfrMain.TShowAboutHandler.Execute(Sender: TWorkItem; Activity: IActivity);
+begin
+  ShellAboutShow;
 end;
 
 end.

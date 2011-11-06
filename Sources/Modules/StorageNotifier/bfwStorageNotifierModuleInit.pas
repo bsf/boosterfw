@@ -1,7 +1,7 @@
 unit bfwStorageNotifierModuleInit;
 
 interface
-uses classes, CoreClasses,  ShellIntf, ActivityServiceIntf, UIClasses,
+uses classes, CoreClasses,  ShellIntf, UIClasses,
   NotifyReceiver, NotifySenderPresenter, NotifySenderView;
 
 type
@@ -17,16 +17,13 @@ procedure TStorageNotifierModuleInit.Load;
 begin
   WorkItem.Root.WorkItems.Add(TNotifyReceiver, TNotifyReceiver.ClassName);
 
-  with WorkItem.Services[IActivityService] as IActivityService do
+  with WorkItem.Activities[VIEW_NOTIFYSENDER] do
   begin
-    with RegisterActivityInfo(VIEW_NOTIFYSENDER) do
-    begin
-      Title := VIEW_NOTIFYSENDER_TITLE;
-      Group := MAIN_MENU_SERVICE_GROUP;
-    end;
-    RegisterActivityClass(TViewActivityBuilder.Create(WorkItem,
-      VIEW_NOTIFYSENDER, TNotifySenderPresenter, TfrNotifySenderView));
+    Title := VIEW_NOTIFYSENDER_TITLE;
+    Group := MAIN_MENU_SERVICE_GROUP;
   end;
+  WorkItem.Activities.RegisterHandler(VIEW_NOTIFYSENDER,
+    TViewActivityHandler.Create(TNotifySenderPresenter, TfrNotifySenderView));
 
 end;
 

@@ -28,7 +28,7 @@ type
     procedure SetData(AInfo, AList, AItems: TDataSet);
   end;
 
-  TEntityCollectPresenter = class(TCustomContentPresenter)
+  TEntityCollectPresenter = class(TEntityContentPresenter)
   private
     function View: IEntityCollectView;
     procedure CmdClose(Sender: TObject);
@@ -49,8 +49,6 @@ type
     function OnGetWorkItemState(const AName: string): Variant; override;
     procedure OnUpdateCommandStatus; override;
     procedure OnViewReady; override;
-  public
-    class function ExecuteDataClass: TActionDataClass; override;
   end;
 
 implementation
@@ -69,19 +67,14 @@ begin
   GetEVItems.Reload;
 end;
 
-class function TEntityCollectPresenter.ExecuteDataClass: TActionDataClass;
-begin
-  Result := TEntityItemPresenterData;
-end;
-
 function TEntityCollectPresenter.GetEVList: IEntityView;
 begin
-  Result := GetEView(ViewInfo.EntityName, ENT_VIEW_LIST);
+  Result := GetEView(EntityName, ENT_VIEW_LIST);
 end;
 
 function TEntityCollectPresenter.GetEVInfo: IEntityView;
 begin
-  Result := GetEView(ViewInfo.EntityName, ENT_VIEW_INFO);
+  Result := GetEView(EntityName, ENT_VIEW_INFO);
 end;
 
 function TEntityCollectPresenter.OnGetWorkItemState(
@@ -95,7 +88,6 @@ begin
     Result := WorkItem.State['ID']
   else if (not SameText(AName, 'ID')) and GetEVList.IsLoaded and (GetEVList.DataSet.FindField(AName) <> nil) then
     Result := GetEVList.DataSet[AName];
-
 
 end;
 
@@ -193,25 +185,24 @@ begin
 end;
 
 procedure TEntityCollectPresenter.CmdAddItem(Sender: TObject);
-var
-  action: IAction;
 begin
-  action := WorkItem.Actions[ACTION_ENTITY_DETAIL_NEW];
-  action.Data.Value['ENTITYNAME'] := ViewInfo.EntityName;
-  action.Execute(WorkItem);
+  with WorkItem.Activities[ACTION_ENTITY_DETAIL_NEW] do
+  begin
+    Params['ENTITYNAME'] := EntityName;
+    Execute(WorkItem);
+  end;
 end;
 
 procedure TEntityCollectPresenter.CmdOpen(Sender: TObject);
-var
-  action: IAction;
 begin
   if VarIsEmpty(WorkItem.State['ITEM_ID']) then Exit;
 
-  action := WorkItem.Actions[ACTION_ENTITY_DETAIL];
-  action.Data.Value['ID'] := WorkItem.State['ITEM_ID'];
-  action.Data.Value['ENTITYNAME'] := ViewInfo.EntityName;
-  action.Execute(WorkItem);
-
+  with WorkItem.Activities[ACTION_ENTITY_DETAIL] do
+  begin
+    Params['ID'] := WorkItem.State['ITEM_ID'];
+    Params['ENTITYNAME'] := EntityName;
+    Execute(WorkItem);
+  end;
 end;
 
 
@@ -237,7 +228,7 @@ end;
 
 function TEntityCollectPresenter.GetEVItems: IEntityView;
 begin
-  Result := GetEView(ViewInfo.EntityName, ENT_VIEW_ITEMS);
+  Result := GetEView(EntityName, ENT_VIEW_ITEMS);
 end;
 
 procedure TEntityCollectPresenter.CmdItemsSelected(Sender: TObject);
@@ -257,7 +248,7 @@ var
   oper: IEntityOper;
 begin
   try
-    oper := App.Entities[ViewInfo.EntityName].GetOper(ENT_OPER_ADD, WorkItem);
+    oper := App.Entities[EntityName].GetOper(ENT_OPER_ADD, WorkItem);
     for I := 0 to View.SelectionList.Count - 1 do
     begin
       oper.ParamsBind;
@@ -271,7 +262,7 @@ begin
     if ViewInfo.OptionExists('ReloadList') then
       GetEVList.Reload;
     ReloadCallerWorkItem;
-    GetEVItems.ReloadLinksData;  
+    GetEVItems.ReloadLinksData;
   end;
 
 

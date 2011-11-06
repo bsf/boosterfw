@@ -9,59 +9,20 @@ const
   VIEW_SECURITYPERMEFFECTIVE = 'views.security.permeffective';
 
 type
-  TSecurityPolicyPresenterData = class(TPresenterData)
-  private
-    FPolID: variant;
-    procedure SetPolID(const Value: variant);
-  published
-    property PolID: variant read FPolID write SetPolID;
+  TSecurityPolicyActivityParams = record
+    const
+      PolID = 'POLID';
   end;
 
-  TSecurityPermEffectivePresenterData = class(TPresenterData)
-  private
-    FPermID: string;
-    FResID: string;
-    FPolID: string;
-    procedure SetPermID(const Value: string);
-    procedure SetResID(const Value: string);
-    procedure SetPolID(const Value: string);
-  published
-    property PolID: string read FPolID write SetPolID;
-    property PermID: string read FPermID write SetPermID;
-    property ResID: string read FResID write SetResID;
+  TSecurityPermEffectiveActivityParams = record
+    const
+      PolID = 'POLID';
+      PermID = 'PERMID';
+      ResID = 'RESID';
   end;
+
 
 implementation
 
-{ TSecurityPolicyPresenterData }
-
-procedure TSecurityPolicyPresenterData.SetPolID(const Value: variant);
-begin
-  FPolID := Value;
-  PresenterID := Value;
-end;
-
-{ TSecurityPermEffectivePresenterData }
-
-procedure TSecurityPermEffectivePresenterData.SetPermID(
-  const Value: string);
-begin
-  FPermID := Value;
-  PresenterID := FPolID + FPermID + FResID;
-end;
-
-procedure TSecurityPermEffectivePresenterData.SetPolID(
-  const Value: string);
-begin
-  FPolID := Value;
-  PresenterID := FPolID + FPermID + FResID;
-end;
-
-procedure TSecurityPermEffectivePresenterData.SetResID(
-  const Value: string);
-begin
-  FResID := Value;
-  PresenterID := FPolID + FPermID + FResID;
-end;
 
 end.

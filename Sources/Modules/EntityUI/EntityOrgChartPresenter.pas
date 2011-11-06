@@ -15,7 +15,7 @@ type
     procedure Zoom;
   end;
 
-  TEntityOrgChartPresenter = class(TCustomContentPresenter)
+  TEntityOrgChartPresenter = class(TEntityContentPresenter)
   private
     procedure CmdReload(Sender: TObject);
     procedure CmdRotate(Sender: TObject);
@@ -26,8 +26,6 @@ type
   protected
     function OnGetWorkItemState(const AName: string): Variant; override;
     procedure OnViewReady; override;
-  public
-    class function ExecuteDataClass: TActionDataClass; override;
   end;
 
 implementation
@@ -36,8 +34,11 @@ implementation
 
 procedure TEntityOrgChartPresenter.CmdOpenNode(Sender: TObject);
 begin
-  (WorkItem.Actions[GetViewURI].Data as TEntityOrgChartData).ROOT_ID := WorkItem.State['ITEM_ID'];
-  WorkItem.Actions[GetViewURI].Execute(WorkItem);
+  with WorkItem.Activities[GetViewURI] do
+  begin
+    Params[TEntityOrgChartActivityParams.ROOT_ID] := WorkItem.State['ITEM_ID'];
+    Execute(WorkItem);
+  end;
 end;
 
 procedure TEntityOrgChartPresenter.CmdReload(Sender: TObject);
@@ -55,19 +56,14 @@ begin
   View.Zoom;
 end;
 
-class function TEntityOrgChartPresenter.ExecuteDataClass: TActionDataClass;
-begin
-  Result := TEntityOrgChartData;
-end;
-
 function TEntityOrgChartPresenter.GetEVChart: IEntityView;
 var
   evName: string;
 begin
-  evName := ViewInfo.EntityViewName;
+  evName := EntityViewName;
   if evName = '' then evName := ENT_VIEW_ORGCHART;
 
-   Result := GetEView(ViewInfo.EntityName, evName);
+   Result := GetEView(EntityName, evName);
 end;
 
 function TEntityOrgChartPresenter.OnGetWorkItemState(
@@ -89,7 +85,7 @@ begin
     AddCommand(COMMAND_RELOAD, COMMAND_RELOAD_CAPTION, COMMAND_RELOAD_SHORTCUT, CmdReload);
 
   WorkItem.Commands[COMMAND_RELOAD].Status := csDisabled; //TODO - AV при обновлении!
-    
+
   View.CommandBar.
     AddCommand('cmd.rotate', 'Развернуть', '', CmdRotate);
 
@@ -105,7 +101,7 @@ end;
 
 function TEntityOrgChartPresenter.View: IEntityOrgChartView;
 begin
-  Result := GetView as IEntityOrgChartView;  
+  Result := GetView as IEntityOrgChartView;
 end;
 
 end.

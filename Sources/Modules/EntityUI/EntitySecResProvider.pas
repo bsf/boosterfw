@@ -1,8 +1,8 @@
 unit EntitySecResProvider;
 
 interface
-uses SecurityIntf, CoreClasses, classes, ActivityServiceIntf, EntityServiceIntf,
-  ShellIntf, db;
+uses SecurityIntf, CoreClasses, classes,  EntityServiceIntf,
+  ShellIntf, db, EntityCatalogIntf;
 
 type
   TEntitySecurityResNode = class(TInterfacedObject, ISecurityResNode)
@@ -20,7 +20,8 @@ type
   private
     FWorkItem: TWorkItem;
     FID: string;
-    function UIInfo: IActivityInfo;
+    function EntityName: string;
+    function UIInfo: IActivity;
   protected
     function ID: string;
     function GetTopRes: IInterfaceList;
@@ -42,6 +43,11 @@ begin
   FWorkItem := AWorkItem;
 end;
 
+function TEntitySecurityResProvider.EntityName: string;
+begin
+  Result := FWorkItem.Activities[FID].OptionValue(TEntityActivityOptions.EntityName);
+end;
+
 function TEntitySecurityResProvider.GetChildRes(
   const ParentResID: string): IInterfaceList;
 var
@@ -50,10 +56,9 @@ var
   useDescription: boolean;
 begin
   Result := TInterfaceList.Create;
-
-  if App.Entities.EntityViewExists(UIInfo.EntityName, 'ChildNodes') then
+  if App.Entities.EntityViewExists(EntityName, 'ChildNodes') then
   begin
-    ds := App.Entities[UIInfo.EntityName].
+    ds := App.Entities[EntityName].
       GetView('ChildNodes', FWorkItem).Load([ParentResID]);
     useDescription := ds.FindField('DESCRIPTION') <> nil;
     while not ds.Eof do
@@ -76,7 +81,7 @@ var
   node: TEntitySecurityResNode;
   useDescription: boolean;
 begin
-  ds := App.Entities[UIInfo.EntityName].GetView('Node', FWorkItem).Load([ID]);
+  ds := App.Entities[EntityName].GetView('Node', FWorkItem).Load([ID]);
   useDescription := ds.FindField('DESCRIPTION') <> nil;
   node := TEntitySecurityResNode.Create;
   node.FID := ds['ID'];
@@ -84,7 +89,7 @@ begin
   if useDescription then
     node.FDescription := ds['DESCRIPTION'];
 
-  Result := node;  
+  Result := node;
 end;
 
 function TEntitySecurityResProvider.GetTopRes: IInterfaceList;
@@ -94,7 +99,7 @@ var
   useDescription: boolean;
 begin
   Result := TInterfaceList.Create;
-  ds := App.Entities[UIInfo.EntityName].GetView('TopNodes', FWorkItem).Load;
+  ds := App.Entities[EntityName].GetView('TopNodes', FWorkItem).Load;
   useDescription := ds.FindField('DESCRIPTION') <> nil;
   while not ds.Eof do
   begin
@@ -113,9 +118,10 @@ begin
   Result := FID;
 end;
 
-function TEntitySecurityResProvider.UIInfo: IActivityInfo;
+function TEntitySecurityResProvider.UIInfo: IActivity;
 begin
-  Result := (FWorkItem.Services[IActivityService] as IActivityService).ActivityInfo(FID);
+  Result := FWorkItem.Activities[FID];
+//  (FWorkItem.Services[IActivityService] as IActivityService).ActivityInfo(FID);
 end;
 
 { TEntitySecurityResNode }

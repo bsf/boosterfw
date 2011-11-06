@@ -27,7 +27,7 @@ type
     procedure InitParamEditor_ButtonEdit(const AParamName, ACommanName: string);
   end;
 
-  TReportLauncherPresenterData = class(TPresenterData)
+  TReportLauncherActivityData = class(TViewActivityData)
   private
     FReportURI: string;
     FImmediateRun: variant;
@@ -499,7 +499,7 @@ begin
 
   action.Execute(WorkItem);
 
-  if (action.Data as TPresenterData).ModalResult = mrOK then
+  if (action.Data as TViewActivityData).ModalResult = mrOK then
     //DataOut
     for I := 0 to paramNode.EditorOptions.Count - 1 do
     begin
@@ -542,11 +542,11 @@ end;
 
 class function TReportLauncherPresenter.ExecuteDataClass: TActionDataClass;
 begin
-  Result := TReportLauncherPresenterData;
+  Result := TReportLauncherActivityData;
 end;
 
 { TReportLauncherPresenterData }
-procedure TReportLauncherPresenterData.AssignLaunchData(
+procedure TReportLauncherActivityData.AssignLaunchData(
   AData: TReportLaunchData);
 var
   I: integer;

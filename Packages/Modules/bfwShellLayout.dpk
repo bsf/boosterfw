@@ -48,6 +48,9 @@ contains
   UserPreferencesPresenter in '..\..\Sources\Modules\ShellLayout\UserPreferencesPresenter.pas',
   UserPreferencesView in '..\..\Sources\Modules\ShellLayout\UserPreferencesView.pas' {frUserPreferencesView},
   ViewStyleController in '..\..\Sources\Modules\ShellLayout\ViewStyleController.pas',
-  NumLockDotHook in '..\..\Sources\Modules\ShellLayout\NumLockDotHook.pas';
+  NumLockDotHook in '..\..\Sources\Modules\ShellLayout\NumLockDotHook.pas',
+  NotifyReceiver in '..\..\Sources\Modules\ShellLayout\NotifyReceiver.pas',
+  NotifySenderPresenter in '..\..\Sources\Modules\ShellLayout\NotifySenderPresenter.pas',
+  NotifySenderView in '..\..\Sources\Modules\ShellLayout\NotifySenderView.pas' {frNotifySenderView};
 
 end.

@@ -19,7 +19,7 @@ type
     procedure SetItemLinksLookupDataSet(ADataSet: TDataSet);
   end;
 
-  TReportSetupPresenterData = class(TPresenterData)
+  TReportSetupPresenterData = class(TViewActivityData)
   private
     FReportID: string;
     procedure SetReportID(const Value: string);

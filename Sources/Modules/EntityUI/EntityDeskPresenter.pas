@@ -20,7 +20,7 @@ type
   end;
 
 
-  TEntityDeskPresenter = class(TCustomContentPresenter)
+  TEntityDeskPresenter = class(TEntityContentPresenter)
   private
     function View: IEntityDeskView;
     procedure CmdClose(Sender: TObject);
@@ -38,9 +38,6 @@ type
     function OnGetWorkItemState(const AName: string): Variant; override;
     procedure OnUpdateCommandStatus; override;
     procedure OnViewReady; override;
-
-  public
-    class function ExecuteDataClass: TActionDataClass; override;
   end;
 
 implementation
@@ -57,19 +54,14 @@ begin
   GetEVList.Reload;
 end;
 
-class function TEntityDeskPresenter.ExecuteDataClass: TActionDataClass;
-begin
-  Result := TEntityPresenterData;
-end;
-
 function TEntityDeskPresenter.GetEVList: IEntityView;
 begin
-  Result := GetEView(ViewInfo.EntityName, 'List');
+  Result := GetEView(EntityName, 'List');
 end;
 
 function TEntityDeskPresenter.GetEVParams: IEntityView;
 begin
-  Result := App.Entities[ViewInfo.EntityName].GetView('Params', WorkItem);
+  Result := App.Entities[EntityName].GetView('Params', WorkItem);
 end;
 
 function TEntityDeskPresenter.OnGetWorkItemState(
@@ -90,10 +82,7 @@ begin
       result := GetEVStates.DataSet['ID'];
     end;
   end
-
-
 end;
-
 
 procedure TEntityDeskPresenter.OnViewReady;
 var
@@ -107,7 +96,7 @@ begin
     View.Tabs.Add(dsStates['NAME']);
     dsStates.Next;
   end;
-  
+
   View.CommandBar.
     AddCommand(COMMAND_CLOSE, COMMAND_CLOSE_CAPTION, COMMAND_CLOSE_SHORTCUT, CmdClose);
 
@@ -171,24 +160,24 @@ begin
 end;
 
 procedure TEntityDeskPresenter.CmdNew(Sender: TObject);
-var
-  action: IAction;
 begin
-  action := WorkItem.Actions[ACTION_ENTITY_NEW];
-  action.Data.Value['ENTITYNAME'] := ViewInfo.EntityName;
-  action.Execute(WorkItem);
+  with WorkItem.Activities[ACTION_ENTITY_NEW] do
+  begin
+    Params[TEntityNewActionParams.EntityName] := EntityName;
+    Execute(WorkItem);
+  end;
 end;
 
 procedure TEntityDeskPresenter.CmdOpen(Sender: TObject);
-var
-  action: IAction;
 begin
   if VarIsEmpty(WorkItem.State['ITEM_ID']) then Exit;
 
-  action := WorkItem.Actions[ACTION_ENTITY_ITEM];
-  action.Data.Value['ID'] := WorkItem.State['ITEM_ID'];
-  action.Data.Value['ENTITYNAME'] := ViewInfo.EntityName;
-  action.Execute(WorkItem);
+  with WorkItem.Activities[ACTION_ENTITY_ITEM] do
+  begin
+    Params[TEntityItemActionParams.ID] := WorkItem.State['ITEM_ID'];
+    Params[TEntityItemActionParams.EntityName] := EntityName;
+    Execute(WorkItem);
+  end;
 
 end;
 
@@ -231,7 +220,7 @@ end;
 
 function TEntityDeskPresenter.GetEVStates: IEntityView;
 begin
-  Result := GetEView(ViewInfo.EntityName, 'States');
+  Result := GetEView(EntityName, 'States');
 end;
 
 procedure TEntityDeskPresenter.CmdStateChange(Sender: TObject);
@@ -253,7 +242,7 @@ begin
 
     for I := 0 to View.Selection.Count - 1 do
     begin
-      App.Entities[ViewInfo.EntityName].
+      App.Entities[EntityName].
         GetOper(ENT_OPER_STATE_CHANGE_DEFAULT, WorkItem).
           Execute([View.Selection[I], direction]);
     end;

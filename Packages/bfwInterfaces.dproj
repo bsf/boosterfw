@@ -57,7 +57,6 @@
 			<DCCReference Include="dsnap.dcp"/>
 			<DCCReference Include="dbrtl.dcp"/>
 			<DCCReference Include="vclimg.dcp"/>
-			<DCCReference Include="..\Sources\Interfaces\ActivityServiceIntf.pas"/>
 			<DCCReference Include="..\Sources\Interfaces\ConfigServiceIntf.pas"/>
 			<DCCReference Include="..\Sources\Interfaces\EntityServiceIntf.pas"/>
 			<DCCReference Include="..\Sources\Interfaces\ReportServiceIntf.pas"/>

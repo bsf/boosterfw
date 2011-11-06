@@ -1,8 +1,8 @@
 unit EntityCatalogIntf;
 
 interface
-uses UIClasses, db, Classes, ShellIntf, CoreClasses,
-  variants;
+uses UIClasses, db, Classes, ShellIntf, CoreClasses, variants,
+  CustomContentPresenter, CustomDialogPresenter;
 
 const
   ENT_OPER_STATE_CHANGE_DEFAULT = 'StateChange';
@@ -17,56 +17,50 @@ const
   ACTION_ENTITY_DETAIL = 'actions.entity.detail';
 
 type
-  TEntityNewActionData = class(TActionData)
+  TEntityActivityOptions = record
+    const
+      EntityName = 'EntityName';
+      EntityViewName = 'EntityViewName';
+  end;
+
+  TEntityNewActionParams = record
+    const
+      HID = 'HID';
+      EntityName = 'EntityName';
+  end;
+
+{  TEntityNewActionData = class(TActionData)
   private
     FHID: variant;
     FEntityName: string;
   published
     property HID: Variant read FHID write FHID;
     property EntityName: string read FEntityName write FEntityName;
+  end;}
+
+  TEntityItemActionParams = record
+    const
+      ID = 'ID';
+      EntityName = 'EntityName';
   end;
 
-  TEntityItemActionData = class(TActionData)
+  {TEntityItemActionData = class(TActionData)
   private
     FID: variant;
     FEntityName: string;
   published
     property ID: variant read FID write FID;
     property EntityName: string read FEntityName write FEntityName;
+  end;}
+
+  TEntityNewActivityParams = record
+    const
+      HID = 'HID';
+      FOCUS_FIELD = 'FOCUS_FIELD';
+      NEXT_ACTION = 'NEXT_ACTION';
   end;
 
-  TEntityActionData = class(TActionData)
-  public
-    constructor Create(const ActionURI: string); override;
-  end;
-
-  TEntityPresenterData = class(TPresenterData)
-  end;
-
-  TEntityPickListPresenterData = class(TEntityPresenterData, IPickListPresenterData)
-  private
-    FFilter: string;
-    FID: Variant;
-    FNAME: Variant;
-  protected
-    function GetFilter: string;
-    function GetID: Variant;
-    function GetName: Variant;
-    procedure SetFilter(Value: string);
-    procedure SetID(Value: Variant);
-    procedure SetNameValue(Value: Variant);
-    procedure IPickListPresenterData.SetName = SetNameValue;
-  public
-    constructor Create(const ActionURI: string); override;
-  published
-    property Filter: string read GetFilter write SetFilter;
-    property ID: Variant read GetID write SetID;
-    property NAME: Variant read GetNAME write SetNAMEValue;
-  end;
-
-  TEntitySelectorPresenterData = class(TEntityPresenterData)
-  end;
-
+  {
   TEntityNewPresenterData = class(TEntityPresenterData)
   private
     FFocusField: string;
@@ -77,8 +71,15 @@ type
     property FOCUS_FIELD: string read FFocusField write FFocusField;
     property NEXT_ACTION: string read FNextAction write FNextAction;
   end;
+   }
 
-  TEntityItemPresenterData = class(TEntityPresenterData)
+  TEntityItemActivityParams = record
+    const
+      ID = 'ID';
+      FOCUS_FIELD = 'FOCUS_FIELD';
+  end;
+
+{  TEntityItemPresenterData = class(TEntityPresenterData)
   private
     FFocusField: string;
     FID: Variant;
@@ -87,14 +88,13 @@ type
     property ID: Variant read FID write SetID;
     property FOCUS_FIELD: string read FFocusField write FFocusField;
   end;
+ }
 
   IEntityItemView = interface(IContentView)
   ['{1DBB5B01-51A0-4BB0-85D2-D6724AEDC6F4}']
     procedure SetItemDataSet(ADataSet: TDataSet);
   end;
 
-  TEntityListPresenterData = class(TEntityPresenterData)
-  end;
 
   IEntityListView = interface(IContentView)
   ['{B1E6FCB6-EAC1-4B63-880F-C662B09579B4}']
@@ -121,82 +121,67 @@ type
     procedure SetJournalDataSet(ADataSet: TDataSet);
   end;
 
-  TEntityOrgChartData = class(TEntityPresenterData)
+  TEntityOrgChartActivityParams = record
+    const
+      ROOT_ID = 'ROOT_ID';
+  end;
+
+{  TEntityOrgChartData = class(TEntityPresenterData)
   private
     FROOT_ID: Variant;
     procedure SetROOT_ID(const Value: Variant);
   published
     property ROOT_ID: Variant read FROOT_ID write SetROOT_ID;
   end;
+ }
 
+   TEntityContentPresenter = class(TCustomContentPresenter)
+   const
+      EntityNameOption = 'EntityName';
+      EntityViewNameOption = 'EntityViewName';
 
+   protected
+     function EntityName: string;
+     function EntityViewName: string;
+   end;
+
+   TEntityDialogPresenter = class(TCustomDialogPresenter)
+   const
+      EntityNameOption = 'EntityName';
+      EntityViewNameOption = 'EntityViewName';
+
+   protected
+     function EntityName: string;
+     function EntityViewName: string;
+   end;
 implementation
 
-uses SysUtils;
 
 
-{ TEntityItemPresenterData }
 
-procedure TEntityItemPresenterData.SetID(const Value: Variant);
+
+{ TCustomEntityContentPresenter }
+
+function TEntityContentPresenter.EntityName: string;
 begin
-  FID := Value;
-  PresenterID := VarToStr(Value);
+  Result := ViewInfo.OptionValue(EntityNameOption);
 end;
 
-
-{ TEntityPickListPresenterData }
-
-constructor TEntityPickListPresenterData.Create(const ActionURI: string);
+function TEntityContentPresenter.EntityViewName: string;
 begin
-  inherited Create(ActionURI);
-  AddOut('ID');
-  AddOut('NAME');
+  Result := ViewInfo.OptionValue(EntityViewNameOption);
 end;
 
-function TEntityPickListPresenterData.GetFilter: string;
+{ TEntityDialogPresenter }
+
+function TEntityDialogPresenter.EntityName: string;
 begin
-  Result := FFilter;
+  Result := ViewInfo.OptionValue(EntityNameOption);
 end;
 
-function TEntityPickListPresenterData.GetID: Variant;
+function TEntityDialogPresenter.EntityViewName: string;
 begin
-  Result := FID;
+  Result := ViewInfo.OptionValue(EntityViewNameOption);
 end;
-
-function TEntityPickListPresenterData.GetName: Variant;
-begin
-  Result := FName;
-end;
-
-procedure TEntityPickListPresenterData.SetFilter(Value: string);
-begin
-  FFilter := Value;
-end;
-
-procedure TEntityPickListPresenterData.SetID(Value: Variant);
-begin
-  FID := Value;
-end;
-
-procedure TEntityPickListPresenterData.SetNameValue(Value: Variant);
-begin
-  FName := Value;
-end;
-
-{ TEntityOrgChartData }
-
-procedure TEntityOrgChartData.SetROOT_ID(const Value: Variant);
-begin
-  FROOT_ID := Value;
-  PresenterID := VarToStr(Value);
-end;
-
-{ TEntityActionData }
-
-constructor TEntityActionData.Create(const ActionURI: string);
-begin
-  inherited Create(ActionURI);
-end;
-
 
 end.

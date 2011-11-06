@@ -32,7 +32,7 @@ type
     function GetPreviewObject: TfrxPreview;
   end;
 
-  TfrReportPreviewData = class(TPresenterData)
+  TfrReportPreviewActivityData = class(TViewActivityData)
   private
     FStream: TMemoryStream;
     function GetStream: TStream;
@@ -204,7 +204,7 @@ end;
 
 class function TfrReportPreviewPresenter.ExecuteDataClass: TActionDataClass;
 begin
-  Result := TfrReportPreviewData;
+  Result := TfrReportPreviewActivityData;
 end;
 
 procedure TfrReportPreviewPresenter.frxReportClickObject(Sender: TfrxView;
@@ -235,8 +235,8 @@ begin
   inherited;
   FReport := TfrxReport.Create(Self);
   FReport.OnClickObject := frxReportClickObject;
-  (Sender.Data as TfrReportPreviewData).ReportStream.Position := 0;
-  FReport.PreviewPages.LoadFromStream((Sender.Data as TfrReportPreviewData).ReportStream);
+  (Sender.Data as TfrReportPreviewActivityData).ReportStream.Position := 0;
+  FReport.PreviewPages.LoadFromStream((Sender.Data as TfrReportPreviewActivityData).ReportStream);
 
   FSaveDialog := TSaveDialog.Create(Self);
   FSaveDialog.Options := FSaveDialog.Options + [ofOverwritePrompt];
@@ -285,12 +285,12 @@ end;
 
 { TfrReportPreviewData }
 
-procedure TfrReportPreviewData.ClearReportStream;
+procedure TfrReportPreviewActivityData.ClearReportStream;
 begin
   (ReportStream as TMemoryStream).Clear;
 end;
 
-function TfrReportPreviewData.GetStream: TStream;
+function TfrReportPreviewActivityData.GetStream: TStream;
 begin
   if FStream = nil then
     FStream := TMemoryStream.Create;
