@@ -1,7 +1,7 @@
 unit SecurityPoliciesPresenter;
 
 interface
-uses coreClasses, CustomContentPresenter, CommonViewIntf, cxCustomData, ShellIntf,
+uses coreClasses, CustomContentPresenter, UIClasses, cxCustomData, ShellIntf,
   sysutils, Contnrs, classes, db, CommonUtils, dxmdaset, SecurityIntf, variants,
   AdminConst;
 
@@ -64,7 +64,7 @@ end;
 
 procedure TSecurityPoliciesPresenter.CmdOpen(Sender: TObject);
 var
-  action: IAction;
+  activity: IActivity;
   polID: variant;
   policy: ISecurityPolicy;
 begin
@@ -74,12 +74,12 @@ begin
   policy := App.Security.FindPolicy(polID);
 
   if policy.ResProviderID = '' then
-    action := WorkItem.Actions[VIEW_SECURITYPOLICY]
+    activity := WorkItem.Activities[VIEW_SECURITYPOLICY]
   else
-    action := WorkItem.Actions[VIEW_SECURITYPOLICYRES];
+    activity := WorkItem.Activities[VIEW_SECURITYPOLICYRES];
 
-  (action.Data as TSecurityPolicyPresenterData).PolID := polID;
-  action.Execute(WorkItem);
+  activity.Params[TSecurityPolicyActivityParams.PolID] := polID;
+  activity.Execute(WorkItem);
 end;
 
 procedure TSecurityPoliciesPresenter.CmdPolicyActivate(Sender: TObject);
@@ -117,7 +117,7 @@ begin
   if VarIsEmpty(polID) then exit;
 
   policy := App.Security.FindPolicy(polID);
-  if App.Views.MessageBox.
+  if App.UI.MessageBox.
       ConfirmYesNo(
         format('”далить все установленные разрешени€ дл€ политики%s- %s ?', [#10#13, policy.Name])) then
   begin

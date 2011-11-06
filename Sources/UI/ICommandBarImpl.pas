@@ -2,7 +2,7 @@ unit ICommandBarImpl;
 
 interface
 uses classes, cxGroupBox, cxButtons, ActnList, sysutils, CoreClasses, ShellIntf,
-  CommonViewIntf, Menus, types, windows, Graphics, forms, controls, CommonUtils;
+  UIClasses, Menus, types, windows, Graphics, forms, controls, CommonUtils;
 
 const
   const_TopMargin: integer = 8;
@@ -113,7 +113,7 @@ begin
     if FButtonAlignment = alLeft then
       Left := nextPosition
     else
-      Left := nextPosition - MulDiv(Width, App.Views.ViewStyle.Scale, 100);
+      Left := nextPosition - MulDiv(Width, App.UI.ViewStyle.Scale, 100);
 
     if FButtonAlignment = alRight then
       Anchors := [akRight, akBottom];
@@ -122,7 +122,7 @@ begin
     SpeedButtonOptions.CanBeFocused := false;
   end;
 
-  Result.ScaleBy(App.Views.ViewStyle.Scale, 100);
+  Result.ScaleBy(App.UI.ViewStyle.Scale, 100);
 
 end;
 
@@ -180,7 +180,7 @@ end;
 
 function TICommandBarImpl.GetButtonMargin: integer;
 begin
-  Result := MulDiv(const_ButtonMargin, App.Views.ViewStyle.Scale, 100);
+  Result := MulDiv(const_ButtonMargin, App.UI.ViewStyle.Scale, 100);
 end;
 
 function TICommandBarImpl.GetButtonWidth(const ACaption: string): integer;
@@ -223,7 +223,7 @@ end;
 
 function TICommandBarImpl.GetTopMargin: integer;
 begin
-  Result := MulDiv(const_TopMargin, App.Views.ViewStyle.Scale, 100);
+  Result := MulDiv(const_TopMargin, App.UI.ViewStyle.Scale, 100);
 end;
 
 end.

@@ -44,6 +44,7 @@ contains
   SecurityPolicyView in '..\..\Sources\Modules\SecurityManager\SecurityPolicyView.pas' {frSecurityPolicyView},
   UserAccountsPresenter in '..\..\Sources\Modules\SecurityManager\UserAccountsPresenter.pas',
   UserAccountsView in '..\..\Sources\Modules\SecurityManager\UserAccountsView.pas' {frUserAccountsView},
-  bfwSecurityManagerModuleInit in '..\..\Sources\Modules\SecurityManager\bfwSecurityManagerModuleInit.pas';
+  bfwSecurityManagerModuleInit in '..\..\Sources\Modules\SecurityManager\bfwSecurityManagerModuleInit.pas',
+  SecurityResProvider in '..\..\Sources\Modules\SecurityManager\SecurityResProvider.pas';
 
 end.

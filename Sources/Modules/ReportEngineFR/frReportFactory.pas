@@ -2,9 +2,11 @@ unit frReportFactory;
 
 interface
 uses windows, classes, CoreClasses, ReportServiceIntf, EntityServiceIntf,
-  SysUtils, db, ibdatabase, CustomUIController, ComObj, controls,
+  SysUtils, db, ibdatabase,  ComObj, controls,
   frxClass, frxExportXML, frxExportXLS, frxExportCSV, frxIBXComponents, frxDesgn,
-  frxChBox, frxCross, frxBarCode, frxDCtrl, variants, frReportPreviewPresenter;
+  frxChBox, frxCross, frxBarCode, frxDCtrl, variants,
+  frReportPreviewPresenter, frReportPreviewView,
+  ActivityServiceIntf, UIClasses;
 
 const
   VIEW_FASTREPORT_PREVIEW = 'views.reports.fastreport.preview';
@@ -47,7 +49,7 @@ type
     property Template: string read FTemplate write FTemplate;
   end;
 
-  TFastReportFactory = class(TCustomUIController, IReportLauncherFactory)
+  TFastReportFactory = class(TWorkItemController, IReportLauncherFactory)
   private
     FWorkItem: TWorkItem;
     FLauncher: TFastReportLauncher;
@@ -68,6 +70,13 @@ begin
   inherited;
   FWorkItem := AOwner;
   (WorkItem.Services[IReportService] as IReportService).RegisterLauncherFactory(Self);
+
+  with WorkItem.Services[IActivityService] as IActivityService do
+  begin
+    RegisterActivityInfo(VIEW_FR_PREVIEW);
+    RegisterActivityClass(TViewActivityBuilder.Create(WorkItem,
+     VIEW_FR_PREVIEW, TfrReportPreviewPresenter, TfrfrReportPreviewView));
+  end
 end;
 
 function TFastReportFactory.GetLauncher(AConnection: IEntityStorageConnection;
@@ -156,7 +165,7 @@ begin
   FProgressCallback := ProgressCallback;
   try
     FReport.LoadFromFile(GetReportFileName);
-
+    FReport.ReportOptions.Name := ChangeFileExt(ExtractFileName(GetReportFileName), '');
     if FIBXComponents.DefaultDatabase.DefaultTransaction.InTransaction then
       FIBXComponents.DefaultDatabase.DefaultTransaction.Commit;
 
@@ -224,11 +233,11 @@ end;
 
 procedure TFastReportLauncher.Preview(const ATitle: string);
 var
-  actionData: TfrReportPreviewData;
+  actionData: TfrReportPreviewActivityData;
   action: IAction;
 begin
   action := FCallerWI.Actions[VIEW_FR_PREVIEW];
-  actionData := action.Data as TfrReportPreviewData;
+  actionData := action.Data as TfrReportPreviewActivityData;
   actionData.PresenterID := CreateClassID;
   actionData.ViewTitle := ATitle;
   actionData.ClearReportStream;

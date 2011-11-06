@@ -5,7 +5,7 @@ uses cxTL, cxTLdxBarBuiltInMenu, cxTLData, cxDBTL,
   Contnrs, controls, CustomView, classes, sysutils, db,
   EntityServiceIntf, cxButtonEdit, cxEdit, CoreClasses, StrUtils, Variants,
   CustomPresenter, cxInplaceContainer, cxDBLookupComboBox, menus, cxCheckBox,
-  CommonViewIntf;
+  UIClasses;
 
 type
   TcxTreeGridViewHelper = class(TViewHelper, IViewHelper)

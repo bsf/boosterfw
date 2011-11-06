@@ -4,12 +4,16 @@ inherited frSecurityPolicyResView: TfrSecurityPolicyResView
   Caption = 'frSecurityPolicyResView'
   ClientHeight = 626
   ClientWidth = 1031
+  ExplicitWidth = 320
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
+    ExplicitWidth = 1031
+    ExplicitHeight = 626
     Height = 626
     Width = 1031
     inherited pnButtons: TcxGroupBox
+      ExplicitWidth = 1027
       Width = 1027
     end
     object trRes: TcxTreeList
@@ -107,12 +111,12 @@ inherited frSecurityPolicyResView: TfrSecurityPolicyResView
           Width = 75
           Height = 25
           Caption = #1042#1089#1077
-          TabOrder = 0
-          OnClick = btUsersShowAllClick
           LookAndFeel.Kind = lfOffice11
           SpeedButtonOptions.GroupIndex = 1
           SpeedButtonOptions.CanBeFocused = False
           SpeedButtonOptions.Down = True
+          TabOrder = 0
+          OnClick = btUsersShowAllClick
         end
         object btUsersShowUsers: TcxButton
           Left = 87
@@ -120,11 +124,11 @@ inherited frSecurityPolicyResView: TfrSecurityPolicyResView
           Width = 83
           Height = 25
           Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1080
-          TabOrder = 1
-          OnClick = btUsersShowAllClick
           LookAndFeel.Kind = lfOffice11
           SpeedButtonOptions.GroupIndex = 1
           SpeedButtonOptions.CanBeFocused = False
+          TabOrder = 1
+          OnClick = btUsersShowAllClick
         end
         object btUsersShowRoles: TcxButton
           Left = 176
@@ -132,11 +136,11 @@ inherited frSecurityPolicyResView: TfrSecurityPolicyResView
           Width = 75
           Height = 25
           Caption = #1056#1086#1083#1080
-          TabOrder = 2
-          OnClick = btUsersShowAllClick
           LookAndFeel.Kind = lfOffice11
           SpeedButtonOptions.GroupIndex = 1
           SpeedButtonOptions.CanBeFocused = False
+          TabOrder = 2
+          OnClick = btUsersShowAllClick
         end
       end
       object grUsers: TcxGrid

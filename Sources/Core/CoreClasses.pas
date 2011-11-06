@@ -2,14 +2,13 @@ unit CoreClasses;
 
 interface
 uses SysUtils, Classes, Contnrs, Controls, Messages, ManagedList, Variants,
-  typinfo, windows;
+  typinfo, windows, graphics;
 
 const
   etAppStarted = 'Application.Started';
   etAppStoped = 'Application.Stoped';
 
-  GetModuleActivatorFunctionName = 'GetModuleActivator';
-
+  EVT_MODULE_LOAD = 'events.OnModuleLoad';
 
 type
   EArgumentError = class(Exception);
@@ -27,45 +26,24 @@ type
       const ArgumentName: string = '');
     class procedure CheckArgumentNotEmpty(AValue: Variant;
       const ArgumentName: string = '');
-  end;                                       
+  end;
 
   TWorkItem = class;
 
-  TAppRunMode = (rmStandard, rmConfiguration, rmAdministration);
-  TAppRunModes = set of TAppRunMode;
+  TModuleKind = (mkInfrastructure, mkFoundation, mkExtension);
 
-  TModuleKind = (mkInfrastructure, mkConfiguration, mkFoundation, mkExtension);
-
-  IModule = interface
-  ['{C29B7570-168C-4655-AC39-235A06A54D7C}']
-    procedure AddServices(AWorkItem: TWorkItem);
-    procedure Load;
-    procedure UnLoad;
+  TModule = class(TComponent)
+  private
+    FWorkItem: TWorkItem;
+  public
+    constructor Create(AWorkItem: TWorkItem); reintroduce;
+    class function Kind: TModuleKind; virtual;
+    procedure Load; virtual;
+    procedure UnLoad; virtual;
+    property WorkItem: TWorkItem read FWorkItem;
   end;
 
-
-  TGetModuleActivator = function: TClass;
-
-  IModuleEnumeratorEmbeded = interface
-  ['{5E262A6E-C0FF-4441-8F76-C0A53816E6B8}']
-    procedure Modules(Activators: TClassList; Kind: TModuleKind; RunMode: TAppRunMode);
-  end;
-
-  IModuleEnumerator = interface
-  ['{80750273-3990-4E3A-8B79-6B917BEBE3F9}']
-    procedure Modules(AModules: TStrings; Kind: TModuleKind; RunMode: TAppRunMode);
-  end;
-
-  TModuleLoaderInfoCallback = procedure(const AModuleName, AInfo: string; Kind: TModuleKind) of object;
-
-  IModuleLoaderService = interface
-  ['{F198EE64-F7E8-46EE-B1A6-6ADCA7E1AF9B}']
-    procedure Load(AWorkItem: TWorkItem; AModules: TStrings; Kind: TModuleKind;
-      AInfoCallback: TModuleLoaderInfoCallback);
-    procedure LoadEmbeded(AWorkItem: TWorkItem; AActivators: TClassList;
-      Kind: TModuleKind; AInfoCallback: TModuleLoaderInfoCallback);
-    procedure UnLoadAll;
-  end;
+  TModuleClass = class of TModule;
 
   IAuthenticationService = interface
   ['{220B21AC-CD11-48DF-ADCB-BE6F577EC416}']
@@ -144,8 +122,91 @@ type
     property Workspace[const AName: string]: IWorkspace read GetWorkspace; default;
   end;
 
-{Actions}
+{Activities}
+  IActivity = interface;
 
+  TActivityHandler = class(TObject)
+  public
+    procedure Execute(Sender: TWorkItem; Activity: IActivity); virtual; abstract;
+  end;
+
+  IActivityData = interface
+  ['{3890884F-D4DB-4E57-AECB-D432BA6CA6A8}']
+    function Count: integer;
+    function ValueName(AIndex: integer): string;
+    function IndexOf(const AName: string): integer;
+    procedure Assign(Source: TPersistent);
+    procedure AssignTo(Dest: TPersistent);
+    procedure SetValue(const AName: string; AValue: Variant);
+    function GetValue(const AName: string): Variant;
+    property Value[const AName: string]: Variant read GetValue write SetValue; default;
+  end;
+
+
+  IActivity = interface
+  ['{D9404645-31DF-4505-8972-BD29B4D5F85F}']
+    function URI: string;
+
+    procedure SetActivityClass(const Value: string);
+    function GetActivityClass: string;
+    property ActivityClass: string read GetActivityClass write SetActivityClass;
+
+    procedure SetTitle(const Value: string);
+    function GetTitle: string;
+    property Title: string read GetTitle write SetTitle;
+
+    procedure SetGroup(const Value: string);
+    function GetGroup: string;
+    property Group: string read GetGroup write SetGroup;
+
+    procedure SetMenuIndex(Value: integer);
+    function GetMenuIndex: integer;
+    property MenuIndex: integer read GetMenuIndex write SetMenuIndex;
+
+    function GetShortCut: string;
+    procedure SetShortCut(const Value: string);
+    property ShortCut: string read GetShortCut write SetShortCut;
+
+    function GetImage: Graphics.TBitmap;
+    procedure SetImage(Value: Graphics.TBitmap);
+    property Image: Graphics.TBitmap read GetImage write SetImage;
+
+    procedure SetUsePermission(Value: boolean);
+    function GetUsePermission: boolean;
+    property UsePermission: boolean read GetUsePermission write SetUsePermission;
+    function HavePermission: boolean;
+
+    function Options: TStrings;
+    function OptionExists(const AName: string): boolean;
+    function OptionValue(const AName: string): string;
+
+    function Params: IActivityData;
+    function Outs: IActivityData;
+
+    procedure RegisterHandler(AHandler: TActivityHandler);
+
+    procedure Execute(Sender: TWorkItem);
+
+  end;
+
+  IActivityPermissionHandler = interface
+  ['{87BFE264-2CB4-4DA1-BA4F-A90FE230BF2F}']
+    function CheckPermission(Activity: IActivity): boolean;
+    procedure DemandPermission(Activity: IActivity);
+  end;
+
+  IActivities = interface
+  ['{135F7738-1BD9-4562-B9F3-EBA335B3CC3A}']
+    procedure RegisterHandler(const ActivityClass: string; AHandler: TActivityHandler);
+    procedure RegisterPermissionHandler(AHandler: IActivityPermissionHandler);
+    function Count: integer;
+    function GetItem(AIndex: integer): IActivity;
+    function IndexOf(const URI: string): integer;
+    function FindOrCreate(const URI: string): IActivity;
+    property Activity[const URI: string]: IActivity read FindOrCreate; default;
+  end;
+
+{Actions}
 
   IAction = interface;
 
@@ -164,7 +225,7 @@ type
     procedure AddOut(const AName: string);
     function IsEmbedded(const AName: string): boolean;
   public
-    constructor Create(const ActionURI: string); reintroduce; virtual; 
+    constructor Create(const ActionURI: string); reintroduce; virtual;
     destructor Destroy; override;
     function ValueName(AIndex: integer): string;
     function Count: integer;
@@ -230,7 +291,7 @@ type
     procedure RegisterCondition(ACondition: TCommandConditionMethod);
     procedure RemoveCondition(ACondition: TCommandConditionMethod);
 
-    procedure Init(const ACaption, AShortCut: string; AHandler: TNotifyEvent); 
+    procedure Init(const ACaption, AShortCut: string; AHandler: TNotifyEvent);
     property Caption: string read GetCaption write SetCaption;
     property ShortCut: string read GetShortCut write SetShortCut;
     property Status: TCommandStatus read GetStatus write SetStatus;
@@ -306,7 +367,7 @@ type
 {TWorkItem}
   TWorkItemStatus = (wisActive, wisInactive, wisTerminated);
 
-  TAbstractController = class(TComponent)
+  TWorkItemController = class(TComponent)
   private
     function GetWorkItem: TWorkItem;
   protected
@@ -316,17 +377,17 @@ type
     procedure Run; virtual;
     procedure Activate; virtual;
     procedure Deactivate; virtual;
-    procedure Instantiate; virtual;
+    procedure Initialize; virtual;
   public
     constructor Create(AOwner: TWorkItem); reintroduce; virtual;
     property WorkItem: TWorkItem read GetWorkItem;
   end;
 
-  TControllerClass = class of TAbstractController;
+  TControllerClass = class of TWorkItemController;
 
   IWorkItems = interface(ICollection)
   ['{09683504-8734-4CA6-83B9-A2BD006A2CC3}']
-    function Add(const AID: string = ''; AControllerClass: TControllerClass = nil): TWorkItem;
+    function Add(AControllerClass: TControllerClass = nil; const AID: string = ''): TWorkItem;
     function Find(const AID: string): TWorkItem;
     function Get(Index: integer): TWorkItem;
     property WorkItem[Index: integer]: TWorkItem read Get; default;
@@ -337,11 +398,12 @@ type
     FParent: TWorkItem;
     FStatus: TWorkItemStatus;
     FControllerClass: TControllerClass;
-    FController: TAbstractController;
+    FController: TWorkItemController;
     FEventTopics: TComponent;
     FServices: TComponent;
     FWorkItems: TComponent;
     FCommands: TComponent;
+    FActivities: TComponent;
     FActions: TComponent;
     FWorkspaces: TComponent;
     FItems: TComponent;
@@ -354,11 +416,13 @@ type
     function GetEventTopics: IEventTopics;
     function GetWorkItems: IWorkItems;
     function GetCommands: ICommands;
+    function GetActivities: IActivities;
     function GetActions: IActions;
     function GetWorkspaces: IWorkspaces;
     function GetItems: IItems;
     function GetState(const AName: string): Variant;
     procedure SetState(const AName: string; const Value: Variant);
+
      //отключено за ненадобностью
     //function GetApplication: IInterface;
   protected
@@ -368,6 +432,7 @@ type
 
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
+    property Actions: IActions read GetActions;
   public
     procedure DebugInfo(const AInfoText: string);
 
@@ -383,11 +448,12 @@ type
     property WorkItems: IWorkItems read GetWorkItems;
     property EventTopics: IEventTopics read GetEventTopics;
     property Commands: ICommands read GetCommands;
-    property Actions: IActions read GetActions;
+    property Activities: IActivities read GetActivities;
+
     property Workspaces: IWorkspaces read GetWorkspaces;
     property Items: IItems read GetItems;
     property State[const AName: string]: Variant read GetState write SetState;
-    property Controller: TAbstractController read FController;
+    property Controller: TWorkItemController read FController;
     property Status: TWorkItemStatus read FStatus;
     property Parent: TWorkItem read FParent;
     //можно использовать как хочешь
@@ -398,24 +464,33 @@ type
 
   TWorkItemClass = class of TWorkItem;
 
-procedure RegisterEmbededModule(ActivatorClass: TClass; Kind: TModuleKind;
-  RunModes: TAppRunModes = [rmStandard]);
+
+procedure RegisterModule(ModuleClass: TModuleClass);
+function ModuleClasses: TClassList;
 
 function FindWorkItem(const AID: string; AParent: TWorkItem): TWorkItem;
 
 implementation
 
-uses ModuleEnumeratorEmbeded, EventBroker, ServicesList, CommandsList,
-  WorkspacesList, ItemsList, ActionsList;
+uses  EventBroker, ServicesList, CommandsList, Activities, WorkspacesList, ItemsList,
+  ActionsList;
 
 var
   DebugInfoProc: procedure(const AInfo: string);
 
-procedure RegisterEmbededModule(ActivatorClass: TClass; Kind: TModuleKind;
-  RunModes: TAppRunModes);
+  ModuleClassesList: TClassList;
+
+function ModuleClasses: TClassList;
 begin
-  if HInstance = MainInstance then
-    ModuleEnumeratorEmbeded.RegisterActivator(ActivatorClass, Kind, RunModes);
+  if not Assigned(ModuleClassesList) then
+    ModuleClassesList := TClassList.Create;
+
+  Result := ModuleClassesList;
+end;
+
+procedure RegisterModule(ModuleClass: TModuleClass);
+begin
+  ModuleClasses.Add(ModuleClass);
 end;
 
 function FindWorkItem(const AID: string; AParent: TWorkItem): TWorkItem;
@@ -440,7 +515,7 @@ end;
 type
   TWorkItems = class(TManagedItemList, IWorkItems)
   public
-    function Add(const AID: string = ''; AControllerClass: TControllerClass = nil): TWorkItem;
+    function Add(AControllerClass: TControllerClass = nil; const AID: string = ''): TWorkItem;
     function Find(const AID: string): TWorkItem;
     function Get(Index: integer): TWorkItem;
   end;
@@ -508,6 +583,9 @@ begin
     ParentList := TManagedItemList(FParent.FCommands);
   FCommands := TCommands.Create(Self, lsmLocal{lsmUp}, ParentList);
 
+  if FParent = nil then
+    FActivities := TActivities.Create(Self);
+
   ParentList := nil;
   if FParent <> nil then
     ParentList := TManagedItemList(FParent.FActions);
@@ -529,6 +607,7 @@ begin
   begin
     FController := FControllerClass.Create(Self);
     FController.FreeNotification(Self);
+    FController.Initialize;
   end;
 
 end;
@@ -579,6 +658,11 @@ end;
 function TWorkItem.GetActions: IActions;
 begin
   FActions.GetInterface(IActions, Result);
+end;
+
+function TWorkItem.GetActivities: IActivities;
+begin
+  Result := Root.FActivities as IActivities;
 end;
 
 {function TWorkItem.GetApplication: IInterface;
@@ -661,50 +745,49 @@ end;
 
 { AbstractTController }
 
-procedure TAbstractController.Activate;
+procedure TWorkItemController.Activate;
 begin
 
 end;
 
-constructor TAbstractController.Create(AOwner: TWorkItem);
+constructor TWorkItemController.Create(AOwner: TWorkItem);
 begin
   inherited Create(AOwner);
-  Instantiate;
 end;
 
-procedure TAbstractController.Deactivate;
+procedure TWorkItemController.Deactivate;
 begin
 
 end;
 
-function TAbstractController.GetWorkItem: TWorkItem;
+function TWorkItemController.GetWorkItem: TWorkItem;
 begin
   Result := TWorkItem(Owner);
 end;
 
-procedure TAbstractController.Instantiate;
+procedure TWorkItemController.Initialize;
 begin
 
 end;
 
-function TAbstractController.OnGetWorkItemState(
+function TWorkItemController.OnGetWorkItemState(
   const AName: string): Variant;
 begin
 
 end;
 
-procedure TAbstractController.OnSetWorkItemState(const AName: string;
+procedure TWorkItemController.OnSetWorkItemState(const AName: string;
   const Value: Variant);
 begin
 
 end;
 
-procedure TAbstractController.Run;
+procedure TWorkItemController.Run;
 begin
 
 end;
 
-procedure TAbstractController.Terminate;
+procedure TWorkItemController.Terminate;
 begin
 
 end;
@@ -728,9 +811,15 @@ end;
 
 { TWorkItems }
 
-function TWorkItems.Add(const AID: string; AControllerClass: TControllerClass): TWorkItem;
+function TWorkItems.Add(AControllerClass: TControllerClass; const AID: string): TWorkItem;
+var
+  wID: string;
 begin
-  Result := TWorkItem.Create(Self, TWorkItem(Self.Owner), AID, AControllerClass);
+  wID := AID;
+  if (wID = '') and (AControllerClass <> nil) then
+    wID := AControllerClass.ClassName;
+
+  Result := TWorkItem.Create(Self, TWorkItem(Self.Owner), wID, AControllerClass);
   InternalAdd(Result);
 end;
 
@@ -911,6 +1000,30 @@ begin
 end;
 
 procedure DebugInfoProcStub(const AInfo: string);
+begin
+
+end;
+
+
+{ TModule }
+
+constructor TModule.Create(AWorkItem: TWorkItem);
+begin
+  inherited Create(nil);
+  FWorkItem := AWorkItem.WorkItems.Add(nil, Self.ClassName);
+end;
+
+class function TModule.Kind: TModuleKind;
+begin
+  Result := mkExtension;
+end;
+
+procedure TModule.Load;
+begin
+
+end;
+
+procedure TModule.UnLoad;
 begin
 
 end;

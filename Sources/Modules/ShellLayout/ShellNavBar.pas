@@ -4,7 +4,7 @@ interface
 
 uses classes, types, ViewStyleController, dxNavBar, dxNavBarGroupItems, dxNavBarCollns,
   sysutils, controls, CoreClasses, Graphics, cxGraphics, IniFiles,
-  NavBarServiceIntf, windows, menus, cxLookAndFeels, ShellIntf;
+  windows, menus, cxLookAndFeels, ShellIntf;
 
 const
   DefNavView = 13;
@@ -15,49 +15,31 @@ const
   PreferenceFile = 'NavBar';
 
 type
-  TNavBarItemLinkControlInfo = class(TComponent)
-  private
-    FItemID: string;
-    FNavBar: TdxNavBar;
+  TNavBarItemInfo = class(TComponent)
+  const INSTANCE_NAME = 'ItemInfo';
+  public
+    URI: string;
   end;
 
-  TdxNavBarControlManager = class(TComponent, INavBarControlManager)
+  TdxNavBarControlManager = class(TComponent)
   private
     FScaleM: integer;
     FScaleD: integer;
     FImageList: TcxImageList;
     FNavBar: TdxNavBar;
     FWorkItem: TWorkItem;
-    FItemMenu: TPopupMenu;
-    FItemLinkSubItemsCallback: TNavBarItemLinkSubItemsCallback;
     FLookAndFeelListener: TcxLookAndFeel;
-    function FindCategoryControl(ACategory: INavBarCategory): TdxNavBarGroup;
-    function FindGroupControl(AGroup: INavBarGroup): TdxNavBarGroup;
-    function FindItemLinkControl(AItemLink: INavBarItemLink): TdxNavBarItemLink;
-    procedure ShiftImageIndex(ARemoveIndex: integer);
-    procedure NavBarLinkClickHandler(Sender: TObject; ALink: TdxNavBarItemLink);
-    function IsControlKeyDown: boolean;
-    procedure ShowItemLinkSubItems(ALink: TdxNavBarItemLink);
-    function GetItemLinkInfo(ALink: TdxNavBarItemLink): TNavBarItemLinkControlInfo;
     procedure LookAndFeelChangedHandler(Sender: TcxLookAndFeel;
       AChangedValues: TcxLookAndFeelValues);
     procedure LoadPreferenceFromFile(AFile: TMemIniFile);
     procedure SavePreferenceToFile(AFile: TMemIniFile);
     procedure ScaleByCategory(ACategory: TdxNavBarGroup; M, D: integer);
-  protected
-    procedure AddCategory(ACategory: INavBarCategory);
-    procedure RemoveCategory(ACategory: INavBarCategory);
-    procedure ChangeCategory(ACategory: INavBarCategory);
-    procedure AddGroup(AGroup: INavBarGroup);
-    procedure RemoveGroup(AGroup: INavBarGroup);
-    procedure AddItemLink(AItemLink: INavBarItemLink);
-    procedure RemoveItemLink(AItemLink: INavBarItemLink);
-    procedure ChangeItemLink(AItemLink: INavBarItemLink);
-    procedure RemoveAllItems;
-    procedure SetItemLinkSubItemsCallback(Value: TNavBarItemLinkSubItemsCallback);
-    //CustomDraw
-    procedure OnCustomDrawGroupCaption(Sender: TObject;
-         ACanvas: TCanvas; AViewInfo: TdxNavBarGroupViewInfo; var AHandled: Boolean);
+
+
+    procedure NavBarItemClickHandler(Sender: TObject; ALink: TdxNavBarItemLink);
+    function FindOrCreateCategory(const ACaption: string): TdxNavBarGroup;
+    function FindOrCreateGroup(const ACaption: string; ACategory: TdxNavBarGroup): TdxNavBarGroup;
+
   public
     constructor Create(AOwner: TComponent; ANavBar: TdxNavBar;
       AWorkItem: TWorkItem); reintroduce;
@@ -65,6 +47,7 @@ type
     procedure ScaleBy(M, D: integer);
     procedure SavePreference;
     procedure LoadPreference;
+    procedure BuildMainMenu;
   end;
 
 
@@ -93,342 +76,135 @@ begin
   else
     FNavBar.View := DefNavView;
 
-  FItemMenu := TPopupMenu.Create(Self);
 
   FScaleM := 100;
   FScaleD := 100;
+
 end;
 
-procedure TdxNavBarControlManager.AddCategory(ACategory: INavBarCategory);
-var
-  dxCategory: TdxNavBarGroup;
-  dxCategoryNavBar: TdxNavBar;
-begin
-  dxCategory := FNavBar.Groups.Add;
 
-  dxCategory.OptionsGroupControl.UseControl := true;
-  dxCategory.Control.UseStyle := true;
-  dxCategory.UseSmallImages := false;
-  dxCategoryNavBar := TdxNavBar.Create(dxCategory.Control); //Parent and Owner must be equal !
+procedure TdxNavBarControlManager.BuildMainMenu;
+
+  procedure AddItem(Activity: IActivity; Group: TdxNavBarGroup);
+  var
+    categoryNavBar: TdxNavBar;
+    dxItem: TdxNavBarItem;
+    ItemInfo: TNavBarItemInfo;
+  begin
+    categoryNavBar := TdxNavBar(Group.Collection.Owner);
+
+    if (Group.LinkCount > 0) and Activity.OptionExists('BeginSection') then
+    begin
+      dxItem := categoryNavBar.Items.Add(TdxNavBarSeparator);
+      Group.CreateLink(dxItem);
+    end;
+
+    dxItem := categoryNavBar.Items.Add;
+    dxItem.Caption := Activity.Title;
+    if not Activity.Image.Empty then
+      dxItem.SmallImageIndex :=
+        categoryNavBar.SmallImages.AddMasked(Activity.Image, clDefault);
+
+    Group.CreateLink(dxItem);
+
+    ItemInfo := TNavBarItemInfo.Create(dxItem);
+    ItemInfo.Name := TNavBarItemInfo.INSTANCE_NAME;
+    ItemInfo.URI := Activity.URI;
+  end;
+
+var
+  activity: IActivity;
+  I: integer;
+  category: TdxNavBarGroup;
+begin
+
+  category := FindOrCreateCategory('Главное меню');
+
+  for I := 0 to FWorkItem.Activities.Count - 1 do
+  begin
+    activity := FWorkItem.Activities.GetItem(I);
+
+    if (activity.Group <> '') and (activity.MenuIndex > -1) and activity.HavePermission then
+      AddItem(activity, FindOrCreateGroup(activity.Group, category));
+  end;
+end;
+
+function TdxNavBarControlManager.FindOrCreateCategory(
+  const ACaption: string): TdxNavBarGroup;
+var
+  dxCategoryNavBar: TdxNavBar;
+  I: integer;
+begin
+  for I := 0 to FNavBar.Groups.Count -  1 do
+  begin
+    Result := FNavBar.Groups[I];
+    if SameText(Result.Caption, ACaption) then Exit;
+  end;
+
+  Result := FNavBar.Groups.Add;
+
+  Result.OptionsGroupControl.UseControl := true;
+  Result.Control.UseStyle := true;
+  Result.UseSmallImages := false;
+  dxCategoryNavBar := TdxNavBar.Create(Result.Control); //Parent and Owner must be equal !
   dxCategoryNavBar.Name := 'NavBar';
+  dxCategoryNavBar.OnLinkClick := NavBarItemClickHandler;
 
   if cxLookAndFeels.cxUseSkins then
     dxCategoryNavBar.View := SkinExpView
   else
     dxCategoryNavBar.View := DefExpView;
 
+  dxCategoryNavBar.SmallImages := FNavBar.SmallImages;
+
   dxCategoryNavBar.Align := alClient;
-  dxCategoryNavBar.Parent := dxCategory.Control;
+  dxCategoryNavBar.Parent := Result.Control;
   dxCategoryNavBar.TabStop := true;
   dxCategoryNavBar.OptionsBehavior.Common.DragDropFlags :=
     dxCategoryNavBar.OptionsBehavior.Common.DragDropFlags - [fAllowDragGroup, fAllowDragLink];
 
-  dxCategory.Caption := ACategory.Caption;
+  Result.Caption := ACaption;
 
-  if not ACategory.GetImage.Empty then
+{  if not ACategory.GetImage.Empty then
+  begin
     dxCategory.LargeImageIndex :=
       FImageList.AddMasked(ACategory.GetImage, clDefault);
-
-  ScaleByCategory(dxCategory, FScaleM, FScaleD);
-
-end;
-
-procedure TdxNavBarControlManager.AddGroup(AGroup: INavBarGroup);
-var
-  dxCategory: TdxNavBarGroup;
-  dxCategoryNavBar: TdxNavBar;
-  dxGroup: TdxNavBarGroup;
-begin
-  dxCategory := FindCategoryControl(AGroup.Category);
-  dxCategoryNavBar := TdxNavBar(dxCategory.Control.FindComponent('NavBar'));
-
-  dxGroup := dxCategoryNavBar.Groups.Add;
-  dxGroup.Caption := AGroup.Caption;
-  dxGroup.Visible := false;
-end;
-
-
-procedure TdxNavBarControlManager.AddItemLink(AItemLink: INavBarItemLink);
-var
-  dxGroup: TdxNavBarGroup;
-  dxCategoryNavBar: TdxNavBar;
-  dxItem: TdxNavBarItem;
-  ItemInfo: TNavBarItemLinkControlInfo;
-begin
-  dxGroup := FindGroupControl(AItemLink.Group);
-  dxCategoryNavBar := TdxNavBar(
-     FindCategoryControl(AItemLink.Group.Category).Control.FindComponent('NavBar'));
-
-
-  if (dxGroup.LinkCount > 0) and  (AItemLink.SectionIndex <> 0) then
-  begin
-    dxItem := dxCategoryNavBar.Items.Add(TdxNavBarSeparator);
-    dxGroup.CreateLink(dxItem);
+    FNavBar.SmallImages.AddMasked(ACategory.GetImage, clDefault);
   end;
+ }
+  ScaleByCategory(Result, FScaleM, FScaleD);
 
-  dxItem := dxCategoryNavBar.Items.Add;
-  dxItem.Caption := AItemLink.Caption;
-  dxGroup.CreateLink(dxItem);
-  dxGroup.Visible := true;
 
-  ItemInfo := TNavBarItemLinkControlInfo.Create(dxItem);
-  ItemInfo.Name := 'ItemLinkInfo';
-  ItemInfo.FItemID := AItemLink.ItemID;
-  ItemInfo.FNavBar := dxCategoryNavBar;
-  dxCategoryNavBar.OnLinkClick := NavBarLinkClickHandler;
 end;
 
-procedure TdxNavBarControlManager.RemoveGroup(AGroup: INavBarGroup);
-begin
-  FindGroupControl(AGroup).Free;
-end;
-
-procedure TdxNavBarControlManager.RemoveItemLink(
-  AItemLink: INavBarItemLink);
+function TdxNavBarControlManager.FindOrCreateGroup(const ACaption: string;
+  ACategory: TdxNavBarGroup): TdxNavBarGroup;
 var
-  dxGroup: TdxNavBarGroup;
-begin
-  dxGroup := FindGroupControl(AItemLink.Group);
-  FindItemLinkControl(AItemLink).Free;
-  dxGroup.Visible := dxGroup.LinkCount > 0;
-end;
-
-procedure TdxNavBarControlManager.RemoveCategory(
-  ACategory: INavBarCategory);
-var
-  ImageIdx: integer;
-  dxCategory: TdxNavBarGroup;
-begin
-  dxCategory := FindCategoryControl(ACategory);
-  ImageIdx := dxCategory.LargeImageIndex;
-  if ImageIdx > -1 then
-    ShiftImageIndex(ImageIdx);
-  dxCategory.Free;  
-end;
-
-procedure TdxNavBarControlManager.RemoveAllItems;
-begin
-  FNavBar.Groups.Clear;
-  FNavBar.Items.Clear;
-  FImageList.Clear;
-end;
-
-procedure TdxNavBarControlManager.ChangeCategory(ACategory: INavBarCategory);
-var
-  ImageIdx: integer;
-  dxCategory: TdxNavBarGroup;
-begin
-  dxCategory := FindCategoryControl(ACategory);
-  ImageIdx := dxCategory.LargeImageIndex;
-
-  if (ImageIdx = -1) and (not ACategory.GetImage.Empty) then //Add
-    dxCategory.LargeImageIndex := FImageList.AddMasked(ACategory.GetImage, clDefault)
-  else if (ImageIdx <> -1) and (not ACategory.GetImage.Empty) then //Replace
-    FImageList.ReplaceMasked(ImageIdx, ACategory.GetImage, clDefault)
-  else if (ImageIdx <> -1) and (ACategory.GetImage.Empty) then //Clear
-  begin
-    dxCategory.LargeImageIndex := -1;
-    FImageList.Delete(ImageIdx);
-    ShiftImageIndex(ImageIdx);
-  end;
-end;
-
-
-procedure TdxNavBarControlManager.ChangeItemLink(
-  AItemLink: INavBarItemLink);
-begin
-
-end;
-
-function TdxNavBarControlManager.FindCategoryControl(
-  ACategory: INavBarCategory): TdxNavBarGroup;
-var
-  I: integer;
-begin
-  for I := 0 to FNavBar.Groups.Count -  1 do
-  begin
-    Result := FNavBar.Groups[I];
-    if SameText(Result.Caption, ACategory.Caption) then Exit;
-  end;
-
-  raise Exception.CreateFmt('NavBar Category %s not found', [ACategory.Caption]);
-end;
-
-
-
-procedure TdxNavBarControlManager.ShiftImageIndex(ARemoveIndex: integer);
-var
-  I: integer;
-begin
-  if ARemoveIndex = -1 then Exit;
-
-  for I := 0 to FNavBar.Groups.Count - 1 do
-    if FNavBar.Groups[I].LargeImageIndex > ARemoveIndex then
-      FNavBar.Groups[I].LargeImageIndex :=
-        FNavBar.Groups[I].LargeImageIndex - 1;
-
-  for I := 0 to FNavBar.Items.Count - 1 do
-    if FNavBar.Items[I].LargeImageIndex > ARemoveIndex then
-      FNavBar.Items[I].LargeImageIndex :=
-        FNavBar.Items[I].LargeImageIndex - 1;
-
-end;
-
-function TdxNavBarControlManager.FindGroupControl(
-  AGroup: INavBarGroup): TdxNavBarGroup;
-var
-  dxCategory: TdxNavBarGroup;
   dxCategoryNavBar: TdxNavBar;
   I: integer;
 begin
-  dxCategory := FindCategoryControl(AGroup.Category);
-  dxCategoryNavBar := TdxNavBar(dxCategory.Control.FindComponent('NavBar'));
+  dxCategoryNavBar := TdxNavBar(ACategory.Control.FindComponent('NavBar'));
 
   for I := 0 to dxCategoryNavBar.Groups.Count -  1 do
   begin
     Result := dxCategoryNavBar.Groups[I];
-    if SameText(Result.Caption, AGroup.Caption) then Exit;
+    if SameText(Result.Caption, ACaption) then Exit;
   end;
 
-  raise Exception.CreateFmt('NavBar Group %s not found', [AGroup.Caption]);
-
+  Result := dxCategoryNavBar.Groups.Add;
+  Result.Caption := ACaption;
 end;
 
-function TdxNavBarControlManager.FindItemLinkControl(
-  AItemLink: INavBarItemLink): TdxNavBarItemLink;
-var
-  dxGroup: TdxNavBarGroup;
-  I: integer;
-begin
-  dxGroup := FindGroupControl(AItemLink.Group);
-  for I := 0 to dxGroup.LinkCount - 1 do
-  begin
-    Result := dxGroup.Links[I];
-    if SameText(Result.Item.Caption, AItemLink.Caption) then Exit;
-  end;
-
-  raise Exception.CreateFmt('NavBar ItemLink %s not found', [AItemLink.Caption]);
-end;
-
-procedure TdxNavBarControlManager.NavBarLinkClickHandler(Sender: TObject;
-  ALink: TdxNavBarItemLink);
-begin
-  if not IsControlKeyDown then
-    FWorkItem.Commands[GetItemLinkInfo(ALink).FItemID].Execute
-  else
-    ShowItemLinkSubItems(ALink);
-end;
-
-procedure TdxNavBarControlManager.OnCustomDrawGroupCaption(Sender: TObject;
-  ACanvas: TCanvas; AViewInfo: TdxNavBarGroupViewInfo; var AHandled: Boolean);
-{var
-  ARect: TRect;
-  AColor1, AColor2: TColor;
-  AAlphaBlend1, AAlphaBlend2: Byte;
-  AGradientMode: TdxBarStyleGradientMode;
-  W70: Integer;
-  AButtonPainter: TdxNavBarCustomButtonPainterClass;}
-begin
-{  AColor1 := $FFBF00;
-  AColor2 := clWhite;
-  AAlphaBlend1 := 255;
-
-  AAlphaBlend2 := 255;
-  AGradientMode := gmHorizontal;
-
-  AButtonPainter := TdxNavBarCustomButtonPainter;
-  ARect := AViewInfo.CaptionRect;
-  // The width of the left section of the group background
-  W70 := Trunc((ARect.Right - ARect.Left)*0.7);
-
-  // Draw the left section of the group background
-  ARect.Right := ARect.Left + W70;
-  AButtonPainter.DrawButton(ACanvas, ARect, nil, AColor1, AColor2, AAlphaBlend1, AAlphaBlend2, AGradientMode, clWhite, AViewInfo.State);
-
-  // Draw the right section of the group background
-  ARect.Left := ARect.Right;
-  ARect.Right := AViewInfo.CaptionRect.Right;
-  AButtonPainter.DrawButton(ACanvas, ARect, nil, AColor2, AColor1, AAlphaBlend1, AAlphaBlend2, AGradientMode, clWhite, AViewInfo.State);
-
-  // Draw the group image
-  ARect := AViewInfo.CaptionImageRect;
-  TdxNavBarCustomImagePainter.DrawImage(ACanvas, AViewInfo.ImageList, AViewInfo.ImageIndex, ARect);
-
-  // Draw the hearder sign
-
-  ARect := AViewInfo.CaptionSignRect;
-  TdxNavBarExplorerBarSignPainter.DrawSign(ACanvas, ARect, clYellow, clBlack, clBlack, AViewInfo.State);
-
-  // Draw the group caption
-  ARect := AViewInfo.CaptionTextRect;
-  ACanvas.Brush.Style := bsClear;
-  ACanvas.Font := AViewInfo.CaptionFont;
-  ACanvas.Font.Color := AViewInfo.CaptionFontColor;
-  DrawText(ACanvas.Handle, PChar(AViewInfo.Group.Caption), Length(AViewInfo.Group.Caption), ARect, AViewInfo.GetDrawEdgeFlag);
-   }
-  AHandled := false;
-
-end;
-
-function TdxNavBarControlManager.IsControlKeyDown: boolean;
-begin
-  result:=(Word(GetKeyState(VK_CONTROL)) and $8000)<>0;
-end;
-
-procedure TdxNavBarControlManager.SetItemLinkSubItemsCallback(
-  Value: TNavBarItemLinkSubItemsCallback);
-begin
-  FItemLinkSubItemsCallback := Value;
-end;
-
-procedure TdxNavBarControlManager.ShowItemLinkSubItems(
+procedure TdxNavBarControlManager.NavBarItemClickHandler(Sender: TObject;
   ALink: TdxNavBarItemLink);
 var
-  _point: TPoint;
-  ItemInfo: TNavBarItemLinkControlInfo;
-  I: integer;
-  mi: TMenuItem;
-  SubItems: INavBarItems;
+  uri: string;
 begin
-  ItemInfo := GetItemLinkInfo(ALink);
-  FItemMenu.Items.Clear;
-
-  {Fill items}
-  SubItems := nil;
-  if Assigned(FItemLinkSubItemsCallback) then
-    SubItems := FItemLinkSubItemsCallback(ItemInfo.FItemID);
-
-  if (SubItems <> nil) and (SubItems.Count > 0) then
-  begin
-    for I := 0 to SubItems.Count - 1 do
-    begin
-      mi := TMenuItem.Create(FItemMenu);
-      mi.Caption := SubItems.GetItem(I).Caption;
-      FItemMenu.Items.Add(mi);      
-      FWorkItem.Commands[SubItems.GetItem(I).ID].AddInvoker(mi, 'OnClick');
-    end;
-  end
-  else
-  begin
-    mi := TMenuItem.Create(FItemMenu);
-    mi.Caption := 'Нет дополнительных действий';
-    FItemMenu.Items.Add(mi);
-  end;
-
-  _point := Point(ItemInfo.FNavBar.ViewInfo.GetLinkViewInfoByLink(ALink).Rect.Left + 20,
-    ItemInfo.FNavBar.ViewInfo.GetLinkViewInfoByLink(ALink).Rect.Bottom);
-  _point := ItemInfo.FNavBar.ClientToScreen(_Point);
-
-  FItemMenu.Popup(_point.X, _point.Y);
-
-
+  uri := TNavBarItemInfo(ALink.Item.FindComponent(TNavBarItemInfo.INSTANCE_NAME)).URI;
+//  FWorkItem.Actions[uri].Execute(FWorkItem);
+  FWorkItem.Activities[uri].Execute(FWorkItem);
 end;
 
-function TdxNavBarControlManager.GetItemLinkInfo(
-  ALink: TdxNavBarItemLink): TNavBarItemLinkControlInfo;
-begin
-  Result := TNavBarItemLinkControlInfo(ALink.Item.FindComponent('ItemLinkInfo'));
-end;
 
 procedure TdxNavBarControlManager.LookAndFeelChangedHandler(
   Sender: TcxLookAndFeel; AChangedValues: TcxLookAndFeelValues);
@@ -526,6 +302,7 @@ var
 begin
   FNavBar.ActiveGroupIndex :=
     AFile.ReadInteger('Common', 'ActiveGroupIndex', 0);
+
   FNavBar.Width :=
     AFile.ReadInteger('Common', 'Width', 300);
   FNavBar.OptionsBehavior.NavigationPane.Collapsed :=
@@ -549,6 +326,9 @@ begin
 
     end;
   end;
+
+  if not FNavBar.OptionsView.Common.ShowGroupCaptions then
+    FNavBar.ActiveGroupIndex := 0;
 end;
 
 procedure TdxNavBarControlManager.SavePreferenceToFile(AFile: TMemIniFile);

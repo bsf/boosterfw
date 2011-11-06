@@ -1,46 +1,35 @@
 unit bfwStorageNotifierModuleInit;
 
 interface
-uses classes, CoreClasses,  ShellIntf,
+uses classes, CoreClasses,  ShellIntf, UIClasses,
   NotifyReceiver, NotifySenderPresenter, NotifySenderView;
 
 type
-  TdxbStorageNotifierModuleInit = class(TComponent, IModule)
-  protected
-    //IModule
-    procedure AddServices(AWorkItem: TWorkItem);
-    procedure Load;
-    procedure UnLoad;
+  TStorageNotifierModuleInit = class(TModule)
+  public
+    procedure Load; override;
   end;
 
 implementation
 
-{ TdxbStorageNotifierModuleInit }
-
-procedure TdxbStorageNotifierModuleInit.AddServices(AWorkItem: TWorkItem);
+{ TStorageNotifierModuleInit }
+procedure TStorageNotifierModuleInit.Load;
 begin
-  AWorkItem.WorkItems.Add(TNotifyReceiver.ClassName, TNotifyReceiver);
+  WorkItem.Root.WorkItems.Add(TNotifyReceiver, TNotifyReceiver.ClassName);
 
-  App.Activities.Items.Add(VIEW_NOTIFYSENDER).Init(MAIN_MENU_CATEGORY,
-    MAIN_MENU_SERVICE_GROUP, VIEW_NOTIFYSENDER_TITLE);
- {RegisterActivity(VIEW_NOTIFYSENDER, MAIN_MENU_CATEGORY, MAIN_MENU_SERVICE_GROUP,
-    VIEW_NOTIFYSENDER_TITLE, TNotifySenderPresenter, TfrNotifySenderView);}
-
-  App.Views.RegisterView(VIEW_NOTIFYSENDER, TfrNotifySenderView, TNotifySenderPresenter);
-end;
-
-procedure TdxbStorageNotifierModuleInit.Load;
-begin
+  with WorkItem.Activities[VIEW_NOTIFYSENDER] do
+  begin
+    Title := VIEW_NOTIFYSENDER_TITLE;
+    Group := MAIN_MENU_SERVICE_GROUP;
+  end;
+  WorkItem.Activities.RegisterHandler(VIEW_NOTIFYSENDER,
+    TViewActivityHandler.Create(TNotifySenderPresenter, TfrNotifySenderView));
 
 end;
 
-procedure TdxbStorageNotifierModuleInit.UnLoad;
-begin
-
-end;
 
 initialization
-  RegisterEmbededModule(TdxbStorageNotifierModuleInit, mkExtension);
+  RegisterModule(TStorageNotifierModuleInit);
 
 
 end.

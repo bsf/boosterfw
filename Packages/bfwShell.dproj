@@ -58,7 +58,7 @@
 			<DCCReference Include="vclimg.dcp"/>
 			<DCCReference Include="bfwCore.dcp"/>
 			<DCCReference Include="dsnapcon.dcp"/>
-			<DCCReference Include="..\Sources\Shell\bfwShellApp.pas"/>
+			<DCCReference Include="..\Sources\Shell\bfwApp.pas"/>
 			<DCCReference Include="..\Sources\Shell\ShellLock.pas"/>
 			<DCCReference Include="..\Sources\Shell\ShellLogin.pas"/>
 			<DCCReference Include="..\Sources\Shell\ShellLoginForm.pas">
@@ -73,14 +73,11 @@
 			<DCCReference Include="..\Sources\Shell\ShellUnlockForm.pas">
 				<Form>fmShellUnlock</Form>
 			</DCCReference>
-			<DCCReference Include="..\Sources\Shell\Services\ActivityService.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\ConfigService.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\ConfigStorage.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\EntityManagerService.pas"/>
-			<DCCReference Include="..\Sources\Shell\Services\NavBarService.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\ReportService.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\SecurityService.pas"/>
-			<DCCReference Include="..\Sources\Shell\Services\ViewManagerService.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\UIService.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>

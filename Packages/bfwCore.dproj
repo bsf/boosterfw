@@ -61,13 +61,12 @@
 			<DCCReference Include="..\Sources\Core\EventBroker.pas"/>
 			<DCCReference Include="..\Sources\Core\ItemsList.pas"/>
 			<DCCReference Include="..\Sources\Core\ManagedList.pas"/>
-			<DCCReference Include="..\Sources\Core\ModuleEnumerator.pas"/>
-			<DCCReference Include="..\Sources\Core\ModuleEnumeratorEmbeded.pas"/>
-			<DCCReference Include="..\Sources\Core\ModuleLoader.pas"/>
 			<DCCReference Include="..\Sources\Core\ServicesList.pas"/>
 			<DCCReference Include="..\Sources\Core\WindowWorkspace.pas"/>
 			<DCCReference Include="..\Sources\Core\Workspace.pas"/>
 			<DCCReference Include="..\Sources\Core\WorkspacesList.pas"/>
+			<DCCReference Include="..\Sources\Core\HashList.pas"/>
+			<DCCReference Include="..\Sources\Core\Activities.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

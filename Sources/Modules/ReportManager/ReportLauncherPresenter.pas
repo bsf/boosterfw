@@ -1,10 +1,10 @@
 unit ReportLauncherPresenter;
 
 interface
-uses classes, CoreClasses, CustomPresenter, ShellIntf, CommonViewIntf, SysUtils,
-  dxmdaset, db, ReportCatalogClasses, EntityServiceIntf, ViewServiceIntf,
+uses classes, CoreClasses, CustomPresenter, ShellIntf, UIClasses, SysUtils,
+  dxmdaset, db, ReportCatalogClasses, EntityServiceIntf,
   variants, StrUtils, controls, ReportCatalogConst, CommonUtils,
-  cxDateUtils;
+  cxDateUtils, Generics.Collections;
 
 const
   COMMAND_EXECUTE = '{1D84C651-1B31-4F77-87BF-86A00AC0232B}';
@@ -21,11 +21,13 @@ type
     procedure InitParamEditor_DBLookup(const AParamName: string; ADataSet: TDataSet;
       const AKeyFieldName, AListFieldName: string);
     procedure InitParamEditor_CheckBox(const AParamName: string);
+    procedure InitParamEditor_CheckBoxList(const AParamName: string; AItems: TStrings);
+
     procedure InitParamEditor_Lookup(const AParamName: string; AItems: TStrings);
     procedure InitParamEditor_ButtonEdit(const AParamName, ACommanName: string);
   end;
 
-  TReportLauncherPresenterData = class(TPresenterData)
+  TReportLauncherActivityData = class(TViewActivityData)
   private
     FReportURI: string;
     FImmediateRun: variant;
@@ -37,9 +39,15 @@ type
   end;
 
   TReportLauncherPresenter = class(TCustomPresenter)
+  const
+    REPORT_LAYOUT_PARAM = 'ReportLayouts';
+
   private
     FParamDataSet: TdxMemData;
     FReportCatalogItem: TReportCatalogItem;
+    FLayouts: TDictionary<string, string>;
+    FLayoutCaptions: TStringList;
+    FInitialized: boolean;
     procedure InitParamDataSet;
     procedure InitViewParamEditors;
     procedure InitParamDefaultValues;
@@ -65,6 +73,7 @@ type
     procedure OnViewShow; override;
   public
     class function ExecuteDataClass: TActionDataClass; override;
+    destructor Destroy; override;
   end;
 
 implementation
@@ -81,11 +90,12 @@ begin
 
   if FParamDataSet.State in [dsEdit] then FParamDataSet.Post;
 
-  App.Views.MessageBox.StatusBarMessage('Формирование отчета: ' + FReportCatalogItem.Caption);
+  App.UI.MessageBox.StatusBarMessage('Формирование отчета: ' + FReportCatalogItem.Caption);
   try
-    App.Reports[FReportCatalogItem.ID].Execute(WorkItem);
+    App.Reports[FLayouts[WorkItem.State[REPORT_LAYOUT_PARAM]]].Execute(WorkItem);
+//    App.Reports[FReportCatalogItem.ID].Execute(WorkItem);
   finally
-    App.Views.MessageBox.StatusBarMessage('Готово');
+    App.UI.MessageBox.StatusBarMessage('Готово');
   end;
 
   reportID := FReportCatalogItem.ID;
@@ -96,6 +106,8 @@ begin
 end;
 
 procedure TReportLauncherPresenter.OnInit(Sender: IAction);
+var
+  layout: TReportLayout;
 begin
   FreeOnViewClose := false;
 
@@ -107,9 +119,9 @@ begin
       GetItem(WorkItem.State['ReportURI']);
 
 
-  if VarIsEmpty(WorkItem.State['ImmediateRun']) and
+  {if VarIsEmpty(WorkItem.State['ImmediateRun']) and
      FReportCatalogItem.Manifest.ImmediateRun  then
-    WorkItem.State['ImmediateRun'] := '1';
+    WorkItem.State['ImmediateRun'] := '1';}
 
   ViewHidden := (not VarIsEmpty(WorkItem.State['ImmediateRun']))
     and (VarToStr(WorkItem.State['ImmediateRun']) <> '0');
@@ -118,9 +130,19 @@ begin
 
   ViewTitle := FReportCatalogItem.Caption;
 
+  FLayouts := TDictionary<string, string>.Create;
+  FLayoutCaptions := TStringList.Create;
+
+  for layout in FReportCatalogItem.Manifest.Layouts do
+  begin
+    FLayouts.Add(layout.Caption, layout.ID);
+    FLayoutCaptions.Add(layout.Caption);
+  end;
+
   InitParamDataSet;
   InitParamDefaultValues;
   InitParamValues;
+  FInitialized := true;
 end;
 
 procedure TReportLauncherPresenter.OnViewShow;
@@ -183,8 +205,11 @@ procedure TReportLauncherPresenter.InitParamDataSet;
     TStringField(Field).DisplayWidth := 255;
     TStringField(Field).Size := 255;
     field.DisplayLabel := 'Макет';
-    field.FieldName := 'ReportLayout';
+    field.FieldName := REPORT_LAYOUT_PARAM;
     field.DataSet := FParamDataSet;
+    field.Required := true;
+    field.Visible := FLayoutCaptions.Count > 1;
+
   end;
 
 var
@@ -200,6 +225,7 @@ begin
 
   FParamDataSet.Open;
   FParamDataSet.Insert;
+  FParamDataSet.FieldValues[REPORT_LAYOUT_PARAM] := FLayoutCaptions[0];
   FParamDataSet.Post;
 
 end;
@@ -238,6 +264,8 @@ var
   defVal: Variant;
 begin
   FParamDataSet.Edit;
+  FParamDataSet.FieldByName(REPORT_LAYOUT_PARAM).Value := FLayoutCaptions[0];
+
   for I := 0 to FReportCatalogItem.Manifest.ParamNodes.Count - 1 do
   begin
     mParam := FReportCatalogItem.Manifest.ParamNodes[I];
@@ -337,11 +365,49 @@ procedure TReportLauncherPresenter.InitViewParamEditors;
 
   end;
 
+  procedure InitCheckBoxListEditor(AParamNode: TManifestParamNode);
+   var
+    ds: TDataSet;
+    keyNames: string;
+    listNames: string;
+    data: TStringList;
+    field: TField;
+  begin
+    ds :=  App.Entities[AParamNode.EditorOptions.Values['EntityName']].
+      GetView(AParamNode.EditorOptions.Values['EntityViewName'], WorkItem,
+        'ParamLookupDataSet_' + AParamNode.Name).Load([]);
+
+    data := TStringList.Create;
+    try
+      field := ds.FindField('NAME');
+      if field = nil then
+        field := ds.Fields[0];
+
+      {listNames := AParamNode.EditorOptions.Values['ListFieldNames'];
+      if keyNames = '' then keyNames := 'ID';
+      if listNames = '' then listNames := 'NAME';}
+
+      while not ds.Eof do
+      begin
+        data.Add(ds.Fields[field.Index].Value);
+        ds.Next;
+      end;
+      View.InitParamEditor_CheckBoxList(AParamNode.Name, data);
+
+    finally
+      data.Free;
+    end;
+  end;
+
 var
   I: integer;
   prmItem: TManifestParamNode;
 
 begin
+
+  View.InitParamEditor_Lookup(REPORT_LAYOUT_PARAM, FLayoutCaptions);
+
+  //Params
   for I := 0 to FReportCatalogItem.Manifest.ParamNodes.Count - 1 do
   begin
     prmItem := FReportCatalogItem.Manifest.ParamNodes[I];
@@ -349,6 +415,8 @@ begin
       peDBList: InitLookupEditor(prmItem);
 
       peCheckBox: View.InitParamEditor_CheckBox(prmItem.Name);
+
+      peCheckBoxList: InitCheckBoxListEditor(prmItem);
 
       peLookup: View.InitParamEditor_Lookup(prmItem.Name, prmItem.Values);
 
@@ -432,7 +500,7 @@ begin
 
   action.Execute(WorkItem);
 
-  if (action.Data as TPresenterData).ModalResult = mrOK then
+  if (action.Data as TViewActivityData).ModalResult = mrOK then
     //DataOut
     for I := 0 to paramNode.EditorOptions.Count - 1 do
     begin
@@ -451,12 +519,19 @@ begin
 
 end;
 
+destructor TReportLauncherPresenter.Destroy;
+begin
+  FLayouts.Free;
+  FLayoutCaptions.Free;
+  inherited;
+end;
+
 procedure TReportLauncherPresenter.OnSetWorkItemState(const AName: string;
   const AValue: Variant);
 var
   field: TField;
 begin
-  if Self.Initialized then
+  if FInitialized then
   begin
     FParamDataSet.Edit;
     field := FParamDataSet.FindField(AName);
@@ -468,11 +543,11 @@ end;
 
 class function TReportLauncherPresenter.ExecuteDataClass: TActionDataClass;
 begin
-  Result := TReportLauncherPresenterData;
+  Result := TReportLauncherActivityData;
 end;
 
 { TReportLauncherPresenterData }
-procedure TReportLauncherPresenterData.AssignLaunchData(
+procedure TReportLauncherActivityData.AssignLaunchData(
   AData: TReportLaunchData);
 var
   I: integer;

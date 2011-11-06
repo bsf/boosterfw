@@ -1,0 +1,77 @@
+package bfwReportingModule;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$IMPLICITBUILD ON}
+
+requires
+  bfwCore,
+  bfwInterfaces,
+  bfwUI,
+  rtl,
+  ibxpress,
+  dxmdsD15,
+  dxNavBarD15,
+  fs15,
+  fsIBX15,
+  frx15,
+  frxDB15,
+  frxIBX15,
+  frxe15,
+  fsDB15;
+
+contains
+  bfwReportingModuleInit in '..\..\Sources\Modules\Reporting\bfwReportingModuleInit.pas',
+  ReportingController in '..\..\Sources\Modules\Reporting\ReportingController.pas',
+  ReportCatalogClasses in '..\..\Sources\Modules\Reporting\ReportCatalogClasses.pas',
+  ReportCatalogConst in '..\..\Sources\Modules\Reporting\ReportCatalogConst.pas',
+  ReportCatalogDesigner in '..\..\Sources\Modules\Reporting\ReportCatalogDesigner.pas' {frReportCatalogDesigner},
+  ReportCatalogDesignerItem in '..\..\Sources\Modules\Reporting\ReportCatalogDesignerItem.pas' {ReportCatalogDesignerItemView},
+  ReportCatalogItemView in '..\..\Sources\Modules\Reporting\ReportCatalogItemView.pas' {frReportCatalogItemView},
+  ReportCatalogPresenter in '..\..\Sources\Modules\Reporting\ReportCatalogPresenter.pas',
+  ReportCatalogView in '..\..\Sources\Modules\Reporting\ReportCatalogView.pas' {frReportCatalogView},
+  ReportLauncherPresenter in '..\..\Sources\Modules\Reporting\ReportLauncherPresenter.pas',
+  ReportLauncherView in '..\..\Sources\Modules\Reporting\ReportLauncherView.pas' {frReportLauncherView},
+  ReportSetupPresenter in '..\..\Sources\Modules\Reporting\ReportSetupPresenter.pas',
+  ReportSetupView in '..\..\Sources\Modules\Reporting\ReportSetupView.pas' {frReportSetupView},
+  frReportFactory in '..\..\Sources\Modules\Reporting\EngineFR\frReportFactory.pas',
+  frReportPreviewPresenter in '..\..\Sources\Modules\Reporting\EngineFR\frReportPreviewPresenter.pas',
+  frReportPreviewView in '..\..\Sources\Modules\Reporting\EngineFR\frReportPreviewView.pas' {frfrReportPreviewView},
+  xlReportClasses in '..\..\Sources\Modules\Reporting\EngineXL\xlReportClasses.pas',
+  xlReportFactory in '..\..\Sources\Modules\Reporting\EngineXL\xlReportFactory.pas',
+  xlReportMetadata in '..\..\Sources\Modules\Reporting\EngineXL\xlReportMetadata.pas',
+  Excel8G2 in '..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\Excel8G2.pas',
+  Office8G2 in '..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\Office8G2.pas',
+  VBIDE8G2 in '..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\VBIDE8G2.pas',
+  xlAbout in '..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlAbout.pas' {fxlAbout},
+  xlcClasses in '..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlcClasses.pas',
+  xlcOPack in '..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlcOPack.pas',
+  xlcUtils in '..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlcUtils.pas',
+  xlEngine in '..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlEngine.pas',
+  xlPivotOPack in '..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlPivotOPack.pas',
+  xlProOPack in '..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlProOPack.pas',
+  xlReport in '..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlReport.pas',
+  xlReportG2 in '..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlReportG2.pas',
+  xlStdOPack in '..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlStdOPack.pas';
+
+end.

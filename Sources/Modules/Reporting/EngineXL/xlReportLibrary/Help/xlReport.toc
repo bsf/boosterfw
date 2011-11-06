@@ -1,0 +1,17 @@
+:Base xlReport.hlp>main
+:Title XL Report Programmer's Reference
+:Index XL Report Programmer's Reference=xlReport.hlp
+;
+1 XL Report Programmer's Reference
+2 XL Report Programmer's Reference = Programmers_Reference
+2 Why XL Report? = What_is_XLReport
+2 Support = Dev_Support
+2 XL Report units = XLReport_units
+2 Global constants and variables = XLReport_Globals
+2 Functions and procedures = XLReport_Functions
+2 Classes
+3 TxlReport = TxlReport
+3 TxlDataSource = TxlDataSource
+3 TxlDataSources = TxlDataSources
+4 TxlReportParam = TxlReportParam
+4 TxlReportParams = TxlReportParams

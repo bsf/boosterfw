@@ -33,179 +33,127 @@ object Form2: TForm2
     TabOrder = 0
     Height = 552
     Width = 970
-    object dxNavBar1: TdxNavBar
-      Left = 2
-      Top = 2
-      Width = 239
-      Height = 548
-      ParentCustomHint = False
-      Align = alLeft
-      ActiveGroupIndex = 0
-      TabOrder = 0
-      View = 13
-      OptionsBehavior.NavigationPane.AllowCustomizing = False
-      OptionsBehavior.NavigationPane.Collapsible = True
-      OptionsBehavior.NavigationPane.ShowOverflowPanelHints = False
-      OptionsView.Common.ShowGroupCaptions = False
-      OptionsView.ExplorerBar.ShowSpecialGroup = True
-      OptionsView.NavigationPane.ShowActiveGroupCaptionWhenCollapsed = True
-      OptionsView.NavigationPane.ShowOverflowPanel = False
-      object dxNavBar1Group1: TdxNavBarGroup
-        Caption = 'dxNavBar1Group1'
-        SelectedLinkIndex = -1
-        TopVisibleLinkIndex = 0
-        Links = <
-          item
-            Item = dxNavBar1Item3
-          end
-          item
-            Item = dxNavBar1Item1
-          end
-          item
-            Item = dxNavBar1Item2
-          end>
-      end
-      object dxNavBar1Group2: TdxNavBarGroup
-        Caption = 'dxNavBar1Group2'
-        SelectedLinkIndex = -1
-        TopVisibleLinkIndex = 0
-        Links = <
-          item
-            Item = dxNavBar1Item6
-          end
-          item
-            Item = dxNavBar1Item5
-          end
-          item
-            Item = dxNavBar1Item4
-          end>
-      end
-      object dxNavBar1Group3: TdxNavBarGroup
-        Caption = 'dxNavBar1Group3'
-        SelectedLinkIndex = -1
-        TopVisibleLinkIndex = 0
-        Links = <>
-      end
-      object dxNavBar1Item1: TdxNavBarItem
-        Caption = #1054#1090#1082#1088#1099#1090#1100
-        OnClick = dxNavBar1Item1Click
-      end
-      object dxNavBar1Item2: TdxNavBarItem
-        Caption = #1055#1088#1077#1074#1100#1102
-        OnClick = dxNavBar1Item2Click
-      end
-      object dxNavBar1Item3: TdxNavBarItem
-        Caption = #1055#1077#1095#1072#1090#1100
-      end
-      object dxNavBar1Item4: TdxNavBarItem
-        Caption = 'dxNavBar1Item4'
-      end
-      object dxNavBar1Item5: TdxNavBarItem
-        Caption = 'dxNavBar1Item5'
-      end
-      object dxNavBar1Item6: TdxNavBarItem
-        Caption = 'dxNavBar1Item6'
-      end
-    end
-    object cxDBComboBox1: TcxDBComboBox
-      Left = 559
-      Top = 109
-      TabOrder = 1
-      Width = 121
-    end
-    object cxMRUEdit1: TcxMRUEdit
-      Left = 472
-      Top = 48
-      Properties.ImmediatePost = True
-      Properties.OnDeleteLookupItem = cxMRUEdit1PropertiesDeleteLookupItem
-      Properties.OnInitPopup = cxMRUEdit1PropertiesInitPopup
-      Properties.OnNewLookupDisplayText = cxMRUEdit1PropertiesNewLookupDisplayText
-      TabOrder = 2
-      Width = 329
-    end
     object Button1: TButton
       Left = 416
       Top = 152
       Width = 75
       Height = 25
       Caption = 'Button1'
-      TabOrder = 3
+      TabOrder = 0
       OnClick = Button1Click
     end
     object DBGrid1: TDBGrid
-      Left = 752
-      Top = 224
-      Width = 193
-      Height = 193
+      Left = 654
+      Top = 296
+      Width = 275
+      Height = 233
       DataSource = DataSource1
-      TabOrder = 4
+      TabOrder = 1
       TitleFont.Charset = DEFAULT_CHARSET
       TitleFont.Color = clWindowText
       TitleFont.Height = -11
       TitleFont.Name = 'Tahoma'
       TitleFont.Style = []
     end
-    object cxDBVerticalGrid2: TcxDBVerticalGrid
-      Left = 239
-      Top = 152
-      Width = 586
-      Height = 357
-      OptionsView.ShowEditButtons = ecsbAlways
-      OptionsView.RowHeaderWidth = 228
-      TabOrder = 5
+    object cxGroupBox2: TcxGroupBox
+      Left = 2
+      Top = 2
+      Align = alTop
+      Caption = 'cxGroupBox2'
+      TabOrder = 2
+      Height = 175
+      Width = 966
+      object cxButton1: TcxButton
+        Left = 24
+        Top = 15
+        Width = 75
+        Height = 25
+        Caption = 'cxButton1'
+        TabOrder = 0
+        OnClick = cxButton1Click
+      end
+      object cxButton2: TcxButton
+        Left = 128
+        Top = 16
+        Width = 75
+        Height = 25
+        Caption = 'cxButton2'
+        TabOrder = 1
+        OnClick = cxButton2Click
+      end
+      object cxButton3: TcxButton
+        Left = 240
+        Top = 16
+        Width = 75
+        Height = 25
+        Caption = 'cxButton3'
+        TabOrder = 2
+        OnClick = cxButton3Click
+      end
+      object cxDBCheckListBox1: TcxDBCheckListBox
+        Left = 495
+        Top = 57
+        Width = 121
+        Height = 97
+        Items = <>
+        ParentColor = False
+        TabOrder = 3
+      end
+      object cxDBCheckComboBox1: TcxDBCheckComboBox
+        Left = 680
+        Top = 16
+        Properties.EditValueFormat = cvfIndices
+        Properties.Items = <
+          item
+          end>
+        TabOrder = 4
+        Text = 'None selected'
+        Width = 217
+      end
+    end
+    object cxDBVerticalGrid1: TcxDBVerticalGrid
+      Left = 3
+      Top = 183
+      Width = 646
+      Height = 346
+      OptionsView.RowHeaderWidth = 211
+      TabOrder = 3
       DataController.DataSource = DataSource1
       Version = 1
-      object cxDBVerticalGrid2ID: TcxDBEditorRow
+      object cxDBVerticalGrid1ID: TcxDBEditorRow
         Properties.DataBinding.FieldName = 'ID'
         ID = 0
         ParentID = -1
         Index = 0
         Version = 1
       end
-      object cxDBVerticalGrid2IMG: TcxDBEditorRow
+      object cxDBVerticalGrid1IMG: TcxDBEditorRow
         Height = 150
         Properties.EditPropertiesClassName = 'TcxImageProperties'
+        Properties.EditProperties.ClearKey = 46
         Properties.EditProperties.GraphicClassName = 'TJPEGImage'
-        Properties.EditProperties.Stretch = True
+        Properties.EditProperties.ImmediatePost = True
+        Properties.EditProperties.OnAssignPicture = cxDBVerticalGrid1IMGEditPropertiesAssignPicture
+        Properties.EditProperties.OnEditValueChanged = cxDBVerticalGrid1IMGEditPropertiesEditValueChanged
         Properties.DataBinding.FieldName = 'IMG'
-        Properties.Options.ShowEditButtons = eisbAlways
         ID = 1
         ParentID = -1
         Index = 1
+        Version = 1
+      end
+      object cxDBVerticalGrid1NAME: TcxDBEditorRow
+        Properties.DataBinding.FieldName = 'NAME'
+        ID = 2
+        ParentID = -1
+        Index = 2
         Version = 1
       end
     end
   end
   object DataSource1: TDataSource
     DataSet = ClientDataSet1
-    Left = 256
-    Top = 280
-  end
-  object IBDatabase1: TIBDatabase
-    Connected = True
-    DatabaseName = '192.168.0.253:b52'
-    Params.Strings = (
-      'user_name=sysdba'
-      'password=211834'
-      'lc_ctype=WIN1251')
-    LoginPrompt = False
-    DefaultTransaction = IBTransaction1
-    SQLDialect = 1
-    Left = 80
-    Top = 280
-  end
-  object IBQuery1: TIBQuery
-    Database = IBDatabase1
-    Transaction = IBTransaction1
-    SQL.Strings = (
-      'select * from test')
-    Left = 192
-    Top = 280
-  end
-  object IBTransaction1: TIBTransaction
-    Active = True
-    Left = 128
-    Top = 280
+    Left = 216
+    Top = 120
   end
   object frxReport1: TfrxReport
     Version = '4.10.5'
@@ -222,8 +170,8 @@ object Form2: TForm2
       'begin'
       ''
       'end.')
-    Left = 128
-    Top = 160
+    Left = 104
+    Top = 104
     Datasets = <>
     Variables = <>
     Style = <>
@@ -268,12 +216,110 @@ object Form2: TForm2
     Params = <>
     ProviderName = 'DataSetProvider1'
     AfterInsert = ClientDataSet1AfterInsert
-    Left = 320
-    Top = 368
+    Left = 312
+    Top = 120
+    object ClientDataSet1ID: TIntegerField
+      FieldName = 'ID'
+      Origin = 'TEST.ID'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+    end
+    object ClientDataSet1IMG: TBlobField
+      FieldName = 'IMG'
+      Origin = 'TEST.IMG'
+      ProviderFlags = [pfInUpdate]
+      Size = 8
+    end
+    object ClientDataSet1NAME: TWideStringField
+      FieldName = 'NAME'
+      Origin = 'TEST.NAME'
+      Size = 50
+    end
   end
   object DataSetProvider1: TDataSetProvider
     DataSet = IBQuery1
-    Left = 248
-    Top = 400
+    Left = 400
+    Top = 88
+  end
+  object ClientDataSet2: TClientDataSet
+    Aggregates = <>
+    Params = <
+      item
+        DataType = ftBlob
+        ParamType = ptUnknown
+      end>
+    Left = 800
+    Top = 224
+  end
+  object DataSetProvider2: TDataSetProvider
+    Left = 840
+    Top = 160
+  end
+  object IBQuery1: TIBQuery
+    Database = IBDatabase1
+    Transaction = IBTransaction1
+    Active = True
+    CachedUpdates = True
+    SQL.Strings = (
+      'select * from test')
+    UpdateObject = IBUpdateSQL1
+    Left = 672
+    Top = 80
+  end
+  object IBDatabase1: TIBDatabase
+    Connected = True
+    DatabaseName = 'server:b52'
+    Params.Strings = (
+      'user_name=sysdba'
+      'password=211834'
+      'lc_ctype=WIN1251')
+    LoginPrompt = False
+    DefaultTransaction = IBTransaction1
+    SQLDialect = 1
+    Left = 752
+    Top = 80
+  end
+  object IBTransaction1: TIBTransaction
+    Active = True
+    DefaultDatabase = IBDatabase1
+    Left = 832
+    Top = 80
+  end
+  object DataSource2: TDataSource
+    DataSet = IBQuery1
+    Left = 304
+    Top = 64
+  end
+  object IBQuery2: TIBQuery
+    Left = 760
+    Top = 136
+  end
+  object IBUpdateSQL1: TIBUpdateSQL
+    RefreshSQL.Strings = (
+      'Select '
+      '  ID,'
+      '  IMG,'
+      '  NAME'
+      'from test '
+      'where'
+      '  ID = :ID')
+    ModifySQL.Strings = (
+      'update test'
+      'set'
+      '  IMG = :IMG,'
+      '  NAME = :NAME'
+      'where'
+      '  ID = :OLD_ID')
+    InsertSQL.Strings = (
+      'insert into test'
+      '  (IMG, NAME)'
+      'values'
+      '  (:IMG, :NAME)')
+    DeleteSQL.Strings = (
+      'delete from test'
+      'where'
+      '  ID = :OLD_ID')
+    Left = 720
+    Top = 208
   end
 end

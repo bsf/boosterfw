@@ -6,8 +6,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, cxLookAndFeelPainters, cxControls, cxContainer,  Menus,
   cxGroupBox, CoreClasses, CustomPresenter, ShellIntf,
-  ImgList, cxGraphics, ActnList, cxButtons, ViewServiceIntf,
-  CommonViewIntf, db, Contnrs, cxEdit, Typinfo, cxLookAndFeels, dxSkinsCore,
+  ImgList, cxGraphics, ActnList, cxButtons,
+  UIClasses, db, Contnrs, cxEdit, Typinfo, cxLookAndFeels, dxSkinsCore,
   dxSkinsDefaultPainters, CommonUtils, inifiles;
 
 const

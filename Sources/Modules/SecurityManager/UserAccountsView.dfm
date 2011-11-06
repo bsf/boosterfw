@@ -4,12 +4,16 @@ inherited frUserAccountsView: TfrUserAccountsView
   Caption = 'frUserAccountsView'
   ClientHeight = 572
   ClientWidth = 1155
+  ExplicitWidth = 320
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
+    ExplicitWidth = 1155
+    ExplicitHeight = 572
     Height = 572
     Width = 1155
     inherited pnButtons: TcxGroupBox
+      ExplicitWidth = 1151
       Width = 1151
     end
     object pcMain: TcxPageControl
@@ -21,12 +25,17 @@ inherited frUserAccountsView: TfrUserAccountsView
       Align = alClient
       LookAndFeel.Kind = lfOffice11
       TabOrder = 1
-      ClientRectBottom = 528
-      ClientRectRight = 1151
+      ClientRectBottom = 524
+      ClientRectLeft = 4
+      ClientRectRight = 1147
       ClientRectTop = 24
       object tsUsers: TcxTabSheet
         Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1080
         ImageIndex = 0
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object grUsers: TcxGrid
           Left = 0
           Top = 0
@@ -111,6 +120,10 @@ inherited frUserAccountsView: TfrUserAccountsView
       object tsRoles: TcxTabSheet
         Caption = #1056#1086#1083#1080
         ImageIndex = 1
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object grRoles: TcxGrid
           Left = 0
           Top = 0

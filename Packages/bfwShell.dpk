@@ -32,21 +32,18 @@ requires
   dsnapcon;
 
 contains
-  bfwShellApp in '..\Sources\Shell\bfwShellApp.pas',
+  bfwApp in '..\Sources\Shell\bfwApp.pas',
   ShellLock in '..\Sources\Shell\ShellLock.pas',
   ShellLogin in '..\Sources\Shell\ShellLogin.pas',
   ShellLoginForm in '..\Sources\Shell\ShellLoginForm.pas' {fmShellLogin},
   ShellLoginParamForm in '..\Sources\Shell\ShellLoginParamForm.pas' {frShellLoginParam},
   ShellSplashForm in '..\Sources\Shell\ShellSplashForm.pas' {frShellSplash},
   ShellUnlockForm in '..\Sources\Shell\ShellUnlockForm.pas' {fmShellUnlock},
-  ActivityService in '..\Sources\Shell\Services\ActivityService.pas',
   ConfigService in '..\Sources\Shell\Services\ConfigService.pas',
   ConfigStorage in '..\Sources\Shell\Services\ConfigStorage.pas',
   EntityManagerService in '..\Sources\Shell\Services\EntityManagerService.pas',
-  NavBarService in '..\Sources\Shell\Services\NavBarService.pas',
   ReportService in '..\Sources\Shell\Services\ReportService.pas',
   SecurityService in '..\Sources\Shell\Services\SecurityService.pas',
-  ViewManagerService in '..\Sources\Shell\Services\ViewManagerService.pas',
   UIService in '..\Sources\Shell\Services\UIService.pas';
 
 end.

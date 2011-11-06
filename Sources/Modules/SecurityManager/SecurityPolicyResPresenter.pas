@@ -1,7 +1,7 @@
 unit SecurityPolicyResPresenter;
 
 interface
-uses CustomContentPresenter, CommonViewIntf, coreClasses, ShellIntf, SecurityIntf,
+uses CustomContentPresenter, UIClasses, coreClasses, ShellIntf, SecurityIntf,
   AdminConst, sysutils, classes, variants;
 
 const
@@ -43,8 +43,6 @@ type
     procedure CmdPermEffective(Sender: TObject);
   protected
     procedure OnViewReady; override;
-  public
-    class function ExecuteDataClass: TActionDataClass; override;
   end;
 
 implementation
@@ -52,16 +50,16 @@ implementation
 { TSecurityPolicyResPresenter }
 
 procedure TSecurityPolicyResPresenter.CmdPermEffective(Sender: TObject);
-var
-  action: IAction;
 begin
   if VarIsEmpty(View.GetResSelection) then Exit;
 
-  action := WorkItem.Actions[VIEW_SECURITYPERMEFFECTIVE];
-  (action.Data as TSecurityPermEffectivePresenterData).PolID := FPolicy.ID;
-  (action.Data as TSecurityPermEffectivePresenterData).PermID := '';
-  (action.Data as TSecurityPermEffectivePresenterData).ResID := View.GetResSelection;
-  action.Execute(WorkItem);
+  with WorkItem.Activities[VIEW_SECURITYPERMEFFECTIVE] do
+  begin
+    Params[TSecurityPermEffectiveActivityParams.PolID] := FPolicy.ID;
+    Params[TSecurityPermEffectiveActivityParams.PermID] := '';
+    Params[TSecurityPermEffectiveActivityParams.ResID] := View.GetResSelection;
+    Execute(WorkItem);
+  end;
 end;
 
 procedure TSecurityPolicyResPresenter.CmdSetPermState(Sender: TObject);
@@ -96,11 +94,6 @@ begin
   View.ClearUserList;
   if not VarIsEmpty(View.GetResSelection) then
     FillUserList(View.GetResSelection);
-end;
-
-class function TSecurityPolicyResPresenter.ExecuteDataClass: TActionDataClass;
-begin
-  Result := TSecurityPolicyPresenterData;
 end;
 
 procedure TSecurityPolicyResPresenter.FillPermissionList;
@@ -148,7 +141,7 @@ var
   pStates: array of TPermissionState;
   userAccount: IUserAccount;
 begin
-  App.Views.WaitBox.StartWait;
+  App.UI.WaitBox.StartWait;
   try
     SetLength(pStates, FPolicy.Permissions.Count);
     for I := 0 to App.Security.Accounts.Count - 1 do
@@ -160,7 +153,7 @@ begin
       View.AddUser(userAccount.ID, userAccount.Name, userAccount.IsRole, pStates);
     end;
   finally
-    App.Views.WaitBox.StopWait;
+    App.UI.WaitBox.StopWait;
   end;
 end;
 

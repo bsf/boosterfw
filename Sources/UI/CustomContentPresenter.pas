@@ -1,7 +1,7 @@
 unit CustomContentPresenter;
 
 interface
-uses CustomPresenter, ShellIntf, CommonViewIntf, CoreClasses;
+uses CustomPresenter, ShellIntf, UIClasses, CoreClasses;
 
 type
   TCustomContentPresenter = class(TCustomPresenter)

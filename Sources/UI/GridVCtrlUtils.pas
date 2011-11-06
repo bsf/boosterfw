@@ -4,7 +4,7 @@ interface
 uses cxVGrid, cxDBVGrid, Contnrs, controls, CustomView, classes, sysutils, db,
   EntityServiceIntf, cxButtonEdit, cxEdit, CoreClasses, StrUtils, Variants,
   cxInplaceContainer, cxDBLookupComboBox, cxDropDownEdit, menus, cxCheckBox, forms,
-  CommonViewIntf, ViewServiceIntf, cxCalendar, typinfo, cxImage;
+  UIClasses, cxCalendar, typinfo, cxImage, graphics;
 
 const
   EDITOR_DATA_ENTITY = 'EntityName';
@@ -34,6 +34,7 @@ type
     procedure InitComboBoxEditor(ARow: TcxDBEditorRow; ADataSet: TDataSet);
     procedure InitCheckBoxEditor(ARow: TcxDBEditorRow);
     procedure InitImageEditor(ARow: TcxDBEditorRow);
+    procedure ImageRow_OnAssignPicture(Sender: TObject; const Picture: TPicture);
 
     procedure TuneGridForDataSet(AGrid: TcxDBVerticalGrid;
       ADataSet: TDataSet);
@@ -531,6 +532,28 @@ begin
   end;
 end;
 
+procedure TcxVGridViewHelper.ImageRow_OnAssignPicture(Sender: TObject;
+  const Picture: TPicture);
+var
+  row: TcxDBEditorRow;
+  ds: TDataSet;
+  fieldName: string;
+  fieldDel: TField;
+begin
+  row := TcxDBEditorRow(TcxDBVerticalGrid(TcxImage(Sender).owner).FocusedRow);
+  fieldName := row.Properties.DataBinding.FieldName;
+  ds := row.Properties.DataBinding.DataController.DataSet;
+  fieldDel := ds.FindField(fieldName + '_DEL');
+  if fieldDel <> nil then
+  begin
+    if Picture.Graphic = nil then
+      fieldDel.Value := 1
+    else
+      fieldDel.Value := 0;
+  end;
+
+end;
+
 procedure TcxVGridViewHelper.InitCheckBoxEditor(ARow: TcxDBEditorRow);
 begin
   ARow.Properties.EditPropertiesClass := TcxCheckBoxProperties;
@@ -601,6 +624,7 @@ begin
     Stretch := true;
     //ClearKey := TextToShortCut('Del'); on move to next row and back dont work !
     ImmediatePost := true;
+    OnAssignPicture := ImageRow_OnAssignPicture;
   end;
 
 end;
@@ -754,7 +778,7 @@ begin
 end;
 
 procedure TcxVGridViewHelper.PickListEditorCommandHandler(Sender: TObject);
-  procedure InitPickListData(AData: TActionData; ADataSet: TDataSet);
+  procedure InitPickListData(AData: IActivityData; ADataSet: TDataSet);
   var
     I: integer;
     val: Variant;
@@ -797,7 +821,7 @@ var
   I: integer;
 
   actionName: string;
-  action: IAction;
+  activity: IActivity;
 
   optionName: string;
   dataName: string;
@@ -846,16 +870,16 @@ begin
     begin
       actionName := editorOptions.Values[FIELD_ATTR_EDITOR_ACTION];
 
-      action := WorkItem.Actions[actionName];
+      activity := WorkItem.Activities[actionName];
 
-      (action.Data as IPickListPresenterData).Filter := pickFilter;
-      InitPickListData(action.Data, dataSet);
+      activity.Params[TPickListActivityParams.Filter] := pickFilter;
+      InitPickListData(activity.Params, dataSet);
 
-      WorkItem.Actions[actionName].Execute(WorkItem);
+      activity.Execute(WorkItem);
 
       dataSet.Edit;
 
-      if (Action.Data as TPresenterData).ModalResult <> mrOK then
+      if activity.Outs[TViewActivityOuts.ModalResult] <> mrOK then
       begin
         field.Value := OldValue;
         if Assigned(fieldID) then
@@ -865,9 +889,9 @@ begin
       begin
 
 
-        field.Value := (action.Data as IPickListPresenterData).Name;
+        field.Value := activity.Outs[TPickListActivityOuts.NAME];
         if Assigned(fieldID) then
-          fieldID.Value := (action.Data as IPickListPresenterData).ID;
+          fieldID.Value := activity.Outs[TPickListActivityOuts.ID];
 
         //DataOutExt
         for I := 0 to editorOptions.Count - 1 do
@@ -879,9 +903,9 @@ begin
             dataValueName := editorOptions.Values[optionName];
             dataValueField := dataSet.FindField(dataValueName);
             if dataValueField <> nil then
-              dataValueField.Value := action.Data.GetValue(dataName)
+              dataValueField.Value := activity.Outs[dataName]
             else
-              WorkItem.State[dataValueName] := action.Data.GetValue(dataName);
+              WorkItem.State[dataValueName] := activity.Outs[dataName];
           end;
         end;
       end;

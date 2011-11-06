@@ -8,7 +8,7 @@ inherited frCustomDialogView: TfrCustomDialogView
   inherited ViewControl: TcxGroupBox
     object pnButtons: TcxGroupBox
       Left = 2
-      Top = 484
+      Top = 476
       Align = alBottom
       PanelStyle.Active = True
       PanelStyle.OfficeBackgroundKind = pobkGradient
@@ -19,7 +19,7 @@ inherited frCustomDialogView: TfrCustomDialogView
       StyleHot.LookAndFeel.Kind = lfOffice11
       TabOrder = 0
       Height = 37
-      Width = 674
+      Width = 666
     end
   end
 end

@@ -1,9 +1,10 @@
 unit frReportPreviewPresenter;
 
 interface
-uses sysutils, CustomPresenter, CoreClasses, ViewServiceIntf, frxClass, classes,
-  controls, CommonViewIntf, frxPreview, ShellIntf,
-  frxExportCSV, frxExportHTML, frxExportPDF, frxExportXML, frxExportODF;
+uses windows, sysutils, CustomPresenter, CoreClasses, frxClass, classes,
+  controls, UIClasses, frxPreview, ShellIntf,
+  frxExportCSV, frxExportHTML, frxExportPDF, frxExportXML, frxExportODF,
+  dialogs, shellapi;
 
 const
   VIEW_FR_PREVIEW = 'views.fastreport.preview';
@@ -31,7 +32,7 @@ type
     function GetPreviewObject: TfrxPreview;
   end;
 
-  TfrReportPreviewData = class(TPresenterData)
+  TfrReportPreviewActivityData = class(TViewActivityData)
   private
     FStream: TMemoryStream;
     function GetStream: TStream;
@@ -43,6 +44,7 @@ type
   TfrReportPreviewPresenter = class(TCustomPresenter)
   private
     FReport: TfrxReport;
+    FSaveDialog: TSaveDialog;
     FInitViewTitle: string;
     FfrxPDFExport: TfrxPDFExport;
     FfrxHTMLExport: TfrxHTMLExport;
@@ -130,9 +132,23 @@ begin
     FfrxXMLExport.Wysiwyg := false;
     FfrxXMLExport.Background := false;
     FfrxXMLExport.ExportPageBreaks := false;
-    FfrxXMLExport.OpenExcelAfterExport := true;
+    FfrxXMLExport.SuppressPageHeadersFooters := true;
+    FfrxXMLExport.OpenExcelAfterExport := false;
   end;
-  View.GetPreviewObject.Export(FfrxXMLExport);
+
+  FfrxXMLExport.ShowDialog := false;
+
+  FSaveDialog.Filter := 'Τΰιλ Excel (*.xls)|*.xls';
+  FSaveDialog.DefaultExt := '.xls';
+  FSaveDialog.FileName := View.GetPreviewObject.Report.ReportOptions.Name;
+
+  if FSaveDialog.Execute then
+  begin
+    FfrxXMLExport.FileName := FSaveDialog.FileName;
+    View.GetPreviewObject.Export(FfrxXMLExport);
+    if FileExists(FSaveDialog.FileName) then
+      ShellExecute(HInstance, nil, PWideChar(FSaveDialog.FileName), nil, nil, SW_SHOWNORMAL);
+  end;
 
 end;
 
@@ -188,7 +204,7 @@ end;
 
 class function TfrReportPreviewPresenter.ExecuteDataClass: TActionDataClass;
 begin
-  Result := TfrReportPreviewData;
+  Result := TfrReportPreviewActivityData;
 end;
 
 procedure TfrReportPreviewPresenter.frxReportClickObject(Sender: TfrxView;
@@ -219,9 +235,11 @@ begin
   inherited;
   FReport := TfrxReport.Create(Self);
   FReport.OnClickObject := frxReportClickObject;
-  (Sender.Data as TfrReportPreviewData).ReportStream.Position := 0;
-  FReport.PreviewPages.LoadFromStream((Sender.Data as TfrReportPreviewData).ReportStream);
+  (Sender.Data as TfrReportPreviewActivityData).ReportStream.Position := 0;
+  FReport.PreviewPages.LoadFromStream((Sender.Data as TfrReportPreviewActivityData).ReportStream);
 
+  FSaveDialog := TSaveDialog.Create(Self);
+  FSaveDialog.Options := FSaveDialog.Options + [ofOverwritePrompt];
 
   FInitViewTitle := ViewTitle;
 end;
@@ -267,12 +285,12 @@ end;
 
 { TfrReportPreviewData }
 
-procedure TfrReportPreviewData.ClearReportStream;
+procedure TfrReportPreviewActivityData.ClearReportStream;
 begin
   (ReportStream as TMemoryStream).Clear;
 end;
 
-function TfrReportPreviewData.GetStream: TStream;
+function TfrReportPreviewActivityData.GetStream: TStream;
 begin
   if FStream = nil then
     FStream := TMemoryStream.Create;

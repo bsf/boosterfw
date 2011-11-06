@@ -1,7 +1,7 @@
 unit CustomDialogPresenter;
 
 interface
-uses CustomPresenter, ShellIntf, CoreClasses, CommonViewIntf;
+uses CustomPresenter, ShellIntf, CoreClasses, UIClasses;
 
 type
   TCustomDialogPresenter = class(TCustomPresenter)

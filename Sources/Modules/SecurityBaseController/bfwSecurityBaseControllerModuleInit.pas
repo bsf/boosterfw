@@ -4,35 +4,29 @@ interface
 uses classes, CoreClasses,  bfwSecurityBaseController, EntityServiceIntf, SecurityIntf;
 
 type
-  TdxbStorageSecurityControllerModuleInit = class(TComponent, IModule)
-  protected
-    //IModule
-    procedure AddServices(AWorkItem: TWorkItem);
-    procedure Load;
-    procedure UnLoad;
+  TdxbStorageSecurityControllerModuleInit = class(TModule)
+  public
+    class function Kind: TModuleKind; override;
+    procedure Load; override;
   end;
 
 implementation
 
 { TdxbStorageSecurityControllerModuleInit }
 
-procedure TdxbStorageSecurityControllerModuleInit.AddServices(AWorkItem: TWorkItem);
+class function TdxbStorageSecurityControllerModuleInit.Kind: TModuleKind;
 begin
-    (AWorkItem.Services[ISecurityService] as ISecurityService).RegisterSecurityBaseController(
-      TSecurityBaseController.Create(Self, AWorkItem));
+  Result := mkInfrastructure;
 end;
 
 procedure TdxbStorageSecurityControllerModuleInit.Load;
 begin
-
+  (WorkItem.Services[ISecurityService] as ISecurityService).RegisterSecurityBaseController(
+      TSecurityBaseController.Create(Self, WorkItem.Root));
 end;
 
-procedure TdxbStorageSecurityControllerModuleInit.UnLoad;
-begin
-
-end;
 
 initialization
-  RegisterEmbededModule(TdxbStorageSecurityControllerModuleInit, mkInfrastructure);
+  RegisterModule(TdxbStorageSecurityControllerModuleInit);
 
 end.

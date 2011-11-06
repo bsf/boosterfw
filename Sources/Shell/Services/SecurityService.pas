@@ -6,7 +6,10 @@ uses SecurityIntf, CoreClasses, classes, ConfigServiceIntf, SysUtils, Contnrs,
 
 type
 
-  TSecurityService = class(TComponent, ISecurityService, IAuthenticationService)
+  TSecurityService = class(TComponent, ISecurityService, IAuthenticationService, IActivityPermissionHandler)
+  const
+    PERMISSION_ACTIVITY_EXECUTE = 'app.activity.execute';
+
   private
     FWorkItem: TWorkItem;
     FResProviders: TInterfaceList;
@@ -14,7 +17,6 @@ type
     FBaseController: ISecurityBaseController;
     function AppSettings: ISettings;
     procedure LoginAuthenticateFunc(AUserData: ILoginUserData);
-    function SecurityActionCondition(Sender: IAction): boolean;
   protected
     //IAutenticationService
     procedure Authenticate;
@@ -32,9 +34,15 @@ type
     function Accounts: IUserAccounts;
     function Policies: ISecurityPolicies;
     function FindPolicy(const APolID: string): ISecurityPolicy;
+    //IActivityPermissionHandler
+    function ActivityCheckPermission(Activity: IActivity): boolean;
+    procedure ActivityDemandPermission(Activity: IActivity);
+    function IActivityPermissionHandler.CheckPermission = ActivityCheckPermission;
+    procedure IActivityPermissionHandler.DemandPermission = ActivityDemandPermission;
   public
     constructor Create(AOwner: TComponent; AWorkItem: TWorkItem); reintroduce;
     destructor Destroy; override;
+
   end;
 
 implementation
@@ -44,6 +52,16 @@ implementation
 function TSecurityService.Accounts: IUserAccounts;
 begin
   Result := FBaseController.GetAccounts;
+end;
+
+function TSecurityService.ActivityCheckPermission(Activity: IActivity): boolean;
+begin
+  Result := CheckPermission(PERMISSION_ACTIVITY_EXECUTE, Activity.URI);
+end;
+
+procedure TSecurityService.ActivityDemandPermission(Activity: IActivity);
+begin
+  DemandPermission(PERMISSION_ACTIVITY_EXECUTE, Activity.URI);
 end;
 
 function TSecurityService.AppSettings: ISettings;
@@ -80,7 +98,8 @@ begin
   inherited Create(AOwner);
   FWorkItem := AWorkItem;
   FResProviders := TInterfaceList.Create;
-  FWorkItem.Actions.RegisterCondition(SecurityActionCondition); //??
+  FWorkItem.Activities.RegisterPermissionHandler(Self);
+//  Actions.RegisterCondition(SecurityActionCondition); //??
 end;
 
 function TSecurityService.CurrentPrincipal: IPrincipal;
@@ -204,11 +223,6 @@ procedure TSecurityService.RemoveResProvider(
   AProvider: ISecurityResProvider);
 begin
 
-end;
-
-function TSecurityService.SecurityActionCondition(Sender: IAction): boolean;
-begin
-  Result := true;
 end;
 
 end.

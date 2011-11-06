@@ -1,7 +1,7 @@
 unit SecurityPermEffectivePresenter;
 
 interface
-uses CustomContentPresenter, CommonViewIntf, coreClasses, ShellIntf, SecurityIntf,
+uses CustomContentPresenter, UIClasses, coreClasses, ShellIntf, SecurityIntf,
   AdminConst, sysutils, classes, variants, db;
 
 
@@ -19,18 +19,11 @@ type
     procedure FillList;
   protected
     procedure OnViewReady; override;
-  public
-    class function ExecuteDataClass: TActionDataClass; override;
   end;
 
 implementation
 
 { TSecurityPermEffectivePresenter }
-
-class function TSecurityPermEffectivePresenter.ExecuteDataClass: TActionDataClass;
-begin
-  Result := TSecurityPermEffectivePresenterData;
-end;
 
 procedure TSecurityPermEffectivePresenter.FillList;
 var

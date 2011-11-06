@@ -16,35 +16,40 @@ uses
   frxExportXML, frxExportODF, cxDBEdit, cxListBox, cxVGrid, cxDBVGrid,
   cxInplaceContainer, cxDBExtLookupComboBox, ComCtrls, ShlObj, cxShellCommon,
   cxShellListView, cxShellTreeView, cxShellComboBox, cxImage, StdCtrls, cxMemo,
-  cxRichEdit;
+  cxRichEdit, cxCustomPivotGrid, cxDBPivotGrid, Menus, cxButtons,
+  cxExportPivotGridLink, cxCheckComboBox, cxDBCheckComboBox, cxCheckListBox,
+  cxDBCheckListBox, IBUpdateSQL;
 
 type
   TForm2 = class(TForm)
     DataSource1: TDataSource;
-    IBDatabase1: TIBDatabase;
-    IBQuery1: TIBQuery;
-    IBTransaction1: TIBTransaction;
     cxGroupBox1: TcxGroupBox;
-    dxNavBar1: TdxNavBar;
-    dxNavBar1Group1: TdxNavBarGroup;
-    dxNavBar1Group2: TdxNavBarGroup;
-    dxNavBar1Group3: TdxNavBarGroup;
-    dxNavBar1Item1: TdxNavBarItem;
-    dxNavBar1Item2: TdxNavBarItem;
-    dxNavBar1Item3: TdxNavBarItem;
-    dxNavBar1Item4: TdxNavBarItem;
-    dxNavBar1Item5: TdxNavBarItem;
-    dxNavBar1Item6: TdxNavBarItem;
     frxReport1: TfrxReport;
-    cxDBComboBox1: TcxDBComboBox;
-    cxMRUEdit1: TcxMRUEdit;
     Button1: TButton;
     ClientDataSet1: TClientDataSet;
     DBGrid1: TDBGrid;
     DataSetProvider1: TDataSetProvider;
-    cxDBVerticalGrid2: TcxDBVerticalGrid;
-    cxDBVerticalGrid2ID: TcxDBEditorRow;
-    cxDBVerticalGrid2IMG: TcxDBEditorRow;
+    cxGroupBox2: TcxGroupBox;
+    cxButton1: TcxButton;
+    cxButton2: TcxButton;
+    cxButton3: TcxButton;
+    cxDBCheckListBox1: TcxDBCheckListBox;
+    cxDBCheckComboBox1: TcxDBCheckComboBox;
+    ClientDataSet2: TClientDataSet;
+    DataSetProvider2: TDataSetProvider;
+    IBQuery1: TIBQuery;
+    IBDatabase1: TIBDatabase;
+    IBTransaction1: TIBTransaction;
+    DataSource2: TDataSource;
+    cxDBVerticalGrid1: TcxDBVerticalGrid;
+    cxDBVerticalGrid1ID: TcxDBEditorRow;
+    cxDBVerticalGrid1IMG: TcxDBEditorRow;
+    cxDBVerticalGrid1NAME: TcxDBEditorRow;
+    IBQuery2: TIBQuery;
+    IBUpdateSQL1: TIBUpdateSQL;
+    ClientDataSet1ID: TIntegerField;
+    ClientDataSet1IMG: TBlobField;
+    ClientDataSet1NAME: TWideStringField;
     procedure dxNavBar1Item1Click(Sender: TObject);
     procedure dxNavBar1Item2Click(Sender: TObject);
     procedure cxMRUEdit1PropertiesInitPopup(Sender: TObject);
@@ -56,6 +61,13 @@ type
       ARowProperties: TcxCustomEditorRowProperties);
     procedure Button1Click(Sender: TObject);
     procedure ClientDataSet1AfterInsert(DataSet: TDataSet);
+    procedure cxButton2Click(Sender: TObject);
+    procedure cxButton3Click(Sender: TObject);
+    procedure cxButton1Click(Sender: TObject);
+    procedure cxDBVerticalGrid1IMGEditPropertiesEditValueChanged(
+      Sender: TObject);
+    procedure cxDBVerticalGrid1IMGEditPropertiesAssignPicture(Sender: TObject;
+      const Picture: TPicture);
   private
     { Private declarations }
   public
@@ -77,6 +89,61 @@ end;
 procedure TForm2.ClientDataSet1AfterInsert(DataSet: TDataSet);
 begin
 //
+end;
+
+procedure TForm2.cxButton1Click(Sender: TObject);
+begin
+  IBQuery1.ApplyUpdates;
+  IBQuery1.Close;
+  IBQuery1.open;
+end;
+
+procedure TForm2.cxButton2Click(Sender: TObject);
+var
+  f: TBlobField;
+  d: TBytes;
+  s: TMemoryStream;
+begin
+ s := TMemoryStream.Create;
+ f := TBlobField(ClientDataSet1.FieldByName('IMG'));
+ f.SaveToStream(s);
+ f.Clear;
+ f.LoadFromStream(s);
+ s.Free;
+
+ ClientDataSet1.ApplyUpdates(0);
+end;
+
+procedure TForm2.cxButton3Click(Sender: TObject);
+begin
+  ClientDataSet1.Close;
+  ClientDataSet1.Open;
+end;
+
+procedure TForm2.cxDBVerticalGrid1IMGEditPropertiesAssignPicture(
+  Sender: TObject; const Picture: TPicture);
+var
+  row: TcxCustomRow;
+begin
+  row := TcxDBVerticalGrid(TcxImage(Sender).owner).FocusedRow;
+
+
+  if row is TcxDBEditorRow then
+    ShowMessage(TcxDBEditorRow(row).Properties.DataBinding.FieldName);
+
+
+//  TcxImage(Sender).InternalProperties.
+
+//  ShowMessage(TcxImage(Sender).Properties.GetContainerClass.ClassName);
+end;
+
+procedure TForm2.cxDBVerticalGrid1IMGEditPropertiesEditValueChanged(
+  Sender: TObject);
+begin
+{  if TcxImage(Sender).Picture.Graphic = nil then
+    ShowMessage('Sender empty')
+  else
+    ShowMessage(Sender.ClassName);}
 end;
 
 procedure TForm2.cxMRUEdit1PropertiesDeleteLookupItem(

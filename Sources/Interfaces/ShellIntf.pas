@@ -3,8 +3,7 @@ unit ShellIntf;
 interface
 
 uses  windows, graphics, forms, jpeg, CoreClasses, ConfigServiceIntf,
-  NavBarServiceIntf, EntityServiceIntf, ReportServiceIntf, SecurityIntf,
-  ActivityServiceIntf, ViewServiceIntf, UIServiceIntf;
+  EntityServiceIntf, ReportServiceIntf, SecurityIntf, UIServiceIntf;
 
 const
   strAboutText: string = 'HELLO !!!';
@@ -41,17 +40,14 @@ type
   IApp = interface
   ['{D24C773A-376C-41BA-A955-6FFE5CE62ECE}']
     function Version: string;
-    function RunMode: TAppRunMode;
     function WorkItem: TWorkItem;
     function Settings: ISettings;
     function UserProfile: IProfile;
     function HostProfile: IProfile;
     function UI: IUIService;
-    function Views: IViewManagerService;
     function Entities: IEntityManagerService;
     function Reports: IReportService;
     function Security: ISecurityService;
-    function Activities: IActivityManagerService;
     function ContentWorkspace: IWorkspace;
     function DialogWorkspace: IWorkspace;
   end;

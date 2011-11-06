@@ -1,54 +1,37 @@
 unit bfwReportManagerModuleInit;
 
 interface
-uses classes, CoreClasses, CustomModule, ShellIntf, NavBarServiceIntf,
-  ReportCatalogController, ReportCatalogConst, Graphics;
+uses classes, CoreClasses, ShellIntf,
+  ReportCatalogController, ReportCatalogConst;
 
 const
   NAVBAR_IMAGE_RES_NAME = 'REPORTS_NAVBAR_IMAGE';
 
 type
-  TdxbReportManagerModuleInit = class(TCustomModule)
-  protected
-    //IModule
-    procedure OnLoading; override;
-    procedure OnLoaded; override;
+  TReportManagerModuleInit = class(TModule)
+  public
+    class function Kind: TModuleKind; override;
+    procedure Load; override;
   end;
 
 implementation
 {$R Reporting.res}
 
 
-{ TdxbReportManagerModuleInit }
+{ TReportManagerModuleInit }
 
-procedure TdxbReportManagerModuleInit.OnLoaded;
+class function TReportManagerModuleInit.Kind: TModuleKind;
 begin
-  InstantiateController(TReportCatalogController);
+  Result := mkFoundation;
 end;
 
-procedure TdxbReportManagerModuleInit.OnLoading;
-var
-  Image: TBitMap;
-  ImgRes: TResourceStream;
-  Svc: INavBarService;
+procedure TReportManagerModuleInit.Load;
 begin
-  Image := TBitMap.Create;
-  try
-    ImgRes := TResourceStream.Create(HInstance, NAVBAR_IMAGE_RES_NAME, 'file');
-    try
-      Image.LoadFromStream(ImgRes);
-    finally
-      ImgRes.Free;
-    end;
-
-    Svc := WorkItem.Services[INavBarService] as INavBarService;
-    Svc.DefaultLayout.Categories[ACT_CTG_REPORTS].SetImage(Image);
-  finally
-    Image.Free;
-  end;
+  WorkItem.WorkItems.Add(TReportCatalogController);
 end;
+
 
 initialization
-  RegisterEmbededModule(TdxbReportManagerModuleInit, mkFoundation);
+  RegisterModule(TReportManagerModuleInit);
 
 end.

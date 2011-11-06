@@ -4,33 +4,20 @@ interface
 uses classes, CoreClasses,  AdminController;
 
 type
-  TdxbSecurityManagerModuleInit = class(TComponent, IModule)
-  protected
-    //IModule
-    procedure AddServices(AWorkItem: TWorkItem);
-    procedure Load;
-    procedure UnLoad;
+  TdxbSecurityManagerModuleInit = class(TModule)
+  public
+    procedure Load; override;
   end;
 
 implementation
 
 { TdxbSecurityManagerModuleInit }
 
-procedure TdxbSecurityManagerModuleInit.AddServices(AWorkItem: TWorkItem);
-begin
-  AWorkItem.WorkItems.Add(TAdminController.ClassName, TAdminController);
-end;
-
 procedure TdxbSecurityManagerModuleInit.Load;
 begin
-
-end;
-
-procedure TdxbSecurityManagerModuleInit.UnLoad;
-begin
-
+  WorkItem.Root.WorkItems.Add(TAdminController, TAdminController.ClassName);
 end;
 
 initialization
-  RegisterEmbededModule(TdxbSecurityManagerModuleInit, mkExtension);
+  RegisterModule(TdxbSecurityManagerModuleInit);
 end.

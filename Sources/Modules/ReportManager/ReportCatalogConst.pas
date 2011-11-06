@@ -1,7 +1,7 @@
 unit ReportCatalogConst;
 
 interface
-uses CoreClasses, ReportCatalogClasses, ShellIntf, ViewServiceIntf;
+uses CoreClasses, ReportCatalogClasses, ShellIntf;
 
 const
   ACT_CTG_REPORTS = '־עקועû';

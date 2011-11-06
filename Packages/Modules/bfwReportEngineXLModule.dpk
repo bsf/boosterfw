@@ -28,14 +28,24 @@ requires
   rtl,
   bfwCore,
   bfwInterfaces,
-  bfwUI,
-  d15XLR4_R,
-  d15OPack;
+  bfwUI;
 
 contains
   bfwReportEngineXLModuleInit in '..\..\Sources\Modules\ReportEngineXL\bfwReportEngineXLModuleInit.pas',
   xlReportClasses in '..\..\Sources\Modules\ReportEngineXL\xlReportClasses.pas',
   xlReportFactory in '..\..\Sources\Modules\ReportEngineXL\xlReportFactory.pas',
-  xlReportMetadata in '..\..\Sources\Modules\ReportEngineXL\xlReportMetadata.pas';
+  xlReportMetadata in '..\..\Sources\Modules\ReportEngineXL\xlReportMetadata.pas',
+  Excel8G2 in '..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\Excel8G2.pas',
+  Office8G2 in '..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\Office8G2.pas',
+  VBIDE8G2 in '..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\VBIDE8G2.pas',
+  xlAbout in '..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\xlAbout.pas' {fxlAbout},
+  xlcClasses in '..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\xlcClasses.pas',
+  xlcOPack in '..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\xlcOPack.pas',
+  xlcUtils in '..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\xlcUtils.pas',
+  xlEngine in '..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\xlEngine.pas',
+  xlPivotOPack in '..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\xlPivotOPack.pas',
+  xlProOPack in '..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\xlProOPack.pas',
+  xlReport in '..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\xlReport.pas',
+  xlStdOPack in '..\..\Sources\Modules\ReportEngineXL\xlReportLibrary\Source\xlStdOPack.pas';
 
 end.

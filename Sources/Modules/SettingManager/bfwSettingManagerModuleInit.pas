@@ -1,42 +1,31 @@
 unit bfwSettingManagerModuleInit;
 
 interface
-uses classes, CoreClasses,  ShellIntf, SettingsPresenter, SettingsView;
+uses classes, CoreClasses, UIClasses, ShellIntf,
+     SettingsPresenter, SettingsView;
 
 type
-  TdxbSecurityManagerModuleInit = class(TComponent, IModule)
-  protected
-    //IModule
-    procedure AddServices(AWorkItem: TWorkItem);
-    procedure Load;
-    procedure UnLoad;
+  TSettingManagerModuleInit = class(TModule)
+  public
+    procedure Load; override;
   end;
 
 implementation
 
-{ TdxbSecurityManagerModuleInit }
+{ TSettingManagerModuleInit }
 
-procedure TdxbSecurityManagerModuleInit.AddServices(AWorkItem: TWorkItem);
+procedure TSettingManagerModuleInit.Load;
 begin
-{RegisterActivity(VIEW_SETTINGS, MAIN_MENU_CATEGORY, MAIN_MENU_SERVICE_GROUP,
-    VIEW_SETTINGS_CAPTION, TSettingsPresenter, TfrSettingsView);}
-  App.Activities.Items.Add(VIEW_SETTINGS).Init(MAIN_MENU_CATEGORY, MAIN_MENU_SERVICE_GROUP,
-    VIEW_SETTINGS_CAPTION);
-  App.Views.RegisterView(VIEW_SETTINGS, TfrSettingsView, TSettingsPresenter);
- // AWorkItem.WorkItems.Add(TAdminController);
-end;
-
-procedure TdxbSecurityManagerModuleInit.Load;
-begin
-
-end;
-
-procedure TdxbSecurityManagerModuleInit.UnLoad;
-begin
-
+  with WorkItem.Activities[VIEW_SETTINGS] do
+  begin
+    Title := VIEW_SETTINGS_CAPTION;
+    Group := MAIN_MENU_SERVICE_GROUP;
+    UsePermission := true;
+    RegisterHandler(TViewActivityHandler.Create(TSettingsPresenter, TfrSettingsView));
+  end;
 end;
 
 initialization
-  RegisterEmbededModule(TdxbSecurityManagerModuleInit, mkExtension);
+  RegisterModule(TSettingManagerModuleInit);
 
 end.

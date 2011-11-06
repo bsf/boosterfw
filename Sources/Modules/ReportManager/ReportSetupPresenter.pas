@@ -3,7 +3,7 @@ unit ReportSetupPresenter;
 interface
 
 uses classes, CoreClasses, CustomPresenter, Variants, ReportCatalogConst,
-  EntityServiceIntf, Sysutils, DB, ShellIntf, CommonViewIntf, ViewServiceIntf;
+  EntityServiceIntf, Sysutils, DB, ShellIntf, UIClasses;
 
 type
 
@@ -19,7 +19,7 @@ type
     procedure SetItemLinksLookupDataSet(ADataSet: TDataSet);
   end;
 
-  TReportSetupPresenterData = class(TPresenterData)
+  TReportSetupPresenterData = class(TViewActivityData)
   private
     FReportID: string;
     procedure SetReportID(const Value: string);

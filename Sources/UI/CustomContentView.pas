@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, CustomView, cxLookAndFeelPainters, ImgList, cxGraphics,
   ActnList, cxPropertiesStore, cxControls, cxContainer, cxEdit, cxGroupBox,
-  Menus, cxLabel, StdCtrls, cxButtons, cxLookAndFeels, CommonViewIntf,
+  Menus, cxLabel, StdCtrls, cxButtons, cxLookAndFeels, UIClasses,
   ICommandBarImpl;
 
 type

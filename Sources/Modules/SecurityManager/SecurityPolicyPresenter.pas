@@ -1,7 +1,7 @@
 unit SecurityPolicyPresenter;
 
 interface
-uses CustomContentPresenter, CommonViewIntf, coreClasses, ShellIntf, SecurityIntf,
+uses CustomContentPresenter, UIClasses, coreClasses, ShellIntf, SecurityIntf,
   AdminConst, sysutils, classes, variants;
 
 const
@@ -31,8 +31,6 @@ type
     procedure CmdPermEffective(Sender: TObject);
   protected
     procedure OnViewReady; override;
-  public
-    class function ExecuteDataClass: TActionDataClass; override;
   end;
 
 implementation
@@ -40,17 +38,16 @@ implementation
 { TSecurityPolicyPresenter }
 
 procedure TSecurityPolicyPresenter.CmdPermEffective(Sender: TObject);
-var
-  action: IAction;
 begin
 //  if View.PermissionSelection.Count = 0 then Exit;
 
-  action := WorkItem.Actions[VIEW_SECURITYPERMEFFECTIVE];
-  (action.Data as TSecurityPermEffectivePresenterData).PolID := FPolicy.ID;
-  (action.Data as TSecurityPermEffectivePresenterData).PermID := '';// View.PermissionSelection.First;
-  (action.Data as TSecurityPermEffectivePresenterData).ResID := '';
-  action.Execute(WorkItem);
-
+  with WorkItem.Activities[VIEW_SECURITYPERMEFFECTIVE] do
+  begin
+    Params[TSecurityPermEffectiveActivityParams.PolID] := FPolicy.ID;
+    Params[TSecurityPermEffectiveActivityParams.PermID] := '';// View.PermissionSelection.First;
+    Params[TSecurityPermEffectiveActivityParams.ResID] := '';
+    Execute(WorkItem);
+  end;
 end;
 
 procedure TSecurityPolicyPresenter.CmdSetPermState(Sender: TObject);
@@ -74,11 +71,6 @@ begin
 end;
 
 
-class function TSecurityPolicyPresenter.ExecuteDataClass: TActionDataClass;
-begin
-  Result := TSecurityPolicyPresenterData;
-end;
-
 procedure TSecurityPolicyPresenter.FillPermissionList;
 var
   I: integer;
@@ -94,7 +86,7 @@ var
   pState: TPermissionState;
   userAccount: IUserAccount;
 begin
-  App.Views.WaitBox.StartWait;
+  App.UI.WaitBox.StartWait;
   try
     for I := 0 to App.Security.Accounts.Count - 1 do
     begin
@@ -103,7 +95,7 @@ begin
       View.AddUser(userAccount.ID, userAccount.Name, userAccount.IsRole, pState);
     end;
   finally
-    App.Views.WaitBox.StopWait;
+    App.UI.WaitBox.StopWait;
   end;
 end;
 

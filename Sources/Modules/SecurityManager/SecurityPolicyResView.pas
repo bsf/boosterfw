@@ -10,7 +10,7 @@ uses
   cxData, cxDataStorage, cxCheckBox, cxGridLevel, cxGridCustomTableView,
   cxGridTableView, cxClasses, cxGridCustomView, cxGrid, StdCtrls,
   cxButtons, cxSplitter, cxInplaceContainer, cxTextEdit, SecurityPolicyResPresenter,
-  SecurityIntf, cxEditRepositoryItems, CommonViewIntf;
+  SecurityIntf, cxEditRepositoryItems, UIClasses;
 
 type
   TfrSecurityPolicyResView = class(TfrCustomContentView, ISecurityPolicyResView)

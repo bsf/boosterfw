@@ -1,7 +1,7 @@
 unit ITabsImpl;
 
 interface
-uses classes, CommonViewIntf, cxPC, CustomView;
+uses classes, UIClasses, cxPC, CustomView;
 
 type
   TITabsImpl = class(TComponent, ITabs)
