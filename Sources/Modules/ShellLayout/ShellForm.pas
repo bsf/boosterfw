@@ -22,7 +22,8 @@ uses
   cxFilter, cxData, cxDataStorage, DB, cxDBData, cxGridLevel,
   cxGridCustomView, cxGridCustomTableView, cxGridTableView,
   cxGridDBTableView, cxGrid, dxOffice11, UIServiceIntf,
-  NotifyReceiver, NotifySenderPresenter, NotifySenderView;
+  NotifyReceiver, NotifySenderPresenter, NotifySenderView,
+  ActivityCatalog;
 
 const
   STATUSBAR_INFO_PANEL = 0;
@@ -205,6 +206,8 @@ begin
   FWorkItem.EventTopics[etAppStoped].AddSubscription(Self, AppStopedHandler);
 
   RegisterShellCommands;
+
+  TActivityCatalog.Create(Self, FWorkItem).Load;
 
   Localization;
 

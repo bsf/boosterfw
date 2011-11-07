@@ -21,7 +21,6 @@ type
     FWorkItem: TWorkItem;
     FID: string;
     function EntityName: string;
-    function UIInfo: IActivity;
   protected
     function ID: string;
     function GetTopRes: IInterfaceList;
@@ -116,12 +115,6 @@ end;
 function TEntitySecurityResProvider.ID: string;
 begin
   Result := FID;
-end;
-
-function TEntitySecurityResProvider.UIInfo: IActivity;
-begin
-  Result := FWorkItem.Activities[FID];
-//  (FWorkItem.Services[IActivityService] as IActivityService).ActivityInfo(FID);
 end;
 
 { TEntitySecurityResNode }

@@ -2,7 +2,7 @@ unit UIClasses;
 
 interface
 uses classes, db, CoreClasses, sysutils, controls, ShellIntf,
-  Contnrs, forms;
+  Contnrs, forms, variants;
 
 const
   COMMAND_CLOSE = 'commands.view.close';
@@ -98,6 +98,8 @@ type
   protected
     function GetView: IView;
     function WorkItem: TWorkItem;
+  public
+    class function CheckView(AView: IView): boolean; virtual; abstract;
   end;
 
   TViewExtensionClass = class of TViewExtension;
@@ -253,7 +255,7 @@ type
 
   end;
 
-procedure RegisterViewExtension(const ViewURI: string; AExtensionClass: TViewExtensionClass);
+procedure RegisterViewExtension(AExtensionClass: TViewExtensionClass);
 
 procedure InstantiateViewExtensions(AView: TView);
 
@@ -273,43 +275,28 @@ type
     property NAME: Variant read GetNAME write SetNAME;
   end;
 
-
-  TExtensionInfo = class(TObject)
-    ViewURI: string;
-    ExtensionClass: TViewExtensionClass;
-  end;
-
 var
-  ExtensionInfos: TObjectList;
+  ExtensionClassList: TClassList;
 
-function GetExtensionInfos: TObjectList;
+function ExtensionClasses: TClassList;
 begin
-  if not Assigned(ExtensionInfos) then
-    ExtensionInfos := TObjectList.Create(true);
-  Result := ExtensionInfos;
+  if not Assigned(ExtensionClassList) then
+    ExtensionClassList := TClassList.Create;
+  Result := ExtensionClassList;
 end;
 
-procedure RegisterViewExtension(const ViewURI: string; AExtensionClass: TViewExtensionClass);
-var
-  info: TExtensionInfo;
+procedure RegisterViewExtension(AExtensionClass: TViewExtensionClass);
 begin
-  info := TExtensionInfo.Create;
-  info.ExtensionClass := AExtensionClass;
-  info.ViewURI := ViewURI;
-  GetExtensionInfos.Add(info);
+  ExtensionClasses.Add(AExtensionClass);
 end;
 
 procedure InstantiateViewExtensions(AView: TView);
 var
-  info: TExtensionInfo;
   I: integer;
 begin
-  for I := 0 to GetExtensionInfos.Count - 1 do
-  begin
-    info := (ExtensionInfos[I] as TExtensionInfo);
-    if info.ViewURI = (AView as IView).ViewURI then
-      info.ExtensionClass.Create(AView);
-  end;
+  for I := 0 to ExtensionClasses.Count - 1 do
+    if TViewExtensionClass(ExtensionClasses[I]).CheckView(AView) then
+      TViewExtensionClass(ExtensionClasses[I]).Create(AView);
 end;
 
 
@@ -317,6 +304,7 @@ end;
 
 procedure TViewActivityHandler.Execute(Sender: TWorkItem; Activity: IActivity);
 begin
+  Activity.Outs[TViewActivityOuts.ModalResult] := Unassigned;
   FPresenterClass.Execute(Sender, Activity, FViewClass);
 end;
 

@@ -110,7 +110,7 @@ begin
   begin
     Params.Assign(WorkItem);
     Execute(WorkItem);
-    if Params[TViewActivityOuts.ModalResult] = mrOk then
+    if Outs[TViewActivityOuts.ModalResult] = mrOk then
     begin
       Outs.AssignTo(WorkItem);
       UpdateInfoText;

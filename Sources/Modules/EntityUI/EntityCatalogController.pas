@@ -27,6 +27,8 @@ type
   protected
     procedure CommandExtend;
     procedure CommandUpdate;
+  public
+    class function CheckView(AView: IView): boolean; override;
   end;
 
 
@@ -47,6 +49,7 @@ type
   protected
     //
     procedure Initialize; override;
+
     type
       TEntityItemActionHandler = class(TActivityHandler)
         procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
@@ -60,10 +63,10 @@ type
       TEntityDetailActionHandler = class(TActivityHandler)
         procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
       end;
-      TEntityViewActivityHandler = class(TViewActivityHandler)
-      private
-        FInitialized: boolean;
-      public
+      TEntityPickListActivityHandler = class(TViewActivityHandler)
+        procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
+      end;
+      TEntityItemActivityHandler = class(TViewActivityHandler)
         procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
       end;
   end;
@@ -222,23 +225,33 @@ begin
 
   with WorkItem.Activities do
   begin
-    RegisterHandler('IEntityListView', TEntityViewActivityHandler.Create(TEntityListPresenter, TfrEntityListView));
-    RegisterHandler('IEntityNewView', TEntityViewActivityHandler.Create(TEntityNewPresenter, TfrEntityNewView));
-    RegisterHandler('IEntityItemView', TEntityViewActivityHandler.Create(TEntityItemPresenter, TfrEntityItemView));
-    RegisterHandler('IEntityComplexView', TEntityViewActivityHandler.Create(TEntityComplexPresenter, TfrEntityComplexView));
-    RegisterHandler('IEntityCollectView', TEntityViewActivityHandler.Create(TEntityCollectPresenter, TfrEntityCollectView));
-    RegisterHandler('IEntityListView', TEntityViewActivityHandler.Create(TEntityListPresenter, TfrEntityListView));
-    RegisterHandler('IEntityPickListView', TEntityViewActivityHandler.Create(TEntityPickListPresenter, TfrEntityPickListView));
-    RegisterHandler('IEntityJournalView', TEntityViewActivityHandler.Create(TEntityJournalPresenter, TfrEntityJournalView));
-    RegisterHandler('IEntitySelectorView', TEntityViewActivityHandler.Create(TEntitySelectorPresenter, TfrEntitySelectorView));
-    RegisterHandler('IEntityDeskView', TEntityViewActivityHandler.Create(TEntityDeskPresenter, TfrEntityDeskView));
-    RegisterHandler('IEntityOrgChartView', TEntityViewActivityHandler.Create(TEntityOrgChartPresenter, TfrEntityOrgChartView));
+    RegisterHandler('IEntityListView', TViewActivityHandler.Create(TEntityListPresenter, TfrEntityListView));
+    RegisterHandler('IEntityNewView', TViewActivityHandler.Create(TEntityNewPresenter, TfrEntityNewView));
+    RegisterHandler('IEntityItemView', TViewActivityHandler.Create(TEntityItemPresenter, TfrEntityItemView));
+    RegisterHandler('IEntityComplexView', TViewActivityHandler.Create(TEntityComplexPresenter, TfrEntityComplexView));
+    RegisterHandler('IEntityCollectView', TViewActivityHandler.Create(TEntityCollectPresenter, TfrEntityCollectView));
+    RegisterHandler('IEntityListView', TViewActivityHandler.Create(TEntityListPresenter, TfrEntityListView));
+    RegisterHandler('IEntityPickListView', TEntityPickListActivityHandler.Create(TEntityPickListPresenter, TfrEntityPickListView));
+    RegisterHandler('IEntityJournalView', TViewActivityHandler.Create(TEntityJournalPresenter, TfrEntityJournalView));
+    RegisterHandler('IEntitySelectorView', TViewActivityHandler.Create(TEntitySelectorPresenter, TfrEntitySelectorView));
+    RegisterHandler('IEntityDeskView', TViewActivityHandler.Create(TEntityDeskPresenter, TfrEntityDeskView));
+    RegisterHandler('IEntityOrgChartView', TViewActivityHandler.Create(TEntityOrgChartPresenter, TfrEntityOrgChartView));
   end;
+
+  RegisterViewExtension(TEntityViewExtension);
 end;
 
 
 
 { TEntityViewExtension }
+
+class function TEntityViewExtension.CheckView(AView: IView): boolean;
+var
+  intf: IInterface;
+begin
+  AView.QueryInterface(ICustomView, intf);
+  Result := intf <> nil;
+end;
 
 procedure TEntityViewExtension.CmdEntityOperExec(Sender: TObject);
 var
@@ -426,7 +439,7 @@ end;
 procedure TEntityCatalogController.TEntityItemActionHandler.Execute(
   Sender: TWorkItem; Activity: IActivity);
 const
-  FMT_VIEW_ITEM = 'Views.%s.Item';
+  FMT_VIEW_ITEM = 'views.%s.Item';
 var
   actionName: string;
   dsItemURI: TDataSet;
@@ -463,8 +476,8 @@ end;
 procedure TEntityCatalogController.TEntityNewActionHandler.Execute(
   Sender: TWorkItem; Activity: IActivity);
 const
-  FMT_VIEW_NEW_URI = 'Views.%s.NewURI';
-  FMT_VIEW_NEW = 'Views.%s.New';
+  FMT_VIEW_NEW_URI = 'views.%s.NewURI';
+  FMT_VIEW_NEW = 'views.%s.New';
 
 var
   actionURI: IActivity;
@@ -499,8 +512,8 @@ end;
 procedure TEntityCatalogController.TEntityDetailNewActionHandler.Execute(
   Sender: TWorkItem; Activity: IActivity);
 const
-  FMT_VIEW_NEW_URI = 'Views.%s.DetailNewURI';
-  FMT_VIEW_NEW = 'Views.%s.DetailNew';
+  FMT_VIEW_NEW_URI = 'views.%s.DetailNewURI';
+  FMT_VIEW_NEW = 'views.%s.DetailNew';
 
 var
   actionURI: IActivity;
@@ -535,7 +548,7 @@ end;
 procedure TEntityCatalogController.TEntityDetailActionHandler.Execute(
   Sender: TWorkItem; Activity: IActivity);
 const
-  FMT_VIEW_ITEM = 'Views.%s.Detail';
+  FMT_VIEW_ITEM = 'views.%s.Detail';
 var
   actionName: string;
   dsItemURI: TDataSet;
@@ -566,17 +579,25 @@ begin
 
 end;
 
-{ TEntityCatalogController.TEntitiyViewActivityHandler }
+{ TEntityCatalogController.TEntityPickListActivityHandler }
 
-procedure TEntityCatalogController.TEntityViewActivityHandler.Execute(
+procedure TEntityCatalogController.TEntityPickListActivityHandler.Execute(
   Sender: TWorkItem; Activity: IActivity);
 begin
-  if not FInitialized then
-  begin
-    RegisterViewExtension(Activity.URI, TEntityViewExtension);
-    FInitialized := true;
-  end;
-  inherited;
+  Activity.Outs[TPickListActivityOuts.ID] := Unassigned;
+  Activity.Outs[TPickListActivityOuts.NAME] := Unassigned;
+  inherited Execute(Sender, Activity);
+end;
+
+{ TEntityCatalogController.TEntityItemActivityHandler }
+
+procedure TEntityCatalogController.TEntityItemActivityHandler.Execute(
+  Sender: TWorkItem; Activity: IActivity);
+begin
+  if VarIsEmpty(Activity.Params[TViewActivityParams.PresenterID]) then
+    Activity.Params[TViewActivityParams.PresenterID] :=
+      Activity.Params[TEntityItemActivityParams.ID];
+  inherited Execute(Sender, Activity);
 end;
 
 end.

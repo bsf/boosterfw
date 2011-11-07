@@ -140,7 +140,7 @@ begin
   for I := 0 to FItems.Count - 1 do
   begin
     Result := I;
-    if FItems[I].Key = Key then Exit;
+    if SameText(FItems[I].Key, Key) then Exit;
   end;
   Result := -1;
 end;

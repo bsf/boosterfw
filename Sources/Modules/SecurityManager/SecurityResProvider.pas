@@ -169,6 +169,8 @@ var
   node: TSecurityResNode;
 begin
   activity := FWorkItem.Activities[ID];
+
+  node := TSecurityResNode.Create;
   node.FID := activity.URI;
   node.FName := activity.Title;
   node.FDescription := activity.Group;
