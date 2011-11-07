@@ -30,7 +30,6 @@ requires
 
 contains
   AbstractApp in '..\Sources\Core\AbstractApp.pas',
-  ActionsList in '..\Sources\Core\ActionsList.pas',
   CommandsList in '..\Sources\Core\CommandsList.pas',
   CoreClasses in '..\Sources\Core\CoreClasses.pas',
   EventBroker in '..\Sources\Core\EventBroker.pas',

@@ -353,7 +353,7 @@ begin
     for I := 0 to FNames.Count - 1 do
       (Dest as TWorkItem).State[FNames[I]] := GetValue(FNames[I]);
 
-  if (Dest is TActionData) then
+  if (Dest is TActivityData) then
     for I := 0 to FNames.Count - 1 do
       if (Dest as TActivityData).FNames.IndexOf(FNames[I]) <> -1 then
         (Dest as TActivityData).SetValue(FNames[I], GetValue(FNames[I]));

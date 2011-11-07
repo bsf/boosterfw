@@ -26,7 +26,6 @@ type
     FShell: TForm;
     FEntityManager: TEntityManagerService;
     FSecurity: TSecurityService;
-    procedure AppLockHandler(Sender: IAction);
     procedure SplashShow;
     procedure SplashHide;
     procedure SplashUpdate;
@@ -112,12 +111,6 @@ begin
 
   RootWorkItem.Activities.RegisterHandler(COMMAND_LOCK_APP, TAppLockActivityHandler.Create);
 //  RootWorkItem.Actions[COMMAND_LOCK_APP].SetHandler(AppLockHandler);
-end;
-
-
-procedure TApp.AppLockHandler(Sender: IAction);
-begin
-  ShellLock.DoShellLock;
 end;
 
 function TApp.Settings: ISettings;

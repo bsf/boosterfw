@@ -206,65 +206,6 @@ type
     property Activity[const URI: string]: IActivity read FindOrCreate; default;
   end;
 
-{Actions}
-
-  IAction = interface;
-
-  TActionHandlerMethod =  procedure(Sender: IAction) of object;
-  TActionConditionMethod = function(Sender: IAction): boolean of object;
-
-  TActionData = class(TComponent)
-  private
-    FOuts: TStringList;
-    FNames: TStringList;
-    FValues: array of variant;
-    function IndexOf(const AName: string): integer;
-  protected
-    FActionURI: string;
-    procedure Add(const AName: string);
-    procedure AddOut(const AName: string);
-    function IsEmbedded(const AName: string): boolean;
-  public
-    constructor Create(const ActionURI: string); reintroduce; virtual;
-    destructor Destroy; override;
-    function ValueName(AIndex: integer): string;
-    function Count: integer;
-    procedure SetValue(const AName: string; AValue: Variant);
-    function GetValue(const AName: string): Variant;
-    procedure Assign(Source: TPersistent); override;
-    procedure AssignTo(Dest: TPersistent); override;
-    procedure ResetValues;
-    property Value[const AName: string]: Variant read GetValue write SetValue; default;
-  end;
-
-  TActionDataClass = class of TActionData;
-
-  IAction = interface
-  ['{FA986884-8701-4CDF-94E3-D601AA07FA31}']
-    function Name: string;
-    procedure Execute(Caller: TWorkItem);
-    function CanExecute(Caller: TWorkItem): boolean;
-    function VetoObject: Exception;
-    procedure SetHandler(AHandler: TActionHandlerMethod);
-    procedure SetDataClass(AClass: TActionDataClass);
-    procedure ResetData;
-    function GetData: TActionData;
-    procedure RegisterCondition(ACondition: TActionConditionMethod);
-    procedure RemoveCondition(ACondition: TActionConditionMethod);
-    function GetCaller: TWorkItem;
-    property Caller: TWorkItem read GetCaller;
-    property Data: TActionData read GetData;
-  end;
-
-  IActions = interface(ICollection)
-  ['{51DDF9E1-3A23-4758-B835-56370E1F3EA2}']
-    procedure RegisterCondition(ACondition: TActionConditionMethod);
-    procedure RemoveCondition(ACondition: TActionConditionMethod);
-    function GetAction(const AName: string): IAction;
-    property Action[const AName: string]: IAction read GetAction; default;
-  end;
-
-
 {Commands}
   TCommandConditionMethod = function(const CommandName: string;
     Sender: TObject): boolean of object;
@@ -404,7 +345,6 @@ type
     FWorkItems: TComponent;
     FCommands: TComponent;
     FActivities: TComponent;
-    FActions: TComponent;
     FWorkspaces: TComponent;
     FItems: TComponent;
     FStateValues: array of variant;
@@ -417,7 +357,6 @@ type
     function GetWorkItems: IWorkItems;
     function GetCommands: ICommands;
     function GetActivities: IActivities;
-    function GetActions: IActions;
     function GetWorkspaces: IWorkspaces;
     function GetItems: IItems;
     function GetState(const AName: string): Variant;
@@ -432,7 +371,6 @@ type
 
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
-    property Actions: IActions read GetActions;
   public
     procedure DebugInfo(const AInfoText: string);
 
@@ -472,8 +410,8 @@ function FindWorkItem(const AID: string; AParent: TWorkItem): TWorkItem;
 
 implementation
 
-uses  EventBroker, ServicesList, CommandsList, Activities, WorkspacesList, ItemsList,
-  ActionsList;
+uses  EventBroker, ServicesList, CommandsList, Activities, WorkspacesList,
+   ItemsList;
 
 var
   DebugInfoProc: procedure(const AInfo: string);
@@ -588,11 +526,6 @@ begin
 
   ParentList := nil;
   if FParent <> nil then
-    ParentList := TManagedItemList(FParent.FActions);
-  FActions := TActions.Create(Self, lsmUp, ParentList);
-
-  ParentList := nil;
-  if FParent <> nil then
     ParentList := TManagedItemList(FParent.FWorkspaces);
   FWorkspaces := TWorkspaces.Create(Self, lsmUp, ParentList);
 
@@ -634,7 +567,6 @@ begin
     TWorkItems(FWorkItems).Clear;
     TItems(FItems).Clear;
     TCommands(FCommands).Clear;
-    TActions(FActions).Clear;
     TEventTopics(FEventTopics).Clear;
     TWorkspaces(FWorkspaces).Clear;
     TServices(FServices).Clear;
@@ -654,11 +586,6 @@ begin
   end;
 end;
 
-
-function TWorkItem.GetActions: IActions;
-begin
-  FActions.GetInterface(IActions, Result);
-end;
 
 function TWorkItem.GetActivities: IActivities;
 begin
@@ -862,137 +789,6 @@ begin
   if (not Assigned(AInstance)) or ( not (AInstance is AClass)) then
     raise EArgumentTypeError.CreateFmt('Type of argument %s error', [ArgumentName]);
 end;
-
-
-{ TActionData }
-
-procedure TActionData.Add(const AName: string);
-begin
-  if FNames.IndexOf(AName) = -1 then
-    SetLength(FValues, FNames.Add(AName) + 1);
-end;
-
-procedure TActionData.Assign(Source: TPersistent);
-var
-  I: integer;
-begin
-  ResetValues;
-
-  for I := 0 to Count - 1 do
-  begin
-    if (ValueName(I) = 'Name') or (ValueName(I) = 'Tag') then Continue;
-    if Source is TWorkItem then
-      SetValue(ValueName(I), (Source as TWorkItem).State[ValueName(I)])
-    else if (Source is TActionData) and ((Source as TActionData).IndexOf(ValueName(I)) <> -1) then
-      SetValue(ValueName(I), (Source as TActionData).GetValue(ValueName(I)))
-    else if IsPublishedProp(Source, ValueName(I)) then
-      SetValue(ValueName(I), GetPropValue(Source, ValueName(I)));
-  end
-end;
-
-procedure TActionData.AssignTo(Dest: TPersistent);
-var
-  I: integer;
-begin
-
-  for I := 0 to Count - 1 do
-  begin
-    if Dest is TWorkItem then
-      (Dest as TWorkItem).State[ValueName(I)] := GetValue(ValueName(I))
-    else if (Dest is TActionData) and ((Dest as TActionData).IndexOf(ValueName(I)) <> -1) then
-      (Dest as TActionData).SetValue(ValueName(I), GetValue(ValueName(I)))
-    else if IsPublishedProp(Dest, ValueName(I)) then
-      SetPropValue(Dest, ValueName(I), GetValue(ValueName(I)));
-  end;
-
-end;
-
-constructor TActionData.Create(const ActionURI: string);
-var
-  Count, I: Integer;
-  TempList: PPropList;
-begin
-  inherited Create(nil);
-  FActionURI := ActionURI;
-  FNames := TStringList.Create;
-  FOuts := TStringList.Create;
-
-  Count := GetPropList(Self, TempList);
-  if Count > 0 then
-    try
-      for I := 0 to Count - 1 do
-        Add(string(TempList^[I].Name));
-    finally
-      FreeMem(TempList);
-  end;
-end;
-
-destructor TActionData.Destroy;
-begin
-  FNames.Free;
-  FOuts.Free;
-  inherited;
-end;
-
-function TActionData.GetValue(const AName: string): Variant;
-begin
-  if IsEmbedded(AName) then
-    Result := GetPropValue(Self, AName)
-  else if IndexOf(AName) <> -1 then
-    Result := FValues[IndexOf(AName)]
-  else
-    raise Exception.CreateFmt('Param %s for action %s not found', [AName, FActionURI]);
-end;
-
-function TActionData.IsEmbedded(const AName: string): boolean;
-begin
-  Result := IsPublishedProp(Self, AName);
-end;
-
-procedure TActionData.SetValue(const AName: string; AValue: Variant);
-begin
-  if IsEmbedded(AName) then
-  begin
-    if GetPropInfo(Self, AName).SetProc <> nil then
-      SetPropValue(Self, AName, AValue)
-  end
-  else if IndexOf(AName) <> -1 then
-    FValues[IndexOf(AName)] := AValue
-  else
-    raise Exception.CreateFmt('Action param %s not found', [AName]);
-end;
-
-function TActionData.Count: integer;
-begin
-  Result := FNames.Count;
-end;
-
-function TActionData.ValueName(AIndex: integer): string;
-begin
-  Result := FNames[AIndex];
-end;
-
-function TActionData.IndexOf(const AName: string): integer;
-begin
-  Result := FNames.IndexOf(AName);
-end;
-
-procedure TActionData.ResetValues;
-var
-  I: integer;
-begin
-  for I := 0 to Count - 1 do
-    if FOuts.IndexOf(ValueName(I)) = -1 then
-      SetValue(ValueName(I), Unassigned);
-end;
-
-
-procedure TActionData.AddOut(const AName: string);
-begin
-  if FOuts.IndexOf(AName) = -1 then
-    FOuts.Add(AName);
-end;
-
 
 procedure DebugInfoProcConsole(const AInfo: string);
 begin
