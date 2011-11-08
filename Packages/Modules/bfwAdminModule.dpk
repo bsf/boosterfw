@@ -1,0 +1,52 @@
+package bfwAdminModule;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  bfwCore,
+  bfwInterfaces,
+  bfwUI,
+  dxmdsD15;
+
+contains
+  AdminConst in '..\..\Sources\Modules\Admin\AdminConst.pas',
+  AdminController in '..\..\Sources\Modules\Admin\AdminController.pas',
+  SecurityPermEffectivePresenter in '..\..\Sources\Modules\Admin\SecurityPermEffectivePresenter.pas',
+  SecurityPermEffectiveView in '..\..\Sources\Modules\Admin\SecurityPermEffectiveView.pas' {frSecurityPermEffectiveView},
+  SecurityPoliciesPresenter in '..\..\Sources\Modules\Admin\SecurityPoliciesPresenter.pas',
+  SecurityPoliciesView in '..\..\Sources\Modules\Admin\SecurityPoliciesView.pas' {frSecurityPoliciesView},
+  SecurityPolicyPresenter in '..\..\Sources\Modules\Admin\SecurityPolicyPresenter.pas',
+  SecurityPolicyResPresenter in '..\..\Sources\Modules\Admin\SecurityPolicyResPresenter.pas',
+  SecurityPolicyResView in '..\..\Sources\Modules\Admin\SecurityPolicyResView.pas' {frSecurityPolicyResView},
+  SecurityPolicyView in '..\..\Sources\Modules\Admin\SecurityPolicyView.pas' {frSecurityPolicyView},
+  SecurityResProvider in '..\..\Sources\Modules\Admin\SecurityResProvider.pas',
+  SettingsPresenter in '..\..\Sources\Modules\Admin\SettingsPresenter.pas',
+  SettingsView in '..\..\Sources\Modules\Admin\SettingsView.pas' {frSettingsView},
+  UserAccountsPresenter in '..\..\Sources\Modules\Admin\UserAccountsPresenter.pas',
+  UserAccountsView in '..\..\Sources\Modules\Admin\UserAccountsView.pas' {frUserAccountsView},
+  bfwAdminModuleInit in '..\..\Sources\Modules\Admin\bfwAdminModuleInit.pas';
+
+end.

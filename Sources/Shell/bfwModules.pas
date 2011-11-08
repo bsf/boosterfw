@@ -4,8 +4,7 @@ interface
 uses
 
   //Admin addons
-  bfwSettingManagerModuleInit,
-  bfwSecurityManagerModuleInit,
+  bfwAdminModuleInit,
 
   bfwEntityUIModuleInit,
   bfwReportingModuleInit,
