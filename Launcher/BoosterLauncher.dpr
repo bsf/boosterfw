@@ -1,48 +1,19 @@
 program BoosterLauncher;
 
 uses
-  CoreClasses, bfwShellApp, ConfigServiceIntf, classes,
-
-  // dxBooster modules
-
-  //Admin addons
-  bfwSettingManagerModuleInit,
-  bfwSecurityManagerModuleInit,
-
-  //
-  bfwStorageNotifierModuleInit,
-  bfwReportManagerModuleInit,
-  bfwReportEngineXLModuleInit,
-  bfwReportEngineFRModuleInit,
-  bfwEntityCatalogModuleInit,
-  bfwGadgetCatalogModuleInit,
-
-  //Infrastructure addons
-  bfwStorageConnIBXModuleInit,
-  bfwSecurityBaseControllerModuleInit,
-  bfwShellLayoutModuleInit;
+  CoreClasses, bfwApp, bfwModules, ConfigServiceIntf, classes;
 
 {$R *.res}
 
 
 
 type
-  TBoosterApplication = class(TApp)
-  protected
-    procedure AddServices; override;
-  end;
-
-{ TBoosterApplication }
-
-procedure TBoosterApplication.AddServices;
-begin
-  ConfigServiceIntf.LOCAL_APP_DATA_KEY := 'Booster\BoosterLauncher';
-  inherited;
-end;
+  TBoosterApplication = class(TApp);
 
 begin
   //Application.Initialize;
  // Application.MainFormOnTaskbar := True;
   //Application.Run;
+  ConfigServiceIntf.LOCAL_APP_DATA_KEY := 'Booster\BoosterLauncher';
   TBoosterApplication.ShellInstantiate;
 end.
