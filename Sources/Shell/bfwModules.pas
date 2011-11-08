@@ -3,9 +3,9 @@ unit bfwModules;
 interface
 uses
 
-  //Admin addons
-  bfwAdminModuleInit,
 
+  bfwServeModuleInit,
+  bfwAdminModuleInit,
   bfwEntityUIModuleInit,
   bfwReportingModuleInit,
 
