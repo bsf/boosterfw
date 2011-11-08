@@ -56,8 +56,8 @@
 			<DCCReference Include="bfwInterfaces.dcp"/>
 			<DCCReference Include="dsnapcon.dcp"/>
 			<DCCReference Include="ibxpress.dcp"/>
-			<DCCReference Include="..\..\Sources\Modules\StorageConnections\StorageConnIBX.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\StorageConnections\bfwStorageConnModuleInit.pas"/>
+			<DCCReference Include="..\..\Sources\Modules\StorageConn\StorageConnIBX.pas"/>
+			<DCCReference Include="..\..\Sources\Modules\StorageConn\bfwStorageConnModuleInit.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

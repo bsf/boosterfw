@@ -39,6 +39,9 @@
 			<Projects Include="Modules\bfwAdminModule.dproj">
 				<Dependencies/>
 			</Projects>
+			<Projects Include="Modules\bfwServeModule.dproj">
+				<Dependencies/>
+			</Projects>
 		</ItemGroup>
 		<ProjectExtensions>
 			<Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -155,14 +158,23 @@
 		<Target Name="bfwAdminModule:Make">
 			<MSBuild Projects="Modules\bfwAdminModule.dproj" Targets="Make"/>
 		</Target>
+		<Target Name="bfwServeModule">
+			<MSBuild Projects="Modules\bfwServeModule.dproj"/>
+		</Target>
+		<Target Name="bfwServeModule:Clean">
+			<MSBuild Projects="Modules\bfwServeModule.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="bfwServeModule:Make">
+			<MSBuild Projects="Modules\bfwServeModule.dproj" Targets="Make"/>
+		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="BoosterConfigTool;BoosterLauncher;bfwCore;bfwInterfaces;bfwShell;bfwUI;bfwUITemplates;bfwShellLayout;bfwStorageConnModule;bfwReportingModule;bfwEntityUIModule;bfwAdminModule"/>
+			<CallTarget Targets="BoosterConfigTool;BoosterLauncher;bfwCore;bfwInterfaces;bfwShell;bfwUI;bfwUITemplates;bfwShellLayout;bfwStorageConnModule;bfwReportingModule;bfwEntityUIModule;bfwAdminModule;bfwServeModule"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="BoosterConfigTool:Clean;BoosterLauncher:Clean;bfwCore:Clean;bfwInterfaces:Clean;bfwShell:Clean;bfwUI:Clean;bfwUITemplates:Clean;bfwShellLayout:Clean;bfwStorageConnModule:Clean;bfwReportingModule:Clean;bfwEntityUIModule:Clean;bfwAdminModule:Clean"/>
+			<CallTarget Targets="BoosterConfigTool:Clean;BoosterLauncher:Clean;bfwCore:Clean;bfwInterfaces:Clean;bfwShell:Clean;bfwUI:Clean;bfwUITemplates:Clean;bfwShellLayout:Clean;bfwStorageConnModule:Clean;bfwReportingModule:Clean;bfwEntityUIModule:Clean;bfwAdminModule:Clean;bfwServeModule:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="BoosterConfigTool:Make;BoosterLauncher:Make;bfwCore:Make;bfwInterfaces:Make;bfwShell:Make;bfwUI:Make;bfwUITemplates:Make;bfwShellLayout:Make;bfwStorageConnModule:Make;bfwReportingModule:Make;bfwEntityUIModule:Make;bfwAdminModule:Make"/>
+			<CallTarget Targets="BoosterConfigTool:Make;BoosterLauncher:Make;bfwCore:Make;bfwInterfaces:Make;bfwShell:Make;bfwUI:Make;bfwUITemplates:Make;bfwShellLayout:Make;bfwStorageConnModule:Make;bfwReportingModule:Make;bfwEntityUIModule:Make;bfwAdminModule:Make;bfwServeModule:Make"/>
 		</Target>
 		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" Project="$(BDS)\Bin\CodeGear.Group.Targets"/>
 	</Project>

@@ -32,7 +32,7 @@ requires
   ibxpress;
 
 contains
-  StorageConnIBX in '..\..\Sources\Modules\StorageConnections\StorageConnIBX.pas',
-  bfwStorageConnModuleInit in '..\..\Sources\Modules\StorageConnections\bfwStorageConnModuleInit.pas';
+  StorageConnIBX in '..\..\Sources\Modules\StorageConn\StorageConnIBX.pas',
+  bfwStorageConnModuleInit in '..\..\Sources\Modules\StorageConn\bfwStorageConnModuleInit.pas';
 
 end.
