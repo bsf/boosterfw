@@ -6,7 +6,7 @@ uses windows, classes, forms, sysutils,
   AbstractApp, CoreClasses, ShellIntf,
   ShellLogin, ShellLock, ShellSplashForm,
   ConfigServiceIntf, ConfigService,
-  SecurityIntf, SecurityService,
+  SecurityIntf, SecurityService, SecurityController,
   EntityServiceIntf, EntityManagerService,
   ReportServiceIntf, ReportService,
   UIServiceIntf, UIService;
@@ -84,7 +84,8 @@ var
   Intf: IInterface;
 begin
 
-  RootWorkItem.Services.Add(IConfigurationService(TConfigurationService.Create(Self, RootWorkItem)));
+  RootWorkItem.Services.Add(
+    IConfigurationService(TConfigurationService.Create(Self, RootWorkItem)));
 
   //UI
   RootWorkItem.Services.Add(
@@ -94,7 +95,8 @@ begin
   FSecurity := TSecurityService.Create(Self, RootWorkItem);
   RootWorkItem.Services.Add(ISecurityService(FSecurity));
   RootWorkItem.Services.Add(IAuthenticationService(FSecurity));
-
+  (FSecurity as ISecurityService).RegisterSecurityBaseController(
+    TSecurityBaseController.Create(Self, RootWorkItem));
 
   Intf := ILoginUserSelectorService(TLoginUserSelectorService.Create(Self, RootWorkItem));
   RootWorkItem.Services.Add(ILoginUserSelectorService(Intf));

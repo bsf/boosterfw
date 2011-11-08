@@ -11,7 +11,6 @@ uses
 
   //Infrastructure addons
   bfwStorageConnModuleInit,
-  bfwSecurityBaseControllerModuleInit,
   bfwShellLayoutModuleInit;
 
 implementation
