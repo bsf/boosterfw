@@ -10,7 +10,7 @@ uses
   bfwReportingModuleInit,
 
   //Infrastructure addons
-  bfwStorageConnIBXModuleInit,
+  bfwStorageConnModuleInit,
   bfwSecurityBaseControllerModuleInit,
   bfwShellLayoutModuleInit;
 
