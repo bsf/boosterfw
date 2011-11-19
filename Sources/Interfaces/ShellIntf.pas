@@ -48,8 +48,6 @@ type
     function Entities: IEntityManagerService;
     function Reports: IReportService;
     function Security: ISecurityService;
-    function ContentWorkspace: IWorkspace;
-    function DialogWorkspace: IWorkspace;
   end;
 
 var

@@ -101,7 +101,7 @@ begin
   View := TReportCatalogDesignerItemView(ViewList[Idx]);
 
   //AWorkItem.Workspaces[WS_CONTENT].
-  App.ContentWorkspace.Show(View.ViewControl, View.Caption);
+//  App.ContentWorkspace.Show(View.ViewControl, View.Caption);
 end;
 
 { TReportCatalogDesignerItemView }

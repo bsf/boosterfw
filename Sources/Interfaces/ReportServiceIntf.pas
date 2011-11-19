@@ -15,7 +15,7 @@ const
   SECURITY_PROVIDER_REPORTS = 'Security.Policiy.App.Reports';
 
   SECURITY_PERMISSION_REPORT_ENGINE_ACCESS = 'app.report.engine.access';
-  SECURITY_PERMISSION_REPORT_EXECUTE = 'app.report.execute';
+//  SECURITY_PERMISSION_REPORT_EXECUTE = 'app.report.execute';
   SECURITY_PERMISSION_REPORT_SETUP = 'app.report.setup';
 
 type

@@ -125,7 +125,7 @@ begin
   FFactories := TComponentList.Create(false);
   FWorkItem := AWorkItem;
   FEntities := AEntities;
-  (FWorkItem.Services[ISecurityService] as ISecurityService).RegisterResProvider(Self);
+//  (FWorkItem.Services[ISecurityService] as ISecurityService).RegisterResProvider(Self);
 end;
 
 
@@ -239,8 +239,8 @@ procedure TReport.Execute(Caller: TWorkItem;
 var
   Intf: IReportLauncher;
 begin
-  (FWorkItem.Services[ISecurityService] as ISecurityService).
-    DemandPermission(SECURITY_PERMISSION_REPORT_EXECUTE, FReportName);
+{  (FWorkItem.Services[ISecurityService] as ISecurityService).
+    DemandPermission(SECURITY_PERMISSION_REPORT_EXECUTE, FReportName);}
 
   Intf :=  TReportService(Owner).GetLauncher(FTemplate);
   if Intf <> nil then

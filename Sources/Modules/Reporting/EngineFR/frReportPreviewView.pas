@@ -121,7 +121,7 @@ begin
   WorkItem.Commands[COMMAND_PRINT].AddInvoker(miPrint, 'OnClick');
 
   WorkItem.Commands[COMMAND_EXPORT_EXCEL].AddInvoker(btExport, 'OnClick');
-//  WorkItem.Commands[COMMAND_EXPORT_EXCEL].AddInvoker(miExportExcel, 'OnClick');
+  WorkItem.Commands[COMMAND_EXPORT_EXCEL].AddInvoker(miExportExcel, 'OnClick');
   WorkItem.Commands[COMMAND_EXPORT_PDF].AddInvoker(miExportPDF, 'OnClick');
   WorkItem.Commands[COMMAND_EXPORT_HTML].AddInvoker(miExportHTML, 'OnClick');
   WorkItem.Commands[COMMAND_EXPORT_CSV].AddInvoker(miExportCSV, 'OnClick');

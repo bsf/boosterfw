@@ -49,8 +49,6 @@ type
     function Entities: IEntityManagerService;
     function Reports: IReportService;
     function Security: ISecurityService;
-    function ContentWorkspace: IWorkspace;
-    function DialogWorkspace: IWorkspace;
     function WorkItem: TWorkItem;
   public
     class procedure ShellInstantiate;
@@ -196,15 +194,6 @@ begin
   Result := ISecurityService(RootWorkItem.Services[ISecurityService]);
 end;
 
-function TApp.ContentWorkspace: IWorkspace;
-begin
-  Result := RootWorkItem.Workspaces[WS_CONTENT];
-end;
-
-function TApp.DialogWorkspace: IWorkspace;
-begin
-  Result := RootWorkItem.Workspaces[WS_DIALOG];
-end;
 
 { TRootWorkItem }
 
