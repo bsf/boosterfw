@@ -23,30 +23,24 @@ type
     CustomLabel: TLabel;
     CustomCombo: TComboBox;
     Label1: TLabel;
-    btParam: TButton;
     procedure btOKClick(Sender: TObject);
-    procedure btParamClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
     FOkClickEvent: TNotifyEvent;
-    FParamClickEvent: TNotifyEvent;
   public
     { Public declarations }
   end;
 
-function CreateShellLoginDialog(
-  OkClickEvent, ParamClickEvent: TNotifyEvent): TfmShellLogin;
+function CreateShellLoginDialog(OkClickEvent: TNotifyEvent): TfmShellLogin;
 
 implementation
 
 {$R *.dfm}
 
-function CreateShellLoginDialog(
-  OkClickEvent, ParamClickEvent: TNotifyEvent): TfmShellLogin;
+function CreateShellLoginDialog(OkClickEvent: TNotifyEvent): TfmShellLogin;
 begin
   Result := TfmShellLogin.Create(nil);
   Result.FOkClickEvent := OkClickEvent;
-  Result.FParamClickEvent := ParamClickEvent;
   if FindResource(HInstance, RES_ID_APP_LOGO, RT_BITMAP) <> 0 then
     Result.imgLogo.Picture.Bitmap.LoadFromResourceName(HInstance, 'APP_LOGO');
 
@@ -64,12 +58,6 @@ begin
     ActiveControl := UserNameEdit
   else
     ActiveControl := PasswordEdit;
-end;
-
-procedure TfmShellLogin.btParamClick(Sender: TObject);
-begin
-  if Assigned(FParamClickEvent) then
-    FParamClickEvent(Self);
 end;
 
 end.

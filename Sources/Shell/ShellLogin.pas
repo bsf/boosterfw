@@ -4,8 +4,7 @@ interface
 
 uses
   SysUtils, Classes, Messages, forms, Controls, ShellIntf,
-  graphics, windows,  SecurityIntf, CoreClasses, ShellLoginForm,
-  ShellLoginParamForm;
+  graphics, windows,  SecurityIntf, CoreClasses, ShellLoginForm;
 
 type
   TLoginCheckProc = procedure(const AUserID, APassword, ADBItem: string) of
@@ -20,7 +19,6 @@ type
     FCheckProc: TLoginCheckProc;
 
     procedure FOnOKLoginClick(Sender: TObject);
-    procedure FOnParamLoginClick(Sender: TObject);
   public
     constructor Create(AOnwer: TComponent); override;
     destructor Destroy; override;
@@ -82,7 +80,7 @@ var
   lForm: TfmShellLogin;
 begin
   try
-    lForm := CreateShellLoginDialog(FOnOkLoginClick, FOnParamLoginClick);
+    lForm := CreateShellLoginDialog(FOnOkLoginClick);
     try
       lForm.lbVer.Caption := App.Version;
       lForm.UserNameEdit.Text := FUserID;
@@ -139,31 +137,6 @@ begin
 end;
 
 
-procedure TShellLogin.FOnParamLoginClick(Sender: TObject);
-var
-  lForm: TfrShellLoginParam;
-begin
-  try
-    lForm := CreateShellLoginParamDialog; //(FOnOkLoginClick);
-    try
-      lForm.CustomCombo.Items.AddStrings(FAliases);
-      if lForm.CustomCombo.Items.IndexOf(FAlias) > -1 then
-        lForm.CustomCombo.ItemIndex := lForm.CustomCombo.Items.IndexOf(FAlias)
-      else if FAliases.Count > 0 then lForm.CustomCombo.ItemIndex := 0;
-      if lForm.ShowModal = mrOK then
-      begin
-        //FUserName := lForm.UserNameEdit.Text;
-        //FPassword := lForm.PasswordEdit.Text;
-        //FAlias := lForm.CustomCombo.Text;
-      end;
-    finally
-      lForm.Free;
-    end;
-  except
-    Application.HandleException(Self);
-  end;
-
-end;
 
 { TLoginUserSelectorService }
 

@@ -48,6 +48,7 @@ var
   securityService: TSecurityService;
 begin
 
+  //Config
   WorkItem.Services.Add(
     IConfigurationService(TConfigurationService.Create(Self, WorkItem)));
 
@@ -55,7 +56,7 @@ begin
   WorkItem.Services.Add(
     TUIService.Create(Self, WorkItem) as IUIService);
 
-  {Security}
+  //Security
   securityService := TSecurityService.Create(Self, WorkItem);
   WorkItem.Services.Add(ISecurityService(securityService));
   WorkItem.Services.Add(IAuthenticationService(securityService));
@@ -65,8 +66,7 @@ begin
   WorkItem.Services.Add(
     ILoginUserSelectorService(TLoginUserSelectorService.Create(Self, WorkItem)));
 
-  {DAL}
-
+  //DAL
   WorkItem.Services.Add(
     IEntityManagerService(TEntityManagerService.Create(Self, WorkItem)));
 

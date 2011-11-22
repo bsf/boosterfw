@@ -41,7 +41,7 @@ object fmShellLogin: TfmShellLogin
   object lbVer: TLabel
     Left = 10
     Top = 32
-    Width = 46
+    Width = 45
     Height = 14
     Caption = 'ver. 1.0.0'
     Font.Charset = RUSSIAN_CHARSET
@@ -74,13 +74,12 @@ object fmShellLogin: TfmShellLogin
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitWidth = 387
     DesignSize = (
       390
       42)
     object btOK: TButton
-      Left = 121
-      Top = 10
+      Left = 216
+      Top = 6
       Width = 75
       Height = 25
       Anchors = [akRight, akBottom]
@@ -88,11 +87,10 @@ object fmShellLogin: TfmShellLogin
       Default = True
       TabOrder = 0
       OnClick = btOKClick
-      ExplicitLeft = 118
     end
     object btCancel: TButton
-      Left = 205
-      Top = 10
+      Left = 300
+      Top = 6
       Width = 75
       Height = 25
       Anchors = [akRight, akBottom]
@@ -100,20 +98,6 @@ object fmShellLogin: TfmShellLogin
       Caption = #1054#1090#1084#1077#1085#1072
       ModalResult = 2
       TabOrder = 1
-      ExplicitLeft = 202
-    end
-    object btParam: TButton
-      Left = 288
-      Top = 10
-      Width = 89
-      Height = 25
-      Anchors = [akRight, akBottom]
-      Cancel = True
-      Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' >>'
-      Enabled = False
-      TabOrder = 2
-      OnClick = btParamClick
-      ExplicitLeft = 285
     end
   end
   object pnClient: TPanel
@@ -124,9 +108,6 @@ object fmShellLogin: TfmShellLogin
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitTop = 127
-    ExplicitWidth = 387
-    ExplicitHeight = 129
     object UserNameLabel: TLabel
       Left = 14
       Top = 41

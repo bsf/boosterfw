@@ -63,9 +63,6 @@
 			<DCCReference Include="..\Sources\Shell\ShellLoginForm.pas">
 				<Form>fmShellLogin</Form>
 			</DCCReference>
-			<DCCReference Include="..\Sources\Shell\ShellLoginParamForm.pas">
-				<Form>frShellLoginParam</Form>
-			</DCCReference>
 			<DCCReference Include="..\Sources\Shell\ShellSplashForm.pas">
 				<Form>frShellSplash</Form>
 			</DCCReference>
