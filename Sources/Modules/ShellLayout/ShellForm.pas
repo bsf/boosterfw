@@ -275,22 +275,13 @@ end;
 
 procedure TfrMain.RegisterShellCommands;
 begin
-{
-  with WorkItem.Activities.Infos.Add(COMMAND_LOCK_APP) do
-  begin
-    Title := 'Блокировка';
-    Group := MAIN_MENU_FILE_GROUP;
-    ShortCut := 'Ctrl+L';
-  end;
- }
+
   with WorkItem.Activities[COMMAND_CLOSE_APP] do
   begin
     Title := 'Закрыть';
     Group := MENU_GROUP_FILE;
   end;
   WorkItem.Activities.RegisterHandler(COMMAND_CLOSE_APP, TCloseAppHandler.Create(Self));
-
-//  WorkItem.Actions[COMMAND_CLOSE_APP].SetHandler(CloseAppHandler);
 
   with WorkItem.Activities[COMMAND_SHOW_ABOUT] do
   begin

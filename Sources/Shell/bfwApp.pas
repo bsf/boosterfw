@@ -4,7 +4,7 @@ interface
 
 uses windows, classes, forms, sysutils,
   CustomApp, CoreClasses, ShellIntf,
-  ShellLogin, ShellLock, ShellSplashForm,
+  ShellLogin, ShellSplashForm,
   ConfigServiceIntf, ConfigService,
   SecurityIntf, SecurityService, SecurityController,
   EntityServiceIntf, EntityManagerService,
@@ -21,11 +21,6 @@ type
     procedure SplashShow;
     procedure SplashHide;
     procedure SplashUpdate;
-    type
-      TAppLockActivityHandler = class(TActivityHandler)
-      public
-        procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
-      end;
   protected
     procedure AddServices; override;
     procedure OnStart; override;
@@ -80,8 +75,6 @@ begin
   WorkItem.Services.Add(
     IReportService(TReportService.Create(Self, WorkItem)));
 
-  WorkItem.Activities.RegisterHandler(COMMAND_LOCK_APP, TAppLockActivityHandler.Create);
-//  RootWorkItem.Actions[COMMAND_LOCK_APP].SetHandler(AppLockHandler);
 end;
 
 function TApp.Settings: ISettings;
@@ -137,14 +130,6 @@ begin
 end;
 
 
-{ TRootWorkItem }
-
-{function TRootWorkItem.OnGetApplication: IInterface;
-begin
-  Result := IApp(AppInstance);
-end;}
-
-
 function TApp.Version: string;
 var
   exeDate: TDateTime;
@@ -179,12 +164,5 @@ begin
 end;
 
 
-{ TApp.TAppLockHanler }
-
-procedure TApp.TAppLockActivityHandler.Execute(Sender: TWorkItem;
-   Activity: IActivity);
-begin
-  ShellLock.DoShellLock;
-end;
 
 end.

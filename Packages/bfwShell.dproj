@@ -59,7 +59,6 @@
 			<DCCReference Include="bfwCore.dcp"/>
 			<DCCReference Include="dsnapcon.dcp"/>
 			<DCCReference Include="..\Sources\Shell\bfwApp.pas"/>
-			<DCCReference Include="..\Sources\Shell\ShellLock.pas"/>
 			<DCCReference Include="..\Sources\Shell\ShellLogin.pas"/>
 			<DCCReference Include="..\Sources\Shell\ShellLoginForm.pas">
 				<Form>fmShellLogin</Form>
@@ -69,9 +68,6 @@
 			</DCCReference>
 			<DCCReference Include="..\Sources\Shell\ShellSplashForm.pas">
 				<Form>frShellSplash</Form>
-			</DCCReference>
-			<DCCReference Include="..\Sources\Shell\ShellUnlockForm.pas">
-				<Form>fmShellUnlock</Form>
 			</DCCReference>
 			<DCCReference Include="..\Sources\Shell\Services\ConfigService.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\ConfigStorage.pas"/>
