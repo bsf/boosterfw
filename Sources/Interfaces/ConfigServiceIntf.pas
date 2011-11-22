@@ -85,8 +85,6 @@ type
     function HostProfile: IProfile;
   end;
 
-var
-  LOCAL_APP_DATA_KEY: string = '';
 
 implementation
 

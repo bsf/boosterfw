@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Menus,ActnList, ComCtrls, ShellIntf,
+  Dialogs, Menus,ActnList, ComCtrls, ShellIntf, CustomApp,
   ToolWin, ExtCtrls,  Contnrs, cxGraphics,
   cxControls, dxStatusBar,  cxClasses, dxNavBarBase,
   dxNavBarCollns, dxNavBar, cxSplitter, dxBar, dxNavBarGroupItems,
@@ -160,6 +160,14 @@ end;
 constructor TfrMain.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+
+  if App.Settings['Application.Title'] <> '' then
+    Application.Title := App.Settings['Application.Title'];
+
+  if App.Settings.CurrentAlias <> '' then
+    Application.Title := Application.Title + ' <' +
+      App.Settings.CurrentAlias  + '>';
+
 end;
 
 
@@ -278,7 +286,7 @@ begin
   with WorkItem.Activities[COMMAND_CLOSE_APP] do
   begin
     Title := 'Закрыть';
-    Group := MAIN_MENU_FILE_GROUP;
+    Group := MENU_GROUP_FILE;
   end;
   WorkItem.Activities.RegisterHandler(COMMAND_CLOSE_APP, TCloseAppHandler.Create(Self));
 
@@ -287,14 +295,14 @@ begin
   with WorkItem.Activities[COMMAND_SHOW_ABOUT] do
   begin
     Title := 'О программе...';
-    Group := MAIN_MENU_FILE_GROUP;
+    Group := MENU_GROUP_FILE;
   end;
   WorkItem.Activities.RegisterHandler(COMMAND_SHOW_ABOUT, TShowAboutHandler.Create);
 
   with WorkItem.Activities[URI_USERPREFERENCES] do
   begin
     Title := 'Предпочтения';
-    Group := MAIN_MENU_SERVICE_GROUP;
+    Group := MENU_GROUP_SERVICE;
   end;
   WorkItem.Activities.RegisterHandler(URI_USERPREFERENCES,
     TViewActivityHandler.Create(TUserPreferencesPresenter, TfrUserPreferencesView));
@@ -304,7 +312,7 @@ begin
   with WorkItem.Activities[VIEW_NOTIFYSENDER] do
   begin
     Title := VIEW_NOTIFYSENDER_TITLE;
-    Group := MAIN_MENU_SERVICE_GROUP;
+    Group := MENU_GROUP_SERVICE;
     UsePermission := true;
   end;
   WorkItem.Activities.RegisterHandler(VIEW_NOTIFYSENDER,

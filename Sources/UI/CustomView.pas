@@ -412,7 +412,7 @@ end;
 
 function TfrCustomView.GetPreferencePath: string;
 begin
-  Result := PROFILE_VIEW_PREFERENCE_STORAGE + '\' + ViewURI + '\';
+  Result := '\' + ViewURI + '\';
 end;
 
 function TfrCustomView.GetPreferenceValue(const AName: string): string;

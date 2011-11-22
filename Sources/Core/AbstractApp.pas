@@ -1,4 +1,4 @@
-unit AbstractApp;
+﻿unit AbstractApp;
 
 interface
 uses Classes, CoreClasses, SysUtils, Contnrs, Generics.Collections;
@@ -6,6 +6,8 @@ uses Classes, CoreClasses, SysUtils, Contnrs, Generics.Collections;
 type
   TAbstractApplication = class(TComponent)
   private
+    class var Instance: TAbstractApplication;
+
     FRootWorkItem: TWorkItem;
     FModules: TObjectList<TModule>;
     procedure RegisterUnhandledExceptionHandler;
@@ -21,6 +23,7 @@ type
     procedure ShellInitialization; virtual;
     procedure Start; virtual; abstract;
   public
+    class function AppInstance: TAbstractApplication;
     constructor Create(AOwner: TComponent); override;
     procedure Run;
     property RootWorkItem: TWorkItem read GetRootWorkItem;
@@ -33,6 +36,11 @@ implementation
 
 
 procedure TAbstractApplication.AddServices;
+begin
+
+end;
+
+class function TAbstractApplication.AppInstance: TAbstractApplication;
 begin
 
 end;

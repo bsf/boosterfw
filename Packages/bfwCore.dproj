@@ -54,7 +54,7 @@
 			</DelphiCompile>
 			<DCCReference Include="rtl.dcp"/>
 			<DCCReference Include="vcl.dcp"/>
-			<DCCReference Include="..\Sources\Core\AbstractApp.pas"/>
+			<DCCReference Include="..\Sources\Core\CustomApp.pas"/>
 			<DCCReference Include="..\Sources\Core\CommandsList.pas"/>
 			<DCCReference Include="..\Sources\Core\CoreClasses.pas"/>
 			<DCCReference Include="..\Sources\Core\EventBroker.pas"/>

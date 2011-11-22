@@ -256,8 +256,7 @@ begin
   iniFile := TMemIniFile.Create('');
   content := TStringList.Create;
   try
-    App.UserProfile.LoadData(ShellIntf.PROFILE_VIEW_PREFERENCE_STORAGE + PreferencePath,
-      PreferenceFile, stream);
+    App.UserProfile.LoadData(PreferencePath, PreferenceFile, stream);
     stream.Position := 0;
     content.LoadFromStream(stream);
     iniFile.SetStrings(content);
@@ -283,8 +282,7 @@ begin
     iniFile.GetStrings(content);
     content.SaveToStream(stream);
     stream.Position := 0;
-    App.UserProfile.SaveData(ShellIntf.PROFILE_VIEW_PREFERENCE_STORAGE + PreferencePath,
-      PreferenceFile, stream);
+    App.UserProfile.SaveData(PreferencePath, PreferenceFile, stream);
   finally
     stream.Free;
     iniFile.Free;

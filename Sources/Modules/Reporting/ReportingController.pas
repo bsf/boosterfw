@@ -153,7 +153,7 @@ begin
   with  WorkItem.Activities[VIEW_RPT_CATALOG] do
   begin
     Title := VIEW_RPT_CATALOG_CAPTION;
-    Group := MAIN_MENU_SERVICE_GROUP;
+    Group := MENU_GROUP_SERVICE;
     RegisterHandler(TViewActivityHandler.Create(TReportCatalogPresenter, TfrReportCatalogView));
   end;
 

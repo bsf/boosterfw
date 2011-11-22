@@ -3,7 +3,7 @@ unit bfwApp;
 interface
 
 uses windows, classes, forms, sysutils,
-  AbstractApp, CoreClasses, ShellIntf,
+  CustomApp, CoreClasses, ShellIntf,
   ShellLogin, ShellLock, ShellSplashForm,
   ConfigServiceIntf, ConfigService,
   SecurityIntf, SecurityService, SecurityController,
@@ -15,17 +15,9 @@ const
   APP_VERSION = 'ver 1.0';
 
 type
-  TRootWorkItem = class(TWorkItem)
-  protected
-    //function OnGetApplication: IInterface; override;
-  end;
-
-  TApp = class(TAbstractApplication, IApp)
+  TApp = class(TCustomApplication, IApp)
   private
     FSplash: TShellSplash;
-    FShell: TForm;
-    FEntityManager: TEntityManagerService;
-    FSecurity: TSecurityService;
     procedure SplashShow;
     procedure SplashHide;
     procedure SplashUpdate;
@@ -35,10 +27,9 @@ type
         procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
       end;
   protected
-    function GetWorkItemClass: TWorkItemClass; override;
     procedure AddServices; override;
-    procedure Start; override;
-    procedure ShellInitialization; override;
+    procedure OnStart; override;
+    procedure OnShellInitialization; override;
     procedure OnLoadModule(const AModuleName, AInfo: string; Kind: TModuleKind); override;
     //IApp
     function Version: string;
@@ -49,149 +40,100 @@ type
     function Entities: IEntityManagerService;
     function Reports: IReportService;
     function Security: ISecurityService;
-    function WorkItem: TWorkItem;
-  public
-    class procedure ShellInstantiate;
   end;
 
-procedure ShellApplicationInitialization;
-exports
-  ShellApplicationInitialization;
 
 implementation
 
-var
-  AppInstance: TApp;
-
-function GetAppInstance: IApp;
-begin
-  Result := AppInstance;
-end;
-
-procedure ShellApplicationInitialization;
-begin
-  GetIApp := @GetAppInstance;
-  AppInstance := TApp.Create(nil);
-  AppInstance.Run;
-end;
 
 { TApp }
 
 procedure TApp.AddServices;
 var
-  Intf: IInterface;
+  securityService: TSecurityService;
 begin
 
-  RootWorkItem.Services.Add(
-    IConfigurationService(TConfigurationService.Create(Self, RootWorkItem)));
+  WorkItem.Services.Add(
+    IConfigurationService(TConfigurationService.Create(Self, WorkItem)));
 
   //UI
-  RootWorkItem.Services.Add(
-    TUIService.Create(Self, RootWorkItem) as IUIService);
+  WorkItem.Services.Add(
+    TUIService.Create(Self, WorkItem) as IUIService);
 
   {Security}
-  FSecurity := TSecurityService.Create(Self, RootWorkItem);
-  RootWorkItem.Services.Add(ISecurityService(FSecurity));
-  RootWorkItem.Services.Add(IAuthenticationService(FSecurity));
-  (FSecurity as ISecurityService).RegisterSecurityBaseController(
-    TSecurityBaseController.Create(Self, RootWorkItem));
+  securityService := TSecurityService.Create(Self, WorkItem);
+  WorkItem.Services.Add(ISecurityService(securityService));
+  WorkItem.Services.Add(IAuthenticationService(securityService));
+  (securityService as ISecurityService).RegisterSecurityBaseController(
+    TSecurityBaseController.Create(Self, WorkItem));
 
-  Intf := ILoginUserSelectorService(TLoginUserSelectorService.Create(Self, RootWorkItem));
-  RootWorkItem.Services.Add(ILoginUserSelectorService(Intf));
+  WorkItem.Services.Add(
+    ILoginUserSelectorService(TLoginUserSelectorService.Create(Self, WorkItem)));
 
   {DAL}
-  FEntityManager := TEntityManagerService.Create(Self, RootWorkItem);
-  RootWorkItem.Services.Add(IEntityManagerService(FEntityManager));
+
+  WorkItem.Services.Add(
+    IEntityManagerService(TEntityManagerService.Create(Self, WorkItem)));
 
 
   //Reports
-  RootWorkItem.Services.Add(
-    IReportService(TReportService.Create(Self,
-      IEntityManagerService(FEntityManager), RootWorkItem)));
+  WorkItem.Services.Add(
+    IReportService(TReportService.Create(Self, WorkItem)));
 
-  RootWorkItem.Activities.RegisterHandler(COMMAND_LOCK_APP, TAppLockActivityHandler.Create);
+  WorkItem.Activities.RegisterHandler(COMMAND_LOCK_APP, TAppLockActivityHandler.Create);
 //  RootWorkItem.Actions[COMMAND_LOCK_APP].SetHandler(AppLockHandler);
 end;
 
 function TApp.Settings: ISettings;
 begin
-  Result := IConfigurationService(RootWorkItem.
+  Result := IConfigurationService(WorkItem.
     Services[IConfigurationService]).Settings;
 end;
 
-procedure TApp.ShellInitialization;
+procedure TApp.OnShellInitialization;
 begin
-  Application.Initialize;
-
-  if Settings['Application.Title'] <> '' then
-    Application.Title := Settings['Application.Title'];
-
-  if Settings.CurrentAlias <> '' then
-    Application.Title := Application.Title + ' <' +
-      Settings.CurrentAlias  + '>';
-
-  if not Assigned(ShellIntf.ShellFormClass) then
-    raise Exception.Create('MainForm class not setting');
-
-  Application.CreateForm(ShellIntf.ShellFormClass, FShell);
-
   SplashShow;
-
-  TCustomShellForm(FShell).Initialize(RootWorkItem);
-
 end;
 
-class procedure TApp.ShellInstantiate;
-begin
-  GetIApp := @GetAppInstance;
-  AppInstance := Self.Create(nil);
-  AppInstance.Run;
-end;
 
-procedure TApp.Start;
+procedure TApp.OnStart;
 begin
   SplashHide;
-  Application.Run;
 end;
 
 function TApp.UI: IUIService;
 begin
-  Result := RootWorkItem.Services[IUIService] as IUIService;
+  Result := WorkItem.Services[IUIService] as IUIService;
 end;
 
 function TApp.UserProfile: IProfile;
 begin
-  Result := IConfigurationService(RootWorkItem.
+  Result := IConfigurationService(WorkItem.
     Services[IConfigurationService]).UserProfile;
 end;
 
 function TApp.HostProfile: IProfile;
 begin
-  Result := IConfigurationService(RootWorkItem.
+  Result := IConfigurationService(WorkItem.
     Services[IConfigurationService]).HostProfile;
 end;
 
 
-function TApp.GetWorkItemClass: TWorkItemClass;
-begin
-  Result := TRootWorkItem;
-end;
-
 function TApp.Entities: IEntityManagerService;
 begin
-  Result := IEntityManagerService(RootWorkItem.Services[IEntityManagerService]);
+  Result := IEntityManagerService(WorkItem.Services[IEntityManagerService]);
 end;
 
 
 function TApp.Reports: IReportService;
 begin
-  Result := IReportService(RootWorkItem.Services[IReportService]);
+  Result := IReportService(WorkItem.Services[IReportService]);
 end;
 
 
 function TApp.Security: ISecurityService;
 begin
-  Result := ISecurityService(RootWorkItem.Services[ISecurityService]);
+  Result := ISecurityService(WorkItem.Services[ISecurityService]);
 end;
 
 
@@ -227,18 +169,13 @@ end;
 
 procedure TApp.SplashShow;
 begin
- // FSplash := TShellSplash.Create;
-//  FSplash.Show('', 100);
+//  FSplash := TShellSplash.Create;
+ // FSplash.Show('', 100);
 end;
 
 procedure TApp.SplashUpdate;
 begin
   if Assigned(FSplash) then FSplash.Update('');
-end;
-
-function TApp.WorkItem: TWorkItem;
-begin
-  Result := GetRootWorkItem;
 end;
 
 

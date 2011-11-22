@@ -54,7 +54,7 @@ begin
   with WorkItem.Activities[VIEW_SETTINGS] do
   begin
     Title := VIEW_SETTINGS_CAPTION;
-    Group := MAIN_MENU_SERVICE_GROUP;
+    Group := MENU_GROUP_SERVICE;
     UsePermission := true;
     RegisterHandler(TViewActivityHandler.Create(TSettingsPresenter, TfrSettingsView));
   end;
@@ -63,7 +63,7 @@ begin
   with WorkItem.Activities[VIEW_SECURITYPOLICIES] do
   begin
     Title := VIEW_SECURITYPOLICIES_TITLE;
-    Group := MAIN_MENU_SERVICE_GROUP;
+    Group := MENU_GROUP_SERVICE;
     UsePermission := true;
     RegisterHandler(TViewActivityHandler.Create(TSecurityPoliciesPresenter, TfrSecurityPoliciesView));
   end;
@@ -71,7 +71,7 @@ begin
   with WorkItem.Activities[VIEW_USERACCOUNTS] do
   begin
     Title := VIEW_USERACCOUNTS_CAPTION;
-    Group := MAIN_MENU_SERVICE_GROUP;
+    Group := MENU_GROUP_SERVICE;
     UsePermission := true;
     RegisterHandler(TViewActivityHandler.Create(TUserAccountsPresenter, TfrUserAccountsView));
   end;

@@ -6,8 +6,7 @@ uses coreClasses, ConfigServiceIntf, Classes, IniFiles, SysUtils, Contnrs, StrUt
 
 const
 //Common settings names
-  setting_RUNMODE_PORTABLE = 'RunMode.Portable';
-
+  setting_PROFILE_KEY = 'Profile.Key';
 
 type
   TSetting = class(TComponent, ISetting)
@@ -89,6 +88,8 @@ type
   end;
 
   TProfile = class(TComponent, IProfile)
+  const
+    PROFILE_DATA_FOLDER = 'ViewPreference';
   private
     FWorkItem: TWorkItem;
     FLocation: string;
@@ -148,9 +149,9 @@ begin
 
   FSettings := TSettings.Create(FWorkItem);
 
-  if Settings[setting_RUNMODE_PORTABLE] <> '1' then
+  if Settings[setting_PROFILE_KEY] <> 'Portable' then
   begin
-    localAppDataKey := LOCAL_APP_DATA_KEY;
+    localAppDataKey := Settings[setting_PROFILE_KEY];
 
     if localAppDataKey = '' then
       localAppDataKey := ChangeFileExt(ExtractFileName(ParamStr(0)), '');
@@ -471,7 +472,7 @@ var
   fileName: string;
   fileData: TFileStream;
 begin
-  fileName := GetAbsolutePath(ARelativePath) + AFileName;
+  fileName := GetAbsolutePath(PROFILE_DATA_FOLDER + ARelativePath) + AFileName;
   if FileExists(fileName) then
   begin
     fileData := TFileStream.Create(fileName, fmOpenRead or fmShareDenyWrite);
@@ -501,7 +502,7 @@ var
   fileName: string;
   fileData: TFileStream;
 begin
-  fileName :=  GetAbsolutePath(ARelativePath) + AFileName;
+  fileName :=  GetAbsolutePath(PROFILE_DATA_FOLDER + ARelativePath) + AFileName;
   fileData := TFileStream.Create(fileName, fmCreate);
   try
     AData.Position := 0;

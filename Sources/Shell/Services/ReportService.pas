@@ -93,8 +93,7 @@ type
     function GetSecurityGetRes(const ID: string): ISecurityResNode;
     function ISecurityResProvider.GetRes = GetSecurityGetRes;
   public
-    constructor Create(AOwner: TComponent; AEntities: IEntityManagerService;
-       AWorkItem: TWorkItem); reintroduce;
+    constructor Create(AOwner: TComponent; AWorkItem: TWorkItem); reintroduce;
     destructor Destroy; override;
   end;
 
@@ -117,14 +116,14 @@ begin
   Result := FReports.Count;
 end;
 
-constructor TReportService.Create(AOwner: TComponent;
-  AEntities: IEntityManagerService;  AWorkItem: TWorkItem);
+constructor TReportService.Create(AOwner: TComponent; AWorkItem: TWorkItem);
 begin
   inherited Create(AOwner);
   FReports := TComponentList.Create(true);
   FFactories := TComponentList.Create(false);
   FWorkItem := AWorkItem;
-  FEntities := AEntities;
+  FEntities := FWorkItem.Services[IEntityManagerService] as IEntityManagerService;
+
 //  (FWorkItem.Services[ISecurityService] as ISecurityService).RegisterResProvider(Self);
 end;
 

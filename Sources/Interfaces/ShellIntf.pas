@@ -2,12 +2,10 @@ unit ShellIntf;
 
 interface
 
-uses  windows, graphics, forms, jpeg, CoreClasses, ConfigServiceIntf,
+uses  windows, graphics, forms, jpeg, CoreClasses, ConfigServiceIntf, CustomApp,
   EntityServiceIntf, ReportServiceIntf, SecurityIntf, UIServiceIntf;
 
 const
-  strAboutText: string = 'HELLO !!!';
-
   RES_ID_APP_LOGO = 'APP_LOGO';
 
 //Shell workspaces
@@ -16,27 +14,14 @@ const
   WS_CONSOLE = '{65D51821-B33B-4F8B-AC8C-29F623B892C5}';
 
 //Shell def commands
-  COMMAND_SELECT_LAYOUT = '{EDC39FA8-213A-47F7-9305-9E884EF5F75A}';
-  COMMAND_FUNCTION_PANEL = '{383EDA8B-BE6E-42D4-A645-BA35DEB54816}';
   COMMAND_LOCK_APP = '{606295E3-FAB3-4272-8A55-463096A66BE7}';
 
 
-//Profile structure
-  PROFILE_VIEW_PREFERENCE_STORAGE = 'ViewPreference';
-
-  // Top categories
-  MAIN_MENU_CATEGORY = 'Главное меню';
-  MAIN_MENU_FILE_GROUP = 'Файл';
-  MAIN_MENU_SERVICE_GROUP = 'Сервис';
+  //Main menu groups
+  MENU_GROUP_FILE = 'Файл';
+  MENU_GROUP_SERVICE = 'Сервис';
 
 type
-  TCustomShellForm = class(TForm)
-  public
-    procedure Initialize(AWorkItem: TWorkItem); virtual; abstract;
-  end;
-
-  TShellFormClass = class of TCustomShellForm;
-
   IApp = interface
   ['{D24C773A-376C-41BA-A955-6FFE5CE62ECE}']
     function Version: string;
@@ -50,9 +35,6 @@ type
     function Security: ISecurityService;
   end;
 
-var
-  GetIApp: function: IApp = nil;
-  ShellFormClass: TShellFormClass;
 
 function App: IApp;
 
@@ -61,9 +43,7 @@ implementation
 
 function App: IApp;
 begin
-  Result := nil;
-  if @GetIApp <> nil then
-    Result := GetIApp;
+  Result := CustomApp.TCustomApplication.AppInstance as IApp
 end;
 
 

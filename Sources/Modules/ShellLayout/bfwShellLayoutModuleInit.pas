@@ -1,7 +1,7 @@
 unit bfwShellLayoutModuleInit;
 
 interface
-uses classes, CoreClasses, SysUtils, ShellIntf, ShellForm;
+uses classes, CoreClasses, SysUtils, ShellIntf, ShellForm, CustomApp;
 
 
 type
@@ -26,7 +26,7 @@ end;
 procedure TShellUIModule.Load;
 begin
   FormatSettings.ThousandSeparator := ' ';
-  ShellIntf.ShellFormClass := TfrMain;
+  CustomApp.TCustomApplication.ShellFormClass := TfrMain;
 end;
 
 
