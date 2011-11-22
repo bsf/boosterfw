@@ -1,9 +1,10 @@
 unit ReportingController;
 
 interface
-uses classes, CoreClasses,  sysutils, variants,
-  ShellIntf, ReportServiceIntf,
+uses classes, CoreClasses,  sysutils, variants, Contnrs,
+  ShellIntf,
   CommonUtils, ConfigServiceIntf, graphics, UIClasses,
+  EntityServiceIntf, UIServiceIntf,
   ReportCatalogConst, ReportCatalogClasses,
   ReportCatalogPresenter, ReportCatalogView,
   ReportLauncherPresenter, ReportLauncherView,
@@ -22,19 +23,28 @@ type
     FActivityImage: TBitmap;
     FCatalogPath: string;
     FReportCatalog: TReportCatalog;
-    FReportService: IReportService;
+    FFactories: TComponentList;
     procedure LoadCatalogItems;
     procedure LoadCatalogItem(AItem: TReportCatalogItem);
     procedure UnLoadCatalogItem(AItem: TReportCatalogItem);
 
     procedure RegisterSettings;
     procedure LoadActivityImage;
+
+    procedure ReportProgressCallback(AProgressState: TReportProgressState);
   protected
-   function GetItem(const URI: string): TReportCatalogItem;
+    //
+    function GetItem(const URI: string): TReportCatalogItem;
+    procedure RegisterLauncherFactory(Factory: TComponent);
+    procedure Execute(Caller: TWorkItem;  Activity: IActivity);
+    //
     procedure Initialize; override;
     procedure Terminate; override;
   type
-    TReportActivityHandler = class(TActivityHandler)
+    TReportLaunchHandler = class(TActivityHandler)
+      procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
+    end;
+    TReportPreviewHandler = class(TActivityHandler)
       procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
     end;
   end;
@@ -43,6 +53,38 @@ implementation
 
 { TReportCatalogController }
 
+
+procedure TReportingController.Execute(Caller: TWorkItem;  Activity: IActivity);
+var
+  I: integer;
+  Factory: IReportLauncherFactory;
+  rLauncher: IReportLauncher;
+  repItem: TReportCatalogItem;
+  repURI: string;
+  tmpl: string;
+  ExecuteAction: TReportExecuteAction;
+begin
+  repURI := Activity.Params[TReportPreviewParams.ReportURI];
+  executeAction := Activity.Params[TReportPreviewParams.ExecuteAction];
+  repItem := GetItem(repURI);
+
+  tmpl := repItem.Path + repItem.Manifest.Layouts[repURI].Template;
+
+  rLauncher := nil;
+  for I := 0 to FFactories.Count - 1 do
+  begin
+    FFactories[I].GetInterface(IReportLauncherFactory, Factory);
+    rLauncher := Factory.GetLauncher(
+      (WorkItem.Services[IEntityManagerService] as IEntityManagerService).Connections.GetDefault,
+         tmpl);
+    if rLauncher <> nil then Break;
+  end;
+
+  if rLauncher = nil then
+    raise Exception.Create('Report factory not found.');
+
+  rLauncher.Execute(Caller, executeAction, nil, ReportProgressCallback, repItem.Caption);
+end;
 
 function TReportingController.GetItem(
   const URI: string): TReportCatalogItem;
@@ -71,14 +113,14 @@ begin
   //Layouts
   for layout in AItem.Manifest.Layouts do
   begin
-    with FReportService.Add(layout.ID) do
+    {with FReportService.Add(layout.ID) do
     begin
       Template := AItem.Path + layout.Template;
       Group := AItem.Group.Caption;
       Caption := AItem.Caption;
       if layout.ID <> AItem.ID then
         Caption := Caption + ' [' + layout.Caption + ']';
-    end;
+    end;}
 
     with WorkItem.Activities[layout.ID] do
     begin
@@ -92,7 +134,7 @@ begin
         Title := AItem.Caption;
         if not AItem.IsTop then
           MenuIndex := -1;
-        RegisterHandler(TReportActivityHandler.Create);
+        RegisterHandler(TReportLaunchHandler.Create);
       end;
       Group := AItem.Group.Caption;
       Image := FActivityImage;
@@ -138,13 +180,14 @@ end;
 
 procedure TReportingController.Initialize;
 begin
+  FFactories := TComponentList.Create(false);
+
   WorkItem.Root.Services.Add(Self as IReportCatalogService);
 
   FActivityImage := TBitmap.Create;
   LoadActivityImage;
 
   RegisterSettings;
-  FReportService := IReportService(WorkItem.Services[IReportService]);
 
   FReportCatalog := TReportCatalog.Create(Self);
 
@@ -160,13 +203,21 @@ begin
   WorkItem.Activities[VIEW_REPORT_LAUNCHER].
     RegisterHandler(TViewActivityHandler.Create(TReportLauncherPresenter, TfrReportLauncherView));
 
-{  ActivitySvc.RegisterActivityInfo(VIEW_RPT_ITEM_SETUP);
-  ActivitySvc.RegisterActivityClass(TViewActivityBuilder.Create(WorkItem,
-    VIEW_RPT_ITEM_SETUP, TReportSetupPresenter, TfrReportSetupView));
- }
+  WorkItem.Activities[ACT_REPORT_PREVIEW].RegisterHandler(TReportPreviewHandler.Create);
 
-   LoadCatalogItems;
-//  WorkItem.Root.EventTopics[EVT_ACTIVITY_LOADING].AddSubscription(Self, OnActivityLoadingHandler);
+
+  LoadCatalogItems;
+
+end;
+
+procedure TReportingController.RegisterLauncherFactory(Factory: TComponent);
+var
+  Intf: IReportLauncherFactory;
+begin
+  if not Factory.GetInterface(IReportLauncherFactory, Intf) then
+    raise Exception.Create('Bad report factory');
+
+  FFactories.Add(Factory);
 end;
 
 procedure TReportingController.RegisterSettings;
@@ -180,6 +231,16 @@ begin
   end;
 end;
 
+procedure TReportingController.ReportProgressCallback(
+  AProgressState: TReportProgressState);
+begin
+  case AProgressState of
+    rpsStart: WorkItem.EventTopics[ET_WAITBOX_START].Fire;
+    rpsFinish: WorkItem.EventTopics[ET_WAITBOX_STOP].Fire;
+    rpsProcess: WorkItem.EventTopics[ET_WAITBOX_UPDATE].Fire;
+  end;
+end;
+
 procedure TReportingController.Terminate;
 begin
   WorkItem.Root.Services.Remove(Self as IReportCatalogService);
@@ -188,13 +249,12 @@ end;
 procedure TReportingController.UnLoadCatalogItem(
   AItem: TReportCatalogItem);
 begin
-  FReportService.Remove(AItem.ID);
 end;
 
 
 { TReportingController.TReportActivityHandler }
 
-procedure TReportingController.TReportActivityHandler.Execute(Sender: TWorkItem;
+procedure TReportingController.TReportLaunchHandler.Execute(Sender: TWorkItem;
   Activity: IActivity);
 var
   I: integer;
@@ -204,9 +264,9 @@ begin
   with Sender.Activities[VIEW_REPORT_LAUNCHER] do
   begin
     Params[TViewActivityParams.PresenterID] := Activity.URI + Sender.ID;
-    Params[TReportActivityParams.ReportURI] := Activity.URI;
-    Params[TReportActivityParams.ImmediateRun] :=
-      Activity.Params[TReportActivityParams.ImmediateRun];
+    Params[TReportLaunchParams.ReportURI] := Activity.URI;
+    Params[TReportLaunchParams.ImmediateRun] :=
+      Activity.Params[TReportLaunchParams.ImmediateRun];
 
     for I := 0 to  Activity.Params.Count - 1 do
       Params['Init.' + Activity.Params.ValueName(I)] :=
@@ -221,6 +281,14 @@ begin
      }
     Execute(Sender);
   end;
+end;
+
+{ TReportingController.TReportPreviewHandler }
+
+procedure TReportingController.TReportPreviewHandler.Execute(Sender: TWorkItem;
+  Activity: IActivity);
+begin
+  (Sender.Services[IReportCatalogService] as IReportCatalogService).Execute(Sender, Activity);
 end;
 
 end.

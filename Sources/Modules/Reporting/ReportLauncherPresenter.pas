@@ -2,7 +2,7 @@ unit ReportLauncherPresenter;
 
 interface
 uses classes, CoreClasses, CustomPresenter, ShellIntf, UIClasses, SysUtils,
-  dxmdaset, db, ReportCatalogClasses, EntityServiceIntf, ReportServiceIntf,
+  dxmdaset, db, ReportCatalogClasses, EntityServiceIntf,
   variants, StrUtils, controls, ReportCatalogConst, CommonUtils,
   cxDateUtils, Generics.Collections;
 
@@ -81,8 +81,15 @@ begin
 
   App.UI.MessageBox.StatusBarMessage('Формирование отчета: ' + FReportCatalogItem.Caption);
   try
-    (WorkItem.Services[IReportService] as IReportService).
-      Report[FLayouts[WorkItem.State[REPORT_LAYOUT_PARAM]]].Execute(WorkItem);
+    //(WorkItem.Services[IReportService] as IReportService).
+     // Report[FLayouts[WorkItem.State[REPORT_LAYOUT_PARAM]]].Execute(WorkItem);
+    with WorkItem.Activities[ACT_REPORT_PREVIEW] do
+    begin
+      Params[TReportPreviewParams.ReportURI] := FLayouts[WorkItem.State[REPORT_LAYOUT_PARAM]];
+      Params[TReportPreviewParams.ExecuteAction] := reaExecute;
+
+      Execute(WorkItem);
+    end;
   finally
     App.UI.MessageBox.StatusBarMessage('Готово');
   end;

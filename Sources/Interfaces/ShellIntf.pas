@@ -3,7 +3,7 @@ unit ShellIntf;
 interface
 
 uses  windows, graphics, forms, jpeg, CoreClasses, ConfigServiceIntf, CustomApp,
-  EntityServiceIntf, ReportServiceIntf, SecurityIntf, UIServiceIntf;
+  EntityServiceIntf, SecurityIntf, UIServiceIntf;
 
 const
   RES_ID_APP_LOGO = 'APP_LOGO';
@@ -27,7 +27,6 @@ type
     function HostProfile: IProfile;
     function UI: IUIService;
     function Entities: IEntityManagerService;
-    function Reports: IReportService;
     function Security: ISecurityService;
   end;
 

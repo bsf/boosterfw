@@ -69,7 +69,6 @@
 			<DCCReference Include="..\Sources\Shell\Services\ConfigService.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\ConfigStorage.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\EntityManagerService.pas"/>
-			<DCCReference Include="..\Sources\Shell\Services\ReportService.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\SecurityService.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\UIService.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\SecurityController.pas"/>

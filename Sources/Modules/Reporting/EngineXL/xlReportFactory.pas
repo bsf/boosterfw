@@ -1,7 +1,7 @@
 unit xlReportFactory;
 
 interface
-uses classes,  ReportServiceIntf, EntityServiceIntf, CoreClasses,
+uses classes,  ReportCatalogConst, EntityServiceIntf, CoreClasses,
   xlReportClasses, db, sysutils, Variants;
 
 type

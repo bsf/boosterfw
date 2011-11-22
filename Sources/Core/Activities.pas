@@ -80,7 +80,6 @@ type
   end;
 
 
-
   TActivities = class(TComponent, IActivities)
   private
     FPermissionHandler: IActivityPermissionHandler;

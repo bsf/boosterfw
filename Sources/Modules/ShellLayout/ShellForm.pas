@@ -11,7 +11,7 @@ uses
   cxContainer, cxEdit, cxLabel, cxTextEdit, cxHyperLinkEdit, StdActns,
   dxNavBarStyles, CoreClasses, WindowWorkspace,
   cxProgressBar, ShellNavBar,
-  ReportServiceIntf,  ImgList, UILocalization,
+  ImgList, UILocalization,
   ShellWaitBox,
   ViewStyleController, cxPC, cxDropDownEdit,
   cxBarEditItem, cxButtonEdit, dxBarExtItems, EntityServiceIntf,
@@ -206,10 +206,10 @@ begin
   FWorkItem.EventTopics[ET_NOTIFY_MESSAGE].AddSubscription(Self, NotifyMessageHandler);
   CloseNotifyPanel;
 
-  FWorkItem.EventTopics[ET_REPORT_PROGRESS_START].AddSubscription(Self, WaitProgressStartHandler);
+{  FWorkItem.EventTopics[ET_REPORT_PROGRESS_START].AddSubscription(Self, WaitProgressStartHandler);
   FWorkItem.EventTopics[ET_REPORT_PROGRESS_FINISH].AddSubscription(Self, WaitProgressStopHandler);
   FWorkItem.EventTopics[ET_REPORT_PROGRESS_PROCESS].AddSubscription(Self, WaitProgressUpdateHandler);
-
+ }
   FWorkItem.EventTopics[etAppStarted].AddSubscription(Self, AppStartedHandler);
   FWorkItem.EventTopics[etAppStoped].AddSubscription(Self, AppStopedHandler);
 
@@ -258,6 +258,7 @@ begin
   FWorkItem.EventTopics[ET_ENTITY_VIEW_OPEN_FINISH].AddSubscription(Self, WaitProgressStopHandler);
 
   FWorkItem.EventTopics[ET_WAITBOX_START].AddSubscription(Self, WaitProgressStartHandler);
+  FWorkItem.EventTopics[ET_WAITBOX_UPDATE].AddSubscription(Self, WaitProgressUpdateHandler);
   FWorkItem.EventTopics[ET_WAITBOX_STOP].AddSubscription(Self, WaitProgressStopHandler);
 
 end;

@@ -1,7 +1,7 @@
 unit frReportFactory;
 
 interface
-uses windows, classes, CoreClasses, ReportServiceIntf, EntityServiceIntf,
+uses windows, classes, CoreClasses, ReportCatalogConst, EntityServiceIntf,
   SysUtils, db, ibdatabase,  ComObj, controls,
   frxClass, frxExportXML, frxExportXLS, frxExportCSV, frxIBXComponents, frxDesgn,
   frxChBox, frxCross, frxBarCode, frxDCtrl, variants,
@@ -68,7 +68,10 @@ constructor TFastReportFactory.Create(AOwner: TWorkItem);
 begin
   inherited;
   FWorkItem := AOwner;
-  (WorkItem.Services[IReportService] as IReportService).RegisterLauncherFactory(Self);
+ // (WorkItem.Services[IReportService] as IReportService).RegisterLauncherFactory(Self);
+
+  (WorkItem.Services[IReportCatalogService] as IReportCatalogService).
+    RegisterLauncherFactory(Self);
 
   WorkItem.Activities[VIEW_FR_PREVIEW].
     RegisterHandler(TViewActivityHandler.Create(TfrReportPreviewPresenter, TfrfrReportPreviewView));

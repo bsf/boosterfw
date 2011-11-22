@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, cxLookAndFeelPainters, cxControls, cxContainer, cxEdit,
   cxGroupBox, CoreClasses, ReportCatalogClasses, ShellIntf, Contnrs, Menus,
-  ActnList, StdCtrls, cxButtons, ReportServiceIntf, cxGraphics,
+  ActnList, StdCtrls, cxButtons,  cxGraphics,
   cxLookAndFeels;
 
 type
@@ -163,16 +163,10 @@ end;
 
 procedure TReportCatalogDesignerItemPresenter.OpenTemplate;
 begin
-  IReportService(
-    FWorkItem.Services[IReportService]).
-      Report[FItemID].Design(FWorkItem);
 end;
 
 procedure TReportCatalogDesignerItemPresenter.Test;
 begin
-  IReportService(
-    FWorkItem.Services[IReportService]).
-      Report[FItemID].Execute(FWorkItem);
 end;
 
 procedure TReportCatalogDesignerItemPresenter.ViewCommandHandler(

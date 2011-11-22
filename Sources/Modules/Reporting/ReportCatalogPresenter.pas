@@ -3,7 +3,7 @@ unit ReportCatalogPresenter;
 interface
 uses classes, CoreClasses, CustomPresenter, ShellIntf, UIClasses, SysUtils,
   db, ReportCatalogConst, ReportCatalogClasses, dxMdaset,
-  CommonUtils, ReportServiceIntf;
+  CommonUtils;
 
 const
   constPageTitleFrm = '%s [%s]';
@@ -190,13 +190,13 @@ begin
     WorkItem.Commands[COMMAND_ITEM_DELETE].Status := csDisabled;
   //SetCommandStatus(COMMAND_ITEM_DELETE, _itemName <> '');
 
-  if _itemName <> '' then
+{  if _itemName <> '' then
     if IsControlKeyDown then
       IReportService(
         WorkItem.Services[IReportService]).
           Report[_itemID].Design(WorkItem)
     else
-      View.ItemOpen(View.GetGroupSelected, _itemName);
+      View.ItemOpen(View.GetGroupSelected, _itemName);}
 end;
 
 procedure TReportCatalogPresenter.CatalogDataInit;

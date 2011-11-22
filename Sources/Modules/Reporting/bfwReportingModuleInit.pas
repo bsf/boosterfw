@@ -2,7 +2,7 @@ unit bfwReportingModuleInit;
 
 interface
 uses classes, CoreClasses, ReportingController, frReportFactory, xlReportFactory,
-  ReportServiceIntf;
+  ReportCatalogConst;
 
 type
   TReportingModuleInit = class(TModule)
@@ -25,9 +25,11 @@ end;
 procedure TReportingModuleInit.Load;
 begin
   WorkItem.WorkItems.Add(TReportingController);
+
   WorkItem.WorkItems.Add(TFastReportFactory);
-  (WorkItem.Services[IReportService] as IReportService).
-     RegisterLauncherFactory(TXLReportFactory.Create(Self));
+
+  (WorkItem.Services[IReportCatalogService] as IReportCatalogService).
+    RegisterLauncherFactory(TXLReportFactory.Create(Self));
 end;
 
 

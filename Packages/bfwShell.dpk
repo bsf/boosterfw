@@ -39,7 +39,6 @@ contains
   ConfigService in '..\Sources\Shell\Services\ConfigService.pas',
   ConfigStorage in '..\Sources\Shell\Services\ConfigStorage.pas',
   EntityManagerService in '..\Sources\Shell\Services\EntityManagerService.pas',
-  ReportService in '..\Sources\Shell\Services\ReportService.pas',
   SecurityService in '..\Sources\Shell\Services\SecurityService.pas',
   UIService in '..\Sources\Shell\Services\UIService.pas',
   SecurityController in '..\Sources\Shell\Services\SecurityController.pas';

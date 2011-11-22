@@ -34,7 +34,6 @@ requires
 contains
   ConfigServiceIntf in '..\Sources\Interfaces\ConfigServiceIntf.pas',
   EntityServiceIntf in '..\Sources\Interfaces\EntityServiceIntf.pas',
-  ReportServiceIntf in '..\Sources\Interfaces\ReportServiceIntf.pas',
   SecurityIntf in '..\Sources\Interfaces\SecurityIntf.pas',
   ShellIntf in '..\Sources\Interfaces\ShellIntf.pas',
   UIServiceIntf in '..\Sources\Interfaces\UIServiceIntf.pas';

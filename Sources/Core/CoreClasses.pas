@@ -362,12 +362,7 @@ type
     function GetState(const AName: string): Variant;
     procedure SetState(const AName: string; const Value: Variant);
 
-     //отключено за ненадобностью
-    //function GetApplication: IInterface;
   protected
-     //¬ корневом WorkItem перегрузить
-    //function OnGetApplication: IInterface; virtual;
-
 
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
@@ -396,8 +391,6 @@ type
     property Parent: TWorkItem read FParent;
     //можно использовать как хочешь
     property Context: string read FContext write FContext;
-    //ћожно использовать дл€ получени€ специализированного прикладного интерфейса
-    //property Application: IInterface read GetApplication;
   end;
 
   TWorkItemClass = class of TWorkItem;
@@ -529,7 +522,8 @@ begin
     ParentList := TManagedItemList(FParent.FWorkspaces);
   FWorkspaces := TWorkspaces.Create(Self, lsmUp, ParentList);
 
-  FServices := TServices.Create(Self);
+  if FParent = nil then
+    FServices := TServices.Create(Self);
 
   FWorkItems := TWorkItems.Create(Self, lsmLocal, nil);
 
@@ -569,7 +563,9 @@ begin
     TCommands(FCommands).Clear;
     TEventTopics(FEventTopics).Clear;
     TWorkspaces(FWorkspaces).Clear;
-    TServices(FServices).Clear;
+
+    if Assigned(FServices) then
+      TServices(FServices).Clear;
 
     if Assigned(FController) then FController.Free;
 
@@ -621,7 +617,8 @@ end;
 
 function TWorkItem.GetServices: IServices;
 begin
-  FServices.GetInterface(IServices, Result);
+//  FServices.GetInterface(IServices, Result);
+  Result := Root.FServices as IServices;
 end;
 
 function TWorkItem.GetState(const AName: string): Variant;

@@ -8,7 +8,6 @@ uses windows, classes, forms, sysutils,
   ConfigServiceIntf, ConfigService,
   SecurityIntf, SecurityService, SecurityController,
   EntityServiceIntf, EntityManagerService,
-  ReportServiceIntf, ReportService,
   UIServiceIntf, UIService;
 
 const
@@ -33,7 +32,6 @@ type
     function HostProfile: IProfile;
     function UI: IUIService;
     function Entities: IEntityManagerService;
-    function Reports: IReportService;
     function Security: ISecurityService;
   end;
 
@@ -69,11 +67,6 @@ begin
   //DAL
   WorkItem.Services.Add(
     IEntityManagerService(TEntityManagerService.Create(Self, WorkItem)));
-
-
-  //Reports
-  WorkItem.Services.Add(
-    IReportService(TReportService.Create(Self, WorkItem)));
 
 end;
 
@@ -115,12 +108,6 @@ end;
 function TApp.Entities: IEntityManagerService;
 begin
   Result := IEntityManagerService(WorkItem.Services[IEntityManagerService]);
-end;
-
-
-function TApp.Reports: IReportService;
-begin
-  Result := IReportService(WorkItem.Services[IReportService]);
 end;
 
 
