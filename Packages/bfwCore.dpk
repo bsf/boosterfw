@@ -35,7 +35,7 @@ contains
   EventBroker in '..\Sources\Core\EventBroker.pas',
   ItemsList in '..\Sources\Core\ItemsList.pas',
   ManagedList in '..\Sources\Core\ManagedList.pas',
-  ServicesList in '..\Sources\Core\ServicesList.pas',
+  Services in '..\Sources\Core\Services.pas',
   WindowWorkspace in '..\Sources\Core\WindowWorkspace.pas',
   Workspace in '..\Sources\Core\Workspace.pas',
   WorkspacesList in '..\Sources\Core\WorkspacesList.pas',

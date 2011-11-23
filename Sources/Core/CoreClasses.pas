@@ -403,7 +403,7 @@ function FindWorkItem(const AID: string; AParent: TWorkItem): TWorkItem;
 
 implementation
 
-uses  EventBroker, ServicesList, CommandsList, Activities, WorkspacesList,
+uses  EventBroker, Services, CommandsList, Activities, WorkspacesList,
    ItemsList;
 
 var
@@ -564,8 +564,7 @@ begin
     TEventTopics(FEventTopics).Clear;
     TWorkspaces(FWorkspaces).Clear;
 
-    if Assigned(FServices) then
-      TServices(FServices).Clear;
+    if Assigned(FServices) then TServices(FServices).Clear;
 
     if Assigned(FController) then FController.Free;
 

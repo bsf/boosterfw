@@ -2,7 +2,6 @@ inherited frEntityListView: TfrEntityListView
   Left = 636
   Top = 519
   Caption = 'frEntityListView'
-  ExplicitWidth = 320
   ExplicitHeight = 543
   PixelsPerInch = 96
   TextHeight = 13
@@ -54,6 +53,7 @@ inherited frEntityListView: TfrEntityListView
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
         DataController.Summary.SummaryGroups = <>
+        FilterRow.ApplyChanges = fracImmediately
         OptionsBehavior.IncSearch = True
         OptionsBehavior.PullFocusing = True
         OptionsCustomize.ColumnsQuickCustomization = True

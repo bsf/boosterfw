@@ -1,4 +1,4 @@
-unit ServicesList;
+unit Services;
 
 interface
 uses Classes, CoreClasses, ComObj;
@@ -7,13 +7,12 @@ type
   TServices = class(TComponent, IServices)
   private
     FItems: TInterfaceList;
-    FWorkItem: TWorkItem;
   public
-    constructor Create(AWorkItem: TWorkItem); reintroduce;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Add(const AService: IInterface);
     procedure Remove(const AService: IInterface);
-    procedure Clear; 
+    procedure Clear;
     function Query(const AService: TGUID; var Obj): boolean;
     function Get(const AService: TGUID): IInterface;
     property GetItem[const AService: TGUID]: IInterface read Get; default;
@@ -23,11 +22,10 @@ implementation
 
 { TServices }
 
-constructor TServices.Create(AWorkItem: TWorkItem);
+constructor TServices.Create(AOwner: TComponent);
 begin
-  inherited Create(nil);
+  inherited Create(AOwner);
   FItems := TInterfaceList.Create;
-  FWorkItem := AWorkItem;
 end;
 
 destructor TServices.Destroy;
@@ -53,9 +51,6 @@ begin
   Result := nil;
   for I := 0 to FItems.Count - 1 do
     if FItems[I].QueryInterface(AService, Result) = 0 then Exit;
-
-  if FWorkItem.Parent <> nil then
-    Result := FWorkItem.Parent.Services.Get(AService);
 
   if Result = nil then
     raise EServiceMissingError.Create('Service ' + GUIDToString(AService) + ' not found.');

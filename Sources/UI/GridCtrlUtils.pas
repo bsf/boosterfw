@@ -66,6 +66,7 @@ type
     FAction: TAction;
     FGrid: TcxGridTableView;
     procedure OnClickHandler(Sender: TObject);
+    procedure OnUpdateHandler(Sender: TObject);
   public
     constructor Create(AOwner: TComponent; AGrid: TcxGridTableView); reintroduce;
   end;
@@ -116,7 +117,7 @@ type
     function GetFocusedField(ADataSet: TDataSet; var Done: boolean): string;
     procedure SetFocusedField(ADataSet: TDataSet; const AFieldName: string; var Done: boolean);
     procedure SetFocusedFieldChangedHandler(AHandler: TViewFocusedFieldChangedHandler; var Done: boolean);
-    
+
   public
     constructor Create(AOwner: TfrCustomView); override;
     destructor Destroy; override;
@@ -142,7 +143,8 @@ begin
     Values[FilterItem.Index];
 
   if (AGrid.Controller.IncSearchingText <> '') and
-      (FilterItem.DataBinding.ValueType = 'String') then
+     ( (FilterItem.DataBinding.ValueType = 'String') or
+        (FilterItem.DataBinding.ValueType = 'WideString')) then
   begin
     FilterValue := AGrid.Controller.IncSearchingText;
     FilterValue := FilterValue + '%';
@@ -930,6 +932,15 @@ procedure TGridQuickFilterResetExtMenuItem.OnClickHandler(Sender: TObject);
 begin
   FGrid.DataController.Filter.Clear;
 //  Active := false;
+end;
+
+procedure TGridQuickFilterResetExtMenuItem.OnUpdateHandler(Sender: TObject);
+begin
+
+{ FAction.Enabled :=  FGrid.DataController.Filter.Active
+  FAction.Enabled := Assigned(FGrid.Controller.FocusedItem) and
+    (FGrid.Controller.SelectedRecordCount <> 0);}
+
 end;
 
 initialization

@@ -182,7 +182,7 @@ procedure TReportingController.Initialize;
 begin
   FFactories := TComponentList.Create(false);
 
-  WorkItem.Root.Services.Add(Self as IReportCatalogService);
+  WorkItem.Services.Add(Self as IReportCatalogService);
 
   FActivityImage := TBitmap.Create;
   LoadActivityImage;
@@ -243,7 +243,7 @@ end;
 
 procedure TReportingController.Terminate;
 begin
-  WorkItem.Root.Services.Remove(Self as IReportCatalogService);
+  WorkItem.Services.Remove(Self as IReportCatalogService);
 end;
 
 procedure TReportingController.UnLoadCatalogItem(
