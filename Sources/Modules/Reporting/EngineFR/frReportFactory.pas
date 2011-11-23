@@ -5,7 +5,8 @@ uses windows, classes, CoreClasses, ReportCatalogConst, EntityServiceIntf,
   SysUtils, db, ibdatabase,  ComObj, controls,
   frxClass, frxExportXML, frxExportXLS, frxExportCSV, frxIBXComponents, frxDesgn,
   frxChBox, frxCross, frxBarCode, frxDCtrl, variants,
-  frReportPreviewPresenter, frReportPreviewView, UIClasses;
+  frReportPreviewPresenter, frReportPreviewView, UIClasses,
+  Generics.Collections;
 
 const
   VIEW_FASTREPORT_PREVIEW = 'views.reports.fastreport.preview';
@@ -20,9 +21,9 @@ type
     FXLSExportFilter: TfrxXLSExport;
     FCSVExportFilter: TfrxCSVExport;
     FCallerWI: TWorkItem;
-    FGetParamValueCallback: TReportGetParamValueCallback;
     FProgressCallback: TReportProgressCallback;
     FTemplate: string;
+    FParams: TDictionary<string, variant>;
     function GetReportFileName: string;
     procedure OnAfterPrintReport(Sender: TObject);
     procedure OnReportGetValue(const VarName: String; var Value: Variant);
@@ -38,13 +39,14 @@ type
     procedure Preview(const ATitle: string);
   protected
     //IReportLauncher
-    procedure Execute(Caller: TWorkItem; ExecuteAction: TReportExecuteAction;
-      GetParamValueCallback: TReportGetParamValueCallback;
-      ProgressCallback: TReportProgressCallback; const ATitle: string);
+    function Params: TDictionary<string, variant>;
+    procedure Execute(Caller: TWorkItem; ALaunchMode: TReportLaunchMode;
+      const ATitle: string; ProgressCallback: TReportProgressCallback);
     procedure Design(Caller: TWorkItem);
   public
     constructor Create(AOwner: TComponent;
       AConnection: IEntityStorageConnection; AWorkItem: TWorkItem); reintroduce;
+    destructor Destroy; override;
     property Template: string read FTemplate write FTemplate;
   end;
 
@@ -54,7 +56,7 @@ type
     FLauncher: TFastReportLauncher;
   protected
     //IReportFactory
-    function GetLauncher(AConnection: IEntityStorageConnection; const ATemplate: string): IReportLauncher;
+    function GetLauncher(AWorkItem: TWorkItem; const ATemplate: string): IReportLauncher;
   public
     constructor Create(AOwner: TWorkItem); override;
   end;
@@ -78,14 +80,16 @@ begin
 
 end;
 
-function TFastReportFactory.GetLauncher(AConnection: IEntityStorageConnection;
+function TFastReportFactory.GetLauncher(AWorkItem: TWorkItem;
   const ATemplate: string): IReportLauncher;
 begin
   Result := nil;
   if ExtractFileExt(ATemplate) = '.fr3' then
   begin
     if not Assigned(FLauncher) then
-      FLauncher := TFastReportLauncher.Create(Self, AConnection, FWorkItem);
+      FLauncher := TFastReportLauncher.Create(Self,
+       (AWorkItem.Services[IEntityManagerService] as IEntityManagerService).Connections.GetDefault,
+       FWorkItem);
 
     FLauncher.Template := ATemplate;
     Result := FLauncher;
@@ -99,6 +103,7 @@ constructor TFastReportLauncher.Create(AOwner: TComponent;
 begin
   inherited Create(AOwner);
   FWorkItem := AWorkItem;
+  FParams := TDictionary<string, variant>.Create;
   FReport := TfrxReport.Create(Self);
   FReport.OnGetValue := OnReportGetValue;
   FReport.OnProgress := DoReportProgress;
@@ -119,6 +124,12 @@ begin
   FCallerWI := Caller;
   FReport.LoadFromFile(GetReportFileName);
   FReport.DesignReport();
+end;
+
+destructor TFastReportLauncher.Destroy;
+begin
+  FParams.Free;
+  inherited;
 end;
 
 procedure TFastReportLauncher.DoReportProgress(Sender: TfrxReport;
@@ -148,13 +159,10 @@ begin
     FIBXComponents.DefaultDatabase.DefaultTransaction.Commit;
 end;
 
-procedure TFastReportLauncher.Execute(Caller: TWorkItem;
-  ExecuteAction: TReportExecuteAction; GetParamValueCallback: TReportGetParamValueCallback;
-  ProgressCallback: TReportProgressCallback;
-   const ATitle: string);
+procedure TFastReportLauncher.Execute(Caller: TWorkItem; ALaunchMode: TReportLaunchMode;
+   const ATitle: string; ProgressCallback: TReportProgressCallback);
 begin
   FCallerWI := Caller;
-  FGetParamValueCallback := GetParamValueCallback;
   if IsControlKeyDown then
   begin
     Design(FCallerWI);
@@ -169,23 +177,18 @@ begin
       FIBXComponents.DefaultDatabase.DefaultTransaction.Commit;
 
     try
-      case ExecuteAction of
-        reaPrepareFirst: FReport.PrepareReport(true);
-        reaPrepareNext: FReport.PrepareReport(false);
-        reaExecutePrepared: FReport.PrepareReport(false);
-        else
-          FReport.PrepareReport(true);
-      end;
+      FReport.PrepareReport(false);
     finally
       if FIBXComponents.DefaultDatabase.DefaultTransaction.InTransaction then
         FIBXComponents.DefaultDatabase.DefaultTransaction.Commit;
     end;
 
-    if ExecuteAction in [reaExecutePrepared,reaExecute] then
+    if ALaunchMode <> lmHold then
     begin
-     // FReport.ShowPreparedReport;
       Preview(ATitle);
-    end
+      FReport.PreviewPages.Clear;
+    end;
+
   finally
     FProgressCallback := nil;
   end;
@@ -220,15 +223,18 @@ end;
 
 procedure TFastReportLauncher.OnReportGetValue(const VarName: String;
   var Value: Variant);
+var
+  val: variant;
 begin
-  if Assigned(FGetParamValueCallback) then
-    FGetParamValueCallback(VarName, Value);
-
-  if VarIsEmpty(Value) and Assigned(FCallerWI) then
-    Value := FCallerWI.State[VarName];
-
+  if VarIsEmpty(Value) and FParams.TryGetValue(UpperCase(VarName), val) then
+    Value := val;
 end;
 
+
+function TFastReportLauncher.Params: TDictionary<string, variant>;
+begin
+  Result := FParams;
+end;
 
 procedure TFastReportLauncher.Preview(const ATitle: string);
 var
@@ -247,15 +253,8 @@ begin
   finally
     stream.Free
   end;
-//  TfrReportPreviewPresenter.Execute(WorkItem, );
 
-  {action := FCallerWI.Actions[VIEW_FR_PREVIEW];
-  actionData := action.Data as TfrReportPreviewActivityData;
-  actionData.PresenterID := CreateClassID;
-  actionData.ViewTitle := ATitle;
-  actionData.ClearReportStream;
-  FReport.PreviewPages.SaveToStream(actionData.ReportStream);
-  action.Execute(FCallerWI);}
 end;
+
 
 end.

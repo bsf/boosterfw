@@ -1,46 +1,38 @@
 unit ReportCatalogConst;
 
 interface
-uses CoreClasses, ReportCatalogClasses, ShellIntf, EntityServiceIntf, classes;
+uses CoreClasses, ReportCatalogClasses, ShellIntf, EntityServiceIntf, classes,
+  generics.collections;
 
 const
-
-
-// Actions
-  ACTION_RPT_CATALOG = 'actions.reports.catalog';
-
-//Entities
-  ENT_RPT_SETUP = 'RPT_Setup';
-
 // VIEWS
   VIEW_RPT_CATALOG = 'view.reports.catalog';
   VIEW_RPT_CATALOG_CAPTION = 'Диспетчер отчетов';
 
   VIEW_REPORT_LAUNCHER = 'views.reports.launcher';
-  VIEW_RPT_ITEM_SETUP = 'views.reports.item.setup';
-
-  ACT_REPORT_PREVIEW = 'reports.preview';
+  VIEW_REPORT_ITEM_SETUP = 'views.reports.item.setup';
 
 type
   TReportProgressState = (rpsStart, rpsProcess, rpsFinish);
   TReportProgressCallback = procedure(AProgressState: TReportProgressState) of object;
 
-  TReportGetParamValueCallback = procedure(const AName: string; var AValue: Variant) of object;
-
-  TReportExecuteAction = (reaPrepareFirst, reaPrepareNext, reaExecutePrepared, reaExecute);
+  TReportLaunchMode = (lmParamView, lmPreview, lmPrint, lmHold);
 
   IReportLauncher = interface
   ['{E71B53B6-B7C4-41A1-8DF1-82F90CBBD770}']
-    procedure Execute(Caller: TWorkItem; ExecuteAction: TReportExecuteAction;
-      GetParamValueCallback: TReportGetParamValueCallback;
-      ProgressCallback: TReportProgressCallback; const ATitle: string);
+
+    function Params: TDictionary<string, variant>;
+
+    procedure Execute(Caller: TWorkItem; ALaunchMode: TReportLaunchMode;
+      const ATitle: string;
+      ProgressCallback: TReportProgressCallback);
 
     procedure Design(Caller: TWorkItem);
   end;
+
   IReportLauncherFactory = interface
   ['{941C6B81-D49B-487B-9C81-DF7B00B83A2E}']
-    function GetLauncher(AConnection: IEntityStorageConnection;
-      const ATemplate: string): IReportLauncher;
+    function GetLauncher(AWorkItem: TWorkItem; const ATemplate: string): IReportLauncher;
   end;
 
   IReportCatalogService = interface
@@ -48,20 +40,22 @@ type
     function GetItem(const URI: string): TReportCatalogItem;
     procedure RegisterLauncherFactory(Factory: TComponent);
 
-    procedure Execute(Caller: TWorkItem; Activity: IActivity);
+    procedure LaunchReport(Caller: TWorkItem;
+      const AReportURI: string; ALaunchMode: TReportLaunchMode);
+  end;
+
+
+  TReportActivityParams = record
+  const
+    LaunchMode = 'LaunchMode'; {0 - show param view; 1 - immediate preview; 2 - immediate print; 3 - hold}
   end;
 
   TReportLaunchParams = record
-    const
-      ImmediateRun = 'ImmediateRun';
-      ReportURI = 'ReportURI';
+  const
+    LaunchMode = 'LaunchMode';
+    ReportURI = 'ReportURI';
   end;
 
-  TReportPreviewParams = record
-    const
-      ReportURI = 'ReportURI';
-      ExecuteAction = 'ExecuteAction';
-  end;
 
 implementation
 

@@ -83,13 +83,11 @@ begin
   try
     //(WorkItem.Services[IReportService] as IReportService).
      // Report[FLayouts[WorkItem.State[REPORT_LAYOUT_PARAM]]].Execute(WorkItem);
-    with WorkItem.Activities[ACT_REPORT_PREVIEW] do
-    begin
-      Params[TReportPreviewParams.ReportURI] := FLayouts[WorkItem.State[REPORT_LAYOUT_PARAM]];
-      Params[TReportPreviewParams.ExecuteAction] := reaExecute;
 
-      Execute(WorkItem);
-    end;
+
+   (WorkItem.Services[IReportCatalogService] as IReportCatalogService).
+     LaunchReport(WorkItem, FLayouts[WorkItem.State[REPORT_LAYOUT_PARAM]],
+       WorkItem.State[TReportActivityParams.LaunchMode]);
   finally
     App.UI.MessageBox.StatusBarMessage('Готово');
   end;
@@ -114,13 +112,7 @@ begin
    (WorkItem.Services[IReportCatalogService] as IReportCatalogService).
       GetItem(WorkItem.State['ReportURI']);
 
-
-  {if VarIsEmpty(WorkItem.State['ImmediateRun']) and
-     FReportCatalogItem.Manifest.ImmediateRun  then
-    WorkItem.State['ImmediateRun'] := '1';}
-
-  ViewHidden := (not VarIsEmpty(WorkItem.State['ImmediateRun']))
-    and (VarToStr(WorkItem.State['ImmediateRun']) <> '0');
+  ViewHidden := Sender.Params[TReportLaunchParams.LaunchMode] <> 0;
 
   FParamDataSet := TdxMemData.Create(Self);
 
@@ -443,8 +435,11 @@ procedure TReportLauncherPresenter.OnReinit(Sender: IActivity);
 begin
   Sender.Params.AssignTo(WorkItem);
   InitParamValues;
-  ViewHidden := not VarIsEmpty(WorkItem.State['ImmediateRun'])
-   and (VarToStr(WorkItem.State['ImmediateRun']) <> '0');
+  ViewHidden := Sender.Params[TReportLaunchParams.LaunchMode] <> 0;
+
+  {  ViewHidden := not VarIsEmpty(WorkItem.State['ImmediateRun'])
+   and (VarToStr(WorkItem.State['ImmediateRun']) <> '0');}
+
   if ViewHidden  then
     WorkItem.Commands[COMMAND_EXECUTE].Execute;
 end;

@@ -20,6 +20,8 @@ type
   end;
 
   TReportSetupPresenter = class(TCustomPresenter)
+  const
+    ENT_RPT_SETUP = 'RPT_Setup';
   private
     FReportID: string;
     function GetEVItems: IEntityView;

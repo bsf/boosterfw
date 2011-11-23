@@ -2,7 +2,7 @@ unit xlReportFactory;
 
 interface
 uses classes,  ReportCatalogConst, EntityServiceIntf, CoreClasses,
-  xlReportClasses, db, sysutils, Variants;
+  xlReportClasses, db, sysutils, Variants, Generics.Collections;
 
 type
   TXLReportLauncher = class(TComponent, IReportLauncher)
@@ -10,20 +10,21 @@ type
     FTemplate: string;
     FReport: TpfwXLReport;
     FCallerWI: TWorkItem;
-    FGetParamValueCallback: TReportGetParamValueCallback;
+    FParams: TDictionary<string, variant>;
     FProgressCallback: TReportProgressCallback;
     procedure DoReportGetValue(const VarName: String; var Value: Variant);
     procedure DoReportProgress;
     function GetReportFileName: string;
   protected
     //IReport
-    procedure Execute(Caller: TWorkItem; ExecuteAction: TReportExecuteAction;
-      GetParamValueCallback: TReportGetParamValueCallback;
-      ProgressCallback: TReportProgressCallback; const ATitle: string);
+    function Params: TDictionary<string, variant>;
+    procedure Execute(Caller: TWorkItem; ALaunchMode: TReportLaunchMode;
+      const ATitle: string; ProgressCallback: TReportProgressCallback);
 
     procedure Design(Caller: TWorkItem);
   public
     constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
     procedure SetConnection(AConnection: IEntityStorageConnection);
     property Template: string read FTemplate write FTemplate;
   end;
@@ -33,7 +34,7 @@ type
     FLauncher: TXLReportLauncher;
   protected
     //IReportFactory
-    function GetLauncher(AConnection: IEntityStorageConnection; const ATemplate: string): IReportLauncher;
+    function GetLauncher(AWorkItem: TWorkItem; const ATemplate: string): IReportLauncher;
 
   end;
 
@@ -41,7 +42,7 @@ implementation
 
 { TXLReportFactory }
 
-function TXLReportFactory.GetLauncher(AConnection: IEntityStorageConnection;
+function TXLReportFactory.GetLauncher(AWorkItem: TWorkItem;
   const ATemplate: string): IReportLauncher;
 begin
   Result := nil;
@@ -49,10 +50,13 @@ begin
   begin
   //  Result := TXLReportLauncher.Create(Self);
     if not Assigned(FLauncher) then
+    begin
       FLauncher := TXLReportLauncher.Create(Self);
+      FLauncher.SetConnection(
+        (AWorkItem.Services[IEntityManagerService] as IEntityManagerService).Connections.GetDefault);
+    end;
 
     FLauncher.Template := ATemplate;
-    FLauncher.SetConnection(AConnection);
     FLauncher.GetInterface(IReportLauncher, Result);
   end;
 end;
@@ -65,6 +69,7 @@ begin
   FReport := TpfwXLReport.Create(Self);
   FReport.OnGetValue := DoReportGetValue;
   FReport.OnProgress := DoReportProgress;
+  FParams := TDictionary<string, variant>.Create;
 end;
 
 procedure TXLReportLauncher.Design(Caller: TWorkItem);
@@ -72,13 +77,16 @@ begin
 
 end;
 
-procedure TXLReportLauncher.Execute(Caller: TWorkItem;
-  ExecuteAction: TReportExecuteAction; GetParamValueCallback: TReportGetParamValueCallback;
-  ProgressCallback: TReportProgressCallback;
-   const ATitle: string);
+destructor TXLReportLauncher.Destroy;
+begin
+  FParams.Free;
+  inherited;
+end;
+
+procedure TXLReportLauncher.Execute(Caller: TWorkItem; ALaunchMode: TReportLaunchMode;
+  const ATitle: string; ProgressCallback: TReportProgressCallback);
 begin
   FCallerWI := Caller;
-  FGetParamValueCallback := GetParamValueCallback;
   FProgressCallback := ProgressCallback;
   if Assigned(FProgressCallback) then
     FProgressCallback(rpsStart);
@@ -95,14 +103,18 @@ begin
   Result := FTemplate;
 end;
 
+function TXLReportLauncher.Params: TDictionary<string, variant>;
+begin
+  Result := FParams;
+end;
+
 procedure TXLReportLauncher.DoReportGetValue(const VarName: String;
   var Value: Variant);
+var
+  val: variant;
 begin
-  if Assigned(FGetParamValueCallback) then
-    FGetParamValueCallback(VarName, Value);
-
-  if VarIsEmpty(Value) and Assigned(FCallerWI) then
-    Value := FCallerWI.State[VarName];
+  if VarIsEmpty(Value) and FParams.TryGetValue(UpperCase(VarName), val) then
+    Value := val;
 end;
 
 procedure TXLReportLauncher.SetConnection(AConnection: IEntityStorageConnection);

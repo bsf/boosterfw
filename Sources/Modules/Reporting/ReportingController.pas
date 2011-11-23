@@ -36,15 +36,13 @@ type
     //
     function GetItem(const URI: string): TReportCatalogItem;
     procedure RegisterLauncherFactory(Factory: TComponent);
-    procedure Execute(Caller: TWorkItem;  Activity: IActivity);
+    procedure LaunchReport(Caller: TWorkItem; const AReportURI: string;
+      ALaunchMode: TReportLaunchMode);
     //
     procedure Initialize; override;
     procedure Terminate; override;
   type
     TReportLaunchHandler = class(TActivityHandler)
-      procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
-    end;
-    TReportPreviewHandler = class(TActivityHandler)
       procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
     end;
   end;
@@ -54,36 +52,40 @@ implementation
 { TReportCatalogController }
 
 
-procedure TReportingController.Execute(Caller: TWorkItem;  Activity: IActivity);
+procedure TReportingController.LaunchReport(Caller: TWorkItem;
+  const AReportURI: string; ALaunchMode: TReportLaunchMode);
 var
   I: integer;
   Factory: IReportLauncherFactory;
   rLauncher: IReportLauncher;
   repItem: TReportCatalogItem;
-  repURI: string;
   tmpl: string;
-  ExecuteAction: TReportExecuteAction;
 begin
-  repURI := Activity.Params[TReportPreviewParams.ReportURI];
-  executeAction := Activity.Params[TReportPreviewParams.ExecuteAction];
-  repItem := GetItem(repURI);
 
-  tmpl := repItem.Path + repItem.Manifest.Layouts[repURI].Template;
+  repItem := GetItem(AReportURI);
+
+  tmpl := repItem.Path + repItem.Manifest.Layouts[AReportURI].Template;
 
   rLauncher := nil;
   for I := 0 to FFactories.Count - 1 do
   begin
     FFactories[I].GetInterface(IReportLauncherFactory, Factory);
-    rLauncher := Factory.GetLauncher(
-      (WorkItem.Services[IEntityManagerService] as IEntityManagerService).Connections.GetDefault,
-         tmpl);
+    rLauncher := Factory.GetLauncher(WorkItem, tmpl);
     if rLauncher <> nil then Break;
   end;
 
   if rLauncher = nil then
     raise Exception.Create('Report factory not found.');
 
-  rLauncher.Execute(Caller, executeAction, nil, ReportProgressCallback, repItem.Caption);
+  with rLauncher do
+  begin
+    Params.Clear;
+    for I := 0 to repItem.Manifest.ParamNodes.Count - 1 do
+      Params.Add(UpperCase(repItem.Manifest.ParamNodes[I].Name),
+        Caller.State[repItem.Manifest.ParamNodes[I].Name]);
+
+    Execute(Caller, ALaunchMode, repItem.Caption, ReportProgressCallback);
+  end;
 end;
 
 function TReportingController.GetItem(
@@ -203,9 +205,6 @@ begin
   WorkItem.Activities[VIEW_REPORT_LAUNCHER].
     RegisterHandler(TViewActivityHandler.Create(TReportLauncherPresenter, TfrReportLauncherView));
 
-  WorkItem.Activities[ACT_REPORT_PREVIEW].RegisterHandler(TReportPreviewHandler.Create);
-
-
   LoadCatalogItems;
 
 end;
@@ -259,36 +258,21 @@ procedure TReportingController.TReportLaunchHandler.Execute(Sender: TWorkItem;
 var
   I: integer;
 begin
-//  App.Security.DemandPermission(SECURITY_PERMISSION_REPORT_EXECUTE, launchData.ReportURI);
 
   with Sender.Activities[VIEW_REPORT_LAUNCHER] do
   begin
     Params[TViewActivityParams.PresenterID] := Activity.URI + Sender.ID;
     Params[TReportLaunchParams.ReportURI] := Activity.URI;
-    Params[TReportLaunchParams.ImmediateRun] :=
-      Activity.Params[TReportLaunchParams.ImmediateRun];
+    Params[TReportLaunchParams.LaunchMode] :=
+      Activity.Params[TReportActivityParams.LaunchMode];
 
     for I := 0 to  Activity.Params.Count - 1 do
       Params['Init.' + Activity.Params.ValueName(I)] :=
         Activity.Params[Activity.Params.ValueName(I)];
 
-    {action.ResetData;
-    launcherData := action.Data as TReportLauncherActivityData;
-    launcherData.PresenterID := launchData.ReportURI + Sender.Caller.ID;
-    launcherData.ReportURI := launchData.ReportURI;
-    launcherData.ImmediateRun := launchData.ImmediateRun;
-    launcherData.AssignLaunchData(launchData);
-     }
     Execute(Sender);
   end;
 end;
 
-{ TReportingController.TReportPreviewHandler }
-
-procedure TReportingController.TReportPreviewHandler.Execute(Sender: TWorkItem;
-  Activity: IActivity);
-begin
-  (Sender.Services[IReportCatalogService] as IReportCatalogService).Execute(Sender, Activity);
-end;
 
 end.
