@@ -66,7 +66,6 @@ type
     FAction: TAction;
     FGrid: TcxGridTableView;
     procedure OnClickHandler(Sender: TObject);
-    procedure OnUpdateHandler(Sender: TObject);
   public
     constructor Create(AOwner: TComponent; AGrid: TcxGridTableView); reintroduce;
   end;
@@ -345,13 +344,13 @@ procedure TcxGridViewHelper.InitLookupEditor(AColumn: TcxGridColumn;
   AField: TField);
 var
   lookupDS: TDataSource;
-  svc: IEntityManagerService;
+  svc: IEntityService;
   entityName: string;
   eviewName: string;
   eviewID: string;
   I: integer;
 begin
-  svc := (GetForm as IView).WorkItem.Services[IEntityManagerService] as IEntityManagerService;
+  svc := (GetForm as IView).WorkItem.Services[IEntityService] as IEntityService;
 
   entityName := GetFieldAttribute(AField, FIELD_ATTR_EDITOR_ENTITY);
   eviewName := GetFieldAttribute(AField, FIELD_ATTR_EDITOR_EVIEW);
@@ -934,14 +933,6 @@ begin
 //  Active := false;
 end;
 
-procedure TGridQuickFilterResetExtMenuItem.OnUpdateHandler(Sender: TObject);
-begin
-
-{ FAction.Enabled :=  FGrid.DataController.Filter.Active
-  FAction.Enabled := Assigned(FGrid.Controller.FocusedItem) and
-    (FGrid.Controller.SelectedRecordCount <> 0);}
-
-end;
 
 initialization
   RegisterViewHelperClass(TcxGridViewHelper);

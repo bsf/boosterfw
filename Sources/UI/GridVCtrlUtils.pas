@@ -475,14 +475,14 @@ procedure TcxVGridViewHelper.InitLookupEditor(ARow: TcxDBEditorRow;
   ADataSet: TDataSet);
 var
   lookupDS: TDataSource;
-  svc: IEntityManagerService;
+  svc: IEntityService;
   entityName: string;
   eviewName: string;
   eviewID: string;
   field: TField;
   I: integer;
 begin
-  svc := WorkItem.Services[IEntityManagerService] as IEntityManagerService;
+  svc := WorkItem.Services[IEntityService] as IEntityService;
   field := ADataSet.FindField(ARow.Properties.DataBinding.FieldName);
   if field = nil then Exit;
 
@@ -577,13 +577,13 @@ procedure TcxVGridViewHelper.InitComboBoxEditor(ARow: TcxDBEditorRow;
 
 var
   lookupDS: TDataSet;
-  svc: IEntityManagerService;
+  svc: IEntityService;
   entityName: string;
   eviewName: string;
   eviewID: string;
   field: TField;
 begin
-  svc := WorkItem.Services[IEntityManagerService] as IEntityManagerService;
+  svc := WorkItem.Services[IEntityService] as IEntityService;
   field := ADataSet.FindField(ARow.Properties.DataBinding.FieldName);
   if field = nil then Exit;
 
@@ -838,7 +838,7 @@ begin
   fPopup := command.Data[EDITOR_DATA_POPUP];
   command := nil;
 
-  dataSet := (WorkItem.Services[IEntityManagerService] as IEntityManagerService).
+  dataSet := (WorkItem.Services[IEntityService] as IEntityService).
     Entity[entityName].GetView(eviewName, WorkItem).DataSet;
 
   field := dataSet.FieldByName(fieldName);

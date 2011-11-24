@@ -199,6 +199,7 @@ begin
   begin
     Title := VIEW_RPT_CATALOG_CAPTION;
     Group := MENU_GROUP_SERVICE;
+    UsePermission := true;
     RegisterHandler(TViewActivityHandler.Create(TReportCatalogPresenter, TfrReportCatalogView));
   end;
 

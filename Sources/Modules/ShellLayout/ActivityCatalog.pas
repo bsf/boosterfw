@@ -34,12 +34,12 @@ procedure TActivityCatalog.Load;
 var
   I: integer;
   list: TDataSet;
-  svc: IEntityManagerService;
+  svc: IEntityService;
   strList: TStringList;
 begin
   strList := TStringList.Create;
   try
-    svc := FWorkItem.Services[IEntityManagerService] as IEntityManagerService;
+    svc := FWorkItem.Services[IEntityService] as IEntityService;
     list := svc.Entity[ENTC_UI].GetView(ENTC_UI_VIEW_LIST, FWorkItem).Load([]);
     while not list.Eof do
     begin

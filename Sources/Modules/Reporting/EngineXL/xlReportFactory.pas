@@ -23,9 +23,8 @@ type
 
     procedure Design(Caller: TWorkItem);
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create(AOwner: TComponent; AConnection: IEntityStorageConnection); reintroduce;
     destructor Destroy; override;
-    procedure SetConnection(AConnection: IEntityStorageConnection);
     property Template: string read FTemplate write FTemplate;
   end;
 
@@ -48,12 +47,10 @@ begin
   Result := nil;
   if ExtractFileExt(ATemplate) = '.xrt' then
   begin
-  //  Result := TXLReportLauncher.Create(Self);
     if not Assigned(FLauncher) then
     begin
-      FLauncher := TXLReportLauncher.Create(Self);
-      FLauncher.SetConnection(
-        (AWorkItem.Services[IEntityManagerService] as IEntityManagerService).Connections.GetDefault);
+      FLauncher := TXLReportLauncher.Create(Self,
+        (AWorkItem.Services[IEntityService] as IEntityService).Connections.GetDefault);
     end;
 
     FLauncher.Template := ATemplate;
@@ -63,12 +60,14 @@ end;
 
 { TXLReportLauncher }
 
-constructor TXLReportLauncher.Create(AOwner: TComponent);
+constructor TXLReportLauncher.Create(AOwner: TComponent;
+  AConnection: IEntityStorageConnection);
 begin
   inherited Create(AOwner);
   FReport := TpfwXLReport.Create(Self);
   FReport.OnGetValue := DoReportGetValue;
   FReport.OnProgress := DoReportProgress;
+  FReport.Connection := AConnection;
   FParams := TDictionary<string, variant>.Create;
 end;
 
@@ -115,11 +114,6 @@ var
 begin
   if VarIsEmpty(Value) and FParams.TryGetValue(UpperCase(VarName), val) then
     Value := val;
-end;
-
-procedure TXLReportLauncher.SetConnection(AConnection: IEntityStorageConnection);
-begin
-  FReport.Connection := AConnection;
 end;
 
 procedure TXLReportLauncher.DoReportProgress;

@@ -26,7 +26,7 @@ type
     function UserProfile: IProfile;
     function HostProfile: IProfile;
     function UI: IUIService;
-    function Entities: IEntityManagerService;
+    function Entities: IEntityService;
     function Security: ISecurityService;
   end;
 

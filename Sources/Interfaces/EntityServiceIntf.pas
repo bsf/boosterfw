@@ -210,7 +210,7 @@ type
     procedure UnregisterConnectionFactory(Factory: TComponent);
   end;
 
-  IEntityManagerService = interface
+  IEntityService = interface
   ['{E644CC6B-5ED0-4F55-9C20-9E2267381A0F}']
     function GetSettings: IEntityStorageSettings;
     function EntityExists(const AEntityName: string): boolean;

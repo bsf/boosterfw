@@ -1,4 +1,4 @@
-unit EntityManagerService;
+unit EntityService;
 
 interface
 
@@ -187,7 +187,7 @@ type
 
   end;
 
-  TEntityManagerService = class(TComponent, IEntityManagerService)
+  TEntityService = class(TComponent, IEntityService)
   private
     FWorkItem: TWorkItem;
     FConnections: TEntityStorageConnections;
@@ -211,7 +211,7 @@ implementation
 
 { TEntityManagerService }
 
-procedure TEntityManagerService.ClearConnectionCache(
+procedure TEntityService.ClearConnectionCache(
   AConnection: IEntityStorageConnection);
 var
   I: integer;
@@ -221,12 +221,12 @@ begin
       FEntities.Delete(I);
 end;
 
-function TEntityManagerService.Connections: IEntityStorageConnections;
+function TEntityService.Connections: IEntityStorageConnections;
 begin
   Result := FConnections;
 end;
 
-constructor TEntityManagerService.Create(AOwner: TComponent; AWorkItem: TWorkItem);
+constructor TEntityService.Create(AOwner: TComponent; AWorkItem: TWorkItem);
 begin
   inherited Create(AOwner);
   FWorkItem := AWorkItem;
@@ -235,25 +235,25 @@ begin
   FSettings := TEntityStorageSettings.Create(Self, FWorkItem);
 end;
 
-destructor TEntityManagerService.Destroy;
+destructor TEntityService.Destroy;
 begin
   FEntities.Free;
   inherited;
 end;
 
-function TEntityManagerService.EntityExists(
+function TEntityService.EntityExists(
   const AEntityName: string): boolean;
 begin
   Result := true;
 end;
 
-function TEntityManagerService.EntityViewExists(
+function TEntityService.EntityViewExists(
   const AEntityName, AEntityViewName: string): boolean;
 begin
   Result := GetEntity(AEntityName).EntityInfo.ViewExists(AEntityViewName);
 end;
 
-function TEntityManagerService.GetEntity(const AEntityName: string): IEntity;
+function TEntityService.GetEntity(const AEntityName: string): IEntity;
 var
   I: integer;
   ConnIdx: integer;
@@ -286,7 +286,7 @@ end;
 
 
 
-function TEntityManagerService.GetSettings: IEntityStorageSettings;
+function TEntityService.GetSettings: IEntityStorageSettings;
 begin
   Result := FSettings as IEntityStorageSettings;
 end;
@@ -387,7 +387,7 @@ var
   Intf: IEntityStorageConnection;
 begin
   Intf := FConnections[AIndex] as IEntityStorageConnection;
-  TEntityManagerService(Owner).ClearConnectionCache(Intf);
+  TEntityService(Owner).ClearConnectionCache(Intf);
   Intf := nil; //!!!
   
   FConnections.Delete(AIndex);
@@ -654,9 +654,9 @@ end;
 
 function TEntityView.EntityInfo: IEntityInfo;
 begin
-  Result := IEntityManagerService(
-    FWorkItem.Services[IEntityManagerService]).
-      Entity[GetEntityName].EntityInfo;
+  Result := IEntityService(
+    FWorkItem.Services[IEntityService]).
+     Entity[GetEntityName].EntityInfo;
 end;
 
 
@@ -891,15 +891,15 @@ end;
 
 function TEntityView.SchemeInfo: IEntitySchemeInfo;
 begin
-  Result := IEntityManagerService(
-    FWorkItem.Services[IEntityManagerService]).
+  Result := IEntityService(
+    FWorkItem.Services[IEntityService]).
       Entity[GetEntityName].Connection.GetSchemeInfo(EntityInfo.SchemeName);
 end;
 
 function TEntityView.SchemeInfoDef: IEntitySchemeInfo;
 begin
-  Result := IEntityManagerService(
-    FWorkItem.Services[IEntityManagerService]).
+  Result := IEntityService(
+    FWorkItem.Services[IEntityService]).
       Entity[GetEntityName].Connection.GetSchemeInfo('');
 end;
 
@@ -937,8 +937,8 @@ end;
 
 function TEntityView.ViewInfo: IEntityViewInfo;
 begin
-  Result := IEntityManagerService(
-    FWorkItem.Services[IEntityManagerService]).
+  Result := IEntityService(
+    FWorkItem.Services[IEntityService]).
       Entity[GetEntityName].EntityInfo.GetViewInfo(ViewName);
 end;
 
@@ -1042,8 +1042,8 @@ end;
 
 function TEntityOper.OperInfo: IEntityOperInfo;
 begin
-  Result := IEntityManagerService(
-    FWorkItem.Services[IEntityManagerService]).
+  Result := IEntityService(
+    FWorkItem.Services[IEntityService]).
       Entity[FEntityName].EntityInfo.GetOperInfo(OperName);
 end;
 
@@ -1267,7 +1267,7 @@ begin
   else
     userID := '';
 
-  dsCheck := (FWorkItem.Services[IEntityManagerService] as IEntityManagerService).
+  dsCheck := (FWorkItem.Services[IEntityService] as IEntityService).
     Entity[ENT_SETTING].GetView(ENT_SETTING_VIEW_CHECK, FWorkItem).
       Load([AField.Origin, userID]);
 
@@ -1317,7 +1317,7 @@ type
   end;
 
 var
-  svc: IEntityManagerService;
+  svc: IEntityService;
   evMeta: IEntityView;
   dsMeta: TDataSet;
   instanceID: string;
@@ -1338,7 +1338,7 @@ begin
   Result := TClientDataSet.Create(AWorkItem);
   if APreferences then Result.Tag := 1;
 
-  svc := FWorkItem.Services[IEntityManagerService] as IEntityManagerService;
+  svc := FWorkItem.Services[IEntityService] as IEntityService;
   evMeta := svc.Entity[ENT_SETTING].GetView(ENT_SETTING_VIEW_META, FWorkItem);
   evMeta.Reload;
   dsMeta := evMeta.DataSet;
@@ -1443,7 +1443,7 @@ begin
   else
     userID := '';
 
-  dsGet := (FWorkItem.Services[IEntityManagerService] as IEntityManagerService).
+  dsGet := (FWorkItem.Services[IEntityService] as IEntityService).
     Entity[ENT_SETTING].GetView(ENT_SETTING_VIEW_GET, FWorkItem).
       Load([AField.Origin, userID]);
 
@@ -1480,7 +1480,7 @@ begin
   else if AField is TDateTimeField then
     valD := AField.Value;
 
-  (FWorkItem.Services[IEntityManagerService] as IEntityManagerService).
+  (FWorkItem.Services[IEntityService] as IEntityService).
     Entity[ENT_SETTING].GetOper(ENT_SETTING_OPER_SET, FWorkItem).
       Execute([AField.Origin, userID, valI, valS, valN, valD]);
 

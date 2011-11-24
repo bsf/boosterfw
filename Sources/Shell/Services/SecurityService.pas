@@ -163,7 +163,7 @@ var
   connEngine: string;
   connParams: string;
   connIdx: integer;
-  entityManager: IEntityManagerService;
+  entityManager: IEntityService;
 begin
 
   AppSettings.UserID := UpperCase(AUserData.ID);
@@ -180,7 +180,7 @@ begin
   if connParams = '' then
     raise Exception.Create('Не заданны параметры подключения (Connection.Params)');
 
-  entityManager := (FWorkItem.Services[IEntityManagerService] as IEntityManagerService);
+  entityManager := (FWorkItem.Services[IEntityService] as IEntityService);
 
   connIdx := entityManager.Connections.Add(connEngine, connParams);
   try

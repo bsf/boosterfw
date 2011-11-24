@@ -21,7 +21,7 @@ type
     FRunningFlag: THandle;
     FAppInstanceID: string;
     FUISvc: IUIService;
-    FEntitySvc: IEntityManagerService;
+    FEntitySvc: IEntityService;
     FTimer: TTimer;
     function CanInstanceReceive: boolean;
     procedure ReceiveMessages;
@@ -73,7 +73,7 @@ begin
   FTimer.Interval := intervalR * 1000;
   FTimer.OnTimer := OnTimer;
 
-  FEntitySvc := (WorkItem.Services[IEntityManagerService] as IEntityManagerService);
+  FEntitySvc := (WorkItem.Services[IEntityService] as IEntityService);
   FUISvc := (WorkItem.Services[IUIService] as IUIService);
 
   FAppInstanceID := format(const_AppInstanceID, [App.Settings.CurrentAlias, App.Settings.UserID]);

@@ -31,7 +31,7 @@ type
     function UserProfile: IProfile;
     function HostProfile: IProfile;
     function UI: IUIService;
-    function Entities: IEntityManagerService;
+    function Entities: IEntityService;
     function Security: ISecurityService;
   end;
 
@@ -66,7 +66,7 @@ begin
 
   //DAL
   WorkItem.Services.Add(
-    IEntityManagerService(TEntityManagerService.Create(Self, WorkItem)));
+    IEntityService(TEntityService.Create(Self, WorkItem)));
 
 end;
 
@@ -105,9 +105,9 @@ begin
 end;
 
 
-function TApp.Entities: IEntityManagerService;
+function TApp.Entities: IEntityService;
 begin
-  Result := IEntityManagerService(WorkItem.Services[IEntityManagerService]);
+  Result := IEntityService(WorkItem.Services[IEntityService]);
 end;
 
 
