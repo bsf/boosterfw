@@ -162,8 +162,7 @@ procedure TSecurityService.LoginAuthenticateFunc(AUserData: ILoginUserData);
 var
   connEngine: string;
   connParams: string;
-  connIdx: integer;
-  entityManager: IEntityService;
+  entitySvc: IEntityService;
 begin
 
   AppSettings.UserID := UpperCase(AUserData.ID);
@@ -180,20 +179,14 @@ begin
   if connParams = '' then
     raise Exception.Create('Не заданны параметры подключения (Connection.Params)');
 
-  entityManager := (FWorkItem.Services[IEntityService] as IEntityService);
+  entitySvc := (FWorkItem.Services[IEntityService] as IEntityService);
 
-  connIdx := entityManager.Connections.Add(connEngine, connParams);
-  try
-    entityManager.Connections.Get(connIdx).Connect;
-  except
-    entityManager.Connections.Delete(connIdx);
-    raise;
-  end;
+  entitySvc.Connect(connEngine, connParams);
 
   try
     FBaseController.Connect(AppSettings.UserID);
   except
-    entityManager.Connections.Delete(connIdx);
+    entitySvc.Disconnect;
     raise;
   end;
 

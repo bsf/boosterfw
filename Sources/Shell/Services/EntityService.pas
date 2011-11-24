@@ -143,30 +143,11 @@ type
     function GetOper(const AOperName: string; AWorkItem: TWorkItem;
       AInstanceID: string = ''): IEntityOper;
     function EntityInfo: IEntityInfo;
-    function Connection: IEntityStorageConnection;
   public
     constructor Create(const AEntityName: string;
       AConnection: IEntityStorageConnection); reintroduce;
   end;
 
-  TEntityStorageConnections = class(TComponent, IEntityStorageConnections)
-  private
-    FConnections: TComponentList;
-    FFactories: TComponentList;
-  protected
-    //IEntityStorageConnections
-    function Count: integer;
-    function Get(AIndex: integer): IEntityStorageConnection;
-    function Add(const AConnectionEngine, AConnectionParams: string): integer;
-    procedure Delete(AIndex: integer);
-    function GetDefault: IEntityStorageConnection;
-    function GetByID(const ID: string): IEntityStorageConnection;
-    procedure RegisterConnectionFactory(Factory: TComponent);
-    procedure UnregisterConnectionFactory(Factory: TComponent);
-  public
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-  end;
 
   TEntityStorageSettings = class(TComponent, IEntityStorageSettings)
   private
@@ -190,17 +171,24 @@ type
   TEntityService = class(TComponent, IEntityService)
   private
     FWorkItem: TWorkItem;
-    FConnections: TEntityStorageConnections;
+    FConnection: TComponent;
     FEntities: TComponentList;
     FSettings: TEntityStorageSettings;
+    FFactories: TComponentList;
   protected
     //IEntityManagerService
-    procedure ClearConnectionCache(AConnection: IEntityStorageConnection);
+    procedure ClearConnectionCache;
     function EntityExists(const AEntityName: string): boolean;
     function EntityViewExists(const AEntityName, AEntityViewName: string): boolean;
     function GetEntity(const AEntityName: string): IEntity;
     function GetSettings: IEntityStorageSettings;
-    function Connections: IEntityStorageConnections;
+
+    function Connection: IEntityStorageConnection;
+    procedure Connect(const AConnectionEngine, AConnectionParams: string);
+    procedure Disconnect;
+
+    procedure RegisterConnectionFactory(Factory: TComponent);
+
   public
     constructor Create(AOwner: TComponent; AWorkItem: TWorkItem); reintroduce;
     destructor Destroy; override;
@@ -211,26 +199,64 @@ implementation
 
 { TEntityManagerService }
 
-procedure TEntityService.ClearConnectionCache(
-  AConnection: IEntityStorageConnection);
+procedure TEntityService.ClearConnectionCache;
 var
   I: integer;
 begin
-  for I := FEntities.Count -1 downto 0 do
-    if TEntity(FEntities[I]).FConnection = AConnection then
-      FEntities.Delete(I);
+  for I := FEntities.Count -1 downto 0 do  FEntities.Delete(I);
 end;
 
-function TEntityService.Connections: IEntityStorageConnections;
+procedure TEntityService.Connect(const AConnectionEngine,
+  AConnectionParams: string);
+var
+  paramList: TStringList;
+  Intf: IEntityStorageConnection;
+  I: integer;
+  Factory: IEntityStorageConnectionFactory;
+  ConnectionID: string;
 begin
-  Result := FConnections;
+  Disconnect;
+
+  paramList := TStringList.Create;
+  try
+    ExtractStrings([';'], [], PChar(AConnectionParams), paramList);
+
+    for I := 0 to FFactories.Count - 1 do
+    begin
+      FFactories[I].GetInterface(IEntityStorageConnectionFactory, Factory);
+      if SameText(Factory.Engine, AConnectionEngine) then
+      begin
+        FConnection := Factory.CreateConnection(ConnectionID, paramList);
+        if FConnection <> nil then Break;
+      end;
+    end;
+  finally
+    paramList.Free;
+  end;
+
+  if FConnection = nil then
+    raise Exception.CreateFmt('Connection factory for engine %s not found.', [AConnectionEngine]);
+
+  if not FConnection.GetInterface(IEntityStorageConnection, Intf) then
+  begin
+    FConnection := nil;
+    raise Exception.Create('Bad connection class');
+  end;
+
+  (FConnection as IEntityStorageConnection).Connect;
+
+end;
+
+function TEntityService.Connection: IEntityStorageConnection;
+begin
+  Result := FConnection as IEntityStorageConnection;
 end;
 
 constructor TEntityService.Create(AOwner: TComponent; AWorkItem: TWorkItem);
 begin
   inherited Create(AOwner);
   FWorkItem := AWorkItem;
-  FConnections := TEntityStorageConnections.Create(Self);
+  FFactories := TComponentList.Create(false);
   FEntities := TComponentList.Create(True);
   FSettings := TEntityStorageSettings.Create(Self, FWorkItem);
 end;
@@ -238,7 +264,18 @@ end;
 destructor TEntityService.Destroy;
 begin
   FEntities.Free;
+  FFactories.Free;
   inherited;
+end;
+
+procedure TEntityService.Disconnect;
+begin
+  ClearConnectionCache;
+
+  if FConnection <> nil then
+    (FConnection as IEntityStorageConnection).Disconnect;
+
+  FConnection := nil;
 end;
 
 function TEntityService.EntityExists(
@@ -256,7 +293,6 @@ end;
 function TEntityService.GetEntity(const AEntityName: string): IEntity;
 var
   I: integer;
-  ConnIdx: integer;
   Ent: TEntity;
 begin
   Result := nil;
@@ -268,18 +304,10 @@ begin
     end;
 
 
-  ConnIdx := -1;
-  for I := 0 to FConnections.Count - 1 do
-    if FConnections.Get(I).GetEntityList.IndexOf(AEntityName) <> - 1 then
-    begin
-      ConnIdx := I;
-      Break;
-    end;
-
-  if ConnIdx = -1 then
+  if (FConnection as IEntityStorageConnection).GetEntityList.IndexOf(AEntityName) = - 1 then
     raise Exception.CreateFmt('Entity %s not found', [AEntityName]);
 
-  Ent := TEntity.Create(AEntityName, FConnections.Get(ConnIdx));
+  Ent := TEntity.Create(AEntityName, FConnection as IEntityStorageConnection);
   FEntities.Add(Ent);
   Ent.GetInterface(IEntity, Result);
 end;
@@ -291,73 +319,7 @@ begin
   Result := FSettings as IEntityStorageSettings;
 end;
 
-{ TEntityStorageConnections }
-
-function TEntityStorageConnections.Count: integer;
-begin
-  Result := FConnections.Count;
-end;
-
-constructor TEntityStorageConnections.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-  FConnections := TComponentList.Create(true);
-  FFactories := TComponentList.Create(false);
-end;
-
-destructor TEntityStorageConnections.Destroy;
-begin
-  FConnections.Free;
-  FFactories.Free;
-  inherited;
-end;
-
-function TEntityStorageConnections.Get(AIndex: integer): IEntityStorageConnection;
-begin
-  FConnections[AIndex].GetInterface(IEntityStorageConnection, Result);
-end;
-
-function TEntityStorageConnections.Add(const AConnectionEngine, AConnectionParams: string): integer;
-var
-  paramList: TStringList;
-  Item: TComponent;
-  Intf: IEntityStorageConnection;
-  I: integer;
-  Factory: IEntityStorageConnectionFactory;
-  ConnectionID: string;
-begin
-  paramList := TStringList.Create;
-  try
-    ExtractStrings([';'], [], PChar(AConnectionParams), paramList);
-
-    ConnectionID := paramList.Values['ID'];
-    if ConnectionID = '' then
-      ConnectionID := CreateClassID;
-
-    Item := nil;
-    for I := 0 to FFactories.Count - 1 do
-    begin
-      FFactories[I].GetInterface(IEntityStorageConnectionFactory, Factory);
-      if SameText(Factory.Engine, AConnectionEngine) then
-      begin
-        Item := Factory.CreateConnection(ConnectionID, paramList);
-        if Item <> nil then Break;
-      end;
-    end;
-  finally
-    paramList.Free;
-  end;
-
-  if Item = nil then
-    raise Exception.CreateFmt('Connection factory for engine %s not found.', [AConnectionEngine]);
-
-  if not Item.GetInterface(IEntityStorageConnection, Intf) then
-    raise Exception.Create('Bad connection class');
-
-  Result := FConnections.Add(Item);
-end;
-
-procedure TEntityStorageConnections.RegisterConnectionFactory(Factory: TComponent);
+procedure TEntityService.RegisterConnectionFactory(Factory: TComponent);
 var
   Intf: IEntityStorageConnectionFactory;
 begin
@@ -365,46 +327,9 @@ begin
     raise Exception.Create('Bad connection factory');
 
   FFactories.Add(Factory);
+
 end;
 
-procedure TEntityStorageConnections.UnregisterConnectionFactory(Factory: TComponent);
-begin
-  FFactories.Remove(Factory);
-end;
-
-function TEntityStorageConnections.GetDefault: IEntityStorageConnection;
-begin
-  Result := nil;
-  if FConnections.Count > 0 then
-    Result := Get(0);
-
-  if not Assigned(Result) then
-    raise Exception.Create('Not any connection present');
-end;
-
-procedure TEntityStorageConnections.Delete(AIndex: integer);
-var
-  Intf: IEntityStorageConnection;
-begin
-  Intf := FConnections[AIndex] as IEntityStorageConnection;
-  TEntityService(Owner).ClearConnectionCache(Intf);
-  Intf := nil; //!!!
-  
-  FConnections.Delete(AIndex);
-end;
-
-function TEntityStorageConnections.GetByID(
-  const ID: string): IEntityStorageConnection;
-var
-  I: integer;
-begin
-  for I := 0 to Count - 1 do
-  begin
-    Result := Get(I);
-    if Result.ID = ID then Exit;
-  end;
-  Result := nil;
-end;
 
 { TEntity }
 
@@ -498,11 +423,6 @@ end;
 function TEntity.EntityInfo: IEntityInfo;
 begin
   Result := FConnection.GetEntityInfo(FEntityName);
-end;
-
-function TEntity.Connection: IEntityStorageConnection;
-begin
-  Result := FConnection;
 end;
 
 { TEntityView }
@@ -892,15 +812,13 @@ end;
 function TEntityView.SchemeInfo: IEntitySchemeInfo;
 begin
   Result := IEntityService(
-    FWorkItem.Services[IEntityService]).
-      Entity[GetEntityName].Connection.GetSchemeInfo(EntityInfo.SchemeName);
+    FWorkItem.Services[IEntityService]).Connection.GetSchemeInfo(EntityInfo.SchemeName);
 end;
 
 function TEntityView.SchemeInfoDef: IEntitySchemeInfo;
 begin
   Result := IEntityService(
-    FWorkItem.Services[IEntityService]).
-      Entity[GetEntityName].Connection.GetSchemeInfo('');
+    FWorkItem.Services[IEntityService]).Connection.GetSchemeInfo('');
 end;
 
 procedure TEntityView.SetValue(const AName: string; AValue: Variant);

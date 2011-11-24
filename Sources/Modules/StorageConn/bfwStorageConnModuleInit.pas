@@ -23,7 +23,6 @@ end;
 procedure TbfwStorageConnModuleInit.Load;
 begin
   (WorkItem.Services[IEntityService] as IEntityService).
-    Connections.
       RegisterConnectionFactory(TIBStorageConnectionFactory.Create(Self));
 end;
 

@@ -50,7 +50,7 @@ begin
     if not Assigned(FLauncher) then
     begin
       FLauncher := TXLReportLauncher.Create(Self,
-        (AWorkItem.Services[IEntityService] as IEntityService).Connections.GetDefault);
+        (AWorkItem.Services[IEntityService] as IEntityService).Connection);
     end;
 
     FLauncher.Template := ATemplate;

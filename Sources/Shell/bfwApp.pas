@@ -7,7 +7,7 @@ uses windows, classes, forms, sysutils,
   ShellLogin, ShellSplashForm,
   ConfigServiceIntf, ConfigService,
   SecurityIntf, SecurityService, SecurityController,
-  EntityServiceIntf, EntityManagerService,
+  EntityServiceIntf, EntityService,
   UIServiceIntf, UIService;
 
 const

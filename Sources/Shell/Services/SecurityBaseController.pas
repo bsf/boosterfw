@@ -250,7 +250,7 @@ var
 begin
   effectiveResID := LeftStr(AResID, const_RESID_MAX_LENGTH);
 
-  pState := (FWorkItem.Services[IEntityManagerService] as IEntityManagerService).
+  pState := (FWorkItem.Services[IEntityService] as IEntityService).
     Entity[ENT_PERM].GetOper(ENT_PERM_OPER_CHECK, FWorkItem).
       Execute([APermID, AUserID, effectiveResID]);
 
@@ -275,7 +275,7 @@ procedure TSecurityBaseController.LoadPrincipal(const AUserID: string);
 var
   uProp: TDataSet;
 begin
-  uProp := (FWorkItem.Services[IEntityManagerService] as IEntityManagerService).
+  uProp := (FWorkItem.Services[IEntityService] as IEntityService).
     Entity[ENT_USERS].GetView(ENT_USERS_VIEW_ITEM, FWorkItem).Load([AUserID]);
 
   FPrincipal.FID := uProp['USERID'];
@@ -334,7 +334,7 @@ var
 begin
   FList.Clear;
 
-  pList := (FWorkItem.Services[IEntityManagerService] as IEntityManagerService).
+  pList := (FWorkItem.Services[IEntityService] as IEntityService).
     Entity[ENT_USERS].GetView(ENT_USERS_VIEW_LIST, FWorkItem).Load([]);
 
   while not pList.Eof do
@@ -374,7 +374,7 @@ end;
 
 function TSecurityPolicy.GetPermEffective(const PermID, ResID: string): TDataSet;
 begin
-  Result := (FWorkItem.Services[IEntityManagerService] as IEntityManagerService).
+  Result := (FWorkItem.Services[IEntityService] as IEntityService).
     Entity[ENT_PERM].GetView(ENT_PERM_VIEW_EFFECTIVE, FWorkItem).
       Load([FID, PermID, ResID]);
 
@@ -388,7 +388,7 @@ var
 begin
   effectiveResID := LeftStr(AResID, const_RESID_MAX_LENGTH);
 
-  pState := (FWorkItem.Services[IEntityManagerService] as IEntityManagerService).
+  pState := (FWorkItem.Services[IEntityService] as IEntityService).
       Entity[ENT_PERM].GetOper(ENT_PERM_OPER_STATE_GET, FWorkItem).
         Execute([AUserID, APermID, effectiveResID]);
 
@@ -414,7 +414,7 @@ function TSecurityPolicy.GetState: TPolicyState;
 var
   ds: TDataSet;
 begin
-  ds := (FWorkItem.Services[IEntityManagerService] as IEntityManagerService).
+  ds := (FWorkItem.Services[IEntityService] as IEntityService).
       Entity[ENT_POLICIES].GetOper(ENT_POLICY_OPER_STATE_GET, FWorkItem).
         Execute([FID]);
 
@@ -447,7 +447,7 @@ end;
 
 procedure TSecurityPolicy.Reset;
 begin
-  (FWorkItem.Services[IEntityManagerService] as IEntityManagerService).
+  (FWorkItem.Services[IEntityService] as IEntityService).
      Entity[ENT_POLICIES].GetOper(ENT_POLICY_OPER_RESET, FWorkItem).
        Execute([FID]);
 end;
@@ -464,14 +464,14 @@ var
 begin
   effectiveResID := LeftStr(AResID, const_RESID_MAX_LENGTH);
 
-  (FWorkItem.Services[IEntityManagerService] as IEntityManagerService).
+  (FWorkItem.Services[IEntityService] as IEntityService).
      Entity[ENT_PERM].GetOper(ENT_PERM_OPER_STATE_SET, FWorkItem).
        Execute([AUserID, APermID, AResID, Ord(APermState)]);
 end;
 
 procedure TSecurityPolicy.SetState(AState: TPolicyState);
 begin
-  (FWorkItem.Services[IEntityManagerService] as IEntityManagerService).
+  (FWorkItem.Services[IEntityService] as IEntityService).
      Entity[ENT_POLICIES].GetOper(ENT_POLICY_OPER_STATE_SET, FWorkItem).
        Execute([FID, Ord(AState)]);
 end;
@@ -530,11 +530,11 @@ end;
 
 function TSecurityPolicies.GetPoliciesEntity: IEntity;
 var
-  svcEntityManager: IEntityManagerService;
+  svcEntityManager: IEntityService;
 begin
   if not Assigned(FPoliciesEntity) then
   begin
-    svcEntityManager := IEntityManagerService(FWorkItem.Services[IEntityManagerService]);
+    svcEntityManager := IEntityService(FWorkItem.Services[IEntityService]);
     FPoliciesEntity := svcEntityManager.Entity[ENT_POLICIES];
   end;
 
@@ -626,7 +626,7 @@ var
 begin
   FList.Clear;
 
-  pList := (FWorkItem.Services[IEntityManagerService] as IEntityManagerService).
+  pList := (FWorkItem.Services[IEntityService] as IEntityService).
     Entity[ENT_PERM].GetView(ENT_PERM_VIEW_LIST, FWorkItem).Load([FPolID]);
 
   while not pList.Eof do
@@ -672,7 +672,7 @@ var
 begin
   effectiveResID := LeftStr(AResID, const_RESID_MAX_LENGTH);
 
-  pState := (FWorkItem.Services[IEntityManagerService] as IEntityManagerService).
+  pState := (FWorkItem.Services[IEntityService] as IEntityService).
       Entity[ENT_PERM].GetOper(ENT_PERM_OPER_STATE_GET, FWorkItem).
         Execute([FID, AUserID, effectiveResID]);
 
@@ -705,7 +705,7 @@ var
 begin
   effectiveResID := LeftStr(AResID, const_RESID_MAX_LENGTH);
 
-  (FWorkItem.Services[IEntityManagerService] as IEntityManagerService).
+  (FWorkItem.Services[IEntityService] as IEntityService).
      Entity[ENT_PERM].GetOper(ENT_PERM_OPER_STATE_SET, FWorkItem).
        Execute([FID, AUserID, AResID, Ord(AState)]);
 
@@ -752,7 +752,7 @@ procedure TUserAccount.LoadData;
 var
   prop: TDataSet;
 begin
-  prop := (FWorkItem.Services[IEntityManagerService] as IEntityManagerService).
+  prop := (FWorkItem.Services[IEntityService] as IEntityService).
     Entity[ENT_USERS].GetView(ENT_USERS_VIEW_ITEM, FWorkItem).Load([FID]);
   FAccountNAME := prop['NAME'];
   FIsRole := prop['ISROLE'] = 1;
@@ -761,21 +761,21 @@ end;
 
 procedure TUserAccount.RoleAdd(const ARoleID: string);
 begin
-  (FWorkItem.Services[IEntityManagerService] as IEntityManagerService).
+  (FWorkItem.Services[IEntityService] as IEntityService).
      Entity[ENT_USERS].GetOper(ENT_USERS_OPER_USERROLEADD, FWorkItem).
       Execute([FID, ARoleID]);
 end;
 
 function TUserAccount.RoleCheck(const ARoleID: string): boolean;
 begin
-  Result := (FWorkItem.Services[IEntityManagerService] as IEntityManagerService).
+  Result := (FWorkItem.Services[IEntityService] as IEntityService).
     Entity[ENT_USERS].GetOper(ENT_USERS_OPER_USERROLECHECK, FWorkItem).
       Execute([FID, ARoleID])['STATUS'] = 1;
 end;
 
 procedure TUserAccount.RoleRemove(const ARoleID: string);
 begin
-  (FWorkItem.Services[IEntityManagerService] as IEntityManagerService).
+  (FWorkItem.Services[IEntityService] as IEntityService).
      Entity[ENT_USERS].GetOper(ENT_USERS_OPER_USERROLEREMOVE, FWorkItem).
       Execute([FID, ARoleID]);
 end;

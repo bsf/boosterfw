@@ -140,8 +140,6 @@ type
     function OperInfo: IEntityOperInfo;
   end;
 
-  IEntityStorageConnection = interface;
-
   IEntity = interface
   ['{9104ED0A-E2E5-48F9-8005-C4757BF4E4DD}']
     function EntityName: string;
@@ -150,7 +148,6 @@ type
     function GetOper(const AOperName: string; AWorkItem: TWorkItem;
       AInstanceID: string = ''): IEntityOper;
     function EntityInfo: IEntityInfo;
-    function Connection: IEntityStorageConnection;
   end;
 
   IDetachedDataSet = interface
@@ -198,18 +195,6 @@ type
     function CreateConnection(const ID: string; AParams: TStrings): TComponent;
   end;
 
-  IEntityStorageConnections = interface
-  ['{3A88CEA5-8878-4FC0-B65E-FBB88D40A5B9}']
-    function Add(const AConnectionEngine, AConnectionParams: string): integer;
-    procedure Delete(AIndex: integer);
-    function Count: integer;
-    function Get(AIndex: integer): IEntityStorageConnection;
-    function GetDefault: IEntityStorageConnection;
-    function GetByID(const ID: string): IEntityStorageConnection;
-    procedure RegisterConnectionFactory(Factory: TComponent);
-    procedure UnregisterConnectionFactory(Factory: TComponent);
-  end;
-
   IEntityService = interface
   ['{E644CC6B-5ED0-4F55-9C20-9E2267381A0F}']
     function GetSettings: IEntityStorageSettings;
@@ -218,7 +203,12 @@ type
     function GetEntity(const AEntityName: string): IEntity;
     property Entity[const AEntityName: string]: IEntity read GetEntity; default;
     property Settings: IEntityStorageSettings read GetSettings;
-    function Connections: IEntityStorageConnections;
+
+    function Connection: IEntityStorageConnection;
+    procedure Connect(const AConnectionEngine, AConnectionParams: string);
+    procedure Disconnect;
+
+    procedure RegisterConnectionFactory(Factory: TComponent);
   end;
 
 

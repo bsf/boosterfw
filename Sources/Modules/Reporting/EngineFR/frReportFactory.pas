@@ -88,7 +88,7 @@ begin
   begin
     if not Assigned(FLauncher) then
       FLauncher := TFastReportLauncher.Create(Self,
-       (AWorkItem.Services[IEntityService] as IEntityService).Connections.GetDefault,
+       (AWorkItem.Services[IEntityService] as IEntityService).Connection,
        FWorkItem);
 
     FLauncher.Template := ATemplate;

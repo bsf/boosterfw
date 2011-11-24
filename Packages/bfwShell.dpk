@@ -38,7 +38,7 @@ contains
   ShellSplashForm in '..\Sources\Shell\ShellSplashForm.pas' {frShellSplash},
   ConfigService in '..\Sources\Shell\Services\ConfigService.pas',
   ConfigStorage in '..\Sources\Shell\Services\ConfigStorage.pas',
-  EntityManagerService in '..\Sources\Shell\Services\EntityManagerService.pas',
+  EntityService in '..\Sources\Shell\Services\EntityService.pas',
   SecurityService in '..\Sources\Shell\Services\SecurityService.pas',
   UIService in '..\Sources\Shell\Services\UIService.pas',
   SecurityController in '..\Sources\Shell\Services\SecurityController.pas';
