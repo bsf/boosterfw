@@ -17,6 +17,8 @@ type
     ParamDataSource: TDataSource;
     grParams: TcxDBVerticalGrid;
     grParamsCategoryTop: TcxCategoryRow;
+    cxStyleRepository1: TcxStyleRepository;
+    cxStyleReadOnlyParam: TcxStyle;
   private
 
     function FindParamEditor(AParamName: string): TcxDBEditorRow;
@@ -97,12 +99,26 @@ begin
 end;
 
 procedure TfrReportLauncherView.LinkParamDataSet(const ADataSet: TDataSet);
+var
+  I: integer;
+  field: TField;
 begin
 
   ParamDataSource.DataSet := ADataSet;
   grParams.DataController.CreateAllItems;
 
+  //for param's labels rows
+  for I := 0 to grParams.Rows.Count - 1 do
+  begin
+    if (grParams.Rows[I] is TcxDBEditorRow) then
+    begin
+      field := ADataSet.FindField((TcxDBEditorRow(grParams.Rows[I]).
+        Properties.DataBinding.FieldName));
+      if (field <> nil) and field.ReadOnly then
+        TcxDBEditorRow(grParams.Rows[I]).Styles.Content := cxStyleReadOnlyParam;
 
+     end;
+  end;
 end;
 
 procedure TfrReportLauncherView.InitParamEditor_CheckBox(

@@ -55,4 +55,13 @@ inherited frReportLauncherView: TfrReportLauncherView
     Left = 46
     Top = 261
   end
+  object cxStyleRepository1: TcxStyleRepository
+    Left = 136
+    Top = 112
+    PixelsPerInch = 96
+    object cxStyleReadOnlyParam: TcxStyle
+      AssignedValues = [svColor]
+      Color = clInfoBk
+    end
+  end
 end

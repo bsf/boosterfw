@@ -31,7 +31,7 @@ type
   TReportLauncherPresenter = class(TCustomPresenter)
   const
     REPORT_LAYOUT_PARAM = 'ReportLayouts';
-
+    PARAM_LABEL_SUFFIX = '.Label';
   private
     FParamDataSet: TdxMemData;
     FReportCatalogItem: TReportCatalogItem;
@@ -159,6 +159,7 @@ procedure TReportLauncherPresenter.InitParamDataSet;
   procedure CreateField(AParam: TManifestParamNode);
   var
     prmField: TField;
+    lblField: TField;
   begin
     case AParam.Editor of
       peInteger: prmField := TIntegerField.Create(Self);
@@ -183,6 +184,17 @@ procedure TReportLauncherPresenter.InitParamDataSet;
     prmField.Visible := not AParam.Hidden;
     prmField.Alignment := taLeftJustify;
     prmField.OnChange := ParamValueChangeHandler;
+
+    //Label Field
+    lblField := TStringField.Create(Self);
+    TStringField(lblField).DisplayWidth := 255;
+    TStringField(lblField).Size := 255;
+    lblField.DisplayLabel := AParam.Caption;
+    lblField.FieldName := AParam.Name + PARAM_LABEL_SUFFIX;
+    lblField.DataSet := FParamDataSet;
+    lblField.Visible := false;
+    lblField.ReadOnly := true;
+    lblField.Alignment := taLeftJustify;
   end;
 
   procedure CreateReportLayoutsField;
@@ -284,6 +296,7 @@ procedure TReportLauncherPresenter.InitParamValues;
 var
   I: integer;
   field: TField;
+  fieldLabel: TField;
   mParam: TManifestParamNode;
   Val: Variant;
 begin
@@ -301,6 +314,21 @@ begin
         field.Value := null
       else
         field.Value := Val;
+    end;
+
+    //Label
+    fieldLabel := FParamDataSet.FieldByName(mParam.Name + PARAM_LABEL_SUFFIX);
+    Val := WorkItem.State['Init.' + mParam.Name + PARAM_LABEL_SUFFIX];
+    if not VarIsEmpty(Val) then
+    begin
+      field.Visible := false;
+      fieldLabel.Visible := true;
+      fieldLabel.Value := VarToStr(Val);
+    end
+    else
+    begin
+      fieldLabel.Visible := false;
+      field.Visible := not mParam.Hidden;
     end;
   end;
 
@@ -398,6 +426,7 @@ begin
   for I := 0 to FReportCatalogItem.Manifest.ParamNodes.Count - 1 do
   begin
     prmItem := FReportCatalogItem.Manifest.ParamNodes[I];
+    if not FParamDataSet.FindField(prmItem.Name).Visible then Continue;
     case prmItem.Editor of
       peDBList: InitLookupEditor(prmItem);
 
