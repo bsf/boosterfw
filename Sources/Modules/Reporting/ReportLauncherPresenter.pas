@@ -12,6 +12,7 @@ const
 
   COMMAND_DATA_PARAMNAME = 'ParamName';
   COMMAND_PARAM_CHANGED = 'commands.paramchanged.';
+  COMMAND_LAYOUT_CHANGED = 'commands.layoutchanged';
 
 type
 
@@ -25,18 +26,22 @@ type
 
     procedure InitParamEditor_Lookup(const AParamName: string; AItems: TStrings);
     procedure InitParamEditor_ButtonEdit(const AParamName, ACommanName: string);
+
+    procedure InitLayoutEditor(const AParamName: string; ADataSet: TDataSet);
+    procedure SetParamsStatus;
   end;
 
 
   TReportLauncherPresenter = class(TCustomPresenter)
   const
-    REPORT_LAYOUT_PARAM = 'ReportLayouts';
+    ACTIVITY_REPORT_LAUNCHER = 'views.reports.launcher';
+    REPORT_LAYOUT_PARAM = TReportActivityParams.Layout;
     PARAM_LABEL_SUFFIX = '.Label';
+    PARAM_PREFIX = 'Init.';
   private
     FParamDataSet: TdxMemData;
+    FLayoutDataSet: TdxMemData;
     FReportCatalogItem: TReportCatalogItem;
-    FLayouts: TDictionary<string, string>;
-    FLayoutCaptions: TStringList;
     FInitialized: boolean;
     procedure InitParamDataSet;
     procedure InitViewParamEditors;
@@ -45,7 +50,7 @@ type
     procedure ParamValueChangeHandler(Sender: TField);
 
     procedure CmdPickListEditorExecute(Sender: TObject);
-
+    procedure CmdLayoutChanged(Sender: TObject);
     procedure CmdExecute(Sender: TObject);
     procedure CmdClose(Sender: TObject);
 
@@ -59,10 +64,7 @@ type
     procedure OnInit(Sender: IActivity); override;
     procedure OnReinit(Sender: IActivity); override;
 
-    procedure OnViewReady; override;
     procedure OnViewShow; override;
-  public
-    destructor Destroy; override;
   end;
 
 implementation
@@ -72,7 +74,6 @@ implementation
 procedure TReportLauncherPresenter.CmdExecute(Sender: TObject);
 var
   doClose: boolean;
-  reportID: string;
 begin
 
   doClose := not IsControlKeyDown;
@@ -81,25 +82,71 @@ begin
 
   App.UI.MessageBox.StatusBarMessage('Формирование отчета: ' + FReportCatalogItem.Caption);
   try
-    //(WorkItem.Services[IReportService] as IReportService).
-     // Report[FLayouts[WorkItem.State[REPORT_LAYOUT_PARAM]]].Execute(WorkItem);
-
-
    (WorkItem.Services[IReportCatalogService] as IReportCatalogService).
-     LaunchReport(WorkItem, FLayouts[WorkItem.State[REPORT_LAYOUT_PARAM]],
+     LaunchReport(WorkItem, FReportCatalogItem.ID,
+       WorkItem.State[TReportActivityParams.Layout],
        WorkItem.State[TReportActivityParams.LaunchMode]);
   finally
     App.UI.MessageBox.StatusBarMessage('Готово');
   end;
-
-  reportID := FReportCatalogItem.ID;
 
   if doClose then CloseView(false);
 
 
 end;
 
+procedure TReportLauncherPresenter.CmdLayoutChanged(Sender: TObject);
+var
+  I: integer;
+  field: TField;
+  fieldLabel: TField;
+  mParam: TManifestParamNode;
+  layout: string;
+  fieldHiden: boolean;
+  fieldLabelHiden: boolean;
+begin
+  //Params
+  if FParamDataSet.State in [dsEdit] then
+    FParamDataSet.Post;
+
+  layout := WorkItem.State[TReportActivityParams.Layout];
+  for I := 0 to FReportCatalogItem.Manifest.ParamNodes.Count - 1 do
+  begin
+    mParam := FReportCatalogItem.Manifest.ParamNodes[I];
+    field := FParamDataSet.FieldByName(mParam.Name);
+    fieldLabel := FParamDataSet.FieldByName(mParam.Name + PARAM_LABEL_SUFFIX);
+    if mParam.Layouts.Count <> 0 then
+    begin
+      fieldHiden := GetFieldAttribute(field, FIELD_ATTR_HIDDEN) = '1';
+      fieldLabelHiden := GetFieldAttribute(fieldLabel, FIELD_ATTR_HIDDEN) = '1';
+      field.Visible := (not fieldHiden) and (mParam.Layouts.IndexOf(layout) <> -1);
+      fieldLabel.Visible := (not fieldLabelHiden) and (mParam.Layouts.IndexOf(layout) <> -1);
+    end;
+  end;
+
+  View.SetParamsStatus;
+end;
+
 procedure TReportLauncherPresenter.OnInit(Sender: IActivity);
+
+  procedure LayoutDataSetCreateFields;
+  var
+    field: TStringField;
+  begin
+    //ID
+    field := TStringField.Create(Self);
+    field.DisplayWidth := 255;
+    field.Size := 255;
+    field.FieldName := 'ID';
+    field.DataSet := FLayoutDataSet;
+    //NAME
+    field := TStringField.Create(Self);
+    field.DisplayWidth := 255;
+    field.Size := 255;
+    field.FieldName := 'NAME';
+    field.DataSet := FLayoutDataSet;
+  end;
+
 var
   layout: TReportLayout;
 begin
@@ -114,22 +161,39 @@ begin
 
   ViewHidden := Sender.Params[TReportLaunchParams.LaunchMode] <> 0;
 
-  FParamDataSet := TdxMemData.Create(Self);
-
   ViewTitle := FReportCatalogItem.Caption;
 
-  FLayouts := TDictionary<string, string>.Create;
-  FLayoutCaptions := TStringList.Create;
+  FParamDataSet := TdxMemData.Create(Self);
 
+  FLayoutDataSet := TdxMemData.Create(Self);
+  LayoutDataSetCreateFields;
+  FLayoutDataSet.Open;
   for layout in FReportCatalogItem.Manifest.Layouts do
   begin
-    FLayouts.Add(layout.Caption, layout.ID);
-    FLayoutCaptions.Add(layout.Caption);
+    FLayoutDataSet.Append;
+    FLayoutDataSet.FieldValues['ID'] := layout.ID;
+    FLayoutDataSet.FieldValues['NAME'] := layout.Caption;
+    FLayoutDataSet.Post;
   end;
 
   InitParamDataSet;
   InitParamDefaultValues;
+
+  View.LinkParamDataSet(FParamDataSet);
+  InitViewParamEditors;
+
+  View.CommandBar.AddCommand(COMMAND_EXECUTE, 'Выполнить', '', CmdExecute);
+  View.CommandBar.AddCommand(COMMAND_CLOSE, 'Отмена', '', CmdClose);
+
+  WorkItem.Commands[COMMAND_LAYOUT_CHANGED].SetHandler(CmdLayoutChanged);
+  WorkItem.Commands[COMMAND_EXECUTE].SetHandler(CmdExecute);
+  WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
+
   InitParamValues;
+
+  if ViewHidden then
+    WorkItem.Commands[COMMAND_EXECUTE].Execute;
+
   FInitialized := true;
 end;
 
@@ -139,22 +203,6 @@ begin
 
   GetView.FocusDataSetControl(FParamDataSet);
 end;
-
-procedure TReportLauncherPresenter.OnViewReady;
-begin
-  View.LinkParamDataSet(FParamDataSet);
-  InitViewParamEditors;
-
-  View.CommandBar.AddCommand(COMMAND_EXECUTE, 'Выполнить', '', CmdExecute);
-  View.CommandBar.AddCommand(COMMAND_CLOSE, 'Отмена', '', CmdClose);
-
-  WorkItem.Commands[COMMAND_EXECUTE].SetHandler(CmdExecute);
-  WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
-
-  if ViewHidden then
-    WorkItem.Commands[COMMAND_EXECUTE].Execute;
-end;
-
 procedure TReportLauncherPresenter.InitParamDataSet;
   procedure CreateField(AParam: TManifestParamNode);
   var
@@ -192,7 +240,7 @@ procedure TReportLauncherPresenter.InitParamDataSet;
     lblField.DisplayLabel := AParam.Caption;
     lblField.FieldName := AParam.Name + PARAM_LABEL_SUFFIX;
     lblField.DataSet := FParamDataSet;
-    lblField.Visible := false;
+    //lblField.Visible := false;
     lblField.ReadOnly := true;
     lblField.Alignment := taLeftJustify;
   end;
@@ -207,8 +255,8 @@ procedure TReportLauncherPresenter.InitParamDataSet;
     field.DisplayLabel := 'Макет';
     field.FieldName := REPORT_LAYOUT_PARAM;
     field.DataSet := FParamDataSet;
-    field.Required := true;
-    field.Visible := FLayoutCaptions.Count > 1;
+   // field.Required := true;
+    //field.Visible := FLayoutCaptions.Count > 1;
 
   end;
 
@@ -224,7 +272,6 @@ begin
 
   FParamDataSet.Open;
   FParamDataSet.Insert;
-  FParamDataSet.FieldValues[REPORT_LAYOUT_PARAM] := FLayoutCaptions[0];
   FParamDataSet.Post;
 
 end;
@@ -263,7 +310,8 @@ var
   defVal: Variant;
 begin
   FParamDataSet.Edit;
-  FParamDataSet.FieldByName(REPORT_LAYOUT_PARAM).Value := FLayoutCaptions[0];
+  FParamDataSet.FieldByName(REPORT_LAYOUT_PARAM).Value :=
+    FReportCatalogItem.Manifest.Layouts.Items[0].ID;
 
   for I := 0 to FReportCatalogItem.Manifest.ParamNodes.Count - 1 do
   begin
@@ -299,17 +347,40 @@ var
   fieldLabel: TField;
   mParam: TManifestParamNode;
   Val: Variant;
+  initLayout: string;
 begin
+//in View autopost!!!
+
+  //Layouts
+  initLayout := WorkItem.State[TReportLaunchParams.InitLayout];
+
   FParamDataSet.Edit;
+  if (initLayout = '') or (FReportCatalogItem.Manifest.Layouts.IndexOf(initLayout) = -1) then
+    FParamDataSet.FieldByName(REPORT_LAYOUT_PARAM).Value :=
+      FReportCatalogItem.Manifest.Layouts.Items[0].ID
+  else
+    FParamDataSet.FieldByName(REPORT_LAYOUT_PARAM).Value := initLayout;
+
+
+  if FParamDataSet.State in [dsEdit] then
+    FParamDataSet.Post;
+
+  FParamDataSet.FieldByName(REPORT_LAYOUT_PARAM).Visible :=
+    (initLayout <> '') or (FReportCatalogItem.Manifest.Layouts.Count > 1);
+
+  FParamDataSet.FieldByName(REPORT_LAYOUT_PARAM).ReadOnly := initLayout <> '';
+
+  //Params
   for I := 0 to FReportCatalogItem.Manifest.ParamNodes.Count - 1 do
   begin
     mParam := FReportCatalogItem.Manifest.ParamNodes[I];
     field := FParamDataSet.FieldByName(mParam.Name);
 
-    Val := WorkItem.State['Init.' + mParam.Name];
+    Val := WorkItem.State[PARAM_PREFIX + mParam.Name];
 
     if not VarIsEmpty(Val) then
     begin
+      FParamDataSet.Edit;
       if VarIsStr(Val) and (VarToStr(Val) = '') then
         field.Value := null
       else
@@ -318,11 +389,12 @@ begin
 
     //Label
     fieldLabel := FParamDataSet.FieldByName(mParam.Name + PARAM_LABEL_SUFFIX);
-    Val := WorkItem.State['Init.' + mParam.Name + PARAM_LABEL_SUFFIX];
+    Val := WorkItem.State[PARAM_PREFIX + mParam.Name + PARAM_LABEL_SUFFIX];
     if not VarIsEmpty(Val) then
     begin
       field.Visible := false;
       fieldLabel.Visible := true;
+      FParamDataSet.Edit;
       fieldLabel.Value := VarToStr(Val);
     end
     else
@@ -330,10 +402,25 @@ begin
       fieldLabel.Visible := false;
       field.Visible := not mParam.Hidden;
     end;
+
+    if field.Visible then
+      SetFieldAttribute(field, FIELD_ATTR_HIDDEN, '0')
+    else
+      SetFieldAttribute(field, FIELD_ATTR_HIDDEN, '1');
+
+   if fieldLabel.Visible then
+      SetFieldAttribute(fieldLabel, FIELD_ATTR_HIDDEN, '0')
+    else
+      SetFieldAttribute(fieldLabel, FIELD_ATTR_HIDDEN, '1');
+
   end;
 
-  FParamDataSet.Post;
+  if FParamDataSet.State in [dsEdit] then
+    FParamDataSet.Post;
 
+  WorkItem.Commands[COMMAND_LAYOUT_CHANGED].Execute;
+
+//  View.SetParamsStatus;
 end;
 
 function TReportLauncherPresenter.View: IReportLauncherView;
@@ -420,7 +507,7 @@ var
 
 begin
 
-  View.InitParamEditor_Lookup(REPORT_LAYOUT_PARAM, FLayoutCaptions);
+  View.InitLayoutEditor(REPORT_LAYOUT_PARAM, FLayoutDataSet);
 
   //Params
   for I := 0 to FReportCatalogItem.Manifest.ParamNodes.Count - 1 do
@@ -465,9 +552,6 @@ begin
   Sender.Params.AssignTo(WorkItem);
   InitParamValues;
   ViewHidden := Sender.Params[TReportLaunchParams.LaunchMode] <> 0;
-
-  {  ViewHidden := not VarIsEmpty(WorkItem.State['ImmediateRun'])
-   and (VarToStr(WorkItem.State['ImmediateRun']) <> '0');}
 
   if ViewHidden  then
     WorkItem.Commands[COMMAND_EXECUTE].Execute;
@@ -536,13 +620,6 @@ begin
       end;
     end;
 
-end;
-
-destructor TReportLauncherPresenter.Destroy;
-begin
-  FLayouts.Free;
-  FLayoutCaptions.Free;
-  inherited;
 end;
 
 procedure TReportLauncherPresenter.OnSetWorkItemState(const AName: string;

@@ -25,7 +25,6 @@ type
     FReportCatalog: TReportCatalog;
     FFactories: TComponentList;
     procedure LoadCatalogItems;
-    procedure LoadCatalogItem(AItem: TReportCatalogItem);
     procedure UnLoadCatalogItem(AItem: TReportCatalogItem);
 
     procedure RegisterSettings;
@@ -36,7 +35,7 @@ type
     //
     function GetItem(const URI: string): TReportCatalogItem;
     procedure RegisterLauncherFactory(Factory: TComponent);
-    procedure LaunchReport(Caller: TWorkItem; const AReportURI: string;
+    procedure LaunchReport(Caller: TWorkItem; const AURI, ALayout: string;
       ALaunchMode: TReportLaunchMode);
     //
     procedure Initialize; override;
@@ -53,7 +52,7 @@ implementation
 
 
 procedure TReportingController.LaunchReport(Caller: TWorkItem;
-  const AReportURI: string; ALaunchMode: TReportLaunchMode);
+  const AURI, ALayout: string; ALaunchMode: TReportLaunchMode);
 var
   I: integer;
   Factory: IReportLauncherFactory;
@@ -62,9 +61,9 @@ var
   tmpl: string;
 begin
 
-  repItem := GetItem(AReportURI);
+  repItem := GetItem(AURI);
 
-  tmpl := repItem.Path + repItem.Manifest.Layouts[AReportURI].Template;
+  tmpl := repItem.Path + repItem.Manifest.Layouts[ALayout].Template;
 
   rLauncher := nil;
   for I := 0 to FFactories.Count - 1 do
@@ -106,38 +105,21 @@ begin
   end;
 end;
 
-procedure TReportingController.LoadCatalogItem(
-  AItem: TReportCatalogItem);
-var
-  layout: TReportLayout;
-  I: integer;
-begin
-  //Layouts
-  for layout in AItem.Manifest.Layouts do
-  begin
-    {with FReportService.Add(layout.ID) do
-    begin
-      Template := AItem.Path + layout.Template;
-      Group := AItem.Group.Caption;
-      Caption := AItem.Caption;
-      if layout.ID <> AItem.ID then
-        Caption := Caption + ' [' + layout.Caption + ']';
-    end;}
 
-    with WorkItem.Activities[layout.ID] do
+procedure TReportingController.LoadCatalogItems;
+
+  procedure LoadItem(AItem: TReportCatalogItem);
+  var
+    I: integer;
+  begin
+
+    with WorkItem.Activities[AItem.ID] do
     begin
-      if layout.ID <> AItem.ID then
-      begin
-        Title := AItem.Caption + ' [' + layout.Caption + ']';
+      Title := AItem.Caption;
+      if not AItem.IsTop then
         MenuIndex := -1;
-      end
-      else
-      begin
-        Title := AItem.Caption;
-        if not AItem.IsTop then
-          MenuIndex := -1;
-        RegisterHandler(TReportLaunchHandler.Create);
-      end;
+      RegisterHandler(TReportLaunchHandler.Create);
+
       Group := AItem.Group.Caption;
       Image := FActivityImage;
       UsePermission := true;
@@ -146,22 +128,10 @@ begin
         Params.Value[AItem.Manifest.ParamNodes[I].Name] := Unassigned;
     end;
   end;
-//  WorkItem.Root.Actions[AItem.ID].SetHandler(ActionReportLaunch);
-//  WorkItem.Root.Actions[AItem.ID].SetDataClass(TReportLaunchData);
 
-
-end;
-
-procedure TReportingController.LoadCatalogItems;
 var
   I, Y: integer;
 begin
-
-  {Clear Report&NavBar Items}
-{  for I := WorkItem.WorkItems.Count - 1 downto 0 do
-    if Assigned(WorkItem.WorkItems[I].Controller) and
-       (WorkItem.WorkItems[I].Controller is TReportLauncherPresenter) then
-       TReportLauncherPresenter(WorkItem.WorkItems[I].Controller).CloseView;}
 
   for I := WorkItem.WorkItems.Count - 1 downto 0 do
     if Assigned(WorkItem.WorkItems[I].Controller) and
@@ -177,7 +147,7 @@ begin
   {Add Report&NavBar Items}
   for I := 0 to FReportCatalog.Groups.Count - 1 do
     for Y := 0 to FReportCatalog.Groups[I].Items.Count - 1 do
-      LoadCatalogItem(FReportCatalog.Groups[I].Items[Y]);
+      LoadItem(FReportCatalog.Groups[I].Items[Y]);
 end;
 
 procedure TReportingController.Initialize;
@@ -203,7 +173,7 @@ begin
     RegisterHandler(TViewActivityHandler.Create(TReportCatalogPresenter, TfrReportCatalogView));
   end;
 
-  WorkItem.Activities[VIEW_REPORT_LAUNCHER].
+  WorkItem.Activities[TReportLauncherPresenter.ACTIVITY_REPORT_LAUNCHER].
     RegisterHandler(TViewActivityHandler.Create(TReportLauncherPresenter, TfrReportLauncherView));
 
   LoadCatalogItems;
@@ -260,15 +230,17 @@ var
   I: integer;
 begin
 
-  with Sender.Activities[VIEW_REPORT_LAUNCHER] do
+  with Sender.Activities[TReportLauncherPresenter.ACTIVITY_REPORT_LAUNCHER] do
   begin
     Params[TViewActivityParams.PresenterID] := Activity.URI + Sender.ID;
     Params[TReportLaunchParams.ReportURI] := Activity.URI;
+    Params[TReportLaunchParams.InitLayout] :=
+      Activity.Params[TReportActivityParams.Layout];
     Params[TReportLaunchParams.LaunchMode] :=
       Activity.Params[TReportActivityParams.LaunchMode];
 
     for I := 0 to  Activity.Params.Count - 1 do
-      Params['Init.' + Activity.Params.ValueName(I)] :=
+      Params[TReportLauncherPresenter.PARAM_PREFIX + Activity.Params.ValueName(I)] :=
         Activity.Params[Activity.Params.ValueName(I)];
 
 

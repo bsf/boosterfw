@@ -26,6 +26,7 @@ type
     FHidden: boolean;
     FDefaultValue: string;
     FRequired: boolean;
+    FLayouts: TStringList;
   public
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
@@ -38,6 +39,7 @@ type
     property Hint: string read FHint write FHint;
     property Hidden: boolean read FHidden write FHidden;
     property Required: boolean read FRequired write FRequired;
+    property Layouts: TStringList read FLayouts;
   end;
 
   TManifestParamNodes = class(TCollection)
@@ -609,6 +611,8 @@ var
   Sections: TStringList;
   nameID: string;
   paramItem: TManifestParamNode;
+  defLayoutCaption: string;
+  idx: integer;
 begin
   Sections := TStringList.Create;
 
@@ -617,6 +621,7 @@ begin
   FIsTop := AManifest.ReadBool('Common', 'IsTop', true);
   FGroup := AManifest.ReadString('Common', 'Group', '');
   FCaption := AManifest.ReadString('Common', 'Caption', '');
+  defLayoutCaption := AManifest.ReadString('Common', 'LayoutCaption', BASE_REPORT_LAYOUT_CAPTION);
   FTemplate := AManifest.ReadString('Common', 'Template', '');
   FDescription := AManifest.ReadString('Common', 'Description', '');
 
@@ -635,6 +640,13 @@ begin
     paramItem.Required := AManifest.ReadBool(Sections[I], 'Required', true);
     paramItem.DefaultValue := AManifest.ReadString(Sections[I], 'DefaultValue', '');
 
+    ExtractStrings([';'], [],
+      PWideChar(AManifest.ReadString(Sections[I], 'Layouts', '')), paramItem.Layouts);
+
+    idx := paramItem.Layouts.IndexOf('Common');
+    if idx <> -1 then
+      paramItem.Layouts[idx] := FID;
+
     {ExtractStrings([';'], [],
       PChar(AManifest.ReadString(Sections[I], 'EditorOptions', '')), paramItem.EditorOptions);}
     AManifest.ReadSectionValues(Sections[I] + '.EditorOptions', paramItem.EditorOptions);
@@ -647,13 +659,13 @@ begin
 
   FLayouts.Clear;
 
-  FLayouts.Add(FID, TReportLayout.Create(FID, BASE_REPORT_LAYOUT_CAPTION, FTemplate));
+  FLayouts.Add(FID, TReportLayout.Create(FID, defLayoutCaption, FTemplate));
 
   GetSectionList('Layout.', Sections);
   for i := 0 to Sections.Count - 1 do
   begin
     nameID := StringReplace(Sections[I], 'Layout.', '', []);
-    FLayouts.Add(FID + '.' + nameID, TReportLayout.Create(FID + '.' + nameID,
+    FLayouts.Add(nameID, TReportLayout.Create(nameID,
       AManifest.ReadString(Sections[I], 'Caption', nameID),
       AManifest.ReadString(Sections[I], 'Template', FTemplate)));
   end;
@@ -746,12 +758,14 @@ begin
   inherited Create(Collection);
   FEditorOptions := TStringList.Create;
   FValues := TStringList.Create;
+  FLayouts := TStringList.Create;
 end;
 
 destructor TManifestParamNode.Destroy;
 begin
   FValues.Free;
   FEditorOptions.Free;
+  FLayouts.Free;
   inherited;
 end;
 

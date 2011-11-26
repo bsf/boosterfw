@@ -19,12 +19,14 @@ type
     grParamsCategoryTop: TcxCategoryRow;
     cxStyleRepository1: TcxStyleRepository;
     cxStyleReadOnlyParam: TcxStyle;
+    cxStyleLayoutHeader: TcxStyle;
   private
 
     function FindParamEditor(AParamName: string): TcxDBEditorRow;
     procedure ParamEditorButtonEditClick(Sender: TObject; AButtonIndex: Integer);
     procedure ParamEditorButtonEditValueChanged(Sender: TObject);
     procedure ParamEditorValueChanged(Sender: TObject);
+    procedure LayoutChanged(Sender: TObject);
   protected
     //TCustomView
     procedure OnFocusDataSetControl(ADataSet: TDataSet; const AFieldName: string;
@@ -38,6 +40,8 @@ type
     procedure InitParamEditor_CheckBoxList(const AParamName: string; AItems: TStrings);
     procedure InitParamEditor_Lookup(const AParamName: string; AItems: TStrings);
     procedure InitParamEditor_ButtonEdit(const AParamName, ACommandName: string);
+    procedure InitLayoutEditor(const AParamName: string; ADataSet: TDataSet);
+    procedure SetParamsStatus;
   public
     { Public declarations }
   end;
@@ -98,27 +102,16 @@ begin
   end;
 end;
 
-procedure TfrReportLauncherView.LinkParamDataSet(const ADataSet: TDataSet);
-var
-  I: integer;
-  field: TField;
+procedure TfrReportLauncherView.LayoutChanged(Sender: TObject);
 begin
+  TcxCustomEdit(Sender).PostEditValue;
+  WorkItem.Commands[COMMAND_LAYOUT_CHANGED].Execute;
+end;
 
+procedure TfrReportLauncherView.LinkParamDataSet(const ADataSet: TDataSet);
+begin
   ParamDataSource.DataSet := ADataSet;
   grParams.DataController.CreateAllItems;
-
-  //for param's labels rows
-  for I := 0 to grParams.Rows.Count - 1 do
-  begin
-    if (grParams.Rows[I] is TcxDBEditorRow) then
-    begin
-      field := ADataSet.FindField((TcxDBEditorRow(grParams.Rows[I]).
-        Properties.DataBinding.FieldName));
-      if (field <> nil) and field.ReadOnly then
-        TcxDBEditorRow(grParams.Rows[I]).Styles.Content := cxStyleReadOnlyParam;
-
-     end;
-  end;
 end;
 
 procedure TfrReportLauncherView.InitParamEditor_CheckBox(
@@ -207,6 +200,38 @@ begin
 
 end;
 
+procedure TfrReportLauncherView.InitLayoutEditor(const AParamName: string;
+  ADataSet: TDataSet);
+var
+  grRow: TcxDBEditorRow;
+  lookupDS: TDataSource;
+begin
+  grRow := FindParamEditor(AParamName);
+  if not Assigned(grRow) then Exit;
+
+  grRow.Styles.Header := cxStyleLayoutHeader;
+
+  lookupDS := TDataSource.Create(grRow);
+  lookupDS.DataSet := ADataSet;
+
+  grRow.Properties.EditPropertiesClass := TcxLookupComboBoxProperties;
+  with TcxLookupComboBoxProperties(grRow.Properties.EditProperties) do
+  begin
+  //  ClearKey := TextToShortCut('Del');
+    ListOptions.ShowHeader := false;
+    if lookupDS.DataSet.RecordCount < 25 then
+      DropDownRows := lookupDS.DataSet.RecordCount
+    else
+      DropDownRows := 25;
+    ListSource := lookupDS;
+    KeyFieldNames := 'ID';
+    ListFieldNames := 'NAME';
+    Revertable := true;
+    OnEditValueChanged := LayoutChanged;
+  end;
+
+end;
+
 procedure TfrReportLauncherView.InitParamEditor_ButtonEdit(
   const AParamName, ACommandName: string);
 var
@@ -259,6 +284,49 @@ end;
 procedure TfrReportLauncherView.ParamEditorValueChanged(Sender: TObject);
 begin
   TcxCustomEdit(Sender).PostEditValue;
+end;
+
+procedure TfrReportLauncherView.SetParamsStatus;
+var
+  I: integer;
+  field: TField;
+  ds: TDataSet;
+  row: TcxDBEditorRow;
+begin
+  ds := ParamDataSource.DataSet;
+  //for param's labels rows
+  for I := 0 to grParams.Rows.Count - 1 do
+  begin
+    if (grParams.Rows[I] is TcxDBEditorRow) then
+    begin
+      row := TcxDBEditorRow(grParams.Rows[I]);
+      field := ds.FindField(row.Properties.DataBinding.FieldName);
+
+      if field = nil then Continue;
+
+      row.Visible := field.Visible;
+
+      if field.ReadOnly then
+      begin
+        with row do
+        begin
+          Styles.Content := cxStyleReadOnlyParam;
+          Properties.Options.Editing := false;
+          Properties.Options.ShowEditButtons := eisbNever;
+        end;
+      end
+      else
+      begin
+        with row do
+        begin
+          Styles.Content := nil;
+          Properties.Options.Editing := true;
+          Properties.Options.ShowEditButtons := eisbDefault;
+        end;
+      end;
+    end;
+  end;
+
 end;
 
 procedure TfrReportLauncherView.OnFocusDataSetControl(ADataSet: TDataSet;

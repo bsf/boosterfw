@@ -9,7 +9,6 @@ const
   VIEW_RPT_CATALOG = 'view.reports.catalog';
   VIEW_RPT_CATALOG_CAPTION = 'Диспетчер отчетов';
 
-  VIEW_REPORT_LAUNCHER = 'views.reports.launcher';
   VIEW_REPORT_ITEM_SETUP = 'views.reports.item.setup';
 
 type
@@ -41,17 +40,19 @@ type
     procedure RegisterLauncherFactory(Factory: TComponent);
 
     procedure LaunchReport(Caller: TWorkItem;
-      const AReportURI: string; ALaunchMode: TReportLaunchMode);
+      const AURI, ALayout: string; ALaunchMode: TReportLaunchMode);
   end;
 
 
   TReportActivityParams = record
   const
+    Layout = 'Layout';
     LaunchMode = 'LaunchMode'; {0 - show param view; 1 - immediate preview; 2 - immediate print; 3 - hold}
   end;
 
   TReportLaunchParams = record
   const
+    InitLayout = 'InitLayout';
     LaunchMode = 'LaunchMode';
     ReportURI = 'ReportURI';
   end;
