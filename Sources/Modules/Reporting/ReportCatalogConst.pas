@@ -41,12 +41,12 @@ type
 
     procedure LaunchReport(Caller: TWorkItem;
       const AURI, ALayout: string; ALaunchMode: TReportLaunchMode);
+
   end;
 
 
   TReportActivityParams = record
   const
-    Layout = 'Layout';
     LaunchMode = 'LaunchMode'; {0 - show param view; 1 - immediate preview; 2 - immediate print; 3 - hold}
   end;
 

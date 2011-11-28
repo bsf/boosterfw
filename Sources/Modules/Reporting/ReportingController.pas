@@ -2,7 +2,7 @@ unit ReportingController;
 
 interface
 uses classes, CoreClasses,  sysutils, variants, Contnrs,
-  ShellIntf,
+  ShellIntf, SecurityIntf,
   CommonUtils, ConfigServiceIntf, graphics, UIClasses,
   EntityServiceIntf, UIServiceIntf,
   ReportCatalogConst, ReportCatalogClasses,
@@ -19,11 +19,16 @@ const
 
 type
   TReportingController = class(TWorkItemController, IReportCatalogService)
+  const
+    REPORT_ACTIVITY_OPTION_REPORT_URI = 'ReportURI';
+    REPORT_ACTIVITY_OPTION_REPORT_LAYOUT = 'ReportLayout';
+    REPORT_TO_ACTIVITY_URI_FMT = '%s.%s';
   private
     FActivityImage: TBitmap;
     FCatalogPath: string;
     FReportCatalog: TReportCatalog;
     FFactories: TComponentList;
+
     procedure LoadCatalogItems;
     procedure UnLoadCatalogItem(AItem: TReportCatalogItem);
 
@@ -59,7 +64,11 @@ var
   rLauncher: IReportLauncher;
   repItem: TReportCatalogItem;
   tmpl: string;
+  layoutURI: string;
 begin
+  layoutURI := format(REPORT_TO_ACTIVITY_URI_FMT, [AURI, ALayout]);
+  if not WorkItem.Activities[layoutURI].HavePermission then
+    raise ESecurity.Create('Отказано в доступе к отчету');
 
   repItem := GetItem(AURI);
 
@@ -111,6 +120,8 @@ procedure TReportingController.LoadCatalogItems;
   procedure LoadItem(AItem: TReportCatalogItem);
   var
     I: integer;
+    repLayout: TReportLayout;
+    layoutURI: string;
   begin
 
     with WorkItem.Activities[AItem.ID] do
@@ -124,8 +135,33 @@ procedure TReportingController.LoadCatalogItems;
       Image := FActivityImage;
       UsePermission := true;
 
+      Options.Values[REPORT_ACTIVITY_OPTION_REPORT_URI] := AItem.ID;
       for I := 0 to  AItem.Manifest.ParamNodes.Count - 1 do
         Params.Value[AItem.Manifest.ParamNodes[I].Name] := Unassigned;
+    end;
+
+    for repLayout in AItem.Manifest.Layouts do
+    begin
+      if repLayout.ID = AItem.ID then Continue;
+
+      layoutURI := format(REPORT_TO_ACTIVITY_URI_FMT, [AItem.ID, repLayout.ID]);
+
+      with WorkItem.Activities[layoutURI] do
+      begin
+        Title := AItem.Caption + '[' + repLayout.Caption + ']';
+        MenuIndex := -1;
+        RegisterHandler(TReportLaunchHandler.Create);
+
+        Group := AItem.Group.Caption;
+        Image := FActivityImage;
+        UsePermission := true;
+
+        Options.Values[REPORT_ACTIVITY_OPTION_REPORT_URI] := AItem.ID;
+        Options.Values[REPORT_ACTIVITY_OPTION_REPORT_LAYOUT] := repLayout.ID;
+        for I := 0 to  AItem.Manifest.ParamNodes.Count - 1 do
+          Params.Value[AItem.Manifest.ParamNodes[I].Name] := Unassigned;
+      end;
+
     end;
   end;
 
@@ -228,19 +264,23 @@ procedure TReportingController.TReportLaunchHandler.Execute(Sender: TWorkItem;
   Activity: IActivity);
 var
   I: integer;
+  reportURI: string;
+  layout: string;
 begin
+  reportURI := Activity.Options.Values[REPORT_ACTIVITY_OPTION_REPORT_URI];
+  layout := Activity.Options.Values[REPORT_ACTIVITY_OPTION_REPORT_LAYOUT];
 
   with Sender.Activities[TReportLauncherPresenter.ACTIVITY_REPORT_LAUNCHER] do
   begin
-    Params[TViewActivityParams.PresenterID] := Activity.URI + Sender.ID;
-    Params[TReportLaunchParams.ReportURI] := Activity.URI;
-    Params[TReportLaunchParams.InitLayout] :=
-      Activity.Params[TReportActivityParams.Layout];
+    Params[TViewActivityParams.PresenterID] := reportURI + Sender.ID;
+    Params[TReportLaunchParams.ReportURI] := reportURI;
+    Params[TReportLaunchParams.InitLayout] := layout;
+
     Params[TReportLaunchParams.LaunchMode] :=
       Activity.Params[TReportActivityParams.LaunchMode];
 
     for I := 0 to  Activity.Params.Count - 1 do
-      Params[TReportLauncherPresenter.PARAM_PREFIX + Activity.Params.ValueName(I)] :=
+      Params[TReportLauncherPresenter.PARAM_INIT_PREFIX + Activity.Params.ValueName(I)] :=
         Activity.Params[Activity.Params.ValueName(I)];
 
 
