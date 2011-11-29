@@ -2,7 +2,7 @@ unit bfwApp;
 
 interface
 
-uses windows, classes, forms, sysutils,
+uses windows, classes, forms, sysutils, graphics,
   CustomApp, CoreClasses, ShellIntf,
   ShellLogin, ShellSplashForm,
   ConfigServiceIntf, ConfigService,
@@ -16,6 +16,7 @@ const
 type
   TApp = class(TCustomApplication, IApp)
   private
+    FLogo: Graphics.TBitmap;
     FSplash: TShellSplash;
     procedure SplashShow;
     procedure SplashHide;
@@ -27,6 +28,7 @@ type
     procedure OnLoadModule(const AModuleName, AInfo: string; Kind: TModuleKind); override;
     //IApp
     function Version: string;
+    function Logo: Graphics.TBitmap;
     function Settings: ISettings;
     function UserProfile: IProfile;
     function HostProfile: IProfile;
@@ -104,6 +106,25 @@ begin
     Services[IConfigurationService]).HostProfile;
 end;
 
+
+function TApp.Logo: Graphics.TBitmap;
+var
+  logoFileName: string;
+begin
+  if FLogo = nil then
+  begin
+    FLogo := TBitmap.Create;
+    if FindResource(HInstance, RES_ID_APP_LOGO, RT_BITMAP) <> 0 then
+      FLogo.LoadFromResourceName(HInstance, 'APP_LOGO')
+    else
+    begin
+      logoFileName := ChangeFileExt(ParamStr(0), '.bmp');
+      if FileExists(logoFileName) then
+        FLogo.LoadFromFile(logoFileName);
+    end;
+  end;
+  Result := FLogo;
+end;
 
 function TApp.Entities: IEntityService;
 begin

@@ -2,14 +2,57 @@ unit UILocalization;
 
 interface
 uses cxClasses, dxNavBarConsts, cxGridStrs, cxFilterControlStrs, cxFilterConsts,
-  cxGridPopupMenuConsts, cxEditConsts;
+  cxGridPopupMenuConsts, cxEditConsts, UIServiceIntf, coreClasses, UIClasses,
+  ShellIntf, ShellNavBar, ShellLayoutStr;
 
-procedure Localization;
+procedure Localization(AWorkItem: TWorkItem);
 
 implementation
 
-procedure Localization;
+
+procedure Localization_ru;
 begin
+  //Booster Frame Work
+  //ShellIntf
+  SetLocaleString(@MENU_GROUP_FILE, 'Файл');
+  SetLocaleString(@MENU_GROUP_SERVICE, 'Сервис');
+
+  //ShellLayout
+  SetLocaleString(@MAIN_MENU_CAPTION, 'Главное меню');
+  SetLocaleString(@VIEW_USER_PREFERENCES_TITLE, 'Предпочтения');
+  SetLocaleString(@COMMAND_CLOSE_APP_CAPTION, 'Выход');
+  SetLocaleString(@COMMAND_SHOW_ABOUT_CAPTION, 'О программе...');
+  SetLocaleString(@MAIN_MENU_CAPTION,  'Главное меню');
+  SetLocaleString(@StrWaitMessage, 'Загрузка данных. Подождите пожалуйста...');
+  SetLocaleString(@COMMAND_RESET_CAPTION,  'Сбросить');
+  SetLocaleString(@VIEW_NOTIFYSENDER_TITLE, 'Рассылка уведомлений');
+  SetLocaleString(@CloseApplicationQuestion, 'Закрыть программу?');
+  SetLocaleString(@strToolWinCmdHideTabs, 'Скрыть закладки');
+  SetLocaleString(@strToolWinCmdTabsTop, 'Закладки вверху');
+  SetLocaleString(@strToolWinCmdTabsBottom, 'Закладки снизу');
+  SetLocaleString(@strToolWinCmdCloseAll, 'Закрыть все');
+
+
+  //UIClasses
+  SetLocaleString(@COMMAND_CLOSE_CAPTION, 'Закрыть');
+  SetLocaleString(@COMMAND_SAVE_CAPTION, 'Сохранить');
+  SetLocaleString(@COMMAND_NEXT_CAPTION, 'Далее >>');
+  SetLocaleString(@COMMAND_OK_CAPTION, 'OK');
+  SetLocaleString(@COMMAND_CANCEL_CAPTION, 'Отмена');
+  SetLocaleString(@COMMAND_RELOAD_CAPTION, 'Обновить');
+  SetLocaleString(@COMMAND_OPEN_CAPTION, 'Открыть');
+  SetLocaleString(@COMMAND_NEW_CAPTION, 'Добавить');
+  SetLocaleString(@COMMAND_DELETE_CAPTION, 'Удалить');
+  SetLocaleString(@COMMAND_DETAIL_OPEN_CAPTION, 'Открыть запись');
+  SetLocaleString(@COMMAND_DETAIL_NEW_CAPTION, 'Добавить запись');
+  SetLocaleString(@COMMAND_DETAIL_DELETE_CAPTION, 'Удалить запись');
+  SetLocaleString(@COMMAND_STATE_CHANGE_CAPTION, 'Сменить состояние');
+  SetLocaleString(@COMMAND_STATE_CHANGE_NEXT_CAPTION, 'Следующее состояние');
+  SetLocaleString(@COMMAND_STATE_CHANGE_PREV_CAPTION, 'Предыдущее состояние');
+  SetLocaleString(@COMMAND_SELECTOR_CAPTION, 'Отбор');
+  SetLocaleString(@COMMAND_EXECUTE_CAPTION, 'Выполнить');
+
+
 //cxEditConsts;
 
   // TODO
@@ -466,6 +509,16 @@ scxGridRecursiveLevels = 'You cannot create recursive levels';
   cxSetResourceString(@cxSFilterBoxNonBlanksCaption, '(Не пусто)');
 
 
+end;
+
+
+procedure Localization(AWorkItem: TWorkItem);
+var
+  svc: IUIService;
+begin
+  svc := AWorkItem.Services[IUIService] as IUIService;
+  if svc.Locale = 'ru-RU' then
+    Localization_ru;
 end;
 
 end.

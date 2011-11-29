@@ -79,10 +79,10 @@ begin
   ViewTitle := ViewInfo.Title;
 
   View.CommandBar.
-    AddCommand(COMMAND_CLOSE, COMMAND_CLOSE_CAPTION, COMMAND_CLOSE_SHORTCUT, CmdClose);
+    AddCommand(COMMAND_CLOSE, GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
 
   View.CommandBar.
-    AddCommand(COMMAND_RELOAD, COMMAND_RELOAD_CAPTION, COMMAND_RELOAD_SHORTCUT, CmdReload);
+    AddCommand(COMMAND_RELOAD, GetLocaleString(@COMMAND_RELOAD_CAPTION), COMMAND_RELOAD_SHORTCUT, CmdReload);
 
   WorkItem.Commands[COMMAND_RELOAD].Status := csDisabled; //TODO - AV при обновлении!
 

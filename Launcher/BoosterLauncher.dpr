@@ -11,9 +11,5 @@ type
   TBoosterApplication = class(TApp);
 
 begin
-  //Application.Initialize;
- // Application.MainFormOnTaskbar := True;
-  //Application.Run;
-  ConfigServiceIntf.LOCAL_APP_DATA_KEY := 'Booster\BoosterLauncher';
-  TBoosterApplication.ShellInstantiate;
+  TBoosterApplication.AppInstance.Run;
 end.

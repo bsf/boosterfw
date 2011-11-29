@@ -87,10 +87,10 @@ begin
     ViewTitle := VarToStr(fieldAux.Value);
 
   View.CommandBar.AddCommand(COMMAND_SAVE,
-    COMMAND_SAVE_CAPTION, COMMAND_SAVE_SHORTCUT, CmdSave);
+    GetLocaleString(@COMMAND_SAVE_CAPTION), COMMAND_SAVE_SHORTCUT, CmdSave);
 
   View.CommandBar.AddCommand(COMMAND_CANCEL,
-    COMMAND_CANCEL_CAPTION, COMMAND_CANCEL_SHORTCUT, CmdCancel);
+    GetLocaleString(@COMMAND_CANCEL_CAPTION), COMMAND_CANCEL_SHORTCUT, CmdCancel);
 
   View.SetData(GetEVItem.DataSet);
 
@@ -123,7 +123,7 @@ begin
   end;
 
   if WorkItem.State['NEXT_ACTION'] <> '' then
-    WorkItem.Commands[COMMAND_SAVE].Caption := 'Далее >>';
+    WorkItem.Commands[COMMAND_SAVE].Caption := GetLocaleString(@COMMAND_NEXT_CAPTION);
 end;
 
 function TEntityNewPresenter.GetEVItem: IEntityView;

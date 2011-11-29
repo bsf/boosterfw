@@ -54,8 +54,8 @@ begin
   ViewTitle := ViewInfo.Title;
   WorkItem.State['ModalResult'] := mrCancel;
 
-  View.CommandBar.AddCommand(COMMAND_CANCEL, COMMAND_CANCEL_CAPTION, 'Esc', cmdCancel);
-  View.CommandBar.AddCommand(COMMAND_OK, COMMAND_OK_CAPTION, 'Enter', cmdOK);
+  View.CommandBar.AddCommand(COMMAND_CANCEL, GetLocaleString(@COMMAND_CANCEL_CAPTION), 'Esc', cmdCancel);
+  View.CommandBar.AddCommand(COMMAND_OK, GetLocaleString(@COMMAND_OK_CAPTION), 'Enter', cmdOK);
 
   View.LinkData(GetEVList.DataSet);
 end;

@@ -41,12 +41,12 @@ object frShellAbout: TfrShellAbout
       Center = True
       Stretch = True
     end
-    object lbLogo: TLabel
+    object LogoLabel: TLabel
       Left = 10
       Top = 10
-      Width = 216
+      Width = 148
       Height = 19
-      Caption = #1048#1085#1092#1086#1088#1084#1072#1094#1080#1086#1085#1085#1072#1103' '#1057#1080#1089#1090#1077#1084#1072
+      Caption = 'Information System'
       Font.Charset = RUSSIAN_CHARSET
       Font.Color = clWindowText
       Font.Height = -16
@@ -58,7 +58,7 @@ object frShellAbout: TfrShellAbout
     object lbVer: TLabel
       Left = 10
       Top = 32
-      Width = 46
+      Width = 45
       Height = 14
       Caption = 'ver. 1.0.0'
       Font.Charset = RUSSIAN_CHARSET

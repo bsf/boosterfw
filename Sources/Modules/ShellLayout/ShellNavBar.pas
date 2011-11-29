@@ -4,7 +4,7 @@ interface
 
 uses classes, types, ViewStyleController, dxNavBar, dxNavBarGroupItems, dxNavBarCollns,
   sysutils, controls, CoreClasses, Graphics, cxGraphics, IniFiles,
-  windows, menus, cxLookAndFeels, ShellIntf;
+  windows, menus, cxLookAndFeels, ShellIntf, UIClasses, ShellLayoutStr;
 
 const
   DefNavView = 13;
@@ -118,7 +118,7 @@ var
   category: TdxNavBarGroup;
 begin
 
-  category := FindOrCreateCategory('Главное меню');
+  category := FindOrCreateCategory(GetLocaleString(@MAIN_MENU_CAPTION)); // 'Главное меню');
 
   for I := 0 to FWorkItem.Activities.Count - 1 do
   begin

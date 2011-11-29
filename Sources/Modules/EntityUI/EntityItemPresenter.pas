@@ -82,14 +82,14 @@ begin
   if not GetEVItem.ViewInfo.ReadOnly then
   begin
     View.CommandBar.AddCommand(COMMAND_SAVE,
-      COMMAND_SAVE_CAPTION, COMMAND_SAVE_SHORTCUT, CmdSave);
+      GetLocaleString(@COMMAND_SAVE_CAPTION), COMMAND_SAVE_SHORTCUT, CmdSave);
 
     View.CommandBar.AddCommand(COMMAND_CANCEL,
-      COMMAND_CANCEL_CAPTION, COMMAND_CANCEL_SHORTCUT, CmdCancel);
+      GetLocaleString(@COMMAND_CANCEL_CAPTION), COMMAND_CANCEL_SHORTCUT, CmdCancel);
   end
   else
     View.CommandBar.AddCommand(COMMAND_CLOSE,
-      COMMAND_CLOSE_CAPTION, COMMAND_CLOSE_SHORTCUT, CmdClose);
+      GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
 
   View.SetItemDataSet(GetEVItem.DataSet);
 
@@ -109,7 +109,7 @@ begin
     WorkItem.State['NEXT_ACTION'] := ViewInfo.OptionValue('Next');
 
   if WorkItem.State['NEXT_ACTION'] <> '' then
-    WorkItem.Commands[COMMAND_SAVE].Caption := 'Далее >>';
+    WorkItem.Commands[COMMAND_SAVE].Caption := GetLocaleString(@COMMAND_NEXT_CAPTION); //'Далее >>';
 end;
 
 function TEntityItemPresenter.GetEVItem: IEntityView;

@@ -3,11 +3,10 @@ unit NotifySenderPresenter;
 interface
 
 uses CustomDialogPresenter, UIClasses, CoreClasses, EntityServiceIntf,
-  CustomPresenter, sysutils, db, ShellIntf, controls, classes;
+  CustomPresenter, sysutils, db, ShellIntf, controls, classes, ShellLayoutStr;
 
 const
   VIEW_NOTIFYSENDER = 'views.notifysender';
-  VIEW_NOTIFYSENDER_TITLE = 'Рассылка уведомлений';
   COMMAND_SEND = 'commands.send';
 
   ENT_USER = 'SEC_USER';
@@ -66,7 +65,7 @@ procedure TNotifySenderPresenter.OnViewReady;
 var
   dsUsers: TDataSet;
 begin
-  ViewTitle := VIEW_NOTIFYSENDER_TITLE;
+  ViewTitle := GetLocaleString(@VIEW_NOTIFYSENDER_TITLE);
   FreeOnViewClose := true;
 
   View.CommandBar.AddCommand(COMMAND_CANCEL, 'Отмена', 'Esc', CmdCancel);

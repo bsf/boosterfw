@@ -165,30 +165,37 @@ begin
   end;
 
   View.CommandBar.
-    AddCommand(COMMAND_CLOSE, COMMAND_CLOSE_CAPTION, COMMAND_CLOSE_SHORTCUT, CmdClose);
+    AddCommand(COMMAND_CLOSE,
+      GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
 
   WorkItem.Commands[COMMAND_RELOAD].SetHandler(CmdReload);
   View.CommandBar.
-    AddCommand(COMMAND_RELOAD, COMMAND_RELOAD_CAPTION, COMMAND_RELOAD_SHORTCUT, CmdReload);
+    AddCommand(COMMAND_RELOAD,
+      GetLocaleString(@COMMAND_RELOAD_CAPTION), COMMAND_RELOAD_SHORTCUT, CmdReload);
 
-  View.CommandBar.AddCommand(COMMAND_SELECTOR, 'Отбор', '', CmdSelector);
-
-  View.CommandBar.
-    AddCommand(COMMAND_NEW, COMMAND_NEW_CAPTION, COMMAND_NEW_SHORTCUT, CmdNew);
-
-  View.CommandBar.
-    AddCommand(COMMAND_OPEN, COMMAND_OPEN_CAPTION, COMMAND_OPEN_SHORTCUT, CmdOpen);
+  View.CommandBar.AddCommand(COMMAND_SELECTOR,
+    GetLocaleString(@COMMAND_SELECTOR_CAPTION), '', CmdSelector);
 
   View.CommandBar.
-    AddCommand(COMMAND_DELETE, COMMAND_DELETE_CAPTION, COMMAND_DELETE_SHORTCUT, CmdDelete);
+    AddCommand(COMMAND_NEW,
+      GetLocaleString(@COMMAND_NEW_CAPTION), COMMAND_NEW_SHORTCUT, CmdNew);
 
-  WorkItem.Commands[COMMAND_STATE_CHANGE_NEXT].Caption := COMMAND_STATE_CHANGE_NEXT_CAPTION;
+  View.CommandBar.
+    AddCommand(COMMAND_OPEN,
+      GetLocaleString(@COMMAND_OPEN_CAPTION), COMMAND_OPEN_SHORTCUT, CmdOpen);
+
+  View.CommandBar.
+    AddCommand(COMMAND_DELETE,
+      GetLocaleString(@COMMAND_DELETE_CAPTION), COMMAND_DELETE_SHORTCUT, CmdDelete);
+
+  WorkItem.Commands[COMMAND_STATE_CHANGE_NEXT].Caption := GetLocaleString(@COMMAND_STATE_CHANGE_NEXT_CAPTION);
   WorkItem.Commands[COMMAND_STATE_CHANGE_NEXT].SetHandler(CmdStateChange);
-  View.CommandBar.AddCommand(COMMAND_STATE_CHANGE_NEXT, 'Сменить состояние', true);
+  View.CommandBar.AddCommand(COMMAND_STATE_CHANGE_NEXT,
+    GetLocaleString(@COMMAND_STATE_CHANGE_CAPTION), true);
 
-  WorkItem.Commands[COMMAND_STATE_CHANGE_PREV].Caption := COMMAND_STATE_CHANGE_PREV_CAPTION;
+  WorkItem.Commands[COMMAND_STATE_CHANGE_PREV].Caption := GetLocaleString(@COMMAND_STATE_CHANGE_PREV_CAPTION);
   WorkItem.Commands[COMMAND_STATE_CHANGE_PREV].SetHandler(CmdStateChange);
-  View.CommandBar.AddCommand(COMMAND_STATE_CHANGE_PREV, 'Сменить состояние');
+  View.CommandBar.AddCommand(COMMAND_STATE_CHANGE_PREV, GetLocaleString(@COMMAND_STATE_CHANGE_CAPTION));
 
   GetEVJrn.SynchronizeOnEntityChange(GetEVJrn.EntityName, ENT_VIEW_NEW_DEFAULT);
   GetEVJrn.SynchronizeOnEntityChange(GetEVJrn.EntityName, ENT_VIEW_ITEM_DEFAULT);

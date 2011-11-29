@@ -74,12 +74,12 @@ begin
   WorkItem.State['ModalResult'] := mrCancel;
 
   WorkItem.Commands[COMMAND_CANCEL].SetHandler(CmdCancel);
-  WorkItem.Commands[COMMAND_CANCEL].Caption := COMMAND_CANCEL_CAPTION;
+  WorkItem.Commands[COMMAND_CANCEL].Caption := GetLocaleString(@COMMAND_CANCEL_CAPTION);
   WorkItem.Commands[COMMAND_CANCEL].ShortCut := 'Esc';
   View.CommandBar.AddCommand(COMMAND_CANCEL);
 
   WorkItem.Commands[COMMAND_OK].SetHandler(CmdOK);
-  WorkItem.Commands[COMMAND_OK].Caption := COMMAND_OK_CAPTION;
+  WorkItem.Commands[COMMAND_OK].Caption := GetLocaleString(@COMMAND_OK_CAPTION);
   WorkItem.Commands[COMMAND_OK].ShortCut := 'Enter';
   (GetView as IEntityPickListView).CommandBar.AddCommand(COMMAND_OK);
 

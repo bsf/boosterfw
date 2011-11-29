@@ -4,59 +4,78 @@ interface
 uses classes, db, CoreClasses, sysutils, controls, ShellIntf,
   Contnrs, forms, variants;
 
+resourcestring
+  COMMAND_CLOSE_CAPTION = 'Close';
+  COMMAND_SAVE_CAPTION = 'Save';
+  COMMAND_NEXT_CAPTION = 'Next';
+  COMMAND_OK_CAPTION = 'OK';
+  COMMAND_CANCEL_CAPTION = 'Cancel';
+  COMMAND_RELOAD_CAPTION = 'Refresh';
+  COMMAND_OPEN_CAPTION = 'Open';
+  COMMAND_NEW_CAPTION = 'Add';
+  COMMAND_DELETE_CAPTION = 'Delete';
+  COMMAND_DETAIL_OPEN_CAPTION = 'Open record';
+  COMMAND_DETAIL_NEW_CAPTION = 'Add record';
+  COMMAND_DETAIL_DELETE_CAPTION = 'Del record';
+  COMMAND_STATE_CHANGE_CAPTION = 'Change state';
+  COMMAND_STATE_CHANGE_NEXT_CAPTION = 'Next state';
+  COMMAND_STATE_CHANGE_PREV_CAPTION = 'Prev state';
+  COMMAND_SELECTOR_CAPTION = 'Selector';
+  COMMAND_EXECUTE_CAPTION = 'Execute';
+
 const
   COMMAND_CLOSE = 'commands.view.close';
-  COMMAND_CLOSE_CAPTION = 'Закрыть';
+  //COMMAND_CLOSE_CAPTION = 'Закрыть';
   COMMAND_CLOSE_SHORTCUT = 'Ctrl+W';
 
   COMMAND_SAVE = 'commands.view.save';
-  COMMAND_SAVE_CAPTION = 'Сохранить';
+ // COMMAND_SAVE_CAPTION = 'Сохранить';
   COMMAND_SAVE_SHORTCUT = 'Ctrl+S;Ctrl+Enter';
 
   COMMAND_OK = 'commands.view.ok';
-  COMMAND_OK_CAPTION = 'OK';
+//  COMMAND_OK_CAPTION = 'OK';
   COMMAND_OK_SHORTCUT = 'Enter';
 
   COMMAND_CANCEL = 'commands.view.cancel';
-  COMMAND_CANCEL_CAPTION = 'Отмена';
+//  COMMAND_CANCEL_CAPTION = 'Отмена';
   COMMAND_CANCEL_SHORTCUT = 'Ctrl+W';
 
  // COMMAND_NEXT = 'commands.view.next';
  // COMMAND_NEXT_CAPTION = 'Далее';
 
   COMMAND_RELOAD = 'commands.view.reload';
-  COMMAND_RELOAD_CAPTION = 'Обновить';
+//  COMMAND_RELOAD_CAPTION = 'Обновить';
   COMMAND_RELOAD_SHORTCUT = 'F5';
 
   COMMAND_OPEN = 'commands.view.open';
-  COMMAND_OPEN_CAPTION = 'Открыть';
+// COMMAND_OPEN_CAPTION = 'Открыть';
   COMMAND_OPEN_SHORTCUT = 'Ctrl+Enter';
 
   COMMAND_NEW = 'commands.view.new';
-  COMMAND_NEW_CAPTION = 'Добавить';
+ // COMMAND_NEW_CAPTION = 'Добавить';
   COMMAND_NEW_SHORTCUT = 'Ins';
 
   COMMAND_DELETE = 'commands.view.del';
-  COMMAND_DELETE_CAPTION = 'Удалить';
+ // COMMAND_DELETE_CAPTION = 'Удалить';
   COMMAND_DELETE_SHORTCUT = 'Ctrl+Del';
 
   COMMAND_DETAIL_OPEN = 'commands.view.detail.open';
-  COMMAND_DETAIL_OPEN_CAPTION = 'Открыть запись';
+//  COMMAND_DETAIL_OPEN_CAPTION = 'Открыть запись';
   COMMAND_DETAIL_OPEN_SHORTCUT = 'Ctrl+Enter';
 
   COMMAND_DETAIL_NEW = 'commands.view.detail.new';
-  COMMAND_DETAIL_NEW_CAPTION = 'Добавить запись';
+//  COMMAND_DETAIL_NEW_CAPTION = 'Добавить запись';
   COMMAND_DETAIL_NEW_SHORTCUT = 'Ins';
 
   COMMAND_DETAIL_DELETE = 'commands.view.detail.del';
-  COMMAND_DETAIL_DELETE_CAPTION = 'Удалить запись';
+//  COMMAND_DETAIL_DELETE_CAPTION = 'Удалить запись';
   COMMAND_DETAIL_DELETE_SHORTCUT = 'Ctrl+Del';
 
   COMMAND_STATE_CHANGE_NEXT = 'commands.view.statechange.next';
-  COMMAND_STATE_CHANGE_NEXT_CAPTION = 'Следующее состояние';
+ // COMMAND_STATE_CHANGE_NEXT_CAPTION = 'Следующее состояние';
 
   COMMAND_STATE_CHANGE_PREV = 'commands.view.statechange.prev';
-  COMMAND_STATE_CHANGE_PREV_CAPTION = 'Предыдущее состояние';
+ // COMMAND_STATE_CHANGE_PREV_CAPTION = 'Предыдущее состояние';
 
 type
 
@@ -260,20 +279,6 @@ procedure RegisterViewExtension(AExtensionClass: TViewExtensionClass);
 procedure InstantiateViewExtensions(AView: TView);
 
 implementation
-
-type
- IPickListPresenterData = interface
-  ['{BE5EEC85-24BF-4BB8-9EC1-3C9A5BD43C22}']
-    function GetFilter: string;
-    function GetID: Variant;
-    function GetName: Variant;
-    procedure SetFilter(Value: string);
-    procedure SetID(Value: Variant);
-    procedure SetName(Value: Variant);
-    property Filter: string read GetFilter write SetFilter;
-    property ID: Variant read GetID write SetID;
-    property NAME: Variant read GetNAME write SetNAME;
-  end;
 
 var
   ExtensionClassList: TClassList;

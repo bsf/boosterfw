@@ -1,7 +1,7 @@
 unit bfwAdminModuleInit;
 
 interface
-uses classes, CoreClasses,  AdminController;
+uses classes, CoreClasses,  AdminController, AdminConst, UIServiceIntf;
 
 type
   TbfwAdminModuleInit = class(TModule)
@@ -15,6 +15,8 @@ implementation
 
 procedure TbfwAdminModuleInit.Load;
 begin
+  Localization((WorkItem.Services[IUIService] as IUIService).Locale);
+
   WorkItem.WorkItems.Add(TAdminController);
 
 end;

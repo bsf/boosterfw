@@ -2,6 +2,7 @@ unit EntityListPresenter;
 
 interface
 uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
+  cxClasses,
   SysUtils, Variants, ShellIntf, CustomContentPresenter,
   EntityCatalogIntf, EntityCatalogConst, db, controls;
 
@@ -135,22 +136,22 @@ begin
     ViewTitle := VarToStr(GetEVList.DataSet.FindField('VIEW_TITLE').Value);}
 
   View.CommandBar.
-    AddCommand(COMMAND_CLOSE, COMMAND_CLOSE_CAPTION, COMMAND_CLOSE_SHORTCUT, CmdClose);
+    AddCommand(COMMAND_CLOSE, GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
 
   View.CommandBar.
-    AddCommand(COMMAND_RELOAD, COMMAND_RELOAD_CAPTION, COMMAND_RELOAD_SHORTCUT, CmdReload);
+    AddCommand(COMMAND_RELOAD, GetLocaleString(@COMMAND_RELOAD_CAPTION), COMMAND_RELOAD_SHORTCUT, CmdReload);
 
   if UseSelector then
-    View.CommandBar.AddCommand(COMMAND_SELECTOR, 'Отбор', '', CmdSelector);
+    View.CommandBar.AddCommand(COMMAND_SELECTOR, GetLocaleString(@COMMAND_SELECTOR_CAPTION), '', CmdSelector);
 
   if ViewInfo.OptionExists('CanAdd') or ViewInfo.OptionExists('CanEdit') then
-    View.CommandBar.AddCommand(COMMAND_NEW, COMMAND_NEW_CAPTION, COMMAND_NEW_SHORTCUT, CmdNew);
+    View.CommandBar.AddCommand(COMMAND_NEW, GetLocaleString(@COMMAND_NEW_CAPTION), COMMAND_NEW_SHORTCUT, CmdNew);
 
   if ViewInfo.OptionExists('CanOpen') or ViewInfo.OptionExists('CanEdit') then
-    View.CommandBar.AddCommand(COMMAND_OPEN, COMMAND_OPEN_CAPTION, COMMAND_OPEN_SHORTCUT, CmdOpen);
+    View.CommandBar.AddCommand(COMMAND_OPEN, GetLocaleString(@COMMAND_OPEN_CAPTION), COMMAND_OPEN_SHORTCUT, CmdOpen);
 
   if ViewInfo.OptionExists('CanDelete') or ViewInfo.OptionExists('CanEdit') then
-    View.CommandBar.AddCommand(COMMAND_DELETE, COMMAND_DELETE_CAPTION, COMMAND_DELETE_SHORTCUT, CmdDelete);
+    View.CommandBar.AddCommand(COMMAND_DELETE, GetLocaleString(@COMMAND_DELETE_CAPTION), COMMAND_DELETE_SHORTCUT, CmdDelete);
 
   GetEVList.SynchronizeOnEntityChange(GetEVList.EntityName, ENT_VIEW_NEW_DEFAULT);
   GetEVList.SynchronizeOnEntityChange(GetEVList.EntityName, ENT_VIEW_ITEM_DEFAULT);

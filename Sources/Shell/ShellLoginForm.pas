@@ -10,7 +10,7 @@ type
   TfmShellLogin = class(TForm)
     imgLogo: TImage;
     lbVer: TLabel;
-    lbLogo: TLabel;
+    LogoLabel: TLabel;
     pnButtons: TPanel;
     pnClient: TPanel;
     btOK: TButton;
@@ -22,11 +22,12 @@ type
     PasswordEdit: TEdit;
     CustomLabel: TLabel;
     CustomCombo: TComboBox;
-    Label1: TLabel;
+    InfoLabel: TLabel;
     procedure btOKClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
     FOkClickEvent: TNotifyEvent;
+    procedure Localization;
   public
     { Public declarations }
   end;
@@ -41,8 +42,10 @@ function CreateShellLoginDialog(OkClickEvent: TNotifyEvent): TfmShellLogin;
 begin
   Result := TfmShellLogin.Create(nil);
   Result.FOkClickEvent := OkClickEvent;
-  if FindResource(HInstance, RES_ID_APP_LOGO, RT_BITMAP) <> 0 then
-    Result.imgLogo.Picture.Bitmap.LoadFromResourceName(HInstance, 'APP_LOGO');
+  Result.imgLogo.Picture.Bitmap.Assign(App.Logo);
+  Result.Localization;
+{  if FindResource(HInstance, RES_ID_APP_LOGO, RT_BITMAP) <> 0 then
+    Result.imgLogo.Picture.Bitmap.LoadFromResourceName(HInstance, 'APP_LOGO');}
 
 end;
 
@@ -58,6 +61,19 @@ begin
     ActiveControl := UserNameEdit
   else
     ActiveControl := PasswordEdit;
+end;
+
+procedure TfmShellLogin.Localization;
+begin
+  if App.UI.Locale = 'ru-RU' then
+  begin
+    Caption := 'Регистрация';
+    LogoLabel.Caption := 'Информационная Система';
+    InfoLabel.Caption := 'Введите ваше пользовательское имя и пароль';
+    UserNameLabel.Caption := 'Имя пользователя';
+    PasswordLabel.Caption := 'Пароль';
+    CustomLabel.Caption := 'Информационная база';
+  end;
 end;
 
 end.

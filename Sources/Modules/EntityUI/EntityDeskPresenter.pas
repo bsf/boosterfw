@@ -98,26 +98,33 @@ begin
   end;
 
   View.CommandBar.
-    AddCommand(COMMAND_CLOSE, COMMAND_CLOSE_CAPTION, COMMAND_CLOSE_SHORTCUT, CmdClose);
+    AddCommand(COMMAND_CLOSE, GetLocaleString(@COMMAND_CLOSE_CAPTION),
+      COMMAND_CLOSE_SHORTCUT, CmdClose);
 
   View.CommandBar.
-    AddCommand(COMMAND_RELOAD, COMMAND_RELOAD_CAPTION, COMMAND_RELOAD_SHORTCUT, CmdReload);
+    AddCommand(COMMAND_RELOAD, GetLocaleString(@COMMAND_RELOAD_CAPTION),
+      COMMAND_RELOAD_SHORTCUT, CmdReload);
 
   if ViewInfo.OptionExists('CanAdd') or ViewInfo.OptionExists('CanEdit') then
-    View.CommandBar.AddCommand(COMMAND_NEW, COMMAND_NEW_CAPTION, COMMAND_NEW_SHORTCUT, CmdNew);
+    View.CommandBar.AddCommand(COMMAND_NEW, GetLocaleString(@COMMAND_NEW_CAPTION),
+      COMMAND_NEW_SHORTCUT, CmdNew);
 
   if ViewInfo.OptionExists('CanOpen') or ViewInfo.OptionExists('CanEdit') then
-    View.CommandBar.AddCommand(COMMAND_OPEN, COMMAND_OPEN_CAPTION, COMMAND_OPEN_SHORTCUT, CmdOpen);
+    View.CommandBar.AddCommand(COMMAND_OPEN, GetLocaleString(@COMMAND_OPEN_CAPTION),
+      COMMAND_OPEN_SHORTCUT, CmdOpen);
 
   if ViewInfo.OptionExists('CanDelete') or ViewInfo.OptionExists('CanEdit') then
-    View.CommandBar.AddCommand(COMMAND_DELETE, COMMAND_DELETE_CAPTION, COMMAND_DELETE_SHORTCUT, CmdDelete);
+    View.CommandBar.AddCommand(COMMAND_DELETE, GetLocaleString(@COMMAND_DELETE_CAPTION),
+      COMMAND_DELETE_SHORTCUT, CmdDelete);
 
 
   View.CommandBar.AddCommand(COMMAND_STATE_CHANGE_NEXT,
-    COMMAND_STATE_CHANGE_NEXT_CAPTION, '', CmdStateChange, 'Сменить состояние', true);
+     GetLocaleString(@COMMAND_STATE_CHANGE_NEXT_CAPTION), '', CmdStateChange,
+      GetLocaleString(@COMMAND_STATE_CHANGE_CAPTION), true);
 
   View.CommandBar.AddCommand(COMMAND_STATE_CHANGE_PREV,
-    COMMAND_STATE_CHANGE_PREV_CAPTION, '', CmdStateChange, 'Сменить состояние');
+     GetLocaleString(@COMMAND_STATE_CHANGE_PREV_CAPTION), '', CmdStateChange,
+     GetLocaleString(@COMMAND_STATE_CHANGE_CAPTION));
 
   GetEVParams.Load(WorkItem);
 

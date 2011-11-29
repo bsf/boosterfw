@@ -7,7 +7,7 @@ uses coreClasses, CustomContentPresenter, UIClasses, cxCustomData, ShellIntf,
 
 const
   VIEW_SECURITYPOLICIES = 'views.security.policies';
-  VIEW_SECURITYPOLICIES_TITLE = 'Настройка разрешений';
+
 
   COMMAND_POLICY_ACTIVATE = '{4BBF82A6-7A65-4C39-A22B-3F18F2D16DD2}';
   COMMAND_POLICY_DEACTIVATE = '{BD133B3F-1E90-4230-9EDE-3BEDFBC2A1D4}';
@@ -152,10 +152,10 @@ procedure TSecurityPoliciesPresenter.OnViewReady;
 begin
   ViewTitle := VIEW_SECURITYPOLICIES_TITLE;
 
-  View.CommandBar.AddCommand(COMMAND_CLOSE, COMMAND_CLOSE_CAPTION,
+  View.CommandBar.AddCommand(COMMAND_CLOSE, GetLocaleString(@COMMAND_CLOSE_CAPTION),
     COMMAND_CLOSE_SHORTCUT, CmdClose);
 
-  View.CommandBar.AddCommand(COMMAND_OPEN, COMMAND_OPEN_CAPTION,
+  View.CommandBar.AddCommand(COMMAND_OPEN, GetLocaleString(@COMMAND_OPEN_CAPTION),
     COMMAND_OPEN_SHORTCUT, CmdOpen);
 
   View.CommandBar.AddCommand(COMMAND_POLICY_ACTIVATE, 'Включить политику',

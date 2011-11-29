@@ -401,6 +401,9 @@ function ModuleClasses: TClassList;
 
 function FindWorkItem(const AID: string; AParent: TWorkItem): TWorkItem;
 
+function GetLocaleString(AResStr: Pointer): string;
+procedure SetLocaleString(AResStr: Pointer; const Value: string);
+
 implementation
 
 uses  EventBroker, Services, CommandsList, Activities, WorkspacesList,
@@ -409,6 +412,7 @@ uses  EventBroker, Services, CommandsList, Activities, WorkspacesList,
 var
   DebugInfoProc: procedure(const AInfo: string);
 
+var
   ModuleClassesList: TClassList;
 
 function ModuleClasses: TClassList;
@@ -440,6 +444,40 @@ begin
   begin
     Result := FindWorkItem(AID, AParent.WorkItems[I]);
     if Assigned(Result) then Exit;
+  end;
+end;
+
+var
+  LocaleStrings: TStringList;
+
+function GetLocaleStrings: TStringList;
+begin
+  if LocaleStrings = nil then
+    LocaleStrings := TStringList.Create;
+  Result := LocaleStrings;
+end;
+
+function GetLocaleString(AResStr: Pointer): string;
+var
+  idx: integer;
+begin
+  idx := GetLocaleStrings.IndexOfObject(AResStr);
+  if idx <> -1 then
+    Result := GetLocaleStrings[idx]
+  else
+    Result := LoadResString(AResStr);
+end;
+
+procedure SetLocaleString(AResStr: Pointer; const Value: string);
+var
+  idx: Integer;
+begin
+  idx := GetLocaleStrings.IndexOfObject(AResStr);
+  if idx <> -1 then
+    GetLocaleStrings[idx] := Value
+  else
+  begin
+    GetLocaleStrings.AddObject(Value, TObject(AResStr));
   end;
 end;
 

@@ -6,8 +6,12 @@ uses classes, coreClasses, UIServiceIntf, forms, windows, dialogs, ConfigService
 
 type
   TUIService = class(TComponent, IUIService, IMessageBox, IInputBox, IWaitBox, IViewStyle)
+  const
+    APP_LOCALE_SETTING = 'Application.Locale';
+
   private
     FWorkItem: TWorkItem;
+    FLocale: string;
   protected
     function MessageBox: IMessageBox;
     function InputBox: IInputBox;
@@ -30,6 +34,11 @@ type
     procedure Notify(const AMessage: string);
     procedure NotifyExt(const AID, ASender, AMessage: string; ADateTime: TDateTime);
     procedure NotifyAccept(const AID: string);
+    //
+    //ms-help://embarcadero.rs_xe/Intl/nls_238z.htm
+    procedure SetLocale(AValue: string);
+    function GetLocale: string;
+
   public
     constructor Create(AOwner: TComponent; AWorkItem: TWorkItem); reintroduce;
   end;
@@ -51,15 +60,31 @@ begin
 end;
 
 constructor TUIService.Create(AOwner: TComponent; AWorkItem: TWorkItem);
+var
+  localeIdx: integer;
 begin
   inherited Create(AOwner);
   FWorkItem := AWorkItem;
+
+  //Init Locale
+  localeIdx := SysUtils.Languages.IndexOf(
+    (FWorkItem.Services[IConfigurationService] as IConfigurationService).
+      Settings[APP_LOCALE_SETTING]);
+
+  if localeIdx = -1 then
+    localeIdx := Sysutils.Languages.IndexOf(GetUserDefaultLCID);
+  FLocale := Sysutils.Languages.LocaleName[localeIdx];
 end;
 
 procedure TUIService.ErrorMessage(const AMessage: string);
 begin
   Windows.MessageBox(Application.Handle, PChar(AMessage),
     'Ошибка', MB_OK + MB_ICONERROR + MB_APPLMODAL + MB_SETFOREGROUND + MB_TOPMOST);
+end;
+
+function TUIService.GetLocale: string;
+begin
+  Result := FLocale;
 end;
 
 function TUIService.GetViewScale: integer;
@@ -109,6 +134,16 @@ procedure TUIService.NotifyExt(const AID, ASender, AMessage: string;
 begin
   FWorkItem.EventTopics[ET_NOTIFY_MESSAGE].Fire(VarArrayOf([AID, ASender, AMessage, ADateTime]));
 end;
+
+procedure TUIService.SetLocale(AValue: string);
+begin
+  if (FLocale <> AValue) and (SysUtils.Languages.IndexOf(AValue) <> -1) then
+  begin
+    FLocale := AVAlue;
+    FWorkItem.EventTopics[ET_LOCALE_CHANGED].Fire(FLocale);
+  end;
+end;
+
 
 procedure TUIService.StartWait;
 begin

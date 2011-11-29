@@ -2,10 +2,12 @@ unit UserPreferencesPresenter;
 interface
 uses coreClasses, CustomContentPresenter, UIClasses, cxCustomData, ShellIntf,
   cxVGrid, sysutils, Contnrs, classes, ConfigServiceIntf, db, CommonUtils,
-  dxmdaset, EntityServiceIntf, variants;
+  dxmdaset, EntityServiceIntf, variants, ShellLayoutStr;
+
+
 
 const
-  URI_USERPREFERENCES = 'views.shell.userpreferences';
+  VIEW_USER_PREFERENCES = 'views.shell.userpreferences';
   COMMAND_RESET_VALUE = '{B8BF4546-DB9D-49AD-A85C-6B09983931DD}';
 
 type
@@ -158,12 +160,12 @@ end;
 
 procedure TUserPreferencesPresenter.OnViewReady;
 begin
-  ViewTitle := 'Предпочтения';
+  ViewTitle := GetLocaleString(@VIEW_USER_PREFERENCES_TITLE);
 
   View.CommandBar.AddCommand(COMMAND_CLOSE, COMMAND_CLOSE_CAPTION,
     COMMAND_CLOSE_SHORTCUT, CmdClose);
 
-  View.CommandBar.AddCommand(COMMAND_RESET_VALUE, 'Сбросить', '', CmdResetValue);
+  View.CommandBar.AddCommand(COMMAND_RESET_VALUE, GetLocaleString(@COMMAND_RESET_CAPTION), '', CmdResetValue);
 
   View.BindAppPreferences(FAppPreferencesData);
   View.BindDBPreferences(FDBPreferencesData);

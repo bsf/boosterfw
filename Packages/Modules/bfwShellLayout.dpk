@@ -52,6 +52,7 @@ contains
   NotifyReceiver in '..\..\Sources\Modules\ShellLayout\NotifyReceiver.pas',
   NotifySenderPresenter in '..\..\Sources\Modules\ShellLayout\NotifySenderPresenter.pas',
   NotifySenderView in '..\..\Sources\Modules\ShellLayout\NotifySenderView.pas' {frNotifySenderView},
-  ActivityCatalog in '..\..\Sources\Modules\ShellLayout\ActivityCatalog.pas';
+  ActivityCatalog in '..\..\Sources\Modules\ShellLayout\ActivityCatalog.pas',
+  ShellLayoutStr in '..\..\Sources\Modules\ShellLayout\ShellLayoutStr.pas';
 
 end.

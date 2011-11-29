@@ -5,10 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, cxLookAndFeelPainters, cxImage, cxLabel, cxControls,
-  cxContainer, cxEdit, cxGroupBox, ExtCtrls, cxGraphics, cxLookAndFeels;
-
-resourcestring
-  StrWaitMessage = 'Загрузка данных. Подождите пожалуйста...';
+  cxContainer, cxEdit, cxGroupBox, ExtCtrls, cxGraphics, cxLookAndFeels,
+  ShellLayoutStr, CoreClasses;
 
 type
   TfrWaitBox = class(TForm)
@@ -79,7 +77,7 @@ end;
 constructor TfrWaitBox.Create(AOwner: TComponent);
 begin
   inherited;
-  lbMessageText.Caption := StrWaitMessage;
+  lbMessageText.Caption := GetLocaleString(@StrWaitMessage);
   Parent := Application.MainForm;
   Image.Picture.Icon := Application.Icon;
 end;

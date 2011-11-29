@@ -2,7 +2,7 @@ unit bfwReportingModuleInit;
 
 interface
 uses classes, CoreClasses, ReportingController, frReportFactory, xlReportFactory,
-  ReportCatalogConst;
+  UIServiceIntf, ReportCatalogConst;
 
 type
   TReportingModuleInit = class(TModule)
@@ -24,6 +24,8 @@ end;
 
 procedure TReportingModuleInit.Load;
 begin
+  Localization((WorkItem.Services[IUIService] as IUIService).Locale);
+
   WorkItem.WorkItems.Add(TReportingController);
 
   WorkItem.WorkItems.Add(TFastReportFactory);

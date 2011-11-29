@@ -7,7 +7,7 @@ uses
   Dialogs, CustomView, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxContainer, cxEdit, ActnList, cxGroupBox, Menus,
   StdCtrls, cxButtons, UIClasses, frxClass, frxPreview, frReportPreviewPresenter,
-  ShellIntf, coreClasses, cxLabel;
+  ShellIntf, coreClasses, cxLabel, ReportCatalogConst;
 
 type
   TfrfrReportPreviewView = class(TfrCustomView, IfrReportPreviewView)
@@ -36,12 +36,6 @@ type
     miExportExcel: TMenuItem;
     btPagePrior: TcxButton;
     btPageNext: TcxButton;
-    ppmPagePrior: TPopupMenu;
-    ppmPageNext: TPopupMenu;
-    miPagePrior: TMenuItem;
-    miPageFirst: TMenuItem;
-    miPageNext: TMenuItem;
-    miPageLast: TMenuItem;
     lbPages: TcxLabel;
     btPageFirst: TcxButton;
     btPageLast: TcxButton;
@@ -78,8 +72,9 @@ procedure TfrfrReportPreviewView.frxPreviewPageChanged(Sender: TfrxPreview;
   PageNo: Integer);
 begin
   if frxPreview.PageCount <> 0 then
-    lbPages.Caption := 'Страница ' + IntToStr(frxPreview.PageNo) +
-      ' из ' + IntToStr(frxPreview.PageCount)
+    lbPages.Caption := format(GetLocaleString(@strPagesLabelFmt), [IntToStr(frxPreview.PageNo), IntToStr(frxPreview.PageCount)])
+      {'Страница ' + IntToStr(frxPreview.PageNo) +
+      ' из ' + IntToStr(frxPreview.PageCount)}
   else
     lbPages.Caption := '';
 end;
@@ -114,6 +109,18 @@ end;
 
 procedure TfrfrReportPreviewView.OnInitialize;
 begin
+  miZoomPageWidth.Caption := GetLocaleString(@strZoomPageWidth);
+  miZoomWholePage.Caption := GetLocaleString(@strZoomWholePage);
+
+  btZoom.Caption := GetLocaleString(@COMMAND_ZOOM_CAPTION);
+  btPrint.Caption := GetLocaleString(@COMMAND_PRINT_DEF_CAPTION);
+  miPrintDef.Caption := GetLocaleString(@COMMAND_PRINT_DEF_CAPTION);
+  miPrint.Caption := GetLocaleString(@COMMAND_PRINT_CAPTION);
+  miExportExcel.Caption := GetLocaleString(@COMMAND_EXPORT_EXCEL_CAPTION);
+  miExportPDF.Caption := GetLocaleString(@COMMAND_EXPORT_PDF_CAPTION);
+  miExportHTML.Caption := GetLocaleString(@COMMAND_EXPORT_HTML_CAPTION);
+  miExportCSV.Caption := GetLocaleString(@COMMAND_EXPORT_CSV_CAPTION);
+
   WorkItem.Commands[COMMAND_CLOSE].AddInvoker(btClose, 'OnClick');
 
   WorkItem.Commands[COMMAND_PRINT_DEF].AddInvoker(btPrint, 'OnClick');
@@ -130,7 +137,6 @@ begin
   WorkItem.Commands[COMMAND_PAGE_FIRST].AddInvoker(btPageFirst, 'OnClick');
 
   WorkItem.Commands[COMMAND_PAGE_NEXT].AddInvoker(btPageNext, 'OnClick');
-//  WorkItem.Commands[COMMAND_PAGE_NEXT].AddInvoker(miPageNext, 'OnClick');
   WorkItem.Commands[COMMAND_PAGE_LAST].AddInvoker(btPageLast, 'OnClick');
 
 end;

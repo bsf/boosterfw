@@ -201,13 +201,13 @@ begin
 
   FCatalogPath := App.Settings[SETTING_REPORTS_LOCATION];
 
-  with  WorkItem.Activities[VIEW_RPT_CATALOG] do
+{  with  WorkItem.Activities[VIEW_RPT_CATALOG] do
   begin
     Title := VIEW_RPT_CATALOG_CAPTION;
     Group := MENU_GROUP_SERVICE;
     UsePermission := true;
     RegisterHandler(TViewActivityHandler.Create(TReportCatalogPresenter, TfrReportCatalogView));
-  end;
+  end;}
 
   WorkItem.Activities[TReportLauncherPresenter.ACTIVITY_REPORT_LAUNCHER].
     RegisterHandler(TViewActivityHandler.Create(TReportLauncherPresenter, TfrReportLauncherView));

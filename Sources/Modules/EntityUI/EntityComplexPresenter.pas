@@ -175,7 +175,7 @@ begin
 
 //----------------- CommandBar
   View.CommandBar.
-    AddCommand(COMMAND_CLOSE, COMMAND_CLOSE_CAPTION, COMMAND_CLOSE_SHORTCUT, CmdClose);
+    AddCommand(COMMAND_CLOSE, GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
 
   if ViewInfo.OptionExists('CanHeadEdit') then
     View.CommandBar.

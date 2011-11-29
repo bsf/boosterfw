@@ -3,7 +3,7 @@ unit EntityCatalogController;
 interface
 uses classes, CoreClasses,  ShellIntf, Variants, db, Contnrs,
   EntityCatalogIntf, EntityServiceIntf, UIClasses, sysutils,
-  StrUtils, EntitySecResProvider, SecurityIntf, controls,
+  StrUtils, SecurityIntf, controls,
   EntityJournalPresenter, EntityJournalView,
   EntityListPresenter, EntityListView,
   EntityNewPresenter, EntityNewView,

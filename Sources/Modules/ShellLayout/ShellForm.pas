@@ -11,7 +11,7 @@ uses
   cxContainer, cxEdit, cxLabel, cxTextEdit, cxHyperLinkEdit, StdActns,
   dxNavBarStyles, CoreClasses, WindowWorkspace,
   cxProgressBar, ShellNavBar,
-  ImgList, UILocalization,
+  ImgList, UILocalization, cxLocalization,
   ShellWaitBox,
   ViewStyleController, cxPC, cxDropDownEdit,
   cxBarEditItem, cxButtonEdit, dxBarExtItems, EntityServiceIntf,
@@ -23,7 +23,7 @@ uses
   cxGridCustomView, cxGridCustomTableView, cxGridTableView,
   cxGridDBTableView, cxGrid, dxOffice11, UIServiceIntf,
   NotifyReceiver, NotifySenderPresenter, NotifySenderView,
-  ActivityCatalog;
+  ActivityCatalog, ShellLayoutStr;
 
 const
   STATUSBAR_INFO_PANEL = 0;
@@ -130,7 +130,7 @@ uses NumLockDotHook; //Linked only
 
 procedure TfrMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-  CanClose := App.UI.MessageBox.ConfirmYesNo('Закрыть программу ?');
+  CanClose := App.UI.MessageBox.ConfirmYesNo(GetLocaleString(@CloseApplicationQuestion));
   if CanClose then
     CanClose := CloseAllContentView;
 end;
@@ -217,8 +217,6 @@ begin
 
   TActivityCatalog.Create(Self, FWorkItem).Load;
 
-  Localization;
-
 end;
 
 procedure TfrMain.StatusUpdateHandler(EventData: Variant);
@@ -279,32 +277,32 @@ begin
 
   with WorkItem.Activities[COMMAND_CLOSE_APP] do
   begin
-    Title := 'Закрыть';
-    Group := MENU_GROUP_FILE;
+    Title := GetLocaleString(@COMMAND_CLOSE_APP_CAPTION);
+    Group := GetLocaleString(@MENU_GROUP_FILE);
   end;
   WorkItem.Activities.RegisterHandler(COMMAND_CLOSE_APP, TCloseAppHandler.Create(Self));
 
   with WorkItem.Activities[COMMAND_SHOW_ABOUT] do
   begin
-    Title := 'О программе...';
-    Group := MENU_GROUP_FILE;
+    Title := GetLocaleString(@COMMAND_SHOW_ABOUT_CAPTION);
+    Group := GetLocaleString(@MENU_GROUP_FILE);
   end;
   WorkItem.Activities.RegisterHandler(COMMAND_SHOW_ABOUT, TShowAboutHandler.Create);
 
-  with WorkItem.Activities[URI_USERPREFERENCES] do
+  with WorkItem.Activities[VIEW_USER_PREFERENCES] do
   begin
-    Title := 'Предпочтения';
-    Group := MENU_GROUP_SERVICE;
+    Title := GetLocaleString(@VIEW_USER_PREFERENCES_TITLE);
+    Group := GetLocaleString(@MENU_GROUP_SERVICE);
   end;
-  WorkItem.Activities.RegisterHandler(URI_USERPREFERENCES,
+  WorkItem.Activities.RegisterHandler(VIEW_USER_PREFERENCES,
     TViewActivityHandler.Create(TUserPreferencesPresenter, TfrUserPreferencesView));
 
   WorkItem.Root.WorkItems.Add(TNotifyReceiver, TNotifyReceiver.ClassName);
 
   with WorkItem.Activities[VIEW_NOTIFYSENDER] do
   begin
-    Title := VIEW_NOTIFYSENDER_TITLE;
-    Group := MENU_GROUP_SERVICE;
+    Title := GetLocaleString(@VIEW_NOTIFYSENDER_TITLE);
+    Group := GetLocaleString(@MENU_GROUP_SERVICE);
     UsePermission := true;
   end;
   WorkItem.Activities.RegisterHandler(VIEW_NOTIFYSENDER,

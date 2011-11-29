@@ -182,8 +182,8 @@ begin
   View.LinkParamDataSet(FParamDataSet);
   InitViewParamEditors;
 
-  View.CommandBar.AddCommand(COMMAND_EXECUTE, 'Выполнить', '', CmdExecute);
-  View.CommandBar.AddCommand(COMMAND_CLOSE, 'Отмена', '', CmdClose);
+  View.CommandBar.AddCommand(COMMAND_EXECUTE, GetLocaleString(@COMMAND_EXECUTE_CAPTION), '', CmdExecute);
+  View.CommandBar.AddCommand(COMMAND_CLOSE, GetLocaleString(@COMMAND_CANCEL_CAPTION), '', CmdClose);
 
   WorkItem.Commands[COMMAND_LAYOUT_CHANGED].SetHandler(CmdLayoutChanged);
   WorkItem.Commands[COMMAND_EXECUTE].SetHandler(CmdExecute);

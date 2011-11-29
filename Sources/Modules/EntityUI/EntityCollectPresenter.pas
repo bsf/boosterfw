@@ -97,10 +97,10 @@ begin
   ViewTitle := ViewInfo.Title;
 
   View.CommandBar.
-    AddCommand(COMMAND_CLOSE, COMMAND_CLOSE_CAPTION, COMMAND_CLOSE_SHORTCUT, CmdClose);
+    AddCommand(COMMAND_CLOSE, GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
 
   View.CommandBar.
-    AddCommand(COMMAND_RELOAD, COMMAND_RELOAD_CAPTION, COMMAND_RELOAD_SHORTCUT, CmdReload);
+    AddCommand(COMMAND_RELOAD, GetLocaleString(@COMMAND_RELOAD_CAPTION), COMMAND_RELOAD_SHORTCUT, CmdReload);
 
   if ViewInfo.OptionExists('BulkModeOnly') then
   begin
@@ -122,10 +122,12 @@ begin
   View.SelectionList.CanMultiSelect := ViewInfo.OptionExists('BulkMode') or ViewInfo.OptionExists('BulkModeOnly');
 
 //  if ViewInfo.OptionExists('CanOpenItem')  then
-    View.CommandBar.AddCommand(COMMAND_OPEN, COMMAND_OPEN_CAPTION, COMMAND_OPEN_SHORTCUT, CmdOpen);
+    View.CommandBar.AddCommand(COMMAND_OPEN, GetLocaleString(@COMMAND_OPEN_CAPTION),
+      COMMAND_OPEN_SHORTCUT, CmdOpen);
 
   //if ViewInfo.OptionExists('CanDelete') or ViewInfo.OptionExists('CanEdit') then
-  View.CommandBar.AddCommand(COMMAND_DELETE, COMMAND_DELETE_CAPTION, COMMAND_DELETE_SHORTCUT, CmdDelete);
+  View.CommandBar.AddCommand(COMMAND_DELETE, GetLocaleString(@COMMAND_DELETE_CAPTION),
+    COMMAND_DELETE_SHORTCUT, CmdDelete);
 
   GetEVItems.SynchronizeOnEntityChange(GetEVItems.EntityName, ENT_VIEW_NEW_DEFAULT);
   GetEVItems.SynchronizeOnEntityChange(GetEVItems.EntityName, ENT_VIEW_ITEM_DEFAULT);

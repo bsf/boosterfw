@@ -1,7 +1,7 @@
 unit CustomPresenter;
 
 interface
-uses Classes, CoreClasses, ShellIntf, Controls,
+uses Classes, CoreClasses, ShellIntf, Controls, cxClasses,
   UIClasses, SysUtils, EntityServiceIntf, Variants, db, StrUtils, typinfo,
   UIServiceIntf, forms;
 
@@ -198,7 +198,7 @@ begin
   end;
 
   WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
-  WorkItem.Commands[COMMAND_CLOSE].Caption := COMMAND_CLOSE_CAPTION;
+  WorkItem.Commands[COMMAND_CLOSE].Caption := GetLocaleString(@COMMAND_CLOSE_CAPTION);
   WorkItem.Commands[COMMAND_CLOSE].ShortCut := COMMAND_CLOSE_SHORTCUT;
 
   GetView.SetShowHandler(ViewShowHandler);

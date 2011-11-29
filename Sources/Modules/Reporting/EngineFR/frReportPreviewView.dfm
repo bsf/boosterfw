@@ -65,7 +65,7 @@ inherited frfrReportPreviewView: TfrfrReportPreviewView
         Top = 9
         Width = 75
         Height = 25
-        Caption = #1052#1072#1096#1090#1072#1073
+        Caption = 'Zoom'
         DropDownMenu = ppmZoome
         Kind = cxbkDropDown
         LookAndFeel.Kind = lfOffice11
@@ -78,7 +78,6 @@ inherited frfrReportPreviewView: TfrfrReportPreviewView
         Width = 39
         Height = 25
         Caption = '<'
-        DropDownMenu = ppmPagePrior
         LookAndFeel.Kind = lfOffice11
         SpeedButtonOptions.CanBeFocused = False
         TabOrder = 4
@@ -222,28 +221,6 @@ inherited frfrReportPreviewView: TfrfrReportPreviewView
     end
     object miExportCSV: TMenuItem
       Caption = 'CSV '#1092#1072#1081#1083
-    end
-  end
-  object ppmPagePrior: TPopupMenu
-    Left = 424
-    Top = 56
-    object miPagePrior: TMenuItem
-      Caption = #1055#1088#1077#1076#1099#1076#1091#1097#1072#1103' '#1089#1090#1088#1072#1085#1080#1094#1072
-      Default = True
-    end
-    object miPageFirst: TMenuItem
-      Caption = #1055#1077#1088#1074#1072#1103' '#1089#1090#1088#1072#1085#1080#1094#1072
-    end
-  end
-  object ppmPageNext: TPopupMenu
-    Left = 560
-    Top = 56
-    object miPageNext: TMenuItem
-      Caption = #1057#1083#1077#1076#1091#1102#1097#1072#1103' '#1089#1090#1088#1072#1085#1080#1094#1072
-      Default = True
-    end
-    object miPageLast: TMenuItem
-      Caption = #1055#1086#1089#1083#1077#1076#1085#1103#1103' '#1089#1090#1088#1072#1085#1080#1094#1072
     end
   end
 end

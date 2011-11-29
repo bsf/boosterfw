@@ -9,6 +9,7 @@ const
   ET_WAITBOX_STOP = '{D6616EE3-B4CE-4DAC-A74E-B8FFBC78C11C}';
   ET_NOTIFY_MESSAGE = '{A6B4B2EC-28CE-43A3-A733-E843F0CE238D}';
   ET_NOTIFY_ACCEPT = '{47857789-AAB1-4AAF-97A1-292E48C5EEDD}';
+  ET_LOCALE_CHANGED = '{4608DB6D-9AD8-49F4-8289-58CD524197A1}';
 
 type
 
@@ -49,6 +50,12 @@ type
     procedure Notify(const AMessage: string);
     procedure NotifyExt(const AID, ASender, AMessage: string; ADateTime: TDateTime);
     procedure NotifyAccept(const AID: string);
+    //
+    //http://www.microsoft.com/globaldev/reference/lcid-all.mspx
+    procedure SetLocale(AValue: string);
+    function GetLocale: string;
+    property Locale: string read GetLocale write SetLocale;
+
   end;
 
 implementation

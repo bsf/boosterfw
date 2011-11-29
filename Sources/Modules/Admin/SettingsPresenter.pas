@@ -3,11 +3,11 @@ unit SettingsPresenter;
 interface
 uses coreClasses, CustomContentPresenter, UIClasses, ShellIntf,
   sysutils, Contnrs, classes, ConfigServiceIntf, db, CommonUtils,
-  dxmdaset, EntityServiceIntf, variants;
+  dxmdaset, EntityServiceIntf, variants, AdminConst;
 
 const
   VIEW_SETTINGS = 'views.shell.settings';
-  VIEW_SETTINGS_CAPTION = 'Параметры системы';
+
 
   COMMAND_RESET_VALUE = '{B8BF4546-DB9D-49AD-A85C-6B09983931DD}';
 
@@ -204,7 +204,7 @@ end;
 
 procedure TSettingsPresenter.OnViewReady;
 begin
-  ViewTitle := VIEW_SETTINGS_CAPTION;
+  ViewTitle := GetLocaleString(@VIEW_SETTINGS_CAPTION);
 
   View.CommandBar.AddCommand(COMMAND_CLOSE, COMMAND_CLOSE_CAPTION,
     COMMAND_CLOSE_SHORTCUT, CmdClose);

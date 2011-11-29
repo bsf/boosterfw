@@ -2,11 +2,11 @@ unit UserAccountsPresenter;
 
 interface
 uses coreClasses, CustomContentPresenter, UIClasses, ShellIntf,
-  sysutils, Contnrs, classes, SecurityIntf;
+  sysutils, Contnrs, classes, SecurityIntf, AdminConst;
 
 const
   VIEW_USERACCOUNTS = 'views.security.useraccounts';
-  VIEW_USERACCOUNTS_CAPTION = 'Диспетчер пользователей';
+
 
   COMMAND_USERROLE_ADD = '{C13E7F2B-3D91-4155-836C-61A001D6816A}';
   COMMAND_USERROLE_REMOVE = '{BCEF2BD2-F58E-4802-BB3C-824B2D510A6B}';
@@ -141,7 +141,7 @@ end;
 
 procedure TUserAccountsPresenter.OnViewReady;
 begin
-  ViewTitle := VIEW_USERACCOUNTS_CAPTION;
+  ViewTitle := GetLocaleString(@VIEW_USERACCOUNTS_CAPTION);
   FreeOnViewClose := true;
   FAccounts := App.Security.Accounts;
 

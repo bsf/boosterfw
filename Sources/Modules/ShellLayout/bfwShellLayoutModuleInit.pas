@@ -1,7 +1,8 @@
 unit bfwShellLayoutModuleInit;
 
 interface
-uses classes, CoreClasses, SysUtils, ShellIntf, ShellForm, CustomApp;
+uses classes, CoreClasses, SysUtils, ShellIntf, ShellForm, CustomApp,
+  UILocalization;
 
 
 type
@@ -13,6 +14,7 @@ type
 
 implementation
 {$R Shell.res}
+
 
 
 { TShellUIModule }
@@ -27,6 +29,8 @@ procedure TShellUIModule.Load;
 begin
   FormatSettings.ThousandSeparator := ' ';
   CustomApp.TCustomApplication.ShellFormClass := TfrMain;
+
+  UILocalization.Localization(WorkItem);
 end;
 
 

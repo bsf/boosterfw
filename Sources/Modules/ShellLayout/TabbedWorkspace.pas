@@ -4,13 +4,13 @@ interface
 uses classes, controls, CoreClasses, Workspace, cxPC, Contnrs, messages,
   sysutils, Graphics,  windows, forms, menus,
   cxGroupBox, cxLookAndFeels, cxGraphics, cxControls, cxLookAndFeelPainters,
-  cxEdit, cxButtons, ShellIntf, ConfigServiceIntf;
+  cxEdit, cxButtons, ShellIntf, ConfigServiceIntf, ShellLayoutStr;
 
 const
   SETTING_HIDE_TABS = 'ViewStyle.Shell.HideTabs';
   SETTING_TABS_BOTTOM = 'ViewStyle.Shell.TabsBottom';
-type
 
+type
   TContentSiteInfo = class(TViewSiteInfo)
   private
     FPage: TcxTabSheet;
@@ -428,11 +428,12 @@ begin
     AddItem(PageControl.Tabs[I].Caption,ToolWinCmdActivateTab, I).Default := PageControl.ActivePageIndex = I;
 
   AddItem('-', nil, -1);
-  AddItem('Скрыть закладки', ToolWinCmdHideTabs, -1);
-  AddItem('Закладки вверху', ToolWinCmdTabsTop, -1);
-  AddItem('Закладки снизу', ToolWinCmdTabsBottom, -1);
+  AddItem(GetLocaleString(@strToolWinCmdHideTabs), ToolWinCmdHideTabs, -1);
+  AddItem(GetLocaleString(@strToolWinCmdTabsTop), ToolWinCmdTabsTop, -1);
+  AddItem(GetLocaleString(@strToolWinCmdTabsBottom), ToolWinCmdTabsBottom, -1);
   AddItem('-', nil, -1);
-  AddItem('Закрыть все', ToolWinCmdCloseAll, -1);
+  AddItem(GetLocaleString(@strToolWinCmdCloseAll), ToolWinCmdCloseAll, -1);
+
 end;
 
 function TTabbedWorkspace.ViewCount: integer;

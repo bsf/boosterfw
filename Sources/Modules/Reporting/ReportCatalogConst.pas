@@ -4,6 +4,22 @@ interface
 uses CoreClasses, ReportCatalogClasses, ShellIntf, EntityServiceIntf, classes,
   generics.collections;
 
+resourcestring
+
+  COMMAND_PRINT_DEF_CAPTION = 'Quick Print';
+  COMMAND_PRINT_CAPTION = 'Print...';
+  COMMAND_ZOOM_CAPTION = 'Zoom';
+
+  COMMAND_EXPORT_EXCEL_CAPTION = 'Document Excel';
+  COMMAND_EXPORT_PDF_CAPTION = 'Document Pdf';
+  COMMAND_EXPORT_HTML_CAPTION = 'Document HTML';
+  COMMAND_EXPORT_CSV_CAPTION = 'CSV File';
+
+  strZoomPageWidth = 'Page Width';
+  strZoomWholePage = 'Whole Page';
+
+  strPagesLabelFmt = '%s from %s';
+
 const
 // VIEWS
   VIEW_RPT_CATALOG = 'view.reports.catalog';
@@ -58,6 +74,31 @@ type
   end;
 
 
+procedure Localization(const ALocale: string);
+
 implementation
+
+procedure Localization_ru;
+begin
+  SetLocaleString(@COMMAND_PRINT_DEF_CAPTION, 'Быстрая печать');
+  SetLocaleString(@COMMAND_PRINT_CAPTION, 'Печать...');
+  SetLocaleString(@COMMAND_ZOOM_CAPTION, 'Маштаб');
+
+  SetLocaleString(@COMMAND_EXPORT_EXCEL_CAPTION, 'Документ Excel');
+  SetLocaleString(@COMMAND_EXPORT_PDF_CAPTION, 'Документ Pdf');
+  SetLocaleString(@COMMAND_EXPORT_HTML_CAPTION, 'Документ HTML');
+  SetLocaleString(@COMMAND_EXPORT_CSV_CAPTION, 'CSV файл');
+
+  SetLocaleString(@strZoomPageWidth, 'По ширине');
+  SetLocaleString(@strZoomWholePage, 'Страница целиком');
+  SetLocaleString(@strPagesLabelFmt, '%s из %s');
+end;
+
+procedure Localization(const ALocale: string);
+begin
+  if ALocale = 'ru-RU' then
+    Localization_ru;
+
+end;
 
 end.

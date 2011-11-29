@@ -61,7 +61,8 @@ begin
   else
     ViewTitle := FPolicy.Name + ' [действующие разрешения]';
 
-  (GetView as ISecurityPermEffectiveView).CommandBar.AddCommand(COMMAND_CLOSE, COMMAND_CLOSE_CAPTION,
+  (GetView as ISecurityPermEffectiveView).CommandBar.AddCommand(COMMAND_CLOSE,
+    GetLocaleString(@COMMAND_CLOSE_CAPTION),
     COMMAND_CLOSE_SHORTCUT, CmdClose);
 
   FillList;  

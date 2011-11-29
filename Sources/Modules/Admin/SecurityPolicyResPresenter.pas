@@ -165,7 +165,7 @@ begin
 
   ViewTitle := FPolicy.Name;
 
-  View.CommandBar.AddCommand(COMMAND_CLOSE, COMMAND_CLOSE_CAPTION,
+  View.CommandBar.AddCommand(COMMAND_CLOSE, GetLocaleString(@COMMAND_CLOSE_CAPTION),
     COMMAND_CLOSE_SHORTCUT, CmdClose);
 
   View.CommandBar.AddCommand(COMMAND_PERMEFFECTIVE, 'Действующие разрешения',

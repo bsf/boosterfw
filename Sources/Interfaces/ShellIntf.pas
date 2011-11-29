@@ -13,14 +13,16 @@ const
   WS_DIALOG = '{6478659E-7B5C-4D29-95F3-5BC4AF9DDE16}';
   WS_CONSOLE = '{65D51821-B33B-4F8B-AC8C-29F623B892C5}';
 
+resourcestring
   //Main menu groups
-  MENU_GROUP_FILE = 'Файл';
-  MENU_GROUP_SERVICE = 'Сервис';
+  MENU_GROUP_FILE = 'File';//'Файл';
+  MENU_GROUP_SERVICE = 'Service'; //'Сервис';
 
 type
   IApp = interface
   ['{D24C773A-376C-41BA-A955-6FFE5CE62ECE}']
     function Version: string;
+    function Logo: Graphics.TBitmap;
     function WorkItem: TWorkItem;
     function Settings: ISettings;
     function UserProfile: IProfile;

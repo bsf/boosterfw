@@ -3,7 +3,7 @@ object fmShellLogin: TfmShellLogin
   Top = 363
   BorderIcons = []
   BorderStyle = bsDialog
-  Caption = #1056#1077#1075#1080#1089#1090#1088#1072#1094#1080#1103
+  Caption = 'Registration'
   ClientHeight = 298
   ClientWidth = 390
   Color = clBtnFace
@@ -52,12 +52,12 @@ object fmShellLogin: TfmShellLogin
     ParentFont = False
     Transparent = True
   end
-  object lbLogo: TLabel
-    Left = 10
-    Top = 10
-    Width = 216
+  object LogoLabel: TLabel
+    Left = 8
+    Top = 8
+    Width = 148
     Height = 19
-    Caption = #1048#1085#1092#1086#1088#1084#1072#1094#1080#1086#1085#1085#1072#1103' '#1057#1080#1089#1090#1077#1084#1072
+    Caption = 'Information System'
     Font.Charset = RUSSIAN_CHARSET
     Font.Color = clWindowText
     Font.Height = -16
@@ -114,7 +114,7 @@ object fmShellLogin: TfmShellLogin
       Width = 105
       Height = 13
       AutoSize = False
-      Caption = #1048#1084#1103' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1103
+      Caption = 'User name'
       FocusControl = UserNameEdit
       Transparent = True
     end
@@ -124,7 +124,7 @@ object fmShellLogin: TfmShellLogin
       Width = 105
       Height = 13
       AutoSize = False
-      Caption = #1055#1072#1088#1086#1083#1100
+      Caption = 'Password'
       FocusControl = PasswordEdit
       Transparent = True
     end
@@ -134,16 +134,16 @@ object fmShellLogin: TfmShellLogin
       Width = 123
       Height = 13
       AutoSize = False
-      Caption = #1048#1085#1092#1086#1088#1084#1072#1094#1080#1086#1085#1085#1072#1103' '#1073#1072#1079#1072
+      Caption = 'Information base'
       FocusControl = CustomCombo
       Transparent = True
     end
-    object Label1: TLabel
+    object InfoLabel: TLabel
       Left = 14
       Top = 6
-      Width = 240
+      Width = 168
       Height = 13
-      Caption = #1042#1074#1077#1076#1080#1090#1077' '#1074#1072#1096#1077' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1100#1089#1082#1086#1077' '#1080#1084#1103' '#1080' '#1087#1072#1088#1086#1083#1100
+      Caption = 'Input your user name and passowrd'
     end
     object UserNameEdit: TEdit
       Left = 144

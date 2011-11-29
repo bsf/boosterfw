@@ -99,7 +99,6 @@
 			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityPickListView.pas">
 				<Form>frEntityPickListView</Form>
 			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntitySecResProvider.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntitySelectorPresenter.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntitySelectorView.pas">
 				<Form>frEntitySelectorView</Form>

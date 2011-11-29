@@ -12,7 +12,7 @@ type
   TfrShellAbout = class(TForm)
     cxGroupBox1: TcxGroupBox;
     btClose: TcxButton;
-    lbLogo: TLabel;
+    LogoLabel: TLabel;
     lbVer: TLabel;
     imgLogo: TImage;
     procedure btCloseClick(Sender: TObject);
@@ -21,6 +21,7 @@ type
     procedure LoadAppLogoImage;
   public
     constructor Create(AOwner: TComponent); override;
+    procedure Localization;
   end;
 
 
@@ -57,8 +58,15 @@ end;
 
 procedure TfrShellAbout.LoadAppLogoImage;
 begin
-  if FindResource(HInstance, RES_ID_APP_LOGO, RT_BITMAP) <> 0 then
-    imgLogo.Picture.Bitmap.LoadFromResourceName(HInstance, 'APP_LOGO');
+  imgLogo.Picture.Bitmap.Assign(App.Logo);
+end;
+
+procedure TfrShellAbout.Localization;
+begin
+  if App.UI.Locale = 'ru-RU' then
+  begin
+    LogoLabel.Caption := 'Информационная Система';
+  end;
 end;
 
 end.

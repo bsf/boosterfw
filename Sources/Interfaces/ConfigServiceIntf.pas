@@ -6,7 +6,6 @@ uses Classes;
 const
   ET_PROFILE_CHANGED = '{78AA14D4-3317-4723-861F-044FE9D76A27}';
 
-
 type
   TSettingStorageLevel = (slNone, slUserProfile, slHostProfile, slAlias, slCommon);
   TSettingStorageLevels = set of TSettingStorageLevel;

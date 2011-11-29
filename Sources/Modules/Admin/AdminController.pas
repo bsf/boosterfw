@@ -53,8 +53,8 @@ begin
 // Settings
   with WorkItem.Activities[VIEW_SETTINGS] do
   begin
-    Title := VIEW_SETTINGS_CAPTION;
-    Group := MENU_GROUP_SERVICE;
+    Title := GetLocaleString(@VIEW_SETTINGS_CAPTION);
+    Group := GetLocaleString(@MENU_GROUP_SERVICE);
     UsePermission := true;
     RegisterHandler(TViewActivityHandler.Create(TSettingsPresenter, TfrSettingsView));
   end;
@@ -62,16 +62,16 @@ begin
 // Security objects
   with WorkItem.Activities[VIEW_SECURITYPOLICIES] do
   begin
-    Title := VIEW_SECURITYPOLICIES_TITLE;
-    Group := MENU_GROUP_SERVICE;
+    Title := GetLocaleString(@VIEW_SECURITYPOLICIES_TITLE);
+    Group := GetLocaleString(@MENU_GROUP_SERVICE);
     UsePermission := true;
     RegisterHandler(TViewActivityHandler.Create(TSecurityPoliciesPresenter, TfrSecurityPoliciesView));
   end;
 
   with WorkItem.Activities[VIEW_USERACCOUNTS] do
   begin
-    Title := VIEW_USERACCOUNTS_CAPTION;
-    Group := MENU_GROUP_SERVICE;
+    Title := GetLocaleString(@VIEW_USERACCOUNTS_CAPTION);
+    Group := GetLocaleString(@MENU_GROUP_SERVICE);
     UsePermission := true;
     RegisterHandler(TViewActivityHandler.Create(TUserAccountsPresenter, TfrUserAccountsView));
   end;
