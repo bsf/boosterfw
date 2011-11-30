@@ -1,13 +1,13 @@
 unit GridCtrlUtils;
 
 interface
-uses classes, forms, cxGridPopupMenu, cxGrid, menus, inifiles, variants,
+uses classes, forms, cxGridPopupMenu, cxGrid, menus, inifiles, variants, cxDBData,
   cxGridCustomPopupMenu, ActnList, Dialogs, cxGridExportLink, ShellAPI,
   windows, cxGridCustomView, CustomView, SysUtils, cxGridCustomTableView,
   db, cxGridDBDataDefinitions, Contnrs, cxGridTableView, cxGridDBTableView,
   cxGridStdPopupMenu, cxGridMenuOperations, cxGridHeaderPopupMenuItems,
   cxGridDBBandedTableView, EntityServiceIntf, cxCustomData, cxFilter, cxGraphics,
-  cxDBLookupComboBox, cxCheckBox, UIClasses, ShellIntf;
+  cxDBLookupComboBox, cxCheckBox, UIClasses, ShellIntf, cxStyles;
 
 
 resourcestring
@@ -104,6 +104,14 @@ type
     procedure LoadPreference(AGridView: TcxCustomGridView);
     procedure SavePreference(AGridView: TcxCustomGridView);
     procedure SaveAllPreference; //(AGridView: TcxCustomGridView; AData: TStream);
+    //Style
+    procedure OnGetColumnStyle(Sender: TcxCustomGridTableView;
+      ARecord: TcxCustomGridRecord; AItem: TcxCustomGridTableItem; out AStyle: TcxStyle);
+
+    procedure OnGetRowStyle(Sender: TcxCustomGridTableView;
+      ARecord: TcxCustomGridRecord; AItem: TcxCustomGridTableItem; out AStyle: TcxStyle);
+
+
   protected
     //IViewHelper
     procedure ViewInitialize;
@@ -548,6 +556,37 @@ begin
 end;
 
 
+procedure TcxGridViewHelper.OnGetColumnStyle(Sender: TcxCustomGridTableView;
+  ARecord: TcxCustomGridRecord; AItem: TcxCustomGridTableItem;
+  out AStyle: TcxStyle);
+var
+  fieldName: string;
+begin
+  if AItem = nil then Exit;
+
+  fieldName := (Sender.DataController as TcxGridDBDataController).GetItemFieldName(AItem.Index);
+
+  AStyle := TcxStyle(App.UI.Styles[
+      VarToStr(ARecord.Values[
+        (Sender.DataController as TcxGridDBDataController).
+          GetItemByFieldName(format(FIELD_UI_STYLE_FMT, [fieldName])).Index])]);
+
+{  if AStyle <> nil then
+    AStyle.Font.Assign((Sender.Owner as TForm).Font);}
+end;
+
+procedure TcxGridViewHelper.OnGetRowStyle(Sender: TcxCustomGridTableView;
+  ARecord: TcxCustomGridRecord; AItem: TcxCustomGridTableItem;
+  out AStyle: TcxStyle);
+begin
+  if AItem = nil then Exit;
+
+  AStyle := TcxStyle(App.UI.Styles[
+      VarToStr(ARecord.Values[
+        (Sender.DataController as TcxGridDBDataController).
+          GetItemByFieldName(FIELD_UI_ROW_STYLE).Index])]);
+end;
+
 procedure TcxGridViewHelper.SaveAllPreference;
 var
   I, Y: integer;
@@ -683,6 +722,11 @@ procedure TcxGridViewHelper.TuneGridForDataSet(AView: TcxCustomGridView;
 
     AColumn.Visible := AField.Visible;
     AColumn.VisibleForCustomization :=  not (GetFieldAttribute(AField, FIELD_ATTR_HIDDEN) = '1');
+
+
+    AColumn.Styles.Header := TcxStyle(App.UI.Styles[GetFieldAttribute(AField, FIELD_ATTR_STYLE_HEADER)]);
+    AColumn.Styles.Content := TcxStyle(App.UI.Styles[GetFieldAttribute(AField, FIELD_ATTR_STYLE_CONTENT)]);
+
   end;
 
 var
@@ -719,7 +763,11 @@ begin
       TcxGridTableView(AView).OptionsData.Deleting := false;
       TcxGridTableView(AView).OptionsData.Appending := false;
     end;
+
   end;
+
+  if ADataSet.FindField(FIELD_UI_ROW_STYLE) <> nil then
+    TcxCustomGridTableView(AView).Styles.OnGetContentStyle := OnGetRowStyle;
 
   for I := 0 to ADataSet.FieldCount - 1 do
   begin
@@ -746,16 +794,11 @@ begin
       TuneColumn(Col, Field);
     end;
 
-    //InitEditors
-{    if Assigned(Col) and Field.ReadOnly then
-    begin
-      Col.Options.Editing := false;
-      Col.Options.ShowEditButtons := isebNever;
-    end
-    else}
-
     if Assigned(Col) then
       InitColumnEditor(Col, Field);
+
+    if ADataSet.FindField(format(FIELD_UI_STYLE_FMT, [Field.FieldName])) <> nil then
+      Col.Styles.OnGetContentStyle := OnGetColumnStyle;
 
   end;
 

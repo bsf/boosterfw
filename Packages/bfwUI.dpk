@@ -67,6 +67,7 @@ contains
   ISelectionGridImpl in '..\Sources\UI\ISelectionGridImpl.pas',
   ITabsImpl in '..\Sources\UI\ITabsImpl.pas',
   CustomDialogView in '..\Sources\UI\CustomDialogView.pas' {frCustomDialogView},
-  CustomContentView in '..\Sources\UI\CustomContentView.pas' {frCustomContentView};
+  CustomContentView in '..\Sources\UI\CustomContentView.pas' {frCustomContentView},
+  HelperStyles in '..\Sources\UI\HelperStyles.pas';
 
 end.

@@ -4,7 +4,6 @@ inherited frReportLauncherView: TfrReportLauncherView
   Caption = 'frReportLauncherView'
   ClientWidth = 888
   ExplicitWidth = 894
-  ExplicitHeight = 543
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
@@ -57,6 +56,7 @@ inherited frReportLauncherView: TfrReportLauncherView
     Top = 261
   end
   object cxStyleRepository1: TcxStyleRepository
+    Scalable = True
     Left = 136
     Top = 112
     PixelsPerInch = 96

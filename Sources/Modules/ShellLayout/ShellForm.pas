@@ -23,7 +23,7 @@ uses
   cxGridCustomView, cxGridCustomTableView, cxGridTableView,
   cxGridDBTableView, cxGrid, dxOffice11, UIServiceIntf,
   NotifyReceiver, NotifySenderPresenter, NotifySenderView,
-  ActivityCatalog, ShellLayoutStr;
+  UICatalog, ShellLayoutStr;
 
 const
   STATUSBAR_INFO_PANEL = 0;
@@ -178,7 +178,7 @@ begin
   pcMain.Color := Self.Color;
   FWorkItem := AWorkItem;
 
-  FScale := (FWorkItem.Services[IUIService] as IUIService).ViewStyle.Scale;
+  FScale := (FWorkItem.Services[IUIService] as IUIService).Scale;
   ScaleBy(FScale, 100);
 
   FViewStyleController := TViewStyleController.Create(Self, FWorkItem);
@@ -215,7 +215,7 @@ begin
 
   RegisterShellCommands;
 
-  TActivityCatalog.Create(Self, FWorkItem).Load;
+  TUICatalog.Load(FWorkItem);
 
 end;
 

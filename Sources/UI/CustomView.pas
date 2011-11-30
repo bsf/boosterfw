@@ -108,7 +108,6 @@ type
     function GetValueStatus(const AName: string): TValueStatus;
     procedure SetValueStatus(const AName: string; AStatus: TValueStatus);
 
-    procedure LinkDataSet(const AName: string; ADataSet: TDataSet); overload;
     procedure LinkDataSet(ADataSource: TDataSource; ADataSet: TDataSet); overload;
 
     procedure FocusValueControl(const AName: string);
@@ -169,7 +168,7 @@ implementation
 uses
   // for linked only
   GridCtrlUtils, EditCtrlUtils, GridVCtrlUtils, GridTreeCtrlUtils,
-  ISelectionGridImpl, ITabsImpl; //View helpers
+  ISelectionGridImpl, ITabsImpl, HelperStyles; //View helpers
 
 {$R *.dfm}
 
@@ -313,7 +312,7 @@ function TfrCustomView.GetViewControl: TControl;
 begin
   Result := ViewControl;
 end;
-
+{
 procedure TfrCustomView.LinkDataSet(const AName: string; ADataSet: TDataSet);
 const
   DataSourceNameFmt = '%sDataSource';
@@ -333,7 +332,7 @@ begin
   LinkDataSet(TDataSource(DS), ADataSet);
 
 
-end;
+end;  }
 
 procedure TfrCustomView.OnGetValue(const AName: string; var AValue: Variant);
 begin

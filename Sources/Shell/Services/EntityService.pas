@@ -466,6 +466,13 @@ begin
   begin
     F := GetDataSet.Fields[I];
 
+    //Hide system fields
+    if Pos('UI_', UpperCase(F.FieldName)) = 1 then
+    begin
+      F.Visible := false;
+      SetFieldAttribute(F, FIELD_ATTR_HIDDEN, '1');
+    end;
+
     vFieldInfo := vInfo.Fields.FindField(F.FieldName);
     eFieldInfo := eInfo.Fields.FindField(F.FieldName);
     smFieldInfo := smInfo.Fields.FindField(F.FieldName);
@@ -509,7 +516,8 @@ begin
     begin
       TFloatField(F).DisplayFormat := ',##0.00';
       //currency := true;
-    end
+    end;
+
   end;
 
 end;

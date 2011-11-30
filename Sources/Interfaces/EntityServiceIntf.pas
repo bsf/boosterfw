@@ -15,6 +15,9 @@ const
   FIELD_ATTR_FIELDID = 'FieldID';
   FIELD_ATTR_REQUIRED = 'Required';
 
+  FIELD_ATTR_STYLE_CONTENT = 'Style';
+  FIELD_ATTR_STYLE_HEADER = 'Style.Header';
+
   FIELD_ATTR_EDITOR = 'Editor';
   FIELD_ATTR_EDITOR_COMMAND = 'Editor.Command';
   FIELD_ATTR_EDITOR_ACTION = 'Editor.Action';
@@ -36,6 +39,11 @@ const
   DATASET_ATTR_READONLY = 'ReadOnly';
   DATASET_ATTR_ENTITY = 'Entity';
   DATASET_ATTR_ENTITY_VIEW = 'EntityView';
+
+  //System field names
+  FIELD_UI_TITLE = 'UI_TITLE';
+  FIELD_UI_ROW_STYLE = 'UI_ROW_STYLE';
+  FIELD_UI_STYLE_FMT = 'UI_%s_STYLE';
 
 type
   TEntityDataRequestKind = (erkReloadRecord, erkInsertDefaults);

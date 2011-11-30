@@ -2,16 +2,17 @@ unit UIService;
 
 interface
 uses classes, coreClasses, UIServiceIntf, forms, windows, dialogs, ConfigServiceIntf,
-  sysutils, variants;
+  sysutils, variants, Generics.Collections;
 
 type
-  TUIService = class(TComponent, IUIService, IMessageBox, IInputBox, IWaitBox, IViewStyle)
+  TUIService = class(TComponent, IUIService, IMessageBox, IInputBox, IWaitBox)
   const
     APP_LOCALE_SETTING = 'Application.Locale';
 
   private
     FWorkItem: TWorkItem;
     FLocale: string;
+    FStyles: TDictionary<string, TObject>;
   protected
     function MessageBox: IMessageBox;
     function InputBox: IInputBox;
@@ -27,10 +28,7 @@ type
     // WaitBox
     procedure StartWait;
     procedure StopWait;
-    // IViewStyle
-    function GetViewScale: integer;
-    function ViewStyle: IViewStyle;
-    function IViewStyle.Scale = GetViewScale;
+
     procedure Notify(const AMessage: string);
     procedure NotifyExt(const AID, ASender, AMessage: string; ADateTime: TDateTime);
     procedure NotifyAccept(const AID: string);
@@ -38,9 +36,13 @@ type
     //ms-help://embarcadero.rs_xe/Intl/nls_238z.htm
     procedure SetLocale(AValue: string);
     function GetLocale: string;
-
+    function Scale: integer;
+    //
+    procedure SetStyle(const AName: string; AValue: TObject);
+    function GetStyle(const AName: string): TObject;
   public
     constructor Create(AOwner: TComponent; AWorkItem: TWorkItem); reintroduce;
+    destructor Destroy; override;
   end;
 
 implementation
@@ -65,6 +67,7 @@ var
 begin
   inherited Create(AOwner);
   FWorkItem := AWorkItem;
+  FStyles := TDictionary<string, TObject>.Create;
 
   //Init Locale
   localeIdx := SysUtils.Languages.IndexOf(
@@ -74,6 +77,14 @@ begin
   if localeIdx = -1 then
     localeIdx := Sysutils.Languages.IndexOf(GetUserDefaultLCID);
   FLocale := Sysutils.Languages.LocaleName[localeIdx];
+
+
+end;
+
+destructor TUIService.Destroy;
+begin
+  FStyles.Free;
+  inherited;
 end;
 
 procedure TUIService.ErrorMessage(const AMessage: string);
@@ -87,7 +98,13 @@ begin
   Result := FLocale;
 end;
 
-function TUIService.GetViewScale: integer;
+function TUIService.GetStyle(const AName: string): TObject;
+begin
+  Result := nil;
+  FStyles.TryGetValue(UpperCase(AName), Result);
+end;
+
+function TUIService.Scale: integer;
 var
   conf_scale: string;
 begin
@@ -145,6 +162,11 @@ begin
 end;
 
 
+procedure TUIService.SetStyle(const AName: string; AValue: TObject);
+begin
+  FStyles.AddOrSetValue(UpperCase(AName), AValue);
+end;
+
 procedure TUIService.StartWait;
 begin
   FWorkItem.EventTopics[ET_WAITBOX_START].Fire;
@@ -158,11 +180,6 @@ end;
 procedure TUIService.StopWait;
 begin
   FWorkItem.EventTopics[ET_WAITBOX_STOP].Fire;
-end;
-
-function TUIService.ViewStyle: IViewStyle;
-begin
- Result := Self as IViewStyle;
 end;
 
 function TUIService.WaitBox: IWaitBox;

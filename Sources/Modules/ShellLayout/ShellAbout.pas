@@ -33,9 +33,10 @@ implementation
 
 procedure ShellAboutShow;
 var
-  frm: TForm;
+  frm: TfrShellAbout;
 begin
   frm := TfrShellAbout.Create(nil);
+  frm.Localization;
   frm.ShowModal;
   frm.Free;
 end;

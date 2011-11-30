@@ -87,7 +87,7 @@
 			<DCCReference Include="..\..\Sources\Modules\ShellLayout\NotifySenderView.pas">
 				<Form>frNotifySenderView</Form>
 			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\ShellLayout\ActivityCatalog.pas"/>
+			<DCCReference Include="..\..\Sources\Modules\ShellLayout\UICatalog.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\ShellLayout\ShellLayoutStr.pas"/>
 			<RcCompile Include="..\..\Sources\Modules\ShellLayout\Shell.rc">
 				<Form>Shell.res</Form>

@@ -2,10 +2,10 @@ unit UILocalization;
 
 interface
 uses cxClasses, dxNavBarConsts, cxGridStrs, cxFilterControlStrs, cxFilterConsts,
-  cxGridPopupMenuConsts, cxEditConsts, UIServiceIntf, coreClasses, UIClasses,
+  cxGridPopupMenuConsts, cxEditConsts, coreClasses, UIClasses,
   ShellIntf, ShellNavBar, ShellLayoutStr;
 
-procedure Localization(AWorkItem: TWorkItem);
+procedure Localization(const ALocale: string);
 
 implementation
 
@@ -512,12 +512,9 @@ scxGridRecursiveLevels = 'You cannot create recursive levels';
 end;
 
 
-procedure Localization(AWorkItem: TWorkItem);
-var
-  svc: IUIService;
+procedure Localization(const ALocale: string);
 begin
-  svc := AWorkItem.Services[IUIService] as IUIService;
-  if svc.Locale = 'ru-RU' then
+  if ALocale = 'ru-RU' then
     Localization_ru;
 end;
 

@@ -190,6 +190,7 @@ procedure TEntityCollectPresenter.CmdAddItem(Sender: TObject);
 begin
   with WorkItem.Activities[ACTION_ENTITY_DETAIL_NEW] do
   begin
+    Params['HID'] := WorkItem.State['HID'];
     Params['ENTITYNAME'] := EntityName;
     Execute(WorkItem);
   end;

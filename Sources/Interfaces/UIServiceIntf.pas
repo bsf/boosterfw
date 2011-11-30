@@ -33,10 +33,6 @@ type
     procedure StopWait;
   end;
 
-  IViewStyle = interface
-  ['{B489F70F-6D69-4FD3-BEC1-01C84DEE8633}']
-    function Scale: integer;
-  end;
 
   IUIService = interface
   ['{20005BF6-C242-4C36-8967-EBB976354DDE}']
@@ -45,17 +41,20 @@ type
     function InputBox: IInputBox;
     function WaitBox: IWaitBox;
     //
-    function ViewStyle: IViewStyle;
-    //
     procedure Notify(const AMessage: string);
     procedure NotifyExt(const AID, ASender, AMessage: string; ADateTime: TDateTime);
     procedure NotifyAccept(const AID: string);
-    //
-    //http://www.microsoft.com/globaldev/reference/lcid-all.mspx
+
+    //ru-RU;en-US
     procedure SetLocale(AValue: string);
     function GetLocale: string;
     property Locale: string read GetLocale write SetLocale;
-
+    //
+    function Scale: integer;
+    //
+    procedure SetStyle(const AName: string; AValue: TObject);
+    function GetStyle(const AName: string): TObject;
+    property Styles[const AName: string]: TObject read GetStyle write SetStyle;
   end;
 
 implementation

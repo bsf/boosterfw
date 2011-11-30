@@ -145,7 +145,7 @@ begin
   FreeOnViewClose := true;
   FAccounts := App.Security.Accounts;
 
-  View.CommandBar.AddCommand(COMMAND_CLOSE, COMMAND_CLOSE_CAPTION,
+  View.CommandBar.AddCommand(COMMAND_CLOSE, GetLocaleString(@COMMAND_CLOSE_CAPTION),
     COMMAND_CLOSE_SHORTCUT, CmdClose);
 
   WorkItem.Commands[COMMAND_USERROLE_ADD].SetHandler(CmdUserRolesChange);

@@ -244,7 +244,7 @@ begin
   UIClasses.InstantiateViewExtensions(view as TView);
 
   (view as TForm).ScaleBy(
-    (WorkItem.Services[IUIService] as IUIService).ViewStyle.Scale, 100);
+    (WorkItem.Services[IUIService] as IUIService).Scale, 100);
 
 
 end;

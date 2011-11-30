@@ -2,7 +2,7 @@ unit bfwShellLayoutModuleInit;
 
 interface
 uses classes, CoreClasses, SysUtils, ShellIntf, ShellForm, CustomApp,
-  UILocalization;
+  UILocalization, UIServiceIntf;
 
 
 type
@@ -30,7 +30,8 @@ begin
   FormatSettings.ThousandSeparator := ' ';
   CustomApp.TCustomApplication.ShellFormClass := TfrMain;
 
-  UILocalization.Localization(WorkItem);
+  Localization(
+    (WorkItem.Services[IUIService] as IUIService).Locale);
 end;
 
 
