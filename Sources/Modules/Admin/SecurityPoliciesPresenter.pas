@@ -3,7 +3,7 @@ unit SecurityPoliciesPresenter;
 interface
 uses coreClasses, CustomContentPresenter, UIClasses, cxCustomData, ShellIntf,
   sysutils, Contnrs, classes, db, CommonUtils, dxmdaset, SecurityIntf, variants,
-  AdminConst;
+  AdminConst, UIStr;
 
 const
   VIEW_SECURITYPOLICIES = 'views.security.policies';
@@ -152,8 +152,8 @@ procedure TSecurityPoliciesPresenter.OnViewReady;
 begin
   ViewTitle := VIEW_SECURITYPOLICIES_TITLE;
 
-  View.CommandBar.AddCommand(COMMAND_CLOSE, GetLocaleString(@COMMAND_CLOSE_CAPTION),
-    COMMAND_CLOSE_SHORTCUT, CmdClose);
+  View.CommandBar.AddCommand(COMMAND_CLOSE,
+    GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
 
   View.CommandBar.AddCommand(COMMAND_OPEN, GetLocaleString(@COMMAND_OPEN_CAPTION),
     COMMAND_OPEN_SHORTCUT, CmdOpen);

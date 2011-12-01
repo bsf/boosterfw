@@ -2,7 +2,8 @@ unit EntityPickListPresenter;
 
 interface
 uses CustomDialogPresenter, UIClasses, CoreClasses, EntityServiceIntf,
-  CustomPresenter, sysutils, db, EntityCatalogIntf, EntityCatalogConst, controls;
+  CustomPresenter, sysutils, db, EntityCatalogIntf, EntityCatalogConst, controls,
+  UIStr;
 
 const
  // COMMAND_OK = 'commands://picklist.ok';

@@ -2,7 +2,7 @@ unit EntityComplexPresenter;
 
 interface
 uses CoreClasses, CustomContentPresenter, ShellIntf, EntityServiceIntf, SysUtils,
-  variants, db,  UIClasses, EntityCatalogIntf, StrUtils, controls;
+  variants, db,  UIClasses, EntityCatalogIntf, StrUtils, controls, UIStr;
 
 const
 
@@ -175,7 +175,8 @@ begin
 
 //----------------- CommandBar
   View.CommandBar.
-    AddCommand(COMMAND_CLOSE, GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
+    AddCommand(COMMAND_CLOSE,
+      GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
 
   if ViewInfo.OptionExists('CanHeadEdit') then
     View.CommandBar.

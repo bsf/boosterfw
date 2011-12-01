@@ -2,7 +2,7 @@ unit UICatalog;
 
 interface
 uses classes, coreClasses, db, EntityServiceIntf, UIServiceIntf, variants,
-  cxStyles, graphics, windows;
+  cxStyles, graphics, windows, generics.collections, sysutils;
 
 type
   TUICatalog = class(TComponent)
@@ -24,6 +24,70 @@ type
 
 implementation
 
+var
+  ColorDictionary: TDictionary<string, integer>;
+
+procedure ColorDictionaryInit;
+begin
+  ColorDictionary := TDictionary<string, integer>.Create;
+
+{clBlack = TColor($000000);
+  clMaroon = TColor($000080);
+  clGreen = TColor($008000);
+  clOlive = TColor($008080);
+  clNavy = TColor($800000);
+
+  clPurple = TColor($800080);
+  clTeal = TColor($808000);
+  clGray = TColor($808080);
+  clSilver = TColor($C0C0C0);
+
+  clRed = TColor($0000FF);
+  clLime = TColor($00FF00);
+  clYellow = TColor($00FFFF);
+  clBlue = TColor($FF0000);
+
+  clFuchsia = TColor($FF00FF);
+  clAqua = TColor($FFFF00);
+  clLtGray = TColor($C0C0C0);
+  clDkGray = TColor($808080);
+  clWhite = TColor($FFFFFF);
+  StandardColorsCount = 16;
+
+  clMoneyGreen = TColor($C0DCC0);
+  clSkyBlue = TColor($F0CAA6);
+  clCream = TColor($F0FBFF);
+  clMedGray = TColor($A4A0A0);
+  ExtendedColorsCount = 4;
+
+  clNone = TColor($1FFFFFFF);
+  clDefault = TColor($20000000);
+}
+  ColorDictionary.Add('BLACK', clBlack);
+  ColorDictionary.Add('MAROON', clMaroon);
+  ColorDictionary.Add('GREEN', clGreen);
+  ColorDictionary.Add('OLIVE', clOlive);
+  ColorDictionary.Add('NAVY', clNavy);
+  ColorDictionary.Add('PURPLE', clPurple);
+  ColorDictionary.Add('TEAL', clTeal);
+  ColorDictionary.Add('GRAY', clGray);
+  ColorDictionary.Add('SILVER', clSilver);
+  ColorDictionary.Add('RED', clRed);
+  ColorDictionary.Add('LIME', clLime);
+  ColorDictionary.Add('YELLOW', clYellow);
+  ColorDictionary.Add('BLUE', clBlue);
+  ColorDictionary.Add('FUCHSIA', clFuchsia);
+  ColorDictionary.Add('AQUA', clAqua);
+  ColorDictionary.Add('LTGRAY', clLtGray);
+  ColorDictionary.Add('DKGRAY', clDkGray);
+  ColorDictionary.Add('WHITE', clWhite);
+  ColorDictionary.Add('MONEYGREEN', clMoneyGreen);
+  ColorDictionary.Add('SKYBLUE', clSkyBlue);
+  ColorDictionary.Add('CREAM', clCream);
+  ColorDictionary.Add('MEDGRAY', clMedGray);
+
+  ColorDictionary.Add('INFOBK', clInfoBk);
+end;
 { TActivityCatalog }
 
 
@@ -36,14 +100,34 @@ end;
 class procedure TUICatalog.LoadStyles(AWorkItem: TWorkItem);
 
   procedure ColorSet(const AValue: string; AStyle: TcxStyle);
+  var
+    color: integer;
   begin
-    AStyle.Color := clInfoBk;
+    if ColorDictionary.TryGetValue(UpperCase(AValue), color) then
+      AStyle.Color := color;
+  end;
+
+  procedure FontColorSet(const AValue: string; AStyle: TcxStyle);
+  var
+    color: integer;
+  begin
+    if ColorDictionary.TryGetValue(UpperCase(AValue), color) then
+      AStyle.TextColor := color;
   end;
 
   procedure FontStyleSet(const AValue: string; AStyle: TcxStyle);
+  var
+    valUpper: string;
   begin
-    if AValue = 'Bold' then
-      AStyle.Font.Style := [fsBold];
+    valUpper := UpperCase(AValue);
+    if valUpper = 'BOLD' then
+      AStyle.Font.Style := [fsBold]
+    else if valUpper = 'ITALIC' then
+      AStyle.Font.Style := [fsItalic]
+    else if valUpper = 'UNDERLINE' then
+     AStyle.Font.Style := [fsUnderline]
+    else if valUpper = 'STRIKEOUT' then
+      AStyle.Font.Style := [fsStrikeOut];
   end;
 
 var
@@ -63,12 +147,13 @@ begin
     begin
       style := TcxStyle.Create(AWorkItem);
       style.Font.Size := MulDiv(style.Font.Size, uiSvc.Scale, 100);
+      style.Font.Name := 'MS Sans Serif';
       strList.Clear;
       ExtractStrings([';'], [], PWideChar(VarToStr(ds['OPTIONS'])), strList);
 
       ColorSet(strList.Values['Color'], style);
       FontStyleSet(strList.Values['Font.Style'], style);
-
+      FontColorSet(strList.Values['Font.Color'], style);
       uiSvc.Styles[ds['ID']] := style;
       ds.Next;
     end
@@ -122,5 +207,8 @@ begin
     strList.Free;
   end;
 end;
+
+initialization
+  ColorDictionaryInit;
 
 end.

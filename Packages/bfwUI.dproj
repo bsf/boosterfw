@@ -84,7 +84,7 @@
 				<Form>frCustomView</Form>
 			</DCCReference>
 			<DCCReference Include="..\Sources\UI\EditCtrlUtils.pas"/>
-			<DCCReference Include="..\Sources\UI\GridCtrlUtils.pas"/>
+			<DCCReference Include="..\Sources\UI\HelperGridCtrl.pas"/>
 			<DCCReference Include="..\Sources\UI\GridTreeCtrlUtils.pas"/>
 			<DCCReference Include="..\Sources\UI\GridTreeGtrlUtils.pas"/>
 			<DCCReference Include="..\Sources\UI\GridVCtrlUtils.pas"/>
@@ -98,7 +98,7 @@
 			<DCCReference Include="..\Sources\UI\CustomContentView.pas">
 				<Form>frCustomContentView</Form>
 			</DCCReference>
-			<DCCReference Include="..\Sources\UI\HelperStyles.pas"/>
+			<DCCReference Include="..\Sources\UI\UIStr.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

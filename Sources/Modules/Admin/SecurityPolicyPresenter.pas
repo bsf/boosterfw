@@ -2,7 +2,7 @@ unit SecurityPolicyPresenter;
 
 interface
 uses CustomContentPresenter, UIClasses, coreClasses, ShellIntf, SecurityIntf,
-  AdminConst, sysutils, classes, variants;
+  AdminConst, sysutils, classes, variants, UIStr;
 
 const
   COMMAND_SET_PERM_UNDEFINED = '{4FF1A7B8-9CC1-42B8-9F47-60D6037A69F1}';
@@ -105,8 +105,8 @@ begin
   FPolicy := App.Security.FindPolicy(WorkItem.State['POLID']);
   ViewTitle := FPolicy.Name;
 
-  View.CommandBar.AddCommand(COMMAND_CLOSE, GetLocaleString(@COMMAND_CLOSE_CAPTION),
-    COMMAND_CLOSE_SHORTCUT, CmdClose);
+  View.CommandBar.AddCommand(COMMAND_CLOSE,
+    GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
 
   View.CommandBar.AddCommand(COMMAND_PERMEFFECTIVE, 'Действующие разрешения',
     '', CmdPermEffective);

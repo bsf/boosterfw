@@ -8,7 +8,7 @@ uses
   cxGroupBox, CoreClasses, CustomPresenter, ShellIntf,
   ImgList, cxGraphics, ActnList, cxButtons,
   UIClasses, db, Contnrs, cxEdit, Typinfo, cxLookAndFeels, dxSkinsCore,
-  dxSkinsDefaultPainters, CommonUtils, inifiles;
+  dxSkinsDefaultPainters, CommonUtils, inifiles, cxStyles;
 
 const
   const_PreferenceValueFileName = 'PreferenceValue.ini';
@@ -96,6 +96,8 @@ type
     function GetPreferenceValues: TMemIniFile;
     procedure SavePreferenceValues;
   protected
+    //CustomForm
+    procedure ChangeScale(M, D: Integer); override;
 
     //IView
     function GetViewControl: TControl; override;
@@ -167,8 +169,8 @@ function GetViewHelperClasses: TClassList;
 implementation
 uses
   // for linked only
-  GridCtrlUtils, EditCtrlUtils, GridVCtrlUtils, GridTreeCtrlUtils,
-  ISelectionGridImpl, ITabsImpl, HelperStyles; //View helpers
+  HelperGridCtrl, EditCtrlUtils, GridVCtrlUtils, GridTreeCtrlUtils,
+  ISelectionGridImpl, ITabsImpl; //View helpers
 
 {$R *.dfm}
 
@@ -190,6 +192,18 @@ end;
 
 { TfrCustomView }
 
+
+procedure TfrCustomView.ChangeScale(M, D: Integer);
+var
+  I: integer;
+begin
+  inherited ChangeScale(M, D);
+  for I := 0 to Self.ComponentCount - 1 do
+    if Components[I] is TcxStyle then
+      TcxStyle(Components[I]).Font.Size := MulDiv(TcxStyle(Components[I]).Font.Size, App.UI.Scale, 100);
+
+
+end;
 
 constructor TfrCustomView.Create(APresenterWI: TWorkItem; const AViewURI: string);
 begin

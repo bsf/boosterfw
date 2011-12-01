@@ -36,6 +36,23 @@ type
     cxGrid1DBTableView1Column1: TcxGridDBColumn;
     cxStyleRepository1: TcxStyleRepository;
     cxStyle1: TcxStyle;
+    cxGridTableViewStyleSheet1: TcxGridTableViewStyleSheet;
+    GridTableViewStyleSheetDevExpress: TcxGridTableViewStyleSheet;
+    cxStyle2: TcxStyle;
+    cxStyle3: TcxStyle;
+    cxStyle4: TcxStyle;
+    cxStyle5: TcxStyle;
+    cxStyle6: TcxStyle;
+    cxStyle7: TcxStyle;
+    cxStyle8: TcxStyle;
+    cxStyle9: TcxStyle;
+    cxStyle10: TcxStyle;
+    cxStyle11: TcxStyle;
+    cxStyle12: TcxStyle;
+    cxStyle13: TcxStyle;
+    cxStyle14: TcxStyle;
+    cxStyle15: TcxStyle;
+    cxStyle16: TcxStyle;
     procedure cxDBComboBox1PropertiesInitPopup(Sender: TObject);
   private
     { Private declarations }

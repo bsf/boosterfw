@@ -1,7 +1,7 @@
 unit CustomPresenter;
 
 interface
-uses Classes, CoreClasses, ShellIntf, Controls, cxClasses,
+uses Classes, CoreClasses, ShellIntf, Controls, UIStr,
   UIClasses, SysUtils, EntityServiceIntf, Variants, db, StrUtils, typinfo,
   UIServiceIntf, forms;
 

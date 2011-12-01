@@ -2,7 +2,7 @@ unit SecurityPermEffectivePresenter;
 
 interface
 uses CustomContentPresenter, UIClasses, coreClasses, ShellIntf, SecurityIntf,
-  AdminConst, sysutils, classes, variants, db;
+  AdminConst, sysutils, classes, variants, db, UIStr;
 
 
 type
@@ -61,9 +61,9 @@ begin
   else
     ViewTitle := FPolicy.Name + ' [действующие разрешения]';
 
-  (GetView as ISecurityPermEffectiveView).CommandBar.AddCommand(COMMAND_CLOSE,
-    GetLocaleString(@COMMAND_CLOSE_CAPTION),
-    COMMAND_CLOSE_SHORTCUT, CmdClose);
+  (GetView as ISecurityPermEffectiveView).CommandBar.
+    AddCommand(COMMAND_CLOSE,
+      GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
 
   FillList;  
 end;

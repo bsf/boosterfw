@@ -2,7 +2,7 @@ unit UserAccountsPresenter;
 
 interface
 uses coreClasses, CustomContentPresenter, UIClasses, ShellIntf,
-  sysutils, Contnrs, classes, SecurityIntf, AdminConst;
+  sysutils, Contnrs, classes, SecurityIntf, AdminConst, UIStr;
 
 const
   VIEW_USERACCOUNTS = 'views.security.useraccounts';
@@ -145,8 +145,8 @@ begin
   FreeOnViewClose := true;
   FAccounts := App.Security.Accounts;
 
-  View.CommandBar.AddCommand(COMMAND_CLOSE, GetLocaleString(@COMMAND_CLOSE_CAPTION),
-    COMMAND_CLOSE_SHORTCUT, CmdClose);
+  View.CommandBar.AddCommand(COMMAND_CLOSE,
+    GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
 
   WorkItem.Commands[COMMAND_USERROLE_ADD].SetHandler(CmdUserRolesChange);
   WorkItem.Commands[COMMAND_USERROLE_REMOVE].SetHandler(CmdUserRolesChange);

@@ -3,7 +3,7 @@ unit SettingsPresenter;
 interface
 uses coreClasses, CustomContentPresenter, UIClasses, ShellIntf,
   sysutils, Contnrs, classes, ConfigServiceIntf, db, CommonUtils,
-  dxmdaset, EntityServiceIntf, variants, AdminConst;
+  dxmdaset, EntityServiceIntf, variants, AdminConst, UIStr;
 
 const
   VIEW_SETTINGS = 'views.shell.settings';
@@ -206,8 +206,8 @@ procedure TSettingsPresenter.OnViewReady;
 begin
   ViewTitle := GetLocaleString(@VIEW_SETTINGS_CAPTION);
 
-  View.CommandBar.AddCommand(COMMAND_CLOSE, GetLocaleString(@COMMAND_CLOSE_CAPTION),
-    COMMAND_CLOSE_SHORTCUT, CmdClose);
+  View.CommandBar.AddCommand(COMMAND_CLOSE,
+    GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
 
   View.BindAppSettingsData(FCommonAppSettingsData,
     FAliasAppSettingsData, FHostAppSettingsData);

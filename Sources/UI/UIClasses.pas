@@ -4,6 +4,7 @@ interface
 uses classes, db, CoreClasses, sysutils, controls, ShellIntf,
   Contnrs, forms, variants;
 
+  {
 resourcestring
   COMMAND_CLOSE_CAPTION = 'Close';
   COMMAND_SAVE_CAPTION = 'Save';
@@ -22,6 +23,7 @@ resourcestring
   COMMAND_STATE_CHANGE_PREV_CAPTION = 'Prev state';
   COMMAND_SELECTOR_CAPTION = 'Selector';
   COMMAND_EXECUTE_CAPTION = 'Execute';
+   }
 
 const
   COMMAND_CLOSE = 'commands.view.close';

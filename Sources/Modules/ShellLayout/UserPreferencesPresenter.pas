@@ -2,7 +2,7 @@ unit UserPreferencesPresenter;
 interface
 uses coreClasses, CustomContentPresenter, UIClasses, cxCustomData, ShellIntf,
   cxVGrid, sysutils, Contnrs, classes, ConfigServiceIntf, db, CommonUtils,
-  dxmdaset, EntityServiceIntf, variants, ShellLayoutStr;
+  dxmdaset, EntityServiceIntf, variants, ShellLayoutStr, UIStr;
 
 
 
@@ -162,10 +162,11 @@ procedure TUserPreferencesPresenter.OnViewReady;
 begin
   ViewTitle := GetLocaleString(@VIEW_USER_PREFERENCES_TITLE);
 
-  View.CommandBar.AddCommand(COMMAND_CLOSE, COMMAND_CLOSE_CAPTION,
-    COMMAND_CLOSE_SHORTCUT, CmdClose);
+  View.CommandBar.AddCommand(COMMAND_CLOSE,
+    GetLocaleString(@COMMAND_CLOSE_CAPTION),  COMMAND_CLOSE_SHORTCUT, CmdClose);
 
-  View.CommandBar.AddCommand(COMMAND_RESET_VALUE, GetLocaleString(@COMMAND_RESET_CAPTION), '', CmdResetValue);
+  View.CommandBar.AddCommand(COMMAND_RESET_VALUE,
+    GetLocaleString(@COMMAND_RESET_CAPTION), '', CmdResetValue);
 
   View.BindAppPreferences(FAppPreferencesData);
   View.BindDBPreferences(FDBPreferencesData);

@@ -2,7 +2,7 @@ unit UILocalization;
 
 interface
 uses cxClasses, dxNavBarConsts, cxGridStrs, cxFilterControlStrs, cxFilterConsts,
-  cxGridPopupMenuConsts, cxEditConsts, coreClasses, UIClasses,
+  cxGridPopupMenuConsts, cxEditConsts, coreClasses, UIStr,
   ShellIntf, ShellNavBar, ShellLayoutStr;
 
 procedure Localization(const ALocale: string);
@@ -51,6 +51,12 @@ begin
   SetLocaleString(@COMMAND_STATE_CHANGE_PREV_CAPTION, 'Предыдущее состояние');
   SetLocaleString(@COMMAND_SELECTOR_CAPTION, 'Отбор');
   SetLocaleString(@COMMAND_EXECUTE_CAPTION, 'Выполнить');
+
+
+  //HelperGridCtrl
+  cxSetResourceString(@cxGridExportToExcel, 'Экспорт в Excel');
+  cxSetResourceString(@cxGridAdjustColumnWidths, 'По ширине таблицы');
+  cxSetResourceString(@cxGridQuickFilter, 'Фильтр по выделенному');
 
 
 //cxEditConsts;

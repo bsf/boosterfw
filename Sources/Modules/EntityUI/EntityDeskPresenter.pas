@@ -4,7 +4,7 @@ interface
 
 uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
   SysUtils, Variants, ShellIntf, CustomContentPresenter, db,
-  EntityCatalogIntf, EntityCatalogConst;
+  EntityCatalogIntf, EntityCatalogConst, UIStr;
 
 const
   ENT_OPER_STATE_CHANGE_DEFAULT = 'StateChange';
@@ -98,12 +98,12 @@ begin
   end;
 
   View.CommandBar.
-    AddCommand(COMMAND_CLOSE, GetLocaleString(@COMMAND_CLOSE_CAPTION),
-      COMMAND_CLOSE_SHORTCUT, CmdClose);
+    AddCommand(COMMAND_CLOSE,
+      GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
 
   View.CommandBar.
-    AddCommand(COMMAND_RELOAD, GetLocaleString(@COMMAND_RELOAD_CAPTION),
-      COMMAND_RELOAD_SHORTCUT, CmdReload);
+    AddCommand(COMMAND_RELOAD,
+      GetLocaleString(@COMMAND_RELOAD_CAPTION), COMMAND_RELOAD_SHORTCUT, CmdReload);
 
   if ViewInfo.OptionExists('CanAdd') or ViewInfo.OptionExists('CanEdit') then
     View.CommandBar.AddCommand(COMMAND_NEW, GetLocaleString(@COMMAND_NEW_CAPTION),

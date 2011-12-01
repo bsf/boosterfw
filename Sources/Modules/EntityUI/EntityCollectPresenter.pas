@@ -3,7 +3,7 @@ unit EntityCollectPresenter;
 interface
 uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
   SysUtils, Variants, ShellIntf, CustomContentPresenter, db,
-  EntityCatalogIntf, EntityCatalogConst;
+  EntityCatalogIntf, EntityCatalogConst, UIStr;
 
 const
   COMMAND_LIST_SELECTED = '{EE438AAA-D7D9-4849-9958-DD6FDED59783}';
@@ -97,10 +97,12 @@ begin
   ViewTitle := ViewInfo.Title;
 
   View.CommandBar.
-    AddCommand(COMMAND_CLOSE, GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
+    AddCommand(COMMAND_CLOSE,
+      GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
 
   View.CommandBar.
-    AddCommand(COMMAND_RELOAD, GetLocaleString(@COMMAND_RELOAD_CAPTION), COMMAND_RELOAD_SHORTCUT, CmdReload);
+    AddCommand(COMMAND_RELOAD,
+      GetLocaleString(@COMMAND_RELOAD_CAPTION), COMMAND_RELOAD_SHORTCUT, CmdReload);
 
   if ViewInfo.OptionExists('BulkModeOnly') then
   begin

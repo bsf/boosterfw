@@ -142,8 +142,119 @@ object Form1: TForm1
     Top = 248
   end
   object cxStyleRepository1: TcxStyleRepository
+    Left = 408
+    Top = 56
     PixelsPerInch = 96
     object cxStyle1: TcxStyle
+    end
+    object cxStyle2: TcxStyle
+      AssignedValues = [svColor]
+      Color = 15451300
+    end
+    object cxStyle3: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 16247513
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      TextColor = clBlack
+    end
+    object cxStyle4: TcxStyle
+      AssignedValues = [svColor, svTextColor]
+      Color = 16247513
+      TextColor = clBlack
+    end
+    object cxStyle5: TcxStyle
+      AssignedValues = [svColor, svTextColor]
+      Color = 16247513
+      TextColor = clBlack
+    end
+    object cxStyle6: TcxStyle
+      AssignedValues = [svColor, svTextColor]
+      Color = 14811135
+      TextColor = clBlack
+    end
+    object cxStyle7: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 14811135
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      TextColor = clNavy
+    end
+    object cxStyle8: TcxStyle
+      AssignedValues = [svColor]
+      Color = 14872561
+    end
+    object cxStyle9: TcxStyle
+      AssignedValues = [svColor, svTextColor]
+      Color = 4707838
+      TextColor = clBlack
+    end
+    object cxStyle10: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 12937777
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      TextColor = clWhite
+    end
+    object cxStyle11: TcxStyle
+      AssignedValues = [svColor]
+      Color = 15451300
+    end
+    object cxStyle12: TcxStyle
+      AssignedValues = [svColor, svTextColor]
+      Color = 4707838
+      TextColor = clBlack
+    end
+    object cxStyle13: TcxStyle
+      AssignedValues = [svColor]
+      Color = 15451300
+    end
+    object cxStyle14: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 14811135
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clNavy
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      TextColor = clNavy
+    end
+    object cxStyle15: TcxStyle
+      AssignedValues = [svColor, svTextColor]
+      Color = 12937777
+      TextColor = clWhite
+    end
+    object cxStyle16: TcxStyle
+    end
+    object cxGridTableViewStyleSheet1: TcxGridTableViewStyleSheet
+      BuiltIn = True
+    end
+    object GridTableViewStyleSheetDevExpress: TcxGridTableViewStyleSheet
+      Caption = 'DevExpress'
+      Styles.Background = cxStyle2
+      Styles.Content = cxStyle3
+      Styles.ContentEven = cxStyle4
+      Styles.ContentOdd = cxStyle5
+      Styles.FilterBox = cxStyle6
+      Styles.Inactive = cxStyle11
+      Styles.IncSearch = cxStyle12
+      Styles.Selection = cxStyle15
+      Styles.Footer = cxStyle7
+      Styles.Group = cxStyle8
+      Styles.GroupByBox = cxStyle9
+      Styles.Header = cxStyle10
+      Styles.Indicator = cxStyle13
+      Styles.Preview = cxStyle14
+      BuiltIn = True
     end
   end
 end

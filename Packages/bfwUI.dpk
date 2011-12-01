@@ -58,7 +58,7 @@ contains
   CustomPresenter in '..\Sources\UI\CustomPresenter.pas',
   CustomView in '..\Sources\UI\CustomView.pas' {frCustomView},
   EditCtrlUtils in '..\Sources\UI\EditCtrlUtils.pas',
-  GridCtrlUtils in '..\Sources\UI\GridCtrlUtils.pas',
+  HelperGridCtrl in '..\Sources\UI\HelperGridCtrl.pas',
   GridTreeCtrlUtils in '..\Sources\UI\GridTreeCtrlUtils.pas',
   GridTreeGtrlUtils in '..\Sources\UI\GridTreeGtrlUtils.pas',
   GridVCtrlUtils in '..\Sources\UI\GridVCtrlUtils.pas',
@@ -68,6 +68,6 @@ contains
   ITabsImpl in '..\Sources\UI\ITabsImpl.pas',
   CustomDialogView in '..\Sources\UI\CustomDialogView.pas' {frCustomDialogView},
   CustomContentView in '..\Sources\UI\CustomContentView.pas' {frCustomContentView},
-  HelperStyles in '..\Sources\UI\HelperStyles.pas';
+  UIStr in '..\Sources\UI\UIStr.pas';
 
 end.

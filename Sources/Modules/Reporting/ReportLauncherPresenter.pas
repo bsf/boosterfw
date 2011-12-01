@@ -4,7 +4,7 @@ interface
 uses classes, CoreClasses, CustomPresenter, ShellIntf, UIClasses, SysUtils,
   dxmdaset, db, ReportCatalogClasses, EntityServiceIntf,
   variants, StrUtils, controls, ReportCatalogConst, CommonUtils,
-  cxDateUtils, Generics.Collections;
+  cxDateUtils, Generics.Collections, UIStr;
 
 const
   COMMAND_EXECUTE = '{1D84C651-1B31-4F77-87BF-86A00AC0232B}';
@@ -182,8 +182,10 @@ begin
   View.LinkParamDataSet(FParamDataSet);
   InitViewParamEditors;
 
-  View.CommandBar.AddCommand(COMMAND_EXECUTE, GetLocaleString(@COMMAND_EXECUTE_CAPTION), '', CmdExecute);
-  View.CommandBar.AddCommand(COMMAND_CLOSE, GetLocaleString(@COMMAND_CANCEL_CAPTION), '', CmdClose);
+  View.CommandBar.AddCommand(COMMAND_EXECUTE,
+    GetLocaleString(@COMMAND_EXECUTE_CAPTION), '', CmdExecute);
+  View.CommandBar.AddCommand(COMMAND_CLOSE,
+    GetLocaleString(@COMMAND_CANCEL_CAPTION), '', CmdClose);
 
   WorkItem.Commands[COMMAND_LAYOUT_CHANGED].SetHandler(CmdLayoutChanged);
   WorkItem.Commands[COMMAND_EXECUTE].SetHandler(CmdExecute);
