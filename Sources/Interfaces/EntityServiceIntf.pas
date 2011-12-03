@@ -45,6 +45,12 @@ const
   FIELD_UI_ROW_STYLE = 'UI_ROW_STYLE';
   FIELD_UI_STYLE_FMT = 'UI_%s_STYLE';
 
+//METADATA
+  DATASETPROXY_PROVIDER = 'PlainSQL';
+  ENTITYVIEW_PROVIDER_FMT = 'EV_%s_%s';
+  ENTITYOPER_PROVIDER_FMT = 'EO_%s_%s';
+
+
 type
   TEntityDataRequestKind = (erkReloadRecord, erkInsertDefaults);
 
@@ -184,17 +190,16 @@ type
 
   IEntityStorageConnection = interface
   ['{5C18F165-6DD0-41CC-95DB-85364B892080}']
-    function ID: string;
     procedure Connect;
     procedure Disconnect;
     function IsConnected: boolean;
     function ConnectionComponent: TCustomRemoteServer;
+
     function GetEntityViewProviderName(const AEntityName, AViewName: string): string;
     function GetEntityOperProviderName(const AEntityName, AOperName: string): string;
 
     function GetEntityList: TStringList;
     function GetEntityInfo(const AEntityName: string): IEntityInfo;
-    function GetStorageInfo: IEntityStorageInfo;
     function GetSchemeInfo(const ASchemeName: string): IEntitySchemeInfo;
 
     function GetStubConnectionComponent: TCustomConnection;
@@ -203,7 +208,7 @@ type
   IEntityStorageConnectionFactory = interface
   ['{2B570522-712E-44AA-9C3E-547D7CF0E82E}']
     function Engine: string;
-    function CreateConnection(const ID: string; AParams: TStrings): TComponent;
+    function CreateConnection(AParams: TStrings): TComponent;
   end;
 
   IEntityService = interface
@@ -233,7 +238,54 @@ procedure CopyFieldAttribute(ASource: TField; ADest: TField);
 function GetDataSetAttribute(ADataSet: TDataSet; const AttributeName: string): string;
 procedure SetDataSetAttribute(ADataSet: TDataSet; const AttributeName, AValue: string);
 
+type
+  TProviderNameBuilder = class
+  const
+    EV_PROVIDER = 'EV';
+    EO_PROVIDER = 'EO';
+
+  type
+    TProviderKind = (pkNone, pkEntityView, pkEntityOper);
+
+  public
+    class procedure Decode(const AProviderName: string;
+      var AKind: TProviderKind;  var AEntityName, AViewName: string);
+    class function Encode(AKind: TProviderKind;
+      const AEntityName, AViewName: string): string;
+  end;
+
+ { TProviderKind = (pkEntityView, pkEntityOper);
+
+procedure ProviderNameDecode(const AProviderName: string;
+  var AProviderKind: TProviderKind;  var AEntityName, AViewName: string);
+
+function ProviderNameEncode(AProviderKind: TProviderKind;
+  const AEntityName, AViewName: string): string;}
+
 implementation
+uses sysutils;
+
+{function ProviderNameEncode(AProviderKind: TProviderKind;
+  const AEntityName, AViewName: string): string;
+begin
+  Result := UpperCase(format('%s%d.2%s%s', [APrefix, Length(AEntityName), AViewName]));
+end;
+
+procedure ProviderNameDecode(const AProviderName: string;
+  var AEntityName, AViewName: string; var AProviderKind: TProviderKind);
+// EVXXENTITYNAMEVIEWNAME
+// EOXXENTITYNAMEOPERNAME
+
+var
+  entNameLen: integer;
+begin
+  entNameLen := StrToIntDef(copy(AProviderName, 2, 2), 0);
+  if entNameLen = 0 then exit;
+
+  AEntityName := copy(AProviderName, 5, entNameLen);
+  AViewName := copy(AProviderName, entNameLen + 5, MAXINT);
+
+end;   }
 
 type
   TFieldAttributes = class(TComponent)
@@ -397,6 +449,49 @@ end;
 procedure SetDataSetAttribute(ADataSet: TDataSet; const AttributeName, AValue: string);
 begin
   GetDataSetAttr(ADataSet).Values[AttributeName] := AValue;
+end;
+
+{ TProviderNameBuilder }
+
+class procedure TProviderNameBuilder.Decode(const AProviderName: string;
+  var AKind: TProviderKind; var AEntityName, AViewName: string);
+// EVXXENTITYNAMEVIEWNAME
+// EOXXENTITYNAMEOPERNAME
+
+var
+  kindLabel: string;
+  entNameLen: integer;
+begin
+
+  kindLabel := copy(AProviderName, 1, 2);
+
+  if kindLabel = EV_PROVIDER then
+    AKind := pkEntityView
+  else if kindLabel = EO_PROVIDER then
+    AKind := pkEntityOper
+  else
+    AKind := pkNone;
+
+  entNameLen := StrToIntDef(copy(AProviderName, 2, 2), 0);
+
+  AEntityName := copy(AProviderName, 5, entNameLen);
+  AViewName := copy(AProviderName, entNameLen + 5, MAXINT);
+
+end;
+
+class function TProviderNameBuilder.Encode(AKind: TProviderKind;
+  const AEntityName, AViewName: string): string;
+var
+  kindLabel: string;
+begin
+  if AKind = pkEntityView then
+    kindLabel := EV_PROVIDER
+  else if AKind = pkEntityOper then
+    kindLabel := EO_PROVIDER
+  else
+    kindLabel := 'XX';
+
+  Result := UpperCase(format('%s%d.2%s%s', [kindLabel, Length(AEntityName), AViewName]));
 end;
 
 end.

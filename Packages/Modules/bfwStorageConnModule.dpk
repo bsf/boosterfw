@@ -34,6 +34,10 @@ requires
 contains
   StorageConnIBX in '..\..\Sources\Modules\StorageConn\StorageConnIBX.pas',
   bfwStorageConnModuleInit in '..\..\Sources\Modules\StorageConn\bfwStorageConnModuleInit.pas',
-  StorageConnDBX in '..\..\Sources\Modules\StorageConn\StorageConnDBX.pas';
+  LocalConnIBX in '..\..\Sources\Modules\StorageConn\LocalConnIBX.pas',
+  LocalConnBDE in '..\..\Sources\Modules\StorageConn\LocalConnBDE.pas',
+  RemoteConn in '..\..\Sources\Modules\StorageConn\RemoteConn.pas',
+  DAL_BDE in '..\..\Sources\DAL\DAL_BDE.pas',
+  DAL_IBX in '..\..\Sources\DAL\DAL_IBX.pas';
 
 end.

@@ -7,6 +7,9 @@ uses
   DBClient, CoreClasses, db, Variants;
 
 const
+  ENT_META = 'BFW_META';
+  ENT_META_VIEW_ENTITIES = 'Entities';
+
   ENT_SETTING = 'INF_SETTING';
   ENT_SETTING_VIEW_META = 'META';
   ENT_SETTING_VIEW_GET = 'GET';
@@ -20,7 +23,7 @@ const
 
 type
   {добавляет поведение master -> detail в clientdataset}
-  TEntityMasterLink = class(DB.TDetailDataLink)
+  TEntityDataSetMasterLink = class(DB.TDetailDataLink)
   private
     FDataSet: TDataSet;
     procedure ReOpen;
@@ -249,7 +252,6 @@ var
   Intf: IEntityStorageConnection;
   I: integer;
   Factory: IEntityStorageConnectionFactory;
-  ConnectionID: string;
 begin
   Disconnect;
 
@@ -262,7 +264,7 @@ begin
       FFactories[I].GetInterface(IEntityStorageConnectionFactory, Factory);
       if SameText(Factory.Engine, AConnectionEngine) then
       begin
-        FConnection := Factory.CreateConnection(ConnectionID, paramList);
+        FConnection := Factory.CreateConnection(paramList);
         if FConnection <> nil then Break;
       end;
     end;
@@ -332,7 +334,7 @@ var
 begin
   ds := TEntityDataSet.Create(AOwner);
   ds.RemoteServer := Connection.ConnectionComponent;
-  ds.ProviderName := 'PlainSQL';
+  ds.ProviderName := DATASETPROXY_PROVIDER;
   Result := ds as IDataSetProxy;
 end;
 
@@ -1148,7 +1150,7 @@ constructor TEntityDataSet.Create(AOwner: TComponent);
 begin
   inherited;
   Self.OnReconcileError := ReconcileErrorHandler;
-  FMasterLink := TEntityMasterLink.Create(Self);
+  FMasterLink := TEntityDataSetMasterLink.Create(Self);
 end;
 
 destructor TEntityDataSet.Destroy;
@@ -1539,32 +1541,32 @@ end;
 
 { TEntityMasterLink }
 
-procedure TEntityMasterLink.ActiveChanged;
+procedure TEntityDataSetMasterLink.ActiveChanged;
 begin
   if FDataSet.Active then ReOpen;
 end;
 
-procedure TEntityMasterLink.CheckBrowseMode;
+procedure TEntityDataSetMasterLink.CheckBrowseMode;
 begin
   if FDataSet.Active then FDataSet.CheckBrowseMode;
 end;
 
-constructor TEntityMasterLink.Create(ADataSet: TDataSet);
+constructor TEntityDataSetMasterLink.Create(ADataSet: TDataSet);
 begin
   FDataSet := ADataSet;
 end;
 
-function TEntityMasterLink.GetDetailDataSet: TDataSet;
+function TEntityDataSetMasterLink.GetDetailDataSet: TDataSet;
 begin
   Result := FDataSet;
 end;
 
-procedure TEntityMasterLink.RecordChanged(Field: TField);
+procedure TEntityDataSetMasterLink.RecordChanged(Field: TField);
 begin
   if (Field = nil) and FDataSet.Active then ReOpen;
 end;
 
-procedure TEntityMasterLink.ReOpen;
+procedure TEntityDataSetMasterLink.ReOpen;
 var
   DataSet: TDataSet;
 begin

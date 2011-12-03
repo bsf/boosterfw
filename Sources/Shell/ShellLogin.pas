@@ -88,6 +88,13 @@ begin
       if lForm.CustomCombo.Items.IndexOf(FAlias) > -1 then
         lForm.CustomCombo.ItemIndex := lForm.CustomCombo.Items.IndexOf(FAlias)
       else if FAliases.Count > 0 then lForm.CustomCombo.ItemIndex := 0;
+
+      if FAliases.Count = 1 then
+      begin
+        lForm.CustomLabel.Visible := false;
+        lForm.CustomCombo.Visible := false;
+      end;
+
       Result := (lForm.ShowModal = mrOK);
       if Result then
       begin
@@ -95,6 +102,8 @@ begin
         FPassword := lForm.PasswordEdit.Text;
         FAlias := lForm.CustomCombo.Text;
       end;
+
+
     finally
       lForm.Free;
     end;

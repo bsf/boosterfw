@@ -3,7 +3,7 @@ unit StorageConnIBX;
 interface
 uses classes, EntityServiceIntf, IBDataBase, db, IBSql,
   IBCustomDataSet, provider, sysutils, Contnrs, IBQuery, IBUpdateSQL,
-  DBClient, Variants, TConnect, StrUtils, IB;
+  DBClient, Variants, TConnect, StrUtils, IB, DAL_IBX;
 
 resourcestring
   cnstGetEntityListSQL = 'select entityname from ent_entities';
@@ -54,11 +54,10 @@ resourcestring
 
 type
 
-  TIBQueryResultCallback = procedure(ASourceData: TObject;
-    AResultData: TIBXSQLDA) of object;
+  TIBQueryResultCallback = procedure(AResultData: TIBXSQLDA) of object;
 
   TExecuteDBQueryProc = procedure(const ASQL: string; AParams: array of variant;
-    ResultCallback: TIBQueryResultCallback; ASourceData: TObject) of object;
+    ResultCallback: TIBQueryResultCallback) of object;
 
   TIBEntityAttrInfo = class(TComponent)
   private
@@ -71,13 +70,13 @@ type
     FOptions: TStringList;
     FLinks: TObjectList;
     FLinkedFields: TStringList;
-    procedure GetFieldsInfoCallback(ASourceData: TObject; AResultData: TIBXSQLDA);
+    procedure GetFieldsInfoCallback( AResultData: TIBXSQLDA);
   protected
     procedure SetOptionsText(const AText: string);
     function GetEntityName: string;
     function GetAttrName: string;
     procedure ExecuteDBQuery(const ASQL: string; AParams: array of variant;
-      ResultCallback: TIBQueryResultCallback; ASourceData: TObject);
+      ResultCallback: TIBQueryResultCallback);
     //IEntityViewInfo
     function Fields: TFields;
     function Params: TParams;
@@ -104,10 +103,10 @@ type
     FIsExec: boolean;
     FExists: boolean;
     FInsertDefSQL: string;
-    procedure GetViewExistsCallback(ASourceData: TObject; AResultData: TIBXSQLDA);
-    procedure GetViewInfoCallback(ASourceData: TObject; AResultData: TIBXSQLDA);
-    procedure GetViewLinksInfoCallback(ASourceData: TObject; AResultData: TIBXSQLDA);
-    procedure GetViewLinkedFieldsInfoCallback(ASourceData: TObject; AResultData: TIBXSQLDA);
+    procedure GetViewExistsCallback(AResultData: TIBXSQLDA);
+    procedure GetViewInfoCallback(AResultData: TIBXSQLDA);
+    procedure GetViewLinksInfoCallback(AResultData: TIBXSQLDA);
+    procedure GetViewLinkedFieldsInfoCallback(AResultData: TIBXSQLDA);
   protected
     //IEntityViewInfo
     function PrimaryKey: string;
@@ -132,7 +131,7 @@ type
   private
     FSQL: string;
     FIsSelect: boolean;
-    procedure GetOperInfoCallback(ASourceData: TObject; AResultData: TIBXSQLDA);
+    procedure GetOperInfoCallback(AResultData: TIBXSQLDA);
   protected
     function IsSelect: boolean;
   public
@@ -151,9 +150,9 @@ type
     FViewInfoList: TComponentList;
     FOperInfoList: TComponentList;
     FDBQueryProc: TExecuteDBQueryProc;
-    procedure GetFieldsInfoCallback(ASourceData: TObject; AResultData: TIBXSQLDA);
+    procedure GetFieldsInfoCallback(AResultData: TIBXSQLDA);
 
-    procedure GetInfoDataCallback(ASourceData: TObject; AResultData: TIBXSQLDA);
+    procedure GetInfoDataCallback(AResultData: TIBXSQLDA);
     function FindOrCreateAttrInfo(const AttrName: string;
       AttrClass: TIBEntityAttrInfoClass; AList: TComponentList): TIBEntityAttrInfo;
 
@@ -179,91 +178,24 @@ type
   private
     FSchemeName: string;
     FFields: TFields;
-    FDBQueryProc: TExecuteDBQueryProc;
-    procedure GetFieldsInfoCallback(ASourceData: TObject; AResultData: TIBXSQLDA);
+    FDataBase: TIBDataBase;
+    procedure GetFieldsInfoCallback(AResultData: TIBXSQLDA);
 
-//    procedure GetInfoDataCallback(ASourceData: TObject; AResultData: TIBXSQLDA);
   protected
     function Fields: TFields;
   public
-    constructor Create(const ASchemeName: string;
-      ADBQueryProc: TExecuteDBQueryProc); reintroduce;
+    constructor Create(const ASchemeName: string; ADataBase: TIBDataBase); reintroduce;
     destructor Destroy; override;
     procedure Initialize;
   end;
 
   TIBStorageInfo = class(TComponent, IEntityStorageInfo)
-  private
-    FDBQueryProc: TExecuteDBQueryProc;
-  protected
-    //IEntityStorageInfo
-  public
-    constructor Create(ADBQueryProc: TExecuteDBQueryProc); reintroduce;
-    destructor Destroy; override;
-    procedure Initialize;
   end;
 
-  TIBQueryFix = class(TIBQuery)
-  protected
-    //Fix - не предусмотрена обработка нового типа ftShortint
-    procedure PSSetParams(AParams: TParams); override;
-    //Fix - при отрицательном коде ошибки ClientDataSet не нормально обрабатывает exception
-    function PSGetUpdateException(E: Exception; Prev: EUpdateError): EUpdateError; override;
-  end;
-
-  TIBEntityAttrProvider = class(TDataSetProvider)
-  end;
-
-  TIBEntityAttrProviderClass = class of TIBEntityAttrProvider;
-
-  TIBEntityViewProvider = class(TIBEntityAttrProvider)
-  private
-    FQuery: TIBQueryFix;
-    FQueryRefresh: TIBQueryFix;
-    FQueryInsertDef: TIBQueryFix;
-    FUpdateSql: TIBUpdateSql;
-    FTransaction: TIBTransaction;
-    FPrimaryKey: TStringList;
-    function RequestReloadRecord(DSParams: OleVariant): OleVariant;
-    function RequestInsertDef(DSParams: OleVariant): OleVariant;
-  protected
-    function DataRequestHandler(Sender: TObject; Input : OleVariant) : OleVariant;
-  public
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-    procedure SetDatabase(Value: TIBDatabase);
-    procedure SetSelectSQL(const Value: string);
-    procedure SetInsertSQL(const Value: string);
-    procedure SetUpdateSQL(const Value: string);
-    procedure SetDeleteSQL(const Value: string);
-    procedure SetRefreshSQL(const Value: string);
-    procedure SetInsertDefSQL(const Value: string);
-    procedure SetPrimaryKey(const Value: string);
-  end;
-
-  TIBEntityOperProvider = class(TIBEntityAttrProvider)
-  private
-    FQuery: TIBQueryFix;
-    FTransaction: TIBTransaction;
-  public
-    constructor Create(AOwner: TComponent); override;
-    procedure SetDatabase(Value: TIBDatabase);
-    procedure SetSQL(const Value: string);
-  end;
-
-  TPlainSQLProvider = class(TIBEntityAttrProvider)
-  private
-    FQuery: TIBQueryFix;
-    FTransaction: TIBTransaction;
-  public
-    constructor Create(AOwner: TComponent); override;
-    procedure SetDatabase(Value: TIBDatabase);
-  end;
 
   TIBStorageConnection = class(TComponent, IEntityStorageConnection)
   private
     FNoCache: boolean;
-    FID: string;
     FRemoteServer: TLocalConnection;
     FConnectionBroker:  TConnectionBroker;
     FDatabase: TIBDatabase;
@@ -272,19 +204,20 @@ type
     FEntityInfoList: TComponentList;
     FEntityAttrProviders: TComponentList;
     FEntitySchemeInfoList: TComponentList;
-    FStorageInfo: TIBStorageInfo;
-    FStorageInfoInitialized: boolean;
-    FPlainSQLProvider: TPlainSQLProvider;
+
+    FPlainSQLProvider: TIBPlainSQLProvider;
     procedure ExecuteDBQuery(const ASQL: string; AParams: array of variant;
-      ResultCallback: TIBQueryResultCallback; ASourceData: TObject);
+      ResultCallback: TIBQueryResultCallback);
 
     procedure LoadEntityList;
-    procedure LoadEntityListCallback(ASourceData: TObject; AResultData: TIBXSQLDA);
+    procedure LoadEntityListCallback(AResultData: TIBXSQLDA);
 
     function GetEntityAttrProviderName(const AEntityName, AViewName: string): string;
     function FindOrCreateEntityInfo(const AName: string): TIBEntityInfo;
+
     function FindOrCreateEntityAttrProvider(const AEntityName,
-      AViewName: string; AClass: TIBEntityAttrProviderClass): TIBEntityAttrProvider;
+      AViewName: string; AClass: TDataSetProviderClass): TDataSetProvider;
+
     function FindOrCreateEntitySchemeInfo(const AName: string): TIBEntitySchemeInfo;
     function GetEntityViewProvider(const AEntityName, AViewName: string;
       AOwner: TComponent): TComponent;
@@ -293,7 +226,6 @@ type
 
   protected
     //IConnection
-    function ID: string;
     procedure Connect;
     procedure Disconnect;
     function IsConnected: boolean;
@@ -304,20 +236,20 @@ type
 
     function GetEntityList: TStringList;
     function GetEntityInfo(const AName: string): IEntityInfo;
-    function GetStorageInfo: IEntityStorageInfo;
+
     function GetSchemeInfo(const AName: string): IEntitySchemeInfo;
 
     function GetStubConnectionComponent: TCustomConnection;
 
   public
-    constructor Create(const AID: string; AParams: TStrings); reintroduce;
+    constructor Create(AParams: TStrings); reintroduce;
     destructor Destroy; override;
   end;
 
   TIBStorageConnectionFactory = class(TComponent, IEntityStorageConnectionFactory)
   protected
     function Engine: string;
-    function CreateConnection(const ID: string; AParams: TStrings): TComponent;
+    function CreateConnection(AParams: TStrings): TComponent;
   end;
 
 
@@ -370,10 +302,10 @@ end;
 
 { TIBStorageConnectionFactory }
 
-function TIBStorageConnectionFactory.CreateConnection(const ID: string;
+function TIBStorageConnectionFactory.CreateConnection(
   AParams: TStrings): TComponent;
 begin
-  Result := TIBStorageConnection.Create(ID, AParams);
+  Result := TIBStorageConnection.Create(AParams);
 end;
 
 function TIBStorageConnectionFactory.Engine: string;
@@ -389,18 +321,17 @@ begin
   Result := FConnectionBroker;
 end;
 
-constructor TIBStorageConnection.Create(const AID: string; AParams: TStrings);
+constructor TIBStorageConnection.Create(AParams: TStrings);
 var
   I: integer;
 begin
   inherited Create(nil);
-  FID := AID;
   FEntityList := TStringList.Create;
   FEntityListLoaded := false;
   FEntityInfoList := TComponentList.Create(true);
   FEntityAttrProviders := TComponentList.Create(true);
   FEntitySchemeInfoList := TComponentList.Create(true);
-  FStorageInfo := TIBStorageInfo.Create(ExecuteDBQuery);
+
   FRemoteServer := TLocalConnection.Create(Self);
   FConnectionBroker :=  TConnectionBroker.Create(Self);
   FConnectionBroker.Connection := FRemoteServer;
@@ -420,10 +351,11 @@ begin
   FDataBase.Params.Values['sql_role_name'] := FParams.Values['sql_role_name'];}
   FDataBase.LoginPrompt := false;
 
-  FPlainSQLProvider := TPlainSQLProvider.Create(Self);
-  FPlainSQLProvider.Name := 'PlainSQL';
+  FPlainSQLProvider := TIBPlainSQLProvider.Create(Self);
+  FPlainSQLProvider.Name := DATASETPROXY_PROVIDER;
   FPlainSQLProvider.SetDatabase(FDataBase);
   FPlainSQLProvider.Options := FPlainSQLProvider.Options + [poAllowCommandText];
+
   FNoCache := FindCmdLineSwitch('NoCacheMetadata');
 end;
 
@@ -434,7 +366,7 @@ begin
   FEntityInfoList.Free;
   FEntityAttrProviders.Free;
   FEntitySchemeInfoList.Free;
-  FStorageInfo.Free;
+
   inherited;
 end;
 
@@ -453,27 +385,20 @@ begin
     LoadEntityList;
 end;
 
-function TIBStorageConnection.ID: string;
-begin
-  Result := FID;
-end;
-
 procedure TIBStorageConnection.LoadEntityList;
 begin
   FEntityList.Clear;
-  ExecuteDBQuery(cnstGetEntityListSQL, [], LoadEntityListCallback, nil);
+  ExecuteDBQuery(cnstGetEntityListSQL, [], LoadEntityListCallback);
   FEntityListLoaded := true;
 end;
 
-procedure TIBStorageConnection.LoadEntityListCallback(ASourceData: TObject;
-  AResultData: TIBXSQLDA);
+procedure TIBStorageConnection.LoadEntityListCallback(AResultData: TIBXSQLDA);
 begin
   FEntityList.Add(AResultData[0].AsString);
 end;
 
 procedure TIBStorageConnection.ExecuteDBQuery(const ASQL: string;
-  AParams: array of variant; ResultCallback: TIBQueryResultCallback;
-  ASourceData: TObject);
+  AParams: array of variant; ResultCallback: TIBQueryResultCallback);
 var
   qry: TIBSQL;
   I: integer;
@@ -497,7 +422,7 @@ begin
       while not qry.Eof do
       begin
         if @ResultCallback <> nil then
-          ResultCallback(ASourceData, qry.Current);
+          ResultCallback(qry.Current);
         qry.Next;
       end;
       qry.Transaction.Commit;
@@ -630,7 +555,7 @@ end;
 
 
 function TIBStorageConnection.FindOrCreateEntityAttrProvider(const AEntityName,
-  AViewName: string; AClass: TIBEntityAttrProviderClass): TIBEntityAttrProvider;
+  AViewName: string; AClass: TDataSetProviderClass): TDataSetProvider;
 var
   I: integer;
   _ProviderName: string;
@@ -638,7 +563,7 @@ begin
   _ProviderName := GetEntityAttrProviderName(AEntityName, AViewName);
   for I := 0 to FEntityAttrProviders.Count - 1 do
   begin
-    Result := TIBEntityAttrProvider(FEntityAttrProviders[I]);
+    Result := TDataSetProvider(FEntityAttrProviders[I]);
     if Result.Name = _ProviderName then Exit;
   end;
 
@@ -666,13 +591,6 @@ begin
   Result := FDataBase;
 end;
 
-function TIBStorageConnection.GetStorageInfo: IEntityStorageInfo;
-begin
-  if not FStorageInfoInitialized then
-    FStorageInfo.Initialize;
-  Result := FStorageInfo as IEntityStorageInfo;
-end;
-
 function TIBStorageConnection.GetSchemeInfo(
   const AName: string): IEntitySchemeInfo;
 begin
@@ -694,7 +612,7 @@ begin
     end;
   end;
 
-  Result := TIBEntitySchemeInfo.Create(AName, ExecuteDBQuery);
+  Result := TIBEntitySchemeInfo.Create(AName, FDatabase);
   FEntitySchemeInfoList.Add(Result);
   try
     Result.Initialize;
@@ -774,8 +692,7 @@ begin
     FindOrCreateAttrInfo(AViewName, TIBEntityViewInfo, FViewInfoList));
 end;
 
-procedure TIBEntityInfo.GetFieldsInfoCallback(ASourceData: TObject;
-  AResultData: TIBXSQLDA);
+procedure TIBEntityInfo.GetFieldsInfoCallback(AResultData: TIBXSQLDA);
 var
   FieldItem: TField;
 
@@ -785,8 +702,7 @@ begin
   FieldAttributeBuilder(FieldItem, AResultData);
 end;
 
-procedure TIBEntityInfo.GetInfoDataCallback(ASourceData: TObject;
-  AResultData: TIBXSQLDA);
+procedure TIBEntityInfo.GetInfoDataCallback(AResultData: TIBXSQLDA);
 begin
   FDescription := AResultData.ByName('Description').AsString;
   FSchemeName := AResultData.ByName('SchemeName').AsString;
@@ -811,12 +727,10 @@ end;
 
 procedure TIBEntityInfo.Initialize;
 begin
-  FDBQueryProc(cnstGetEntityInfoSQL, [FEntityName],
-    GetInfoDataCallback, nil);
+  FDBQueryProc(cnstGetEntityInfoSQL, [FEntityName], GetInfoDataCallback);
 
   FFields.Clear;
-  FDBQueryProc(cnstGetEntityFieldsDefInfoSQL, [FEntityName],
-    GetFieldsInfoCallback, nil);
+  FDBQueryProc(cnstGetEntityFieldsDefInfoSQL, [FEntityName], GetFieldsInfoCallback);
 
 end;
 
@@ -835,171 +749,7 @@ begin
   Result := FindOrCreateViewInfo(AViewName).Exists;
 end;
 
-{ TIBEntityViewProvider }
 
-constructor TIBEntityViewProvider.Create(AOwner: TComponent);
-begin
-  inherited;
-  FTransaction := TIBTransaction.Create(Self);
-  FTransaction.AutoStopAction := saCommit;
-  FQuery := TIBQueryFix.Create(Self);
-  FQuery.Transaction := FTransaction;
-  FUpdateSql := TIBUpdateSql.Create(Self);
-  FQuery.UpdateObject := FUpdateSql;
-  Self.DataSet := FQuery;
-
-  FQueryRefresh := TIBQueryFix.Create(Self);
-  FQueryRefresh.Transaction := FTransaction;
-
-  FQueryInsertDef := TIBQueryFix.Create(Self);
-  FQueryInsertDef.Transaction := FTransaction;
-
-  OnDataRequest := DataRequestHandler;
-
-  FPrimaryKey := TStringList.Create;
-end;
-
-function TIBEntityViewProvider.DataRequestHandler(Sender: TObject;
-  Input: OleVariant): OleVariant;
-var
-  requestKind: TEntityDataRequestKind;
-begin
-  requestKind := Input[0];
-  case requestKind of
-    erkReloadRecord:
-      Result := RequestReloadRecord(Input[1]);
-    erkInsertDefaults:
-      Result := RequestInsertDef(Input[1]);
-  else
-    Result := Unassigned;
-  end;
-end;
-
-destructor TIBEntityViewProvider.Destroy;
-begin
-  FPrimaryKey.Free;
-  inherited;
-end;
-
-
-function TIBEntityViewProvider.RequestInsertDef(
-  DSParams: OleVariant): OleVariant;
-var
-  prmDS: TParams;
-begin
-  Result := Unassigned;
-
-  if FQueryInsertDef.SQL.Text = '' then Exit;
-
-  prmDS := TParams.Create;
-  try
-    UnpackParams(DSParams, prmDS);
-
-    FQueryInsertDef.Params.AssignValues(prmDS);
-    try
-      DataSet := FQueryInsertDef;
-      FQueryInsertDef.Close;
-      FQueryInsertDef.Open;
-      Result := Data;
-    finally
-      DataSet := FQuery;
-      FQueryInsertDef.Close;
-    end;
-  finally
-    prmDS.Free;
-  end;
-
-end;
-
-function TIBEntityViewProvider.RequestReloadRecord(DSParams: OleVariant): OleVariant;
-var
-  prmDS: TParams;
-begin
-  Result := Unassigned;
-
-  prmDS := TParams.Create;
-  try
-    UnpackParams(DSParams, prmDS);
-
-    FQueryRefresh.Params.AssignValues(prmDS);
-    try
-      DataSet := FQueryRefresh;
-      FQueryRefresh.Close;
-      FQueryRefresh.Open;
-      Result := Data;
-    finally
-      DataSet := FQuery;
-      FQueryRefresh.Close;
-    end;
-  finally
-    prmDS.Free;
-  end;
-
-end;
-
-procedure TIBEntityViewProvider.SetDatabase(Value: TIBDatabase);
-begin
-  FQuery.Database := Value;
-  FQuery.Transaction.DefaultDatabase := Value;
-end;
-
-procedure TIBEntityViewProvider.SetDeleteSQL(const Value: string);
-begin
-  FUpdateSql.DeleteSQL.Text := Value;
-end;
-
-procedure TIBEntityViewProvider.SetInsertDefSQL(const Value: string);
-begin
-  FQueryInsertDef.SQL.Text := Value;
-end;
-
-procedure TIBEntityViewProvider.SetInsertSQL(const Value: string);
-begin
-  FUpdateSql.InsertSQL.Text := Value;
-end;
-
-procedure TIBEntityViewProvider.SetPrimaryKey(const Value: string);
-begin
-  ExtractStrings([';'], [], PChar(Value), FPrimaryKey);
-end;
-
-procedure TIBEntityViewProvider.SetRefreshSQL(const Value: string);
-begin
-  FQueryRefresh.SQL.Text := Value;
-end;
-
-procedure TIBEntityViewProvider.SetSelectSQL(const Value: string);
-begin
-  FQuery.SQL.Text := Value;
-end;
-
-procedure TIBEntityViewProvider.SetUpdateSQL(const Value: string);
-begin
-  FUpdateSql.ModifySQL.Text := Value;
-end;
-
-{ TIBEntityOperProvider }
-
-constructor TIBEntityOperProvider.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-  FTransaction := TIBTransaction.Create(Self);
-  FTransaction.AutoStopAction := saCommit;
-  FQuery := TIBQueryFix.Create(Self);
-  FQuery.Transaction := FTransaction;
-  Self.DataSet := FQuery;
-end;
-
-procedure TIBEntityOperProvider.SetDatabase(Value: TIBDatabase);
-begin
-  FQuery.Database := Value;
-  FQuery.Transaction.DefaultDatabase := Value;
-end;
-
-procedure TIBEntityOperProvider.SetSQL(const Value: string);
-begin
-  FQuery.SQL.Text := Value;
-end;
 
 { TIBEntityViewInfo }
 
@@ -1009,14 +759,12 @@ begin
   Result := TEntityViewLinkInfo(FLinks[AIndex]);
 end;
 
-procedure TIBEntityViewInfo.GetViewExistsCallback(ASourceData: TObject;
-  AResultData: TIBXSQLDA);
+procedure TIBEntityViewInfo.GetViewExistsCallback(AResultData: TIBXSQLDA);
 begin
   FExists := AResultData.Vars[0].AsInteger <> 0;
 end;
 
-procedure TIBEntityViewInfo.GetViewInfoCallback(ASourceData: TObject;
-  AResultData: TIBXSQLDA);
+procedure TIBEntityViewInfo.GetViewInfoCallback(AResultData: TIBXSQLDA);
 begin
   FSelectSQL := AResultData.ByName('SQL_Select').AsString;
   FInsertSQL := AResultData.ByName('SQL_Insert').AsString;
@@ -1032,14 +780,12 @@ begin
   SetOptionsText(AResultData.ByName('Options').AsString);
 end;
 
-procedure TIBEntityViewInfo.GetViewLinkedFieldsInfoCallback(
-  ASourceData: TObject; AResultData: TIBXSQLDA);
+procedure TIBEntityViewInfo.GetViewLinkedFieldsInfoCallback(AResultData: TIBXSQLDA);
 begin
   FLinkedFields.Add(AResultData.ByName('linked_field').AsString);
 end;
 
-procedure TIBEntityViewInfo.GetViewLinksInfoCallback(ASourceData: TObject;
-  AResultData: TIBXSQLDA);
+procedure TIBEntityViewInfo.GetViewLinksInfoCallback(AResultData: TIBXSQLDA);
 var
   linkInfo: TEntityViewLinkInfo;
 begin
@@ -1061,18 +807,18 @@ var
 begin
 
   ExecuteDBQuery(cnstEntityViewExistsSQL, [GetEntityName, GetAttrName],
-    GetViewExistsCallback, nil);
+    GetViewExistsCallback);
 
   ExecuteDBQuery(cnstGetEntityViewInfoSQL, [GetEntityName, GetAttrName],
-    GetViewInfoCallback, nil);
+    GetViewInfoCallback);
 
   FLinks.Clear;
   ExecuteDBQuery(cnstGetEntityViewLinksInfoSQL, [GetEntityName, GetAttrName],
-    GetViewLinksInfoCallback, nil);
+    GetViewLinksInfoCallback);
 
   FLinkedFields.Clear;
   ExecuteDBQuery(cnstGetEntityViewLinkedFieldsInfoSQL, [GetEntityName, GetAttrName],
-    GetViewLinkedFieldsInfoCallback, nil);
+    GetViewLinkedFieldsInfoCallback);
 
   inherited;
 
@@ -1111,8 +857,7 @@ end;
 
 { TIBEntityOperInfo }
 
-procedure TIBEntityOperInfo.GetOperInfoCallback(ASourceData: TObject;
-  AResultData: TIBXSQLDA);
+procedure TIBEntityOperInfo.GetOperInfoCallback(AResultData: TIBXSQLDA);
 begin
   FSQL := AResultData.ByName('sql_text').AsString;
   FIsSelect := AResultData.ByName('is_select').AsInteger = 1;
@@ -1122,7 +867,7 @@ end;
 procedure TIBEntityOperInfo.Initialize;
 begin
   ExecuteDBQuery(cnstGetEntityOperInfoSQL, [GetEntityName, GetAttrName],
-    GetOperInfoCallback, nil);
+    GetOperInfoCallback);
   inherited;    
 end;
 
@@ -1158,10 +903,9 @@ begin
 end;
 
 procedure TIBEntityAttrInfo.ExecuteDBQuery(const ASQL: string;
-  AParams: array of variant; ResultCallback: TIBQueryResultCallback;
-  ASourceData: TObject);
+  AParams: array of variant; ResultCallback: TIBQueryResultCallback);
 begin
-  FDBQueryProc(ASQL, AParams, ResultCallback, ASourceData);
+  FDBQueryProc(ASQL, AParams, ResultCallback);
 end;
 
 function TIBEntityAttrInfo.GetAttrName: string;
@@ -1179,8 +923,7 @@ begin
   Result := FFields;
 end;
 
-procedure TIBEntityAttrInfo.GetFieldsInfoCallback(ASourceData: TObject;
-  AResultData: TIBXSQLDA);
+procedure TIBEntityAttrInfo.GetFieldsInfoCallback(AResultData: TIBXSQLDA);
 var
   FieldItem: TField;
 begin
@@ -1193,7 +936,7 @@ procedure TIBEntityAttrInfo.Initialize;
 begin
   FFields.Clear;
   ExecuteDBQuery(cnstGetEntityFieldsInfoSQL, [GetEntityName, GetAttrName],
-    GetFieldsInfoCallback, nil);
+    GetFieldsInfoCallback);
 end;
 
 function TIBEntityAttrInfo.Params: TParams;
@@ -1212,32 +955,14 @@ begin
   ExtractStrings([';'], [], PWideChar(AText), FOptions);
 end;
 
-
-{ TIBStorageInfo }
-
-constructor TIBStorageInfo.Create(ADBQueryProc: TExecuteDBQueryProc);
-begin
-  inherited Create(nil);
-  FDBQueryProc := ADBQueryProc;
-end;
-
-destructor TIBStorageInfo.Destroy;
-begin
-  inherited;
-end;
-
-procedure TIBStorageInfo.Initialize;
-begin
-end;
-
 { TIBEntitySchemeInfo }
 
 constructor TIBEntitySchemeInfo.Create(const ASchemeName: string;
-  ADBQueryProc: TExecuteDBQueryProc);
+  ADataBase: TIBDataBase);
 begin
   inherited Create(nil);
   FSchemeName := ASchemeName;
-  FDBQueryProc := ADBQueryProc;
+  FDataBase := ADataBase;
   FFields := TFields.Create(nil);
 end;
 
@@ -1252,8 +977,7 @@ begin
   Result := FFields;
 end;
 
-procedure TIBEntitySchemeInfo.GetFieldsInfoCallback(ASourceData: TObject;
-  AResultData: TIBXSQLDA);
+procedure TIBEntitySchemeInfo.GetFieldsInfoCallback(AResultData: TIBXSQLDA);
 var
   FieldItem: TField;
 begin
@@ -1271,67 +995,9 @@ begin
    _schemeName := '-';
 
   FFields.Clear;
-  FDBQueryProc(cnstGetSchemeFieldsInfoSQL, [_schemeName],
-    GetFieldsInfoCallback, nil);
+  IBExecuteSQL(FDatabase, cnstGetSchemeFieldsInfoSQL, [_schemeName],
+    GetFieldsInfoCallback);
 
-end;
-
-
-{ TIBQueryFix }
-
-function TIBQueryFix.PSGetUpdateException(E: Exception;
-  Prev: EUpdateError): EUpdateError;
-var
-  PrevErr: Integer;
-begin
-  if Prev <> nil then
-    PrevErr := Prev.ErrorCode else
-    PrevErr := 0;
-  if E is EIBError then
-    with EIBError(E) do
-      Result := EUpdateError.Create(E.Message, '', {SQLCode}1, PrevErr, E) else
-      Result := inherited PSGetUpdateException(E, Prev);
-end;
-
-procedure TIBQueryFix.PSSetParams(AParams: TParams);
-var
-  I: integer;
-begin
-  inherited PSSetParams(AParams);
-
-//BEGIN
-{FIX DELPHI XE BUG
-IBQuery.pas
-procedure TIBQuery.SetParams;
-begin
-..
-  case Params[i].DataType of
-    не определена ветка для ftShortint !!!
-
-end;
-}
-
-   for I := 0 to Params.Count - 1 do
-     if Params[I].DataType = ftShortInt then
-          Params[I].DataType := ftSmallInt;
-end;
-
-{ TPlainSQLProvider }
-
-constructor TPlainSQLProvider.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-  FTransaction := TIBTransaction.Create(Self);
-  FTransaction.AutoStopAction := saCommit;
-  FQuery := TIBQueryFix.Create(Self);
-  FQuery.Transaction := FTransaction;
-  Self.DataSet := FQuery;
-end;
-
-procedure TPlainSQLProvider.SetDatabase(Value: TIBDatabase);
-begin
-  FQuery.Database := Value;
-  FQuery.Transaction.DefaultDatabase := Value;
 end;
 
 end.
