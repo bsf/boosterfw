@@ -19,25 +19,59 @@ const
   ERROR_MSG_FIELD_REQUIRE = 'Поле ''''%s'''' обязательно для заполнения';
 
 type
-  TEntityDataSet = class(TClientDataSet)
+  {добавляет поведение master -> detail в clientdataset}
+  TEntityMasterLink = class(DB.TDetailDataLink)
   private
+    FDataSet: TDataSet;
+    procedure ReOpen;
+  protected
+    procedure ActiveChanged; override;
+    procedure RecordChanged(Field: TField); override;
+    function GetDetailDataSet: TDataSet; override;
+    procedure CheckBrowseMode; override;
+  public
+    constructor Create(ADataSet: TDataSet);
+  end;
+
+  TEntityDataSet = class(TClientDataSet, IDataSetProxy)
+  private
+    FMasterLink: TDataLink;
     FUpdateErrorText: string;
     FImmediateApplyUpdates: boolean;
     procedure SetImmediateApplyUpdates(const Value: boolean);
     procedure ReconcileErrorHandler(DataSet: TCustomClientDataSet;
       E: EReconcileError; UpdateKind: TUpdateKind; var Action: TReconcileAction);
+    procedure SetParamsFromMaster;
   protected
+    procedure DoBeforeOpen; override;
     procedure DoAfterDelete; override;
     procedure DoAfterInsert; override;
+    //IDataSetProxy
+    function DSProxy_GetDataSet: TDataSet;
+    function DSProxy_GetParams: TParams;
+    function DSProxy_GetCommandText: string;
+    procedure DSProxy_SetCommandText(const AValue: string);
+    procedure DSProxy_SetMaster(ADataSource: TDataSource);
+    function DSProxy_GetMaster: TDataSource;
+
+    function IDataSetProxy.GetDataSet = DSProxy_GetDataSet;
+    function IDataSetProxy.GetParams = DSProxy_GetParams;
+    function IDataSetProxy.GetCommandText = DSProxy_GetCommandText;
+    procedure IDataSetProxy.SetCommandText = DSProxy_SetCommandText;
+    procedure IDataSetProxy.SetMaster = DSProxy_SetMaster;
+    function IDataSetProxy.GetMaster = DSProxy_GetMaster;
   public
     constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
     procedure Post; override;
     property ImmediateApplyUpdates: boolean read FImmediateApplyUpdates
       write SetImmediateApplyUpdates;
     property LastUpdateErrorMessage: string read FUpdateErrorText;
   end;
 
+
   TEntity = class;
+
 
   TEntityAttr = class(TComponent)
   private
@@ -168,6 +202,7 @@ type
 
   end;
 
+
   TEntityService = class(TComponent, IEntityService)
   private
     FWorkItem: TWorkItem;
@@ -178,6 +213,7 @@ type
   protected
     //IEntityManagerService
     procedure ClearConnectionCache;
+    function GetDataSetProxy(AOwner: TComponent): IDataSetProxy;
     function EntityExists(const AEntityName: string): boolean;
     function EntityViewExists(const AEntityName, AEntityViewName: string): boolean;
     function GetEntity(const AEntityName: string): IEntity;
@@ -288,6 +324,16 @@ function TEntityService.EntityViewExists(
   const AEntityName, AEntityViewName: string): boolean;
 begin
   Result := GetEntity(AEntityName).EntityInfo.ViewExists(AEntityViewName);
+end;
+
+function TEntityService.GetDataSetProxy(AOwner: TComponent): IDataSetProxy;
+var
+  ds: TEntityDataSet;
+begin
+  ds := TEntityDataSet.Create(AOwner);
+  ds.RemoteServer := Connection.ConnectionComponent;
+  ds.ProviderName := 'PlainSQL';
+  Result := ds as IDataSetProxy;
 end;
 
 function TEntityService.GetEntity(const AEntityName: string): IEntity;
@@ -1102,6 +1148,13 @@ constructor TEntityDataSet.Create(AOwner: TComponent);
 begin
   inherited;
   Self.OnReconcileError := ReconcileErrorHandler;
+  FMasterLink := TEntityMasterLink.Create(Self);
+end;
+
+destructor TEntityDataSet.Destroy;
+begin
+  FMasterLink.Free;
+  inherited;
 end;
 
 procedure TEntityDataSet.DoAfterDelete;
@@ -1153,6 +1206,42 @@ begin
   end;
 end;
 
+procedure TEntityDataSet.DoBeforeOpen;
+begin
+  inherited;
+  SetParamsFromMaster;
+end;
+
+function TEntityDataSet.DSProxy_GetCommandText: string;
+begin
+  Result := Self.CommandText;
+end;
+
+function TEntityDataSet.DSProxy_GetDataSet: TDataSet;
+begin
+  Result := Self;
+end;
+
+function TEntityDataSet.DSProxy_GetMaster: TDataSource;
+begin
+  Result := FMasterLink.DataSource;
+end;
+
+function TEntityDataSet.DSProxy_GetParams: TParams;
+begin
+  Result := Self.Params;
+end;
+
+procedure TEntityDataSet.DSProxy_SetCommandText(const AValue: string);
+begin
+  Self.CommandText := AValue;
+end;
+
+procedure TEntityDataSet.DSProxy_SetMaster(ADataSource: TDataSource);
+begin
+  FMasterLink.DataSource := ADataSource;
+end;
+
 procedure TEntityDataSet.Post;
 begin
   inherited;
@@ -1176,6 +1265,29 @@ begin
   FImmediateApplyUpdates := Value;
   if FImmediateApplyUpdates then
     Self.OnReconcileError := ReconcileErrorHandler;
+end;
+
+procedure TEntityDataSet.SetParamsFromMaster;
+var
+  I: Integer;
+  DataSet: TDataSet;
+begin
+  if FMasterLink.DataSource <> nil then
+  begin
+    DataSet := FMasterLink.DataSource.DataSet;
+    if DataSet <> nil then
+    begin
+      DataSet.FieldDefs.Update;
+      for I := 0 to Params.Count - 1 do
+        with Params[I] do
+          if not Bound then
+          begin
+            AssignField(DataSet.FieldByName(Name));
+            Bound := False;
+          end;
+    end;
+  end;
+
 end;
 
 { TEntityStorageSettings }
@@ -1423,6 +1535,57 @@ begin
   LoadSettingValue(AField, preferences);
   CheckSettingValue(AField, preferences);
   AField.OnChange := SettingsDataChangedHandler;
+end;
+
+{ TEntityMasterLink }
+
+procedure TEntityMasterLink.ActiveChanged;
+begin
+  if FDataSet.Active then ReOpen;
+end;
+
+procedure TEntityMasterLink.CheckBrowseMode;
+begin
+  if FDataSet.Active then FDataSet.CheckBrowseMode;
+end;
+
+constructor TEntityMasterLink.Create(ADataSet: TDataSet);
+begin
+  FDataSet := ADataSet;
+end;
+
+function TEntityMasterLink.GetDetailDataSet: TDataSet;
+begin
+  Result := FDataSet;
+end;
+
+procedure TEntityMasterLink.RecordChanged(Field: TField);
+begin
+  if (Field = nil) and FDataSet.Active then ReOpen;
+end;
+
+procedure TEntityMasterLink.ReOpen;
+var
+  DataSet: TDataSet;
+begin
+  FDataSet.DisableControls;
+  try
+    if Self.DataSource <> nil then
+    begin
+      DataSet := Self.DataSource.DataSet;
+      if DataSet <> nil then
+        if DataSet.Active and (DataSet.State <> dsSetKey) then
+        begin
+          FDataSet.Close;
+          FDataSet.Open;
+        end;
+    end;
+  finally
+    FDataSet.EnableControls;
+  end;
+
+
+
 end;
 
 end.

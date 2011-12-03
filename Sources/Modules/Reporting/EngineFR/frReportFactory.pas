@@ -5,7 +5,7 @@ uses windows, classes, CoreClasses, ReportCatalogConst, EntityServiceIntf,
   SysUtils, db, ibdatabase,  ComObj, controls,
   frxClass, frxExportXML, frxExportXLS, frxExportCSV, frxIBXComponents, frxDesgn,
   frxChBox, frxCross, frxBarCode, frxDCtrl, variants,
-  frReportPreviewPresenter, frReportPreviewView, UIClasses,
+  frReportPreviewPresenter, frReportPreviewView, UIClasses, frDataSet,
   Generics.Collections;
 
 const
@@ -63,6 +63,7 @@ type
 
 
 implementation
+
 
 { TFastReportFactory }
 

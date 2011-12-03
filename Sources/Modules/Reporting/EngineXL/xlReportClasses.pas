@@ -2,22 +2,20 @@ unit xlReportClasses;
 
 interface
 uses classes, xlReport, sysutils, db, xlReportMetadata, 
-  Contnrs, xlcClasses, Variants, xlProOPack, Excel8G2, EntityServiceIntf;
+  Contnrs, xlcClasses, Variants, xlProOPack, Excel8G2, EntityServiceIntf,
+  ShellIntf;
 
 type
   TGetValueEvent = procedure(const VarName: String; var Value: Variant) of object;
   TpfwXLReportProgressEvent = procedure of object;
 
-  TCreateXLReportDataSetFunc = function(AOwner: TComponent;
-     const ACommandText: string): IDetachedDataSet of object;
-
   TpfwXLDataSourceNode = class(TComponent)
   private
     FxlDataSource: TxlDataSource;
     FOnGetValue: TGetValueEvent;
-    FData: IDetachedDataSet;
-    FCrossData: IDetachedDataSet;
-    FCrossColumns: IDetachedDataSet;
+    FData: IDataSetProxy;
+    FCrossData: IDataSetProxy;
+    FCrossColumns: IDataSetProxy;
     FIsCross: boolean;
     FShowCrossEmptyRow: boolean;
     FCrossDataCommand: string;
@@ -28,9 +26,7 @@ type
     FCrossColumnsKeyField: string;
     FKeyField: string;
     FCommand: string;
-    FCreateDataSetFunc: TCreateXLReportDataSetFunc;
-    function CreateDataSet(const ACommandText: string): IDetachedDataSet;
-
+    function CreateDataSet(const ACommandText: string): IDataSetProxy;
     procedure BeforeDataTransfer(DataSource: TxlDataSource);
     procedure GetDataSourceInfo(DataSource: TxlDataSource; var FieldCount: Integer);
     procedure GetFieldInfo(DataSource: TxlDataSource; const FieldIndex: Integer;
@@ -43,7 +39,6 @@ type
     function GetCrossDataFieldType(const ACrossDataFieldName: string): TxlDataType;
   public
     constructor Create(AxlDataSource: TxlDataSource;
-      ACreateDataSetFunc: TCreateXLReportDataSetFunc;
       AMetadata: TpfwXLReportDataSourceMetadata); reintroduce;
     destructor Destroy; override;
     procedure Open;
@@ -61,8 +56,6 @@ type
     FOnGetValue: TGetValueEvent;
     FOnProgress: TpfwXLReportProgressEvent;
     FConnection: IEntityStorageConnection;
-    function CreateXLDataSet(AOwner: TComponent;
-      const ACommandText: string): IDetachedDataSet;
     procedure LoadMetadata(const AFileName: string);
     procedure InitReportParams;
     procedure DoGetValue(const VarName: string; var Value: Variant);
@@ -116,7 +109,7 @@ begin
     ds.MacroBefore := FMetadata.DataSources[I].MacroBefore;
     ds.MacroAfter := FMetadata.DataSources[I].MacroAfter;
     ds.MasterSourceName := FMetadata.DataSources[I].MasterSource;
-    dsNode := TpfwXLDataSourceNode.Create(ds, CreateXLDataSet, FMetadata.DataSources[I]);
+    dsNode := TpfwXLDataSourceNode.Create(ds, FMetadata.DataSources[I]);
     FDataSourceNodes.Add(dsNode);
     dsNode.OnGetValue := DoGetValue;
   end;
@@ -212,12 +205,6 @@ begin
     FOnProgress;
 end;
 
-function TpfwXLReport.CreateXLDataSet(AOwner: TComponent;
-  const ACommandText: string): IDetachedDataSet;
-begin
-  Result := FConnection.GetDetachedDataSet(AOwner, ACommandText);
-end;
-
 { TpfwXLDataSourceNode }
 
 procedure TpfwXLDataSourceNode.BeforeDataTransfer(
@@ -267,19 +254,18 @@ end;
 
 procedure TpfwXLDataSourceNode.Close;
 begin
-  if Assigned(FData) then FData.Close;
+  if Assigned(FData) then FData.DataSet.Close;
 
-  if Assigned(FCrossColumns) then FCrossData.Close;
+  if Assigned(FCrossColumns) then FCrossData.DataSet.Close;
 
-  if Assigned(FCrossData) then FCrossData.Close;
+  if Assigned(FCrossData) then FCrossData.DataSet.Close;
 end;
 
 constructor TpfwXLDataSourceNode.Create(AxlDataSource: TxlDataSource;
-  ACreateDataSetFunc: TCreateXLReportDataSetFunc; AMetadata: TpfwXLReportDataSourceMetadata);
+  AMetadata: TpfwXLReportDataSourceMetadata);
 begin
   inherited Create(nil);
   FxlDataSource := AxlDataSource;
-  FCreateDataSetFunc := ACreateDataSetFunc;
 
   FCommand := AMetadata.CommandText.Text;
   FIsCross := AMetadata.IsCross;
@@ -297,9 +283,11 @@ begin
 end;
 
 function TpfwXLDataSourceNode.CreateDataSet(
-  const ACommandText: string): IDetachedDataSet;
+  const ACommandText: string): IDataSetProxy;
 begin
-  Result := FCreateDataSetFunc(Self, ACommandText);
+  Result := App.Entities.GetDataSetProxy(Self);
+  Result.CommandText := ACommandText;
+//  Result := FCreateDataSetFunc(Self, ACommandText);
 end;
 
 function TpfwXLDataSourceNode.DBTypeToXLDataType(
@@ -514,15 +502,15 @@ begin
 
   {Open}
   InitDataSetParams(FData.Params);
-  FData.Open;
+  FData.DataSet.Open;
 
   if FIsCross then
   begin
     InitDataSetParams(FCrossColumns.Params);
-    FCrossColumns.Open;
+    FCrossColumns.DataSet.Open;
 
     InitDataSetParams(FCrossData.Params);
-    FCrossData.Open;
+    FCrossData.DataSet.Open;
   end;
 
 end;

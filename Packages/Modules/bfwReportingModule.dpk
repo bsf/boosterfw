@@ -72,6 +72,7 @@ contains
   xlProOPack in '..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlProOPack.pas',
   xlReport in '..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlReport.pas',
   xlReportG2 in '..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlReportG2.pas',
-  xlStdOPack in '..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlStdOPack.pas';
+  xlStdOPack in '..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlStdOPack.pas',
+  frDataSet in '..\..\Sources\Modules\Reporting\EngineFR\frDataSet.pas';
 
 end.

@@ -131,7 +131,6 @@ class procedure TUICatalog.LoadStyles(AWorkItem: TWorkItem);
   end;
 
 var
-  I: integer;
   ds: TDataSet;
   strList: TStringList;
   style: TcxStyle;

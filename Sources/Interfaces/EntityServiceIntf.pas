@@ -158,14 +158,19 @@ type
     function EntityInfo: IEntityInfo;
   end;
 
-  IDetachedDataSet = interface
+  IDataSetProxy = interface
   ['{DC5507EB-C88D-4E75-B962-FDEB5283F651}']
     function GetDataSet: TDataSet;
     function GetParams: TParams;
-    procedure Open;
-    procedure Close;
+    function GetCommandText: string;
+    procedure SetCommandText(const AValue: string);
+    procedure SetMaster(ADataSource: TDataSource);
+    function GetMaster: TDataSource;
+
     property DataSet: TDataSet read GetDataSet;
     property Params: TParams read GetParams;
+    property Master: TDataSource read GetMaster write SetMaster;
+    property CommandText: string read GetCommandText write SetCommandText;
   end;
 
   IEntityStorageSettings = interface
@@ -191,9 +196,7 @@ type
     function GetEntityInfo(const AEntityName: string): IEntityInfo;
     function GetStorageInfo: IEntityStorageInfo;
     function GetSchemeInfo(const ASchemeName: string): IEntitySchemeInfo;
-    //function StorageSettings: IEntityStorageSettings;
 
-    function GetDetachedDataSet(AOwner: TComponent; const ACommandText: string): IDetachedDataSet;
     function GetStubConnectionComponent: TCustomConnection;
   end;
 
@@ -205,6 +208,7 @@ type
 
   IEntityService = interface
   ['{E644CC6B-5ED0-4F55-9C20-9E2267381A0F}']
+    function GetDataSetProxy(AOwner: TComponent): IDataSetProxy;
     function GetSettings: IEntityStorageSettings;
     function EntityExists(const AEntityName: string): boolean;
     function EntityViewExists(const AEntityName, AEntityViewName: string): boolean;

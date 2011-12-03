@@ -118,6 +118,10 @@
 			<DCCReference Include="..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlReport.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlReportG2.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlStdOPack.pas"/>
+			<DCCReference Include="..\..\Sources\Modules\Reporting\EngineFR\frDataSet.pas"/>
+			<RcCompile Include="..\..\Sources\Modules\Reporting\EngineFR\frDataSet.rc">
+				<Form>frRes.res</Form>
+			</RcCompile>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

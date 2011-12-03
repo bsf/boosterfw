@@ -18,7 +18,7 @@ uses
   cxShellListView, cxShellTreeView, cxShellComboBox, cxImage, StdCtrls, cxMemo,
   cxRichEdit, cxCustomPivotGrid, cxDBPivotGrid, Menus, cxButtons,
   cxExportPivotGridLink, cxCheckComboBox, cxDBCheckComboBox, cxCheckListBox,
-  cxDBCheckListBox, IBUpdateSQL;
+  cxDBCheckListBox, IBUpdateSQL, DBXDataSnap, DBXCommon, DSConnect, SqlExpr;
 
 type
   TForm2 = class(TForm)
@@ -50,6 +50,12 @@ type
     ClientDataSet1ID: TIntegerField;
     ClientDataSet1IMG: TBlobField;
     ClientDataSet1NAME: TWideStringField;
+    cxDBLookupComboBox1: TcxDBLookupComboBox;
+    cxDBComboBox1: TcxDBComboBox;
+    cxDBPopupEdit1: TcxDBPopupEdit;
+    cxDBMRUEdit1: TcxDBMRUEdit;
+    SQLConnection1: TSQLConnection;
+    DSProviderConnection1: TDSProviderConnection;
     procedure dxNavBar1Item1Click(Sender: TObject);
     procedure dxNavBar1Item2Click(Sender: TObject);
     procedure cxMRUEdit1PropertiesInitPopup(Sender: TObject);
@@ -68,6 +74,7 @@ type
       Sender: TObject);
     procedure cxDBVerticalGrid1IMGEditPropertiesAssignPicture(Sender: TObject;
       const Picture: TPicture);
+    procedure cxGroupBox1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -144,6 +151,11 @@ begin
     ShowMessage('Sender empty')
   else
     ShowMessage(Sender.ClassName);}
+end;
+
+procedure TForm2.cxGroupBox1Click(Sender: TObject);
+begin
+   cxDBLookupComboBox1.Properties.OnButtonClick
 end;
 
 procedure TForm2.cxMRUEdit1PropertiesDeleteLookupItem(

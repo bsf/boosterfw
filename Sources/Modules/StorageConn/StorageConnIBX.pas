@@ -251,18 +251,13 @@ type
     procedure SetSQL(const Value: string);
   end;
 
-  TDetachedDataSet = class(TComponent, IDetachedDataSet)
+  TPlainSQLProvider = class(TIBEntityAttrProvider)
   private
-    FDataSet: TIBQuery;
+    FQuery: TIBQueryFix;
     FTransaction: TIBTransaction;
-  protected
-    function GetDataSet: TDataSet;
-    function GetParams: TParams;
-    procedure Open;
-    procedure Close;
   public
-    constructor Create(AOwner: TComponent;
-      ADataBase: TIBDatabase; const ASQL: string); reintroduce;
+    constructor Create(AOwner: TComponent); override;
+    procedure SetDatabase(Value: TIBDatabase);
   end;
 
   TIBStorageConnection = class(TComponent, IEntityStorageConnection)
@@ -279,7 +274,7 @@ type
     FEntitySchemeInfoList: TComponentList;
     FStorageInfo: TIBStorageInfo;
     FStorageInfoInitialized: boolean;
-
+    FPlainSQLProvider: TPlainSQLProvider;
     procedure ExecuteDBQuery(const ASQL: string; AParams: array of variant;
       ResultCallback: TIBQueryResultCallback; ASourceData: TObject);
 
@@ -312,7 +307,6 @@ type
     function GetStorageInfo: IEntityStorageInfo;
     function GetSchemeInfo(const AName: string): IEntitySchemeInfo;
 
-    function GetDetachedDataSet(AOwner: TComponent; const ACommandText: string): IDetachedDataSet;
     function GetStubConnectionComponent: TCustomConnection;
 
   public
@@ -411,6 +405,7 @@ begin
   FConnectionBroker :=  TConnectionBroker.Create(Self);
   FConnectionBroker.Connection := FRemoteServer;
 
+
   FDataBase := TIBDataBase.Create(Self);
   FDataBase.DefaultTransaction := TIBTransaction.Create(FDataBase);
   FDataBase.DefaultTransaction.DefaultDatabase := FDataBase;
@@ -425,6 +420,10 @@ begin
   FDataBase.Params.Values['sql_role_name'] := FParams.Values['sql_role_name'];}
   FDataBase.LoginPrompt := false;
 
+  FPlainSQLProvider := TPlainSQLProvider.Create(Self);
+  FPlainSQLProvider.Name := 'PlainSQL';
+  FPlainSQLProvider.SetDatabase(FDataBase);
+  FPlainSQLProvider.Options := FPlainSQLProvider.Options + [poAllowCommandText];
   FNoCache := FindCmdLineSwitch('NoCacheMetadata');
 end;
 
@@ -706,29 +705,6 @@ begin
 
 end;
 
-function TIBStorageConnection.GetDetachedDataSet(AOwner: TComponent;
-  const ACommandText: string): IDetachedDataSet;
-var
-  obj: TDetachedDataSet;
-  cmdText: TStringList;
-  cmdSQL: string;
-begin
-  cmdText := TStringList.Create;
-  try
-    cmdText.Text := ACommandText;
-    if (cmdText.Values['EntityName'] <> '')  then
-      cmdSQL := FindOrCreateEntityInfo(cmdText.Values['EntityName']).
-        FindOrCreateViewInfo(cmdText.Values['EntityViewName']).SelectSQL
-    else
-      cmdSQL := ACommandText;
-  finally
-    cmdText.Free;
-  end;
-
-  obj := TDetachedDataSet.Create(AOwner, FDataBase, cmdSQL);
-  obj.GetInterface(IDetachedDataSet, Result);
-
-end;
 
 { TIBEntityInfo }
 
@@ -1300,40 +1276,6 @@ begin
 
 end;
 
-{ TDetachedDataSet }
-
-procedure TDetachedDataSet.Close;
-begin
-  FDataSet.Close;
-end;
-
-constructor TDetachedDataSet.Create(AOwner: TComponent;
-   ADataBase: TIBDatabase; const ASQL: string);
-begin
-  inherited Create(AOwner);
-  FTransaction := TIBTransaction.Create(Self);
-  FTransaction.AutoStopAction := saCommit;
-  FDataSet := TIBQuery.Create(Self);
-  FDataSet.Transaction := FTransaction;
-  FDataSet.Database := ADatabase;
-  FDataSet.Transaction.DefaultDatabase := ADatabase;
-  FDataSet.SQL.Text := ASQL;
-end;
-
-function TDetachedDataSet.GetDataSet: TDataSet;
-begin
-  Result := FDataSet;
-end;
-
-function TDetachedDataSet.GetParams: TParams;
-begin
-  Result := FDataSet.Params;
-end;
-
-procedure TDetachedDataSet.Open;
-begin
-  FDataSet.Open;
-end;
 
 { TIBQueryFix }
 
@@ -1372,6 +1314,24 @@ end;
    for I := 0 to Params.Count - 1 do
      if Params[I].DataType = ftShortInt then
           Params[I].DataType := ftSmallInt;
+end;
+
+{ TPlainSQLProvider }
+
+constructor TPlainSQLProvider.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FTransaction := TIBTransaction.Create(Self);
+  FTransaction.AutoStopAction := saCommit;
+  FQuery := TIBQueryFix.Create(Self);
+  FQuery.Transaction := FTransaction;
+  Self.DataSet := FQuery;
+end;
+
+procedure TPlainSQLProvider.SetDatabase(Value: TIBDatabase);
+begin
+  FQuery.Database := Value;
+  FQuery.Transaction.DefaultDatabase := Value;
 end;
 
 end.

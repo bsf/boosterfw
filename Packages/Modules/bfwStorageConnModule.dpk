@@ -33,6 +33,7 @@ requires
 
 contains
   StorageConnIBX in '..\..\Sources\Modules\StorageConn\StorageConnIBX.pas',
-  bfwStorageConnModuleInit in '..\..\Sources\Modules\StorageConn\bfwStorageConnModuleInit.pas';
+  bfwStorageConnModuleInit in '..\..\Sources\Modules\StorageConn\bfwStorageConnModuleInit.pas',
+  StorageConnDBX in '..\..\Sources\Modules\StorageConn\StorageConnDBX.pas';
 
 end.

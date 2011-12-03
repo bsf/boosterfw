@@ -59,8 +59,11 @@ object Form1: TForm1
       DataController.Summary.DefaultGroupSummaryItems = <>
       DataController.Summary.FooterSummaryItems = <>
       DataController.Summary.SummaryGroups = <>
+      DateTimeHandling.Grouping = dtgByMonth
       object cxGrid1DBTableView1Column1: TcxGridDBColumn
         Styles.Content = cxStyle1
+      end
+      object cxGrid1DBTableView1Column2: TcxGridDBColumn
       end
     end
     object cxGrid1Level1: TcxGridLevel
@@ -256,5 +259,9 @@ object Form1: TForm1
       Styles.Preview = cxStyle14
       BuiltIn = True
     end
+  end
+  object Query1: TQuery
+    Left = 544
+    Top = 64
   end
 end

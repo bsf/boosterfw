@@ -53,6 +53,8 @@ type
     cxStyle14: TcxStyle;
     cxStyle15: TcxStyle;
     cxStyle16: TcxStyle;
+    cxGrid1DBTableView1Column2: TcxGridDBColumn;
+    Query1: TQuery;
     procedure cxDBComboBox1PropertiesInitPopup(Sender: TObject);
   private
     { Private declarations }

@@ -31,6 +31,7 @@ object Form2: TForm2
     StyleFocused.LookAndFeel.Kind = lfOffice11
     StyleHot.LookAndFeel.Kind = lfOffice11
     TabOrder = 0
+    OnClick = cxGroupBox1Click
     Height = 552
     Width = 970
     object Button1: TButton
@@ -109,6 +110,32 @@ object Form2: TForm2
         TabOrder = 4
         Text = 'None selected'
         Width = 217
+      end
+      object cxDBLookupComboBox1: TcxDBLookupComboBox
+        Left = 352
+        Top = 16
+        Properties.ListColumns = <>
+        TabOrder = 5
+        Width = 273
+      end
+      object cxDBComboBox1: TcxDBComboBox
+        Left = 352
+        Top = 43
+        TabOrder = 6
+        Width = 248
+      end
+      object cxDBPopupEdit1: TcxDBPopupEdit
+        Left = 32
+        Top = 72
+        TabOrder = 7
+        Width = 121
+      end
+      object cxDBMRUEdit1: TcxDBMRUEdit
+        Left = 24
+        Top = 47
+        Properties.DropDownListStyle = lsEditFixedList
+        TabOrder = 8
+        Width = 249
       end
     end
     object cxDBVerticalGrid1: TcxDBVerticalGrid
@@ -211,7 +238,6 @@ object Form2: TForm2
     end
   end
   object ClientDataSet1: TClientDataSet
-    Active = True
     Aggregates = <>
     Params = <>
     ProviderName = 'DataSetProvider1'
@@ -258,7 +284,6 @@ object Form2: TForm2
   object IBQuery1: TIBQuery
     Database = IBDatabase1
     Transaction = IBTransaction1
-    Active = True
     CachedUpdates = True
     SQL.Strings = (
       'select * from test')
@@ -267,20 +292,17 @@ object Form2: TForm2
     Top = 80
   end
   object IBDatabase1: TIBDatabase
-    Connected = True
     DatabaseName = 'server:b52'
     Params.Strings = (
       'user_name=sysdba'
       'password=211834'
       'lc_ctype=WIN1251')
-    LoginPrompt = False
     DefaultTransaction = IBTransaction1
     SQLDialect = 1
     Left = 752
     Top = 80
   end
   object IBTransaction1: TIBTransaction
-    Active = True
     DefaultDatabase = IBDatabase1
     Left = 832
     Top = 80
@@ -321,5 +343,26 @@ object Form2: TForm2
       '  ID = :OLD_ID')
     Left = 720
     Top = 208
+  end
+  object SQLConnection1: TSQLConnection
+    DriverName = 'Datasnap'
+    Params.Strings = (
+      'DriverUnit=DBXDataSnap'
+      'HostName=localhost'
+      'Port=211'
+      'CommunicationProtocol=tcp/ip'
+      'DatasnapContext=datasnap/'
+      
+        'DriverAssemblyLoader=Borland.Data.TDBXClientDriverLoader,Borland' +
+        '.Data.DbxClientDriver,Version=15.0.0.0,Culture=neutral,PublicKey' +
+        'Token=91d62ebb5b0d1b1b'
+      'Filters={}')
+    Left = 648
+    Top = 128
+  end
+  object DSProviderConnection1: TDSProviderConnection
+    SQLConnection = SQLConnection1
+    Left = 880
+    Top = 224
   end
 end

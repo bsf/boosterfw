@@ -501,6 +501,7 @@ begin
   begin
    // DropDownListStyle := lsEditList;// lsEditFixedList;
   //  OnInitPopup := LookupEditorInitPopup;
+ //   Buttons.Add;
     ImmediatePost := true;
     ClearKey := TextToShortCut('Del');
     ListOptions.ShowHeader := false;
