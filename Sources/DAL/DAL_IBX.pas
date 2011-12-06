@@ -3,7 +3,7 @@ unit DAL_IBX;
 interface
 uses classes, EntityServiceIntf, IBDataBase, db, IBSql,
   IBCustomDataSet, provider, sysutils, Contnrs, IBQuery, IBUpdateSQL,
-  DBClient, Variants, TConnect, StrUtils, IB;
+  DBClient, Variants, TConnect, StrUtils, IB, DAL, generics.collections;
 
 type
 
@@ -15,51 +15,99 @@ type
     function PSGetUpdateException(E: Exception; Prev: EUpdateError): EUpdateError; override;
   end;
 
-  TIBPlainSQLProvider = class(TDataSetProvider)
-  private
-    FQuery: TIBQueryFix;
-    FTransaction: TIBTransaction;
-  public
-    constructor Create(AOwner: TComponent); override;
-    procedure SetDatabase(Value: TIBDatabase);
-  end;
-
   TDataSetProviderClass = class of TDataSetProvider;
 
-  TIBEntityOperProvider = class(TDataSetProvider)
+  TIBMetadataProvider = class(TDataSetProvider)
+  const
+    GET_METADATA_SQL =
+      ' select sql_select '+
+      ' from ent_views ' +
+      ' where entityname = ''BFW_META'' and viewname = :metadata';
+
   private
+    FDatabase: TIBDatabase;
+    FQuery: TIBQueryFix;
+    FTransaction: TIBTransaction;
+    FMetadataDictionary: TDictionary<string, string>;
+    function Command2Sql(const ACommandText: string): string;
+  protected
+    procedure SetCommandText(const CommandText: WideString); override;
+  public
+    constructor Create(AOwner: TComponent; ADatabase: TIBDatabase); reintroduce;
+    destructor Destroy; override;
+  end;
+
+  TIBPlainSQLProvider = class(TDataSetProvider)
+  private
+    FDatabase: TIBDatabase;
     FQuery: TIBQueryFix;
     FTransaction: TIBTransaction;
   public
-    constructor Create(AOwner: TComponent); override;
-    procedure SetDatabase(Value: TIBDatabase);
-    procedure SetSQL(const Value: string);
+    constructor Create(AOwner: TComponent; ADatabase: TIBDatabase); reintroduce;
+  end;
+
+
+  TIBEntityOperProvider = class(TDataSetProvider)
+  const
+    METADATA_SQL =
+      ' select * '+
+      ' from ent_opers ' +
+      ' where entityname = :entityname and opername = :opername';
+  private
+    FEntityName: string;
+    FOperName: string;
+    FDatabase: TIBDatabase;
+    FQuery: TIBQueryFix;
+    FTransaction: TIBTransaction;
+    procedure LoadMetadataCallback(AResultData: TIBXSQLDA);
+  public
+    constructor Create(AOwner: TComponent; ADataBase: TIBDatabase;
+      const AEntityName, AOperName: string); reintroduce;
+    procedure ReloadMetadata;
   end;
 
   TIBEntityViewProvider = class(TDataSetProvider)
+  const
+    METADATA_SQL =
+      ' select * '+
+      ' from ent_views ' +
+      ' where entityname = :entityname and viewname = :viewname';
   private
+    FEntityName: string;
+    FViewName: string;
+    FDatabase: TIBDatabase;
     FQuery: TIBQueryFix;
     FQueryRefresh: TIBQueryFix;
     FQueryInsertDef: TIBQueryFix;
     FUpdateSql: TIBUpdateSql;
     FTransaction: TIBTransaction;
     FPrimaryKey: TStringList;
+    procedure LoadMetadataCallback(AResultData: TIBXSQLDA);
     function RequestReloadRecord(DSParams: OleVariant): OleVariant;
     function RequestInsertDef(DSParams: OleVariant): OleVariant;
   protected
     function DataRequestHandler(Sender: TObject; Input : OleVariant) : OleVariant;
   public
+    constructor Create(AOwner: TComponent; ADataBase: TIBDatabase;
+      const AEntityName, AViewName: string); reintroduce;
+    destructor Destroy; override;
+    procedure ReloadMetadata;
+  end;
+
+  TDAL_IBX = class(TCustomDAL)
+  private
+    FDatabase: TIBDataBase;
+    FProviders: TDictionary<string, TDataSetProvider>;
+  public
+    class function EngineName: string; override;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure SetDatabase(Value: TIBDatabase);
-    procedure SetSelectSQL(const Value: string);
-    procedure SetInsertSQL(const Value: string);
-    procedure SetUpdateSQL(const Value: string);
-    procedure SetDeleteSQL(const Value: string);
-    procedure SetRefreshSQL(const Value: string);
-    procedure SetInsertDefSQL(const Value: string);
-    procedure SetPrimaryKey(const Value: string);
+    procedure Connect(const AConnectionString: string); override;
+    procedure Disconnect; override;
+    function GetProvider(const AProviderName: string): TDataSetProvider; override;
+    function StubDatabase: TIBDatabase;
   end;
+
 
 type
   TIBExecuteSQLCallback = procedure(AResultData: TIBXSQLDA) of object;
@@ -69,7 +117,19 @@ procedure IBExecuteSQL(ADataBase: TIBDatabase; const ASQL: string;
 
 implementation
 
-
+{  function GetEntityAttrProviderName(const AEntityName, AViewName: string): string;
+  const
+    Alpha = ['A'..'Z', 'a'..'z', '_'];
+    AlphaNumeric = Alpha + ['0'..'9'];
+  var
+    I: Integer;
+  begin
+    Result := UpperCase(AEntityName + AViewName);
+    for I := 1 to Length(Result) do
+      if not CharInSet(Result[I], AlphaNumeric) then
+        Result[I] := '_';
+  end;
+  }
 {type
   TExecuteSQLCallback = procedure(AResultData: TIBXSQLDA) of object;}
 
@@ -152,57 +212,85 @@ end;
 
 { TPlainSQLProvider }
 
-constructor TIBPlainSQLProvider.Create(AOwner: TComponent);
+constructor TIBPlainSQLProvider.Create(AOwner: TComponent; ADatabase: TIBDatabase);
 begin
   inherited Create(AOwner);
+  FDatabase := ADatabase;
   FTransaction := TIBTransaction.Create(Self);
   FTransaction.AutoStopAction := saCommit;
   FQuery := TIBQueryFix.Create(Self);
   FQuery.Transaction := FTransaction;
-  Self.DataSet := FQuery;
-end;
+  FQuery.Database := FDatabase;
+  FQuery.Transaction.DefaultDatabase := FDatabase;
 
-procedure TIBPlainSQLProvider.SetDatabase(Value: TIBDatabase);
-begin
-  FQuery.Database := Value;
-  FQuery.Transaction.DefaultDatabase := Value;
+  Self.DataSet := FQuery;
+  Self.Options := Self.Options + [poAllowCommandText];
+
 end;
 
 { TIBEntityOperProvider }
 
-constructor TIBEntityOperProvider.Create(AOwner: TComponent);
+constructor TIBEntityOperProvider.Create(AOwner: TComponent; ADataBase: TIBDatabase;
+  const AEntityName, AOperName: string);
 begin
   inherited Create(AOwner);
+  FEntityName := AEntityName;
+  FOperName := AOperName;
+
+  FDatabase := ADatabase;
   FTransaction := TIBTransaction.Create(Self);
   FTransaction.AutoStopAction := saCommit;
   FQuery := TIBQueryFix.Create(Self);
   FQuery.Transaction := FTransaction;
+  FQuery.Database := FDatabase;
+  FQuery.Transaction.DefaultDatabase := FDatabase;
+
   Self.DataSet := FQuery;
+
+  IBExecuteSQL(FDatabase, METADATA_SQL, [FEntityName, FOperName],
+    LoadMetadataCallback);
+
 end;
 
-procedure TIBEntityOperProvider.SetDatabase(Value: TIBDatabase);
+procedure TIBEntityOperProvider.LoadMetadataCallback(AResultData: TIBXSQLDA);
 begin
-  FQuery.Database := Value;
-  FQuery.Transaction.DefaultDatabase := Value;
+  FQuery.SQL.Text := AResultData.ByName('sql_text').AsString;
+
+  if Trim(FQuery.SQL.Text) = '' then
+    raise Exception.CreateFmt('SQL is empty for %s.%s', [FEntityName, FOperName]);
+
+
 end;
 
-procedure TIBEntityOperProvider.SetSQL(const Value: string);
+procedure TIBEntityOperProvider.ReloadMetadata;
 begin
-  FQuery.SQL.Text := Value;
+  IBExecuteSQL(FDatabase, METADATA_SQL, [FEntityName, FOperName],
+    LoadMetadataCallback);
 end;
+
 
 { TIBEntityViewProvider }
 
-constructor TIBEntityViewProvider.Create(AOwner: TComponent);
+constructor TIBEntityViewProvider.Create(AOwner: TComponent; ADataBase: TIBDatabase;
+  const AEntityName, AViewName: string);
 begin
-  inherited;
+  inherited Create(AOwner);
+  FEntityName := AEntityName;
+  FViewName := AViewName;
+
+  FDatabase := ADatabase;
+
   FTransaction := TIBTransaction.Create(Self);
   FTransaction.AutoStopAction := saCommit;
+
   FQuery := TIBQueryFix.Create(Self);
   FQuery.Transaction := FTransaction;
+  FQuery.Database := FDatabase;
+  FQuery.Transaction.DefaultDatabase := FDatabase;
+  Self.DataSet := FQuery;
+
   FUpdateSql := TIBUpdateSql.Create(Self);
   FQuery.UpdateObject := FUpdateSql;
-  Self.DataSet := FQuery;
 
   FQueryRefresh := TIBQueryFix.Create(Self);
   FQueryRefresh.Transaction := FTransaction;
@@ -213,6 +301,9 @@ begin
   OnDataRequest := DataRequestHandler;
 
   FPrimaryKey := TStringList.Create;
+
+  IBExecuteSQL(FDatabase, METADATA_SQL, [FEntityName, FViewName],
+    LoadMetadataCallback);
 
 end;
 
@@ -237,6 +328,27 @@ destructor TIBEntityViewProvider.Destroy;
 begin
   FPrimaryKey.Free;
   inherited;
+end;
+
+
+procedure TIBEntityViewProvider.LoadMetadataCallback(AResultData: TIBXSQLDA);
+begin
+  FQuery.SQL.Text := AResultData.ByName('SQL_Select').AsString;
+  FUpdateSql.InsertSQL.Text := AResultData.ByName('SQL_Insert').AsString;
+  FUpdateSql.ModifySQL.Text := AResultData.ByName('SQL_Update').AsString;
+  FUpdateSql.DeleteSQL.Text := AResultData.ByName('SQL_Delete').AsString;
+  FQueryRefresh.SQL.Text := AResultData.ByName('SQL_Refresh').AsString;
+  FQueryInsertDef.SQL.Text := AResultData.ByName('SQL_InsertDef').AsString;
+
+   if Trim(FQuery.SQL.Text) = '' then
+       raise Exception.CreateFmt('SQL is empty for %s.%s', [FEntityName, FViewName]);
+
+end;
+
+procedure TIBEntityViewProvider.ReloadMetadata;
+begin
+  IBExecuteSQL(FDatabase, METADATA_SQL, [FEntityName, FViewName],
+    LoadMetadataCallback);
 end;
 
 function TIBEntityViewProvider.RequestInsertDef(
@@ -295,45 +407,168 @@ begin
 
 end;
 
-procedure TIBEntityViewProvider.SetDatabase(Value: TIBDatabase);
+
+{ TDAL_IBX }
+
+procedure TDAL_IBX.Connect(const AConnectionString: string);
+const
+  ESQLCode_Login = -901;
+  ELoginMessage = 'Неверный пароль или имя пользователя. Повторите ввод.';
+
+var
+  prm: TStringList;
+  I: integer;
 begin
-  FQuery.Database := Value;
-  FQuery.Transaction.DefaultDatabase := Value;
+  prm := TStringList.Create;
+  try
+    ExtractStrings([';'], [], PChar(AConnectionString), prm);
+
+    FDataBase.DatabaseName := prm.Values['DataBase'];
+    for I := 0 to prm.Count - 1 do
+    if not SameText(prm.Names[I], 'DataBase') then
+      FDataBase.Params.Values[prm.Names[I]] := prm.ValueFromIndex[I];
+
+    {FDataBase.Params.Values['user_name'] := FParams.Values['user_name'];
+    FDataBase.Params.Values['password'] := FParams.Values['Password'];
+    FDataBase.Params.Values['sql_role_name'] := FParams.Values['sql_role_name'];}
+
+  finally
+    prm.Free;
+  end;
+
+  try
+    FDatabase.Connected := true;
+  except
+    on E: EIBError do
+    begin
+      if E.SQLCode = ESQLCode_Login then
+        raise Exception.Create(ELoginMessage)
+      else
+        raise;
+    end;
+  end;
+
 end;
 
-procedure TIBEntityViewProvider.SetDeleteSQL(const Value: string);
+constructor TDAL_IBX.Create(AOwner: TComponent);
 begin
-  FUpdateSql.DeleteSQL.Text := Value;
+  inherited Create(AOwner);
+
+  CacheMetadata := true;
+  FProviders := TDictionary<string, TDataSetProvider>.Create;
+
+  FDataBase := TIBDataBase.Create(Self);
+  FDataBase.DefaultTransaction := TIBTransaction.Create(FDataBase);
+  FDataBase.DefaultTransaction.DefaultDatabase := FDataBase;
+  FDataBase.LoginPrompt := false;
+
 end;
 
-procedure TIBEntityViewProvider.SetInsertDefSQL(const Value: string);
+destructor TDAL_IBX.Destroy;
 begin
-  FQueryInsertDef.SQL.Text := Value;
+  FProviders.Free;
+  inherited;
 end;
 
-procedure TIBEntityViewProvider.SetInsertSQL(const Value: string);
+procedure TDAL_IBX.Disconnect;
 begin
-  FUpdateSql.InsertSQL.Text := Value;
+  FDatabase.Connected := false;
 end;
 
-procedure TIBEntityViewProvider.SetPrimaryKey(const Value: string);
+class function TDAL_IBX.EngineName: string;
 begin
-  ExtractStrings([';'], [], PChar(Value), FPrimaryKey);
+  Result := 'IBX';
 end;
 
-procedure TIBEntityViewProvider.SetRefreshSQL(const Value: string);
+function TDAL_IBX.GetProvider(const AProviderName: string): TDataSetProvider;
+var
+  providerName: string;
+  provKind: TProviderNameBuilder.TProviderKind;
+  entityName: string;
+  viewName: string;
 begin
-  FQueryRefresh.SQL.Text := Value;
+  providerName := AProviderName; // UpperCase(AProviderName);
+
+  if not FProviders.TryGetValue(providerName, Result) then
+  begin
+    if providerName = METADATA_PROVIDER then
+      Result := TIBMetadataProvider.Create(Self, FDatabase)
+    else if providerName = DATASETPROXY_PROVIDER then
+      Result := TIBPlainSQLProvider.Create(Self, FDatabase)
+    else begin
+      TProviderNameBuilder.Decode(providerName, provKind, entityName, viewName);
+      if provKind = pkEntityView then
+        Result := TIBEntityViewProvider.Create(Self, FDatabase, entityName, viewName)
+      else if provKind = pkEntityOper then
+        Result := TIBEntityOperProvider.Create(Self, FDatabase, entityName, viewName)
+      else
+        raise Exception.Create('Bad provider name');
+    end;
+    FProviders.Add(providerName, Result);
+  end;
+
+  if not CacheMetadata then
+  begin
+    if Result is TIBEntityViewProvider then
+      (Result as TIBEntityViewProvider).ReloadMetadata
+    else if Result is TIBEntityOperProvider then
+      (Result as TIBEntityOperProvider).ReloadMetadata;
+  end;
 end;
 
-procedure TIBEntityViewProvider.SetSelectSQL(const Value: string);
+function TDAL_IBX.StubDatabase: TIBDatabase;
 begin
-  FQuery.SQL.Text := Value;
+  Result := FDatabase;
 end;
 
-procedure TIBEntityViewProvider.SetUpdateSQL(const Value: string);
+{ TIBMetadataProvider }
+
+function TIBMetadataProvider.Command2Sql(const ACommandText: string): string;
 begin
-  FUpdateSql.ModifySQL.Text := Value;
+  if not FMetadataDictionary.TryGetValue(ACommandText, Result) then
+  begin
+    FQuery.SQL.Text := GET_METADATA_SQL;
+    FQuery.Params.ParamValues['METADATA'] := ACommandText;
+    FQuery.Open;
+    if FQuery.IsEmpty then
+      raise Exception.CreateFmt('Metadata for %s not found', [ACommandText]);
+
+    Result := FQuery['SQL_SELECT'];
+    FMetadataDictionary.Add(ACommandText, Result);
+  end;
 end;
 
+constructor TIBMetadataProvider.Create(AOwner: TComponent;
+  ADatabase: TIBDatabase);
+begin
+  inherited Create(AOwner);
+  FMetadataDictionary := TDictionary<string, string>.Create;
+  FDatabase := ADatabase;
+  FTransaction := TIBTransaction.Create(Self);
+  FTransaction.AutoStopAction := saCommit;
+  FQuery := TIBQueryFix.Create(Self);
+  FQuery.Transaction := FTransaction;
+  FQuery.Database := FDatabase;
+  FQuery.Transaction.DefaultDatabase := FDatabase;
+
+  Self.DataSet := FQuery;
+  Self.Options := Self.Options + [poAllowCommandText];
+end;
+
+destructor TIBMetadataProvider.Destroy;
+begin
+  FMetadataDictionary.Free;
+  inherited;
+end;
+
+procedure TIBMetadataProvider.SetCommandText(const CommandText: WideString);
+var
+  sqlText: string;
+begin
+  sqlText := Command2Sql(CommandText);
+  inherited SetCommandText(sqlText);
+end;
+
+initialization
+  DAL.RegisterDALEngine(TDAL_IBX);
 end.

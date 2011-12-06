@@ -58,6 +58,7 @@
 			<DCCReference Include="vclimg.dcp"/>
 			<DCCReference Include="bfwCore.dcp"/>
 			<DCCReference Include="dsnapcon.dcp"/>
+			<DCCReference Include="ibxpress.dcp"/>
 			<DCCReference Include="..\Sources\Shell\bfwApp.pas"/>
 			<DCCReference Include="..\Sources\Shell\ShellLogin.pas"/>
 			<DCCReference Include="..\Sources\Shell\ShellLoginForm.pas">
@@ -72,6 +73,11 @@
 			<DCCReference Include="..\Sources\Shell\Services\SecurityService.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\UIService.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\SecurityController.pas"/>
+			<DCCReference Include="..\Sources\DAL\DAL.pas"/>
+			<DCCReference Include="..\Sources\DAL\DAL_IBX.pas"/>
+			<DCCReference Include="..\Sources\DAL\DAL_BDE.pas"/>
+			<DCCReference Include="..\Sources\Shell\Services\EntityLocalConn.pas"/>
+			<DCCReference Include="..\Sources\Shell\Services\EntityRemoteConn.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

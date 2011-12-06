@@ -63,6 +63,7 @@
 			<DCCReference Include="..\..\Sources\Modules\StorageConn\RemoteConn.pas"/>
 			<DCCReference Include="..\..\Sources\DAL\DAL_BDE.pas"/>
 			<DCCReference Include="..\..\Sources\DAL\DAL_IBX.pas"/>
+			<DCCReference Include="..\..\Sources\DAL\DAL.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

@@ -38,6 +38,7 @@ contains
   LocalConnBDE in '..\..\Sources\Modules\StorageConn\LocalConnBDE.pas',
   RemoteConn in '..\..\Sources\Modules\StorageConn\RemoteConn.pas',
   DAL_BDE in '..\..\Sources\DAL\DAL_BDE.pas',
-  DAL_IBX in '..\..\Sources\DAL\DAL_IBX.pas';
+  DAL_IBX in '..\..\Sources\DAL\DAL_IBX.pas',
+  DAL in '..\..\Sources\DAL\DAL.pas';
 
 end.

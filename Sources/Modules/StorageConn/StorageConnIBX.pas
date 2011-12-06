@@ -3,7 +3,7 @@ unit StorageConnIBX;
 interface
 uses classes, EntityServiceIntf, IBDataBase, db, IBSql,
   IBCustomDataSet, provider, sysutils, Contnrs, IBQuery, IBUpdateSQL,
-  DBClient, Variants, TConnect, StrUtils, IB, DAL_IBX;
+  DBClient, Variants, TConnect, StrUtils, IB, DAL, DAL_IBX;
 
 resourcestring
   cnstGetEntityListSQL = 'select entityname from ent_entities';
@@ -63,27 +63,26 @@ type
   private
     FEntityName: string;
     FAttrName: string;
-    FDBQueryProc: TExecuteDBQueryProc;
+
     //
     FParams: TParams;
     FFields: TFields;
     FOptions: TStringList;
     FLinks: TObjectList;
     FLinkedFields: TStringList;
+    FDatabase: TIBDatabase;
     procedure GetFieldsInfoCallback( AResultData: TIBXSQLDA);
   protected
     procedure SetOptionsText(const AText: string);
     function GetEntityName: string;
     function GetAttrName: string;
-    procedure ExecuteDBQuery(const ASQL: string; AParams: array of variant;
-      ResultCallback: TIBQueryResultCallback);
     //IEntityViewInfo
     function Fields: TFields;
     function Params: TParams;
     function GetOptions(const AName: string): string;
   public
     constructor Create(const AEntityName, AttrName: string;
-      ADBQueryProc: TExecuteDBQueryProc); reintroduce; virtual;
+      ADatabase: TIBDatabase); reintroduce; virtual;
     destructor Destroy; override;
     procedure Initialize; virtual;
   end;
@@ -149,7 +148,7 @@ type
     FOptions: TStringList;
     FViewInfoList: TComponentList;
     FOperInfoList: TComponentList;
-    FDBQueryProc: TExecuteDBQueryProc;
+    FDatabase: TIBDatabase;
     procedure GetFieldsInfoCallback(AResultData: TIBXSQLDA);
 
     procedure GetInfoDataCallback(AResultData: TIBXSQLDA);
@@ -168,7 +167,7 @@ type
     procedure SetOptions(const AName, AValue: string);
   public
     constructor Create(const AEntityName: string;
-      ADBQueryProc: TExecuteDBQueryProc; ANoCache: boolean); reintroduce;
+      ADatabase: TIBDatabase; ANoCache: boolean); reintroduce;
     destructor Destroy; override;
     procedure Initialize;
   end;
@@ -192,37 +191,29 @@ type
   TIBStorageInfo = class(TComponent, IEntityStorageInfo)
   end;
 
+  TEmbededServer = class(TLocalConnection)
+  private
+    FDAL: TCustomDAL;
+  protected
+    function GetProvider(const ProviderName: string): TCustomProvider; override;
+  public
+    property DAL: TCustomDAL read FDAL write FDAL;
+  end;
 
   TIBStorageConnection = class(TComponent, IEntityStorageConnection)
   private
     FNoCache: boolean;
-    FRemoteServer: TLocalConnection;
+    FDAL: TCustomDAL;
+    FRemoteServer: TEmbededServer;
     FConnectionBroker:  TConnectionBroker;
     FDatabase: TIBDatabase;
-    FEntityList: TStringList;
-    FEntityListLoaded: boolean;
     FEntityInfoList: TComponentList;
     FEntityAttrProviders: TComponentList;
     FEntitySchemeInfoList: TComponentList;
+    FConnectionString: string;
 
-    FPlainSQLProvider: TIBPlainSQLProvider;
-    procedure ExecuteDBQuery(const ASQL: string; AParams: array of variant;
-      ResultCallback: TIBQueryResultCallback);
-
-    procedure LoadEntityList;
-    procedure LoadEntityListCallback(AResultData: TIBXSQLDA);
-
-    function GetEntityAttrProviderName(const AEntityName, AViewName: string): string;
     function FindOrCreateEntityInfo(const AName: string): TIBEntityInfo;
-
-    function FindOrCreateEntityAttrProvider(const AEntityName,
-      AViewName: string; AClass: TDataSetProviderClass): TDataSetProvider;
-
     function FindOrCreateEntitySchemeInfo(const AName: string): TIBEntitySchemeInfo;
-    function GetEntityViewProvider(const AEntityName, AViewName: string;
-      AOwner: TComponent): TComponent;
-    function GetEntityOperProvider(const AEntityName, AOperName: string;
-      AOwner: TComponent): TComponent;
 
   protected
     //IConnection
@@ -231,10 +222,8 @@ type
     function IsConnected: boolean;
 
     function ConnectionComponent: TCustomRemoteServer;
-    function GetEntityViewProviderName(const AEntityName, AViewName: string): string;
-    function GetEntityOperProviderName(const AEntityName, AOperName: string): string;
 
-    function GetEntityList: TStringList;
+
     function GetEntityInfo(const AName: string): IEntityInfo;
 
     function GetSchemeInfo(const AName: string): IEntitySchemeInfo;
@@ -322,39 +311,20 @@ begin
 end;
 
 constructor TIBStorageConnection.Create(AParams: TStrings);
-var
-  I: integer;
 begin
   inherited Create(nil);
-  FEntityList := TStringList.Create;
-  FEntityListLoaded := false;
   FEntityInfoList := TComponentList.Create(true);
   FEntityAttrProviders := TComponentList.Create(true);
   FEntitySchemeInfoList := TComponentList.Create(true);
 
-  FRemoteServer := TLocalConnection.Create(Self);
+  FRemoteServer := TEmbededServer.Create(Self);
   FConnectionBroker :=  TConnectionBroker.Create(Self);
   FConnectionBroker.Connection := FRemoteServer;
 
-
-  FDataBase := TIBDataBase.Create(Self);
-  FDataBase.DefaultTransaction := TIBTransaction.Create(FDataBase);
-  FDataBase.DefaultTransaction.DefaultDatabase := FDataBase;
-  FDataBase.DatabaseName := AParams.Values['DataBase'];
-
-  for I := 0 to AParams.Count - 1 do
-    if not SameText(AParams.Names[I], 'DataBase') then
-      FDataBase.Params.Values[AParams.Names[I]] := AParams.ValueFromIndex[I];
-
-  {FDataBase.Params.Values['user_name'] := FParams.Values['user_name'];
-  FDataBase.Params.Values['password'] := FParams.Values['Password'];
-  FDataBase.Params.Values['sql_role_name'] := FParams.Values['sql_role_name'];}
-  FDataBase.LoginPrompt := false;
-
-  FPlainSQLProvider := TIBPlainSQLProvider.Create(Self);
-  FPlainSQLProvider.Name := DATASETPROXY_PROVIDER;
-  FPlainSQLProvider.SetDatabase(FDataBase);
-  FPlainSQLProvider.Options := FPlainSQLProvider.Options + [poAllowCommandText];
+  FConnectionString := AParams.Text;
+  FDAL := TDAL_IBX.Create(Self);
+  FDatabase := TDAL_IBX(FDAL).StubDatabase;
+  FRemoteServer.DAL := FDAL;
 
   FNoCache := FindCmdLineSwitch('NoCacheMetadata');
 end;
@@ -362,7 +332,6 @@ end;
 
 destructor TIBStorageConnection.Destroy;
 begin
-  FEntityList.Free;
   FEntityInfoList.Free;
   FEntityAttrProviders.Free;
   FEntitySchemeInfoList.Free;
@@ -376,62 +345,6 @@ function TIBStorageConnection.GetEntityInfo(
   const AName: string): IEntityInfo;
 begin
   Result := FindOrCreateEntityInfo(AName);
-end;
-
-function TIBStorageConnection.GetEntityList: TStringList;
-begin
-  Result := FEntityList;
-  if FNoCache or (not FEntityListLoaded)  then
-    LoadEntityList;
-end;
-
-procedure TIBStorageConnection.LoadEntityList;
-begin
-  FEntityList.Clear;
-  ExecuteDBQuery(cnstGetEntityListSQL, [], LoadEntityListCallback);
-  FEntityListLoaded := true;
-end;
-
-procedure TIBStorageConnection.LoadEntityListCallback(AResultData: TIBXSQLDA);
-begin
-  FEntityList.Add(AResultData[0].AsString);
-end;
-
-procedure TIBStorageConnection.ExecuteDBQuery(const ASQL: string;
-  AParams: array of variant; ResultCallback: TIBQueryResultCallback);
-var
-  qry: TIBSQL;
-  I: integer;
-begin
-  qry:= TIBSQL.Create(nil);
-  try
-    qry.Database:= FDatabase;
-    qry.Transaction:= TIBTransaction.Create(qry);
-    qry.Transaction.DefaultDatabase := FDataBase;
-    qry.GoToFirstRecordOnExecute := true;
-    qry.Transaction.StartTransaction;
-    try
-      qry.SQL.Text:= ASQL;
-      qry.Prepare;
-
-      for I := 0 to High(AParams) do
-        if qry.Params.Count > I then
-          qry.Params[I].Value := AParams[I];
-
-      qry.ExecQuery;
-      while not qry.Eof do
-      begin
-        if @ResultCallback <> nil then
-          ResultCallback(qry.Current);
-        qry.Next;
-      end;
-      qry.Transaction.Commit;
-    except
-      qry.Transaction.Rollback;
-    end;
-  finally
-    qry.Free;
-  end;
 end;
 
 
@@ -450,7 +363,7 @@ begin
     end;
   end;
 
-  Result := TIBEntityInfo.Create(AName, ExecuteDBQuery, FNoCache);
+  Result := TIBEntityInfo.Create(AName, FDatabase, FNoCache);
   FEntityInfoList.Add(Result);
   try
     Result.Initialize;
@@ -460,92 +373,15 @@ begin
   end;
 end;
 
-function TIBStorageConnection.GetEntityViewProvider(const AEntityName,
-  AViewName: string; AOwner: TComponent): TComponent;
-var
-  viewInfo: TIBEntityViewInfo;
-begin
-  viewInfo := FindOrCreateEntityInfo(AEntityName).
-    FindOrCreateViewInfo(AViewName);
-
-//  Result := TIBEntityViewProvider.Create(AOwner);
-//  Result.Name := 'ViewProvider_' + IntToStr(FRemoteServer.ProviderCount);
-
-  Result := FindOrCreateEntityAttrProvider(AEntityName, AViewName,
-    TIBEntityViewProvider);
-
-  with TIBEntityViewProvider(Result) do
-  begin
-     SetDatabase(FDatabase);
-     SetSelectSQL(viewInfo.SelectSQL);
-     if viewInfo.SelectSQL = '' then
-       raise Exception.CreateFmt('SQL is empty for %s.%s', [AEntityName, AViewName]);
-
-     SetInsertSQL(viewInfo.InsertSQL);
-     SetUpdateSQL(viewInfo.UpdateSQL);
-     SetDeleteSQL(viewInfo.DeleteSQL);
-     SetRefreshSQL(viewInfo.RefreshSQL);
-     SetInsertDefSQL(viewInfo.InsertDefSQL);
-     SetPrimaryKey(viewInfo.PrimaryKey);
-  end;
-end;
-
-function TIBStorageConnection.GetEntityViewProviderName(const AEntityName,
-  AViewName: string): string;
-begin
-  Result := GetEntityViewProvider(AEntityName, AViewName, Self).Name;
-end;
-
-function TIBStorageConnection.GetEntityOperProvider(const AEntityName,
-  AOperName: string; AOwner: TComponent): TComponent;
-var
-  operInfo: TIBEntityOperInfo;
-begin
-  operInfo := FindOrCreateEntityInfo(AEntityName).
-    FindOrCreateOperInfo(AOperName);
-
-  Result := FindOrCreateEntityAttrProvider(AEntityName, AOperName,
-    TIBEntityOperProvider);
-//  Result := TIBEntityOperProvider.Create(AOwner);
-//  Result.Name := 'OperProvider_' + IntToStr(FRemoteServer.ProviderCount);
-  with TIBEntityOperProvider(Result) do
-  begin
-     SetDatabase(FDatabase);
-     SetSQL(operInfo.SQL);
-     if operInfo.SQL = '' then
-       raise Exception.CreateFmt('SQL is empty for %s.%s', [AEntityName, AOperName]);
-  end;
-
-end;
-
-function TIBStorageConnection.GetEntityOperProviderName(const AEntityName,
-  AOperName: string): string;
-begin
-  Result := GetEntityOperProvider(AEntityName, AOperName, Self).Name;
-end;
 
 procedure TIBStorageConnection.Connect;
-const
-  ESQLCode_Login = -901;
-  ELoginMessage = 'Неверный пароль или имя пользователя. Повторите ввод.';
-
 begin
-  try
-    FDatabase.Connected := true;
-  except
-    on E: EIBError do
-    begin
-      if E.SQLCode = ESQLCode_Login then
-        raise Exception.Create(ELoginMessage)
-      else
-        raise;
-    end;
-  end;
+  FDAL.Connect(FConnectionString);
 end;
 
 procedure TIBStorageConnection.Disconnect;
 begin
-  FDatabase.Connected := false;
+  FDAL.Disconnect;
 end;
 
 function TIBStorageConnection.IsConnected: boolean;
@@ -553,38 +389,6 @@ begin
   Result :=  FDatabase.Connected;
 end;
 
-
-function TIBStorageConnection.FindOrCreateEntityAttrProvider(const AEntityName,
-  AViewName: string; AClass: TDataSetProviderClass): TDataSetProvider;
-var
-  I: integer;
-  _ProviderName: string;
-begin
-  _ProviderName := GetEntityAttrProviderName(AEntityName, AViewName);
-  for I := 0 to FEntityAttrProviders.Count - 1 do
-  begin
-    Result := TDataSetProvider(FEntityAttrProviders[I]);
-    if Result.Name = _ProviderName then Exit;
-  end;
-
-  Result := AClass.Create(Self);
-  Result.Name := _ProviderName;
-  FEntityAttrProviders.Add(Result);
-end;
-
-function TIBStorageConnection.GetEntityAttrProviderName(const AEntityName,
-  AViewName: string): string;
-const
-  Alpha = ['A'..'Z', 'a'..'z', '_'];
-  AlphaNumeric = Alpha + ['0'..'9'];
-var
-  I: Integer;
-begin
-  Result := UpperCase(AEntityName + AViewName);
-  for I := 1 to Length(Result) do
-    if not CharInSet(Result[I], AlphaNumeric) then
-      Result[I] := '_';
-end;
 
 function TIBStorageConnection.GetStubConnectionComponent: TCustomConnection;
 begin
@@ -627,14 +431,14 @@ end;
 { TIBEntityInfo }
 
 constructor TIBEntityInfo.Create(const AEntityName: string;
-  ADBQueryProc: TExecuteDBQueryProc; ANoCache: boolean);
+  ADatabase: TIBDatabase; ANoCache: boolean);
 begin
   inherited Create(nil);
   FEntityName := AEntityName;
   FNoCache := ANoCache;
+  FDatabase := ADatabase;
   FViewInfoList := TComponentList.Create(true);
   FOperInfoList := TComponentList.Create(true);
-  FDBQueryProc := ADBQueryProc;
   FFields := TFields.Create(nil);
   FOptions := TStringList.Create;
 end;
@@ -668,7 +472,7 @@ begin
     end;
   end;
 
-  Result := AttrClass.Create(FEntityName, AttrName, FDBQueryProc);
+  Result := AttrClass.Create(FEntityName, AttrName, FDatabase);
   AList.Add(Result);
   try
     Result.Initialize;
@@ -727,10 +531,10 @@ end;
 
 procedure TIBEntityInfo.Initialize;
 begin
-  FDBQueryProc(cnstGetEntityInfoSQL, [FEntityName], GetInfoDataCallback);
+  IBExecuteSQL(FDatabase, cnstGetEntityInfoSQL, [FEntityName], GetInfoDataCallback);
 
   FFields.Clear;
-  FDBQueryProc(cnstGetEntityFieldsDefInfoSQL, [FEntityName], GetFieldsInfoCallback);
+  IBExecuteSQL(FDatabase, cnstGetEntityFieldsDefInfoSQL, [FEntityName], GetFieldsInfoCallback);
 
 end;
 
@@ -806,18 +610,18 @@ var
   I: integer;
 begin
 
-  ExecuteDBQuery(cnstEntityViewExistsSQL, [GetEntityName, GetAttrName],
+  IBExecuteSQL(FDatabase, cnstEntityViewExistsSQL, [GetEntityName, GetAttrName],
     GetViewExistsCallback);
 
-  ExecuteDBQuery(cnstGetEntityViewInfoSQL, [GetEntityName, GetAttrName],
+  IBExecuteSQL(FDatabase, cnstGetEntityViewInfoSQL, [GetEntityName, GetAttrName],
     GetViewInfoCallback);
 
   FLinks.Clear;
-  ExecuteDBQuery(cnstGetEntityViewLinksInfoSQL, [GetEntityName, GetAttrName],
+  IBExecuteSQL(FDatabase, cnstGetEntityViewLinksInfoSQL, [GetEntityName, GetAttrName],
     GetViewLinksInfoCallback);
 
   FLinkedFields.Clear;
-  ExecuteDBQuery(cnstGetEntityViewLinkedFieldsInfoSQL, [GetEntityName, GetAttrName],
+  IBExecuteSQL(FDatabase, cnstGetEntityViewLinkedFieldsInfoSQL, [GetEntityName, GetAttrName],
     GetViewLinkedFieldsInfoCallback);
 
   inherited;
@@ -866,7 +670,7 @@ end;
 
 procedure TIBEntityOperInfo.Initialize;
 begin
-  ExecuteDBQuery(cnstGetEntityOperInfoSQL, [GetEntityName, GetAttrName],
+  IBExecuteSQL(FDatabase, cnstGetEntityOperInfoSQL, [GetEntityName, GetAttrName],
     GetOperInfoCallback);
   inherited;    
 end;
@@ -880,12 +684,12 @@ end;
 { TIBEntityAttrInfo }
 
 constructor TIBEntityAttrInfo.Create(const AEntityName, AttrName: string;
-  ADBQueryProc: TExecuteDBQueryProc);
+  ADatabase: TIBDatabase);
 begin
   inherited Create(nil);
   FEntityName := AEntityName;
   FAttrName := AttrName;
-  FDBQueryProc := ADBQueryProc;
+  FDatabase := ADatabase;
   FParams := TParams.Create(Self);
   FFields := TFields.Create(nil);
   FOptions := TStringList.Create;
@@ -900,12 +704,6 @@ begin
   FLinks.Free;
   FLinkedFields.Free;
   inherited;
-end;
-
-procedure TIBEntityAttrInfo.ExecuteDBQuery(const ASQL: string;
-  AParams: array of variant; ResultCallback: TIBQueryResultCallback);
-begin
-  FDBQueryProc(ASQL, AParams, ResultCallback);
 end;
 
 function TIBEntityAttrInfo.GetAttrName: string;
@@ -935,7 +733,7 @@ end;
 procedure TIBEntityAttrInfo.Initialize;
 begin
   FFields.Clear;
-  ExecuteDBQuery(cnstGetEntityFieldsInfoSQL, [GetEntityName, GetAttrName],
+  IBExecuteSQL(FDatabase, cnstGetEntityFieldsInfoSQL, [GetEntityName, GetAttrName],
     GetFieldsInfoCallback);
 end;
 
@@ -998,6 +796,18 @@ begin
   IBExecuteSQL(FDatabase, cnstGetSchemeFieldsInfoSQL, [_schemeName],
     GetFieldsInfoCallback);
 
+end;
+
+{ TEmbededServer }
+
+function TEmbededServer.GetProvider(
+  const ProviderName: string): TCustomProvider;
+begin
+  Result := nil;
+  if FDAL <> nil then
+    Result := FDAL.GetProvider(ProviderName);
+  if Result = nil then
+    raise Exception.CreateFmt('Provider %s not found', [ProviderName]);
 end;
 
 end.

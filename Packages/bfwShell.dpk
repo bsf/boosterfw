@@ -29,7 +29,8 @@ requires
   bfwInterfaces,
   vclimg,
   bfwCore,
-  dsnapcon;
+  dsnapcon,
+  ibxpress;
 
 contains
   bfwApp in '..\Sources\Shell\bfwApp.pas',
@@ -41,6 +42,11 @@ contains
   EntityService in '..\Sources\Shell\Services\EntityService.pas',
   SecurityService in '..\Sources\Shell\Services\SecurityService.pas',
   UIService in '..\Sources\Shell\Services\UIService.pas',
-  SecurityController in '..\Sources\Shell\Services\SecurityController.pas';
+  SecurityController in '..\Sources\Shell\Services\SecurityController.pas',
+  DAL in '..\Sources\DAL\DAL.pas',
+  DAL_IBX in '..\Sources\DAL\DAL_IBX.pas',
+  DAL_BDE in '..\Sources\DAL\DAL_BDE.pas',
+  EntityLocalConn in '..\Sources\Shell\Services\EntityLocalConn.pas',
+  EntityRemoteConn in '..\Sources\Shell\Services\EntityRemoteConn.pas';
 
 end.
