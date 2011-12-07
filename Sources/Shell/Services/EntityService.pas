@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes, ConfigServiceIntf, EntityServiceIntf, Contnrs, ComObj,
-  DBClient, CoreClasses, db, Variants, DAL, generics.collections, TConnect, Provider;
+  DBClient, CoreClasses, db, Variants, DAL, generics.collections;
 
 const
   ENT_METADATA_ENTITIES = 'Entities';
@@ -304,16 +304,12 @@ type
     constructor Create(AOwner: TComponent; AWorkItem: TWorkItem); reintroduce;
   end;
 
-  TEntityStorageConnection = class(TLocalConnection)
-  protected
-    function GetProvider(const ProviderName: string): TCustomProvider; override;
-  end;
 
   TEntityService = class(TComponent, IEntityService)
   private
     FWorkItem: TWorkItem;
     FDAL: TCustomDAL;
-    FConnection: TCustomRemoteServer;
+    FConnection: TConnectionBroker;
     FEntities: TComponentList;
     FSettings: TEntityStorageSettings;
     FSchemeInfoDictionary: TDictionary<string, TEntitySchemeInfo>;
@@ -451,6 +447,7 @@ begin
   try
     FDAL.Connect(AConnectionParams);
     FDAL.NoCacheMetadata := NoCacheMetadata;
+    FConnection.Connection := FDAL.RemoteServer;
   except
     FDAL.Free;
     FDAL := nil;
@@ -465,7 +462,7 @@ begin
   FEntities := TComponentList.Create(True);
   FSettings := TEntityStorageSettings.Create(Self, FWorkItem);
   FSchemeInfoDictionary := TDictionary<string, TEntitySchemeInfo>.Create;
-  FConnection := TEntityStorageConnection.Create(Self);
+  FConnection := TConnectionBroker.Create(Self);
 
   FMetadataDS := TEntityDataSet.Create(Self);
   FMetadataDS.ProviderName := METADATA_PROVIDER;
@@ -2150,18 +2147,6 @@ end;
 function TEntityViewInfo.ViewExists: boolean;
 begin
   Result := FViewExists;
-end;
-
-{ TEntityStorageConnection }
-
-function TEntityStorageConnection.GetProvider(
-  const ProviderName: string): TCustomProvider;
-begin
-  Result := nil;
-  if TEntityService(Owner).FDAL <> nil then
-    Result := TEntityService(Owner).FDAL.GetProvider(ProviderName);
-  if Result = nil then
-    raise Exception.CreateFmt('Provider %s not found', [ProviderName]);
 end;
 
 initialization

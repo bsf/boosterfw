@@ -1,7 +1,7 @@
 unit DAL_IBE;
 
 interface
-uses classes, EntityServiceIntf, IBDataBase, db, IBSql,
+uses classes,  IBDataBase, db, IBSql,
   IBCustomDataSet, provider, sysutils, Contnrs, IBQuery, IBUpdateSQL,
   DBClient, Variants, TConnect, StrUtils, IB, DAL, generics.collections;
 
@@ -94,26 +94,26 @@ type
     procedure ReloadMetadata;
   end;
 
-  TDAL_IBX = class(TCustomDAL)
+  TDAL_IBE_RemoteServer = class(TLocalConnection)
+  protected
+    function GetProvider(const ProviderName: string): TCustomProvider; override;
+  end;
+
+  TDAL_IBE = class(TCustomDAL)
   private
     FDatabase: TIBDataBase;
     FProviders: TDictionary<string, TDataSetProvider>;
+    FRemoteServer: TCustomRemoteServer;
   public
     class function EngineName: string; override;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Connect(const AConnectionString: string); override;
     procedure Disconnect; override;
+    function RemoteServer: TCustomRemoteServer; override;
     function GetProvider(const AProviderName: string): TDataSetProvider; override;
-    function StubDatabase: TIBDatabase;
   end;
 
-
-type
-  TIBExecuteSQLCallback = procedure(AResultData: TIBXSQLDA) of object;
-
-procedure IBExecuteSQL(ADataBase: TIBDatabase; const ASQL: string;
-  AParams: array of variant; ResultCallback: TIBExecuteSQLCallback);
 
 var
   GlobalIBDatabase: TIBDatabase;
@@ -136,6 +136,8 @@ implementation
 {type
   TExecuteSQLCallback = procedure(AResultData: TIBXSQLDA) of object;}
 
+type
+  TIBExecuteSQLCallback = procedure(AResultData: TIBXSQLDA) of object;
 
 procedure IBExecuteSQL(ADataBase: TIBDatabase; const ASQL: string;
   AParams: array of variant; ResultCallback: TIBExecuteSQLCallback);
@@ -414,7 +416,7 @@ end;
 
 { TDAL_IBX }
 
-procedure TDAL_IBX.Connect(const AConnectionString: string);
+procedure TDAL_IBE.Connect(const AConnectionString: string);
 const
   ESQLCode_Login = -901;
   ELoginMessage = 'Неверный пароль или имя пользователя. Повторите ввод.';
@@ -454,7 +456,7 @@ begin
 
 end;
 
-constructor TDAL_IBX.Create(AOwner: TComponent);
+constructor TDAL_IBE.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 
@@ -465,26 +467,27 @@ begin
   FDataBase.DefaultTransaction.DefaultDatabase := FDataBase;
   FDataBase.LoginPrompt := false;
 
+  FRemoteServer := TDAL_IBE_RemoteServer.Create(Self);
   GlobalIBDatabase := FDatabase;
 end;
 
-destructor TDAL_IBX.Destroy;
+destructor TDAL_IBE.Destroy;
 begin
   FProviders.Free;
   inherited;
 end;
 
-procedure TDAL_IBX.Disconnect;
+procedure TDAL_IBE.Disconnect;
 begin
   FDatabase.Connected := false;
 end;
 
-class function TDAL_IBX.EngineName: string;
+class function TDAL_IBE.EngineName: string;
 begin
   Result := 'IBE';
 end;
 
-function TDAL_IBX.GetProvider(const AProviderName: string): TDataSetProvider;
+function TDAL_IBE.GetProvider(const AProviderName: string): TDataSetProvider;
 var
   providerName: string;
   provKind: TProviderNameBuilder.TProviderKind;
@@ -520,9 +523,9 @@ begin
   end;
 end;
 
-function TDAL_IBX.StubDatabase: TIBDatabase;
+function TDAL_IBE.RemoteServer: TCustomRemoteServer;
 begin
-  Result := FDatabase;
+  Result := FRemoteServer;
 end;
 
 { TIBMetadataProvider }
@@ -573,6 +576,16 @@ begin
   inherited SetCommandText(sqlText);
 end;
 
+{ TDAL_IBE_RemoteServer }
+
+function TDAL_IBE_RemoteServer.GetProvider(
+  const ProviderName: string): TCustomProvider;
+begin
+  Result := TDAL_IBE(Owner).GetProvider(ProviderName);
+  if Result = nil then
+    raise Exception.CreateFmt('Provider %s not found', [ProviderName]);
+end;
+
 initialization
-  DAL.RegisterDALEngine(TDAL_IBX);
+  DAL.RegisterDALEngine(TDAL_IBE);
 end.

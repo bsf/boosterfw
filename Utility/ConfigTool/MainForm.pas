@@ -18,7 +18,8 @@ uses
   cxShellListView, cxShellTreeView, cxShellComboBox, cxImage, StdCtrls, cxMemo,
   cxRichEdit, cxCustomPivotGrid, cxDBPivotGrid, Menus, cxButtons,
   cxExportPivotGridLink, cxCheckComboBox, cxDBCheckComboBox, cxCheckListBox,
-  cxDBCheckListBox, IBUpdateSQL, DBXDataSnap, DBXCommon, DSConnect, SqlExpr;
+  cxDBCheckListBox, IBUpdateSQL, DBXDataSnap, DBXCommon, DSConnect, SqlExpr,
+  DSHTTPLayer;
 
 type
   TForm2 = class(TForm)

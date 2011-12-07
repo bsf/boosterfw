@@ -346,21 +346,25 @@ object Form2: TForm2
   end
   object SQLConnection1: TSQLConnection
     DriverName = 'Datasnap'
+    LoginPrompt = False
     Params.Strings = (
       'DriverUnit=DBXDataSnap'
       'HostName=localhost'
-      'Port=211'
-      'CommunicationProtocol=tcp/ip'
+      'Port=8080'
+      'CommunicationProtocol=http'
       'DatasnapContext=datasnap/'
       
         'DriverAssemblyLoader=Borland.Data.TDBXClientDriverLoader,Borland' +
         '.Data.DbxClientDriver,Version=15.0.0.0,Culture=neutral,PublicKey' +
         'Token=91d62ebb5b0d1b1b'
       'Filters={}')
+    Connected = True
     Left = 648
     Top = 128
+    UniqueId = '{C7173710-E5AA-4D5A-B5E8-3C28577619BF}'
   end
   object DSProviderConnection1: TDSProviderConnection
+    Connected = True
     SQLConnection = SQLConnection1
     Left = 880
     Top = 224

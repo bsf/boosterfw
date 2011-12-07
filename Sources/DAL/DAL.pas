@@ -1,12 +1,13 @@
 unit DAL;
 
 interface
-uses Classes, Provider, Sysutils, Contnrs;
+uses Classes, Provider, Sysutils, Contnrs, DBClient;
 
 const
 //METADATA
   DATASETPROXY_PROVIDER = 'PlainSQL';
   METADATA_PROVIDER = 'Metadata';
+  SERVER_CLASS_NAME = 'TBoosterFrameWork';
 
 type
   TCustomDAL = class(TComponent)
@@ -17,6 +18,7 @@ type
     class function EngineName: string; virtual;
     procedure Connect(const AConnectionString: string); virtual; abstract;
     procedure Disconnect; virtual; abstract;
+    function RemoteServer: TCustomRemoteServer; virtual; abstract;
     function GetProvider(const AProviderName: string): TDataSetProvider; virtual; abstract;
     property NoCacheMetadata: boolean read FNoCacheMetadata write FNoCacheMetadata;
   end;
@@ -35,6 +37,8 @@ type
     class function Encode(AKind: TProviderKind;
       const AEntityName, AViewName: string): string;
   end;
+
+  TEntityDataRequestKind = (erkReloadRecord, erkInsertDefaults);
 
 procedure RegisterDALEngine(DALClass: TDALClass);
 function GetDALEngine(const AEngineName: string): TDALClass;

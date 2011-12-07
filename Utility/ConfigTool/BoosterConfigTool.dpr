@@ -2,7 +2,8 @@ program BoosterConfigTool;
 
 uses
   Forms,
-  MainForm in 'MainForm.pas' {Form2};
+  MainForm in 'MainForm.pas' {Form2},
+  DAL_DSE_ClientProxy in '..\..\Sources\DAL\DAL_DSE_ClientProxy.pas';
 
 {$R *.res}
 

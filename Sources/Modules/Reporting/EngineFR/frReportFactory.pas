@@ -6,7 +6,7 @@ uses windows, classes, CoreClasses, ReportCatalogConst, EntityServiceIntf,
   frxClass, frxExportXML, frxExportXLS, frxExportCSV, frxIBXComponents, frxDesgn,
   frxChBox, frxCross, frxBarCode, frxDCtrl, variants,
   frReportPreviewPresenter, frReportPreviewView, UIClasses, frDataSet,
-  Generics.Collections, DAL_IBX;
+  Generics.Collections, DAL_IBE;
 
 const
   VIEW_FASTREPORT_PREVIEW = 'views.reports.fastreport.preview';
@@ -111,7 +111,7 @@ begin
 //  FReport.OldStyleProgress := true;
   FReport.OnAfterPrintReport := OnAfterPrintReport;
   FIBXComponents := TfrxIBXComponents.Create(Self);
-  FIBXComponents.DefaultDatabase := DAL_IBX.GlobalIBDatabase;
+  FIBXComponents.DefaultDatabase := DAL_IBE.GlobalIBDatabase;
 //   TIBDataBase(AConnection.GetStubConnectionComponent);
   FXLSExportFilter := TfrxXLSExport.Create(Self);
   FCSVExportFilter := TfrxCSVExport.Create(Self);

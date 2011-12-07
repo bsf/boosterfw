@@ -48,7 +48,7 @@ const
 
 
 type
-  TEntityDataRequestKind = (erkReloadRecord, erkInsertDefaults);
+//  TEntityDataRequestKind = (erkReloadRecord, erkInsertDefaults);
 
   TEntityViewLinkKind = (lkNone, lkPK, lkLF);
 

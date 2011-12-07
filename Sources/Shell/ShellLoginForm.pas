@@ -23,6 +23,7 @@ type
     CustomLabel: TLabel;
     CustomCombo: TComboBox;
     InfoLabel: TLabel;
+    Bevel2: TBevel;
     procedure btOKClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private

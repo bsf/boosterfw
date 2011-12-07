@@ -2,7 +2,9 @@ unit bfwModules;
 
 interface
 uses
-{$IFDEF DAL_IBE}
+
+  DAL_IBE,
+  DAL_DSE,
 
   bfwServeModuleInit,
   bfwAdminModuleInit,

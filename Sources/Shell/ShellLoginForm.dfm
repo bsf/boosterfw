@@ -4,7 +4,7 @@ object fmShellLogin: TfmShellLogin
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'Registration'
-  ClientHeight = 298
+  ClientHeight = 300
   ClientWidth = 390
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -66,14 +66,24 @@ object fmShellLogin: TfmShellLogin
     ParentFont = False
     Transparent = True
   end
+  object Bevel2: TBevel
+    Left = 0
+    Top = 254
+    Width = 390
+    Height = 4
+    Align = alBottom
+    Shape = bsTopLine
+    ExplicitTop = 133
+  end
   object pnButtons: TPanel
     Left = 0
-    Top = 256
+    Top = 258
     Width = 390
     Height = 42
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitTop = 256
     DesignSize = (
       390
       42)
@@ -104,10 +114,11 @@ object fmShellLogin: TfmShellLogin
     Left = 0
     Top = 129
     Width = 390
-    Height = 127
+    Height = 125
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
+    ExplicitHeight = 127
     object UserNameLabel: TLabel
       Left = 14
       Top = 41

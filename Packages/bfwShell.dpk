@@ -30,7 +30,13 @@ requires
   vclimg,
   bfwCore,
   dsnapcon,
-  ibxpress;
+  ibxpress,
+  dbexpress,
+  DbxCommonDriver,
+  DataSnapProviderClient,
+  DbxClientDriver,
+  DataSnapIndy10ServerTransport,
+  DataSnapClient;
 
 contains
   bfwApp in '..\Sources\Shell\bfwApp.pas',
@@ -46,7 +52,7 @@ contains
   DAL in '..\Sources\DAL\DAL.pas',
   DAL_IBE in '..\Sources\DAL\DAL_IBE.pas',
   DAL_BDE in '..\Sources\DAL\DAL_BDE.pas',
-  EntityLocalConn in '..\Sources\Shell\Services\EntityLocalConn.pas',
-  EntityRemoteConn in '..\Sources\Shell\Services\EntityRemoteConn.pas';
+  DAL_DSE in '..\Sources\DAL\DAL_DSE.pas',
+  DAL_DSE_ClientProxy in '..\Sources\DAL\DAL_DSE_ClientProxy.pas';
 
 end.
