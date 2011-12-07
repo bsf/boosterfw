@@ -23,7 +23,7 @@ type
 
     procedure Design(Caller: TWorkItem);
   public
-    constructor Create(AOwner: TComponent; AConnection: IEntityStorageConnection); reintroduce;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property Template: string read FTemplate write FTemplate;
   end;
@@ -49,8 +49,7 @@ begin
   begin
     if not Assigned(FLauncher) then
     begin
-      FLauncher := TXLReportLauncher.Create(Self,
-        (AWorkItem.Services[IEntityService] as IEntityService).Connection);
+      FLauncher := TXLReportLauncher.Create(Self);
     end;
 
     FLauncher.Template := ATemplate;
@@ -60,14 +59,12 @@ end;
 
 { TXLReportLauncher }
 
-constructor TXLReportLauncher.Create(AOwner: TComponent;
-  AConnection: IEntityStorageConnection);
+constructor TXLReportLauncher.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FReport := TpfwXLReport.Create(Self);
   FReport.OnGetValue := DoReportGetValue;
   FReport.OnProgress := DoReportProgress;
-  FReport.Connection := AConnection;
   FParams := TDictionary<string, variant>.Create;
 end;
 

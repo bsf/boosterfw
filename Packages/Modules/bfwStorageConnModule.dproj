@@ -58,9 +58,6 @@
 			<DCCReference Include="ibxpress.dcp"/>
 			<DCCReference Include="..\..\Sources\Modules\StorageConn\StorageConnIBX.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\StorageConn\bfwStorageConnModuleInit.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\StorageConn\LocalConnIBX.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\StorageConn\LocalConnBDE.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\StorageConn\RemoteConn.pas"/>
 			<DCCReference Include="..\..\Sources\DAL\DAL_BDE.pas"/>
 			<DCCReference Include="..\..\Sources\DAL\DAL_IBX.pas"/>
 			<DCCReference Include="..\..\Sources\DAL\DAL.pas"/>

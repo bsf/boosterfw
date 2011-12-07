@@ -44,7 +44,7 @@ contains
   UIService in '..\Sources\Shell\Services\UIService.pas',
   SecurityController in '..\Sources\Shell\Services\SecurityController.pas',
   DAL in '..\Sources\DAL\DAL.pas',
-  DAL_IBX in '..\Sources\DAL\DAL_IBX.pas',
+  DAL_IBE in '..\Sources\DAL\DAL_IBE.pas',
   DAL_BDE in '..\Sources\DAL\DAL_BDE.pas',
   EntityLocalConn in '..\Sources\Shell\Services\EntityLocalConn.pas',
   EntityRemoteConn in '..\Sources\Shell\Services\EntityRemoteConn.pas';

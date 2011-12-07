@@ -11,15 +11,14 @@ const
 type
   TCustomDAL = class(TComponent)
   private
-    FCacheMetadata: boolean;
-    procedure SetCacheMetadata(const Value: boolean);
+    FNoCacheMetadata: boolean;
   published
   public
     class function EngineName: string; virtual;
     procedure Connect(const AConnectionString: string); virtual; abstract;
     procedure Disconnect; virtual; abstract;
     function GetProvider(const AProviderName: string): TDataSetProvider; virtual; abstract;
-    property CacheMetadata: boolean read FCacheMetadata write SetCacheMetadata;
+    property NoCacheMetadata: boolean read FNoCacheMetadata write FNoCacheMetadata;
   end;
 
   TDALClass = class of TCustomDAL;
@@ -119,9 +118,5 @@ begin
   Result := '';
 end;
 
-procedure TCustomDAL.SetCacheMetadata(const Value: boolean);
-begin
-  FCacheMetadata := Value;
-end;
 
 end.

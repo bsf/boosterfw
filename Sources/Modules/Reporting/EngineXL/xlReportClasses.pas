@@ -55,7 +55,6 @@ type
     FDataSourceNodes: TComponentList;
     FOnGetValue: TGetValueEvent;
     FOnProgress: TpfwXLReportProgressEvent;
-    FConnection: IEntityStorageConnection;
     procedure LoadMetadata(const AFileName: string);
     procedure InitReportParams;
     procedure DoGetValue(const VarName: string; var Value: Variant);
@@ -67,7 +66,6 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Execute(const AFileName: string);
-    property Connection: IEntityStorageConnection read FConnection write FConnection;
     property OnGetValue: TGetValueEvent read FOnGetValue write FOnGetValue;
     property OnProgress: TpfwXLReportProgressEvent read FOnProgress write FOnProgress;
   end;

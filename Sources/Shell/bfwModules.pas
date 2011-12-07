@@ -2,7 +2,7 @@ unit bfwModules;
 
 interface
 uses
-
+{$IFDEF DAL_IBE}
 
   bfwServeModuleInit,
   bfwAdminModuleInit,
@@ -10,7 +10,6 @@ uses
   bfwReportingModuleInit,
 
   //Infrastructure addons
-  bfwStorageConnModuleInit,
   bfwShellLayoutModuleInit;
 
 implementation

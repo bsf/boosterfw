@@ -184,27 +184,6 @@ type
     property Value[const AName: string]: Variant read GetValue; default;
   end;
 
-  IEntityStorageConnection = interface
-  ['{5C18F165-6DD0-41CC-95DB-85364B892080}']
-    procedure Connect;
-    procedure Disconnect;
-    function IsConnected: boolean;
-    function ConnectionComponent: TCustomRemoteServer;
-
-
-   // function GetEntityList: TStringList;
-   // function GetEntityInfo(const AEntityName: string): IEntityInfo;
-  //  function GetSchemeInfo(const ASchemeName: string): IEntitySchemeInfo;
-
-    function GetStubConnectionComponent: TCustomConnection;
-  end;
-
-  IEntityStorageConnectionFactory = interface
-  ['{2B570522-712E-44AA-9C3E-547D7CF0E82E}']
-    function Engine: string;
-    function CreateConnection(AParams: TStrings): TComponent;
-  end;
-
   IEntityService = interface
   ['{E644CC6B-5ED0-4F55-9C20-9E2267381A0F}']
     function GetDataSetProxy(AOwner: TComponent): IDataSetProxy;
@@ -216,11 +195,9 @@ type
     property Entity[const AEntityName: string]: IEntity read GetEntity; default;
     property Settings: IEntityStorageSettings read GetSettings;
 
-    function Connection: IEntityStorageConnection;
     procedure Connect(const AConnectionEngine, AConnectionParams: string);
     procedure Disconnect;
 
-    procedure RegisterConnectionFactory(Factory: TComponent);
   end;
 
 

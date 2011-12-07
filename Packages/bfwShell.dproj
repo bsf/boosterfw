@@ -74,7 +74,7 @@
 			<DCCReference Include="..\Sources\Shell\Services\UIService.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\SecurityController.pas"/>
 			<DCCReference Include="..\Sources\DAL\DAL.pas"/>
-			<DCCReference Include="..\Sources\DAL\DAL_IBX.pas"/>
+			<DCCReference Include="..\Sources\DAL\DAL_IBE.pas"/>
 			<DCCReference Include="..\Sources\DAL\DAL_BDE.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\EntityLocalConn.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\EntityRemoteConn.pas"/>

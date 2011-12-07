@@ -70,6 +70,7 @@
 			<DCCReference Include="frxIBX15.dcp"/>
 			<DCCReference Include="frxe15.dcp"/>
 			<DCCReference Include="fsDB15.dcp"/>
+			<DCCReference Include="dsnapcon.dcp"/>
 			<DCCReference Include="..\..\Sources\Modules\Reporting\bfwReportingModuleInit.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\Reporting\ReportingController.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\Reporting\ReportCatalogClasses.pas"/>
@@ -119,6 +120,8 @@
 			<DCCReference Include="..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlReportG2.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlStdOPack.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\Reporting\EngineFR\frDataSet.pas"/>
+			<DCCReference Include="..\..\Sources\DAL\DAL.pas"/>
+			<DCCReference Include="..\..\Sources\DAL\DAL_IBE.pas"/>
 			<RcCompile Include="..\..\Sources\Modules\Reporting\EngineFR\frDataSet.rc">
 				<Form>frRes.res</Form>
 			</RcCompile>

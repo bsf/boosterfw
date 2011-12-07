@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes, ConfigServiceIntf, EntityServiceIntf, Contnrs, ComObj,
-  DBClient, CoreClasses, db, Variants, DAL, generics.collections;
+  DBClient, CoreClasses, db, Variants, DAL, generics.collections, TConnect, Provider;
 
 const
   ENT_METADATA_ENTITIES = 'Entities';
@@ -304,13 +304,18 @@ type
     constructor Create(AOwner: TComponent; AWorkItem: TWorkItem); reintroduce;
   end;
 
+  TEntityStorageConnection = class(TLocalConnection)
+  protected
+    function GetProvider(const ProviderName: string): TCustomProvider; override;
+  end;
+
   TEntityService = class(TComponent, IEntityService)
   private
     FWorkItem: TWorkItem;
-    FConnection: TComponent;
+    FDAL: TCustomDAL;
+    FConnection: TCustomRemoteServer;
     FEntities: TComponentList;
     FSettings: TEntityStorageSettings;
-    FFactories: TComponentList;
     FSchemeInfoDictionary: TDictionary<string, TEntitySchemeInfo>;
     FEntityList: TStringList;
     FMetadataDS: TEntityDataSet;
@@ -326,11 +331,9 @@ type
 
     function GetSettings: IEntityStorageSettings;
 
-    function Connection: IEntityStorageConnection;
     procedure Connect(const AConnectionEngine, AConnectionParams: string);
     procedure Disconnect;
 
-    procedure RegisterConnectionFactory(Factory: TComponent);
 
   public
     constructor Create(AOwner: TComponent; AWorkItem: TWorkItem); reintroduce;
@@ -441,62 +444,32 @@ end;
 
 procedure TEntityService.Connect(const AConnectionEngine,
   AConnectionParams: string);
-var
-  paramList: TStringList;
-  Intf: IEntityStorageConnection;
-  I: integer;
-  Factory: IEntityStorageConnectionFactory;
 begin
   Disconnect;
 
-  paramList := TStringList.Create;
+  FDAL := GetDALEngine(AConnectionEngine).Create(Self);
   try
-    ExtractStrings([';'], [], PChar(AConnectionParams), paramList);
-
-    for I := 0 to FFactories.Count - 1 do
-    begin
-      FFactories[I].GetInterface(IEntityStorageConnectionFactory, Factory);
-      if SameText(Factory.Engine, AConnectionEngine) then
-      begin
-        FConnection := Factory.CreateConnection(paramList);
-        if FConnection <> nil then Break;
-      end;
-    end;
-  finally
-    paramList.Free;
+    FDAL.Connect(AConnectionParams);
+    FDAL.NoCacheMetadata := NoCacheMetadata;
+  except
+    FDAL.Free;
+    FDAL := nil;
+    raise;
   end;
-
-  if FConnection = nil then
-    raise Exception.CreateFmt('Connection factory for engine %s not found.', [AConnectionEngine]);
-
-  if not FConnection.GetInterface(IEntityStorageConnection, Intf) then
-  begin
-    FConnection := nil;
-    raise Exception.Create('Bad connection class');
-  end;
-
-  (FConnection as IEntityStorageConnection).Connect;
-
-  FMetadataDS.Close;
-  FMetadataDS.RemoteServer := Connection.ConnectionComponent;
-end;
-
-function TEntityService.Connection: IEntityStorageConnection;
-begin
-  Result := FConnection as IEntityStorageConnection;
 end;
 
 constructor TEntityService.Create(AOwner: TComponent; AWorkItem: TWorkItem);
 begin
   inherited Create(AOwner);
   FWorkItem := AWorkItem;
-  FFactories := TComponentList.Create(false);
   FEntities := TComponentList.Create(True);
   FSettings := TEntityStorageSettings.Create(Self, FWorkItem);
   FSchemeInfoDictionary := TDictionary<string, TEntitySchemeInfo>.Create;
+  FConnection := TEntityStorageConnection.Create(Self);
 
   FMetadataDS := TEntityDataSet.Create(Self);
   FMetadataDS.ProviderName := METADATA_PROVIDER;
+  FMetadataDS.RemoteServer := FConnection;
 
   FEntityList := TStringList.Create;
 end;
@@ -504,7 +477,6 @@ end;
 destructor TEntityService.Destroy;
 begin
   FEntities.Free;
-  FFactories.Free;
   FEntityList.Free;
   FSchemeInfoDictionary.Free;
 
@@ -515,10 +487,12 @@ procedure TEntityService.Disconnect;
 begin
   ClearConnectionCache;
 
-  if FConnection <> nil then
-    (FConnection as IEntityStorageConnection).Disconnect;
-
-  FConnection := nil;
+  if FDAL <> nil then
+  begin
+    FDAL.Disconnect;
+    FDAL.Free;
+    FDAL := nil;
+  end;
 end;
 
 function TEntityService.EntityExists(
@@ -538,7 +512,7 @@ var
   ds: TEntityDataSet;
 begin
   ds := TEntityDataSet.Create(AOwner);
-  ds.RemoteServer := Connection.ConnectionComponent;
+  ds.RemoteServer := FConnection;
   ds.ProviderName := DATASETPROXY_PROVIDER;
   Result := ds as IDataSetProxy;
 end;
@@ -577,7 +551,7 @@ begin
   if GetEntityList.IndexOf(AEntityName) = - 1 then
     raise Exception.CreateFmt('Entity %s not found', [AEntityName]);
 
-  Ent := TEntity.Create(AEntityName, Connection.ConnectionComponent);
+  Ent := TEntity.Create(AEntityName, FConnection);
   FEntities.Add(Ent);
   Ent.GetInterface(IEntity, Result);
 end;
@@ -595,7 +569,7 @@ begin
   doLoadInfo := NoCacheMetadata;
   if not FSchemeInfoDictionary.TryGetValue(schemeName, item) then
   begin
-     item := TEntitySchemeInfo.Create(Self, Connection.ConnectionComponent);
+     item := TEntitySchemeInfo.Create(Self, FConnection);
      item.FSchemeName := schemeName;
      FSchemeInfoDictionary.Add(schemeName, item);
      doLoadInfo := true;
@@ -610,18 +584,6 @@ function TEntityService.GetSettings: IEntityStorageSettings;
 begin
   Result := FSettings as IEntityStorageSettings;
 end;
-
-procedure TEntityService.RegisterConnectionFactory(Factory: TComponent);
-var
-  Intf: IEntityStorageConnectionFactory;
-begin
-  if not Factory.GetInterface(IEntityStorageConnectionFactory, Intf) then
-    raise Exception.Create('Bad connection factory');
-
-  FFactories.Add(Factory);
-
-end;
-
 
 { TEntity }
 
@@ -2188,6 +2150,18 @@ end;
 function TEntityViewInfo.ViewExists: boolean;
 begin
   Result := FViewExists;
+end;
+
+{ TEntityStorageConnection }
+
+function TEntityStorageConnection.GetProvider(
+  const ProviderName: string): TCustomProvider;
+begin
+  Result := nil;
+  if TEntityService(Owner).FDAL <> nil then
+    Result := TEntityService(Owner).FDAL.GetProvider(ProviderName);
+  if Result = nil then
+    raise Exception.CreateFmt('Provider %s not found', [ProviderName]);
 end;
 
 initialization

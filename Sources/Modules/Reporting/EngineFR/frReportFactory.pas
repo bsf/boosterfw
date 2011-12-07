@@ -6,7 +6,7 @@ uses windows, classes, CoreClasses, ReportCatalogConst, EntityServiceIntf,
   frxClass, frxExportXML, frxExportXLS, frxExportCSV, frxIBXComponents, frxDesgn,
   frxChBox, frxCross, frxBarCode, frxDCtrl, variants,
   frReportPreviewPresenter, frReportPreviewView, UIClasses, frDataSet,
-  Generics.Collections;
+  Generics.Collections, DAL_IBX;
 
 const
   VIEW_FASTREPORT_PREVIEW = 'views.reports.fastreport.preview';
@@ -44,8 +44,7 @@ type
       const ATitle: string; ProgressCallback: TReportProgressCallback);
     procedure Design(Caller: TWorkItem);
   public
-    constructor Create(AOwner: TComponent;
-      AConnection: IEntityStorageConnection; AWorkItem: TWorkItem); reintroduce;
+    constructor Create(AOwner: TComponent; AWorkItem: TWorkItem); reintroduce;
     destructor Destroy; override;
     property Template: string read FTemplate write FTemplate;
   end;
@@ -88,9 +87,7 @@ begin
   if ExtractFileExt(ATemplate) = '.fr3' then
   begin
     if not Assigned(FLauncher) then
-      FLauncher := TFastReportLauncher.Create(Self,
-       (AWorkItem.Services[IEntityService] as IEntityService).Connection,
-       FWorkItem);
+      FLauncher := TFastReportLauncher.Create(Self, FWorkItem);
 
     FLauncher.Template := ATemplate;
     Result := FLauncher;
@@ -99,8 +96,7 @@ end;
 
 { TFastReportLauncher }
 
-constructor TFastReportLauncher.Create(AOwner: TComponent;
-  AConnection: IEntityStorageConnection; AWorkItem: TWorkItem);
+constructor TFastReportLauncher.Create(AOwner: TComponent; AWorkItem: TWorkItem);
 begin
   inherited Create(AOwner);
   FWorkItem := AWorkItem;
@@ -115,7 +111,8 @@ begin
 //  FReport.OldStyleProgress := true;
   FReport.OnAfterPrintReport := OnAfterPrintReport;
   FIBXComponents := TfrxIBXComponents.Create(Self);
-  FIBXComponents.DefaultDatabase := TIBDataBase(AConnection.GetStubConnectionComponent);
+  FIBXComponents.DefaultDatabase := DAL_IBX.GlobalIBDatabase;
+//   TIBDataBase(AConnection.GetStubConnectionComponent);
   FXLSExportFilter := TfrxXLSExport.Create(Self);
   FCSVExportFilter := TfrxCSVExport.Create(Self);
 end;

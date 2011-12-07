@@ -1,4 +1,4 @@
-unit DAL_IBX;
+unit DAL_IBE;
 
 interface
 uses classes, EntityServiceIntf, IBDataBase, db, IBSql,
