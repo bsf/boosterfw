@@ -9,9 +9,9 @@ const
   VIEW_NOTIFYSENDER = 'views.notifysender';
   COMMAND_SEND = 'commands.send';
 
-  ENT_USER = 'SEC_USER';
+  ENT_USER = 'BFW_SEC_USER';
   ENT_USER_VIEW_LIST  = 'List';
-  ENT_MSG_BOX = 'MSG_BOX';
+  ENT_MSG_BOX = 'BFW_INF_MSG';
   ENT_MSG_BOX_OPER_PUSH = 'PUSH';
 
 type

@@ -21,7 +21,7 @@ type
   const
     GET_METADATA_SQL =
       ' select sql_select '+
-      ' from ent_views ' +
+      ' from bfw_ent_views ' +
       ' where entityname = ''BFW_META'' and viewname = :metadata';
 
   private
@@ -51,8 +51,8 @@ type
   const
     METADATA_SQL =
       ' select * '+
-      ' from ent_opers ' +
-      ' where entityname = :entityname and opername = :opername';
+      ' from bfw_ent_views ' +
+      ' where entityname = :entityname and viewname = :opername';
   private
     FEntityName: string;
     FOperName: string;
@@ -70,7 +70,7 @@ type
   const
     METADATA_SQL =
       ' select * '+
-      ' from ent_views ' +
+      ' from bfw_ent_views ' +
       ' where entityname = :entityname and viewname = :viewname';
   private
     FEntityName: string;
@@ -260,7 +260,7 @@ end;
 
 procedure TIBEntityOperProvider.LoadMetadataCallback(AResultData: TIBXSQLDA);
 begin
-  FQuery.SQL.Text := AResultData.ByName('sql_text').AsString;
+  FQuery.SQL.Text := AResultData.ByName('sql_select').AsString;
 
   if Trim(FQuery.SQL.Text) = '' then
     raise Exception.CreateFmt('SQL is empty for %s.%s', [FEntityName, FOperName]);

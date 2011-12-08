@@ -347,7 +347,7 @@ end;
 procedure TEntityViewExtension.CommandExtend;
 const
   COMMAND_ENTITY_OPER_EXEC = 'view.commands.EntityOperExec';
-  ENTC_UI = 'ENTC_UI';
+  ENTC_UI = 'BFW_UI';
   ENTC_UI_VIEW_CMD = 'Commands';
 
 var

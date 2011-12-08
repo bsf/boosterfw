@@ -7,7 +7,7 @@ uses CoreClasses, ExtCtrls, windows, EntityServiceIntf, UIServiceIntf,
 const
   const_AppInstanceID = 'Hermes Trade %s %s';
   const_ReceiveIntervalDef = 60; //sec
-  ENT_MSG_BOX = 'MSG_BOX';
+  ENT_MSG_BOX = 'BFW_INF_MSG';
   ENT_MSG_BOX_OPER_POP = 'POP';
   ENT_MSG_BOX_OPER_MARK = 'MARK';
 

@@ -7,9 +7,9 @@ uses SecurityIntf, classes, Contnrs, SysUtils, EntityServiceIntf,
 const
   const_RESID_MAX_LENGTH = 38;
 
-  ENT_USERS = 'SEC_USER';
-  ENT_PERM = 'SEC_PERM';
-  ENT_POLICIES = 'SEC_POLICY';
+  ENT_USERS = 'BFW_SEC_USER';
+  ENT_PERM = 'BFW_SEC_PERM';
+  ENT_POLICIES = 'BFW_SEC_POLICY';
 
   ENT_USERS_VIEW_LIST = 'List';
   ENT_USERS_VIEW_ITEM = 'Item';
@@ -278,8 +278,8 @@ begin
   uProp := (FWorkItem.Services[IEntityService] as IEntityService).
     Entity[ENT_USERS].GetView(ENT_USERS_VIEW_ITEM, FWorkItem).Load([AUserID]);
 
-  FPrincipal.FID := uProp['USERID'];
-  FPrincipal.FNAME := uProp['NAME'];
+  FPrincipal.FID := VarToStr(uProp['USERID']);
+  FPrincipal.FNAME := VarToStr(uProp['NAME']);
 
 end;
 

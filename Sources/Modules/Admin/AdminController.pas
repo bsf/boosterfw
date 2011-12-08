@@ -31,7 +31,7 @@ implementation
 procedure TAdminController.Initialize;
   procedure RegisterSecurityResourceProviders;
   const
-    ENT = 'SEC_PROV';
+    ENT = 'BFW_SEC_PROV';
   var
     svc: ISecurityService;
     list: TDataSet;

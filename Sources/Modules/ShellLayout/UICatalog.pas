@@ -7,7 +7,7 @@ uses classes, coreClasses, db, EntityServiceIntf, UIServiceIntf, variants,
 type
   TUICatalog = class(TComponent)
   const
-    ENTC_UI = 'ENTC_UI';
+    ENTC_UI = 'BFW_UI';
     ENTC_UI_VIEW_LIST = 'List';
     ENTC_UI_VIEW_CMD = 'Commands';
     ENTC_UI_VIEW_STYLES = 'Styles';
@@ -177,7 +177,7 @@ begin
     begin
       with AWorkItem.Activities[list['URI']] do
       begin
-        ActivityClass := list['UIClass'];
+        ActivityClass := list['CLS'];
         Title := list['Title'];
         Group := VarToStr(list['GRP']);
         MenuIndex := list['MENUIDX'];

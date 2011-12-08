@@ -15,7 +15,7 @@ const
   ENT_METADATA_LINKS = 'Links';
   ENT_METADATA_LINKEDFIELDS = 'LinkedFields';
 
-  ENT_SETTING = 'INF_SETTING';
+  ENT_SETTING = 'BFW_INF_SETTING';
   ENT_SETTING_VIEW_META = 'META';
   ENT_SETTING_VIEW_GET = 'GET';
   ENT_SETTING_OPER_SET = 'SET';
@@ -1995,7 +1995,7 @@ begin
   FOptions.Clear;
   if not FMetaDS.IsEmpty then
   begin
-    FIsSelect := FMetaDS['is_select'] = 1;
+    FIsSelect := FMetaDS['is_exec'] = 0;
     ExtractStrings([';'], [], PWideChar(VarToStr(FMetaDS['OPTIONS'])), FOptions);
   end;
 

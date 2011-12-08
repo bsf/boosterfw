@@ -314,7 +314,7 @@ begin
   Result := FRuntimeIni.ReadString('', AName, '');
   if Result <> '' then Exit;
 
-  Result := GetValueFromCommandLine(AName);
+  FindCmdLineSwitch(AName, Result);
 
   if Result = '' then
     Result := GetStoredValue(AName, slNone);
@@ -327,28 +327,6 @@ begin
   end;
 
   Result := ParseValue(Result);
-end;
-
-function TSettings.GetValueFromCommandLine(const AName: string): string;
-var
-  I: integer;
-  paramName1, paramName2: string;
-  paramNameLength: integer;
-begin
-  paramName1 := '-' + AName + '=';
-  paramName2 := '/' + AName + '=';
-  paramNameLength := Length(paramName1);
-
-  Result := '';
-
-  for I := 1 to ParamCount do
-  begin
-    if AnsiStartsText(paramName1, ParamStr(I)) or
-       AnsiStartsText(paramName2, ParamStr(I)) then
-      Result := Copy(ParamStr(I), paramNameLength + 1, MaxInt);
-
-    if Result <> '' then Exit;
-  end;
 end;
 
 procedure TSettings.LoadHostProfileSettings(AProfile: IProfile);
