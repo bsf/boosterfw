@@ -210,7 +210,6 @@ end;
 procedure TEntityCatalogController.Initialize;
 begin
 
-
   WorkItem.Activities[ACTION_ENTITY_ITEM].
     RegisterHandler(TEntityItemActionHandler.Create);
 
@@ -235,7 +234,8 @@ begin
     RegisterHandler('IEntityJournalView', TViewActivityHandler.Create(TEntityJournalPresenter, TfrEntityJournalView));
     RegisterHandler('IEntitySelectorView', TViewActivityHandler.Create(TEntitySelectorPresenter, TfrEntitySelectorView));
     RegisterHandler('IEntityDeskView', TViewActivityHandler.Create(TEntityDeskPresenter, TfrEntityDeskView));
-    RegisterHandler('IEntityOrgChartView', TViewActivityHandler.Create(TEntityOrgChartPresenter, TfrEntityOrgChartView));
+    RegisterHandler('IEntityOrgChartView',
+      TViewActivityHandler.Create(TEntityOrgChartPresenter, TfrEntityOrgChartView, 'ROOT_ID'));
   end;
 
   RegisterViewExtension(TEntityViewExtension);

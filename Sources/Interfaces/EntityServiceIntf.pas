@@ -48,25 +48,18 @@ const
 
 
 type
-//  TEntityDataRequestKind = (erkReloadRecord, erkInsertDefaults);
-
-  TEntityViewLinkKind = (lkNone, lkPK, lkLF);
-
   TEntityViewLinkInfo = class
     EntityName: string;
     ViewName: string;
     FieldName: string;
-    LinkKind: TEntityViewLinkKind;
   end;
 
   IEntityViewInfo = interface
   ['{19239A00-F141-4794-BF3E-2A0298C6981B}']
     function Fields: TFields;
-   // function Params: TParams;
     function PrimaryKey: string;
     function ReadOnly: boolean;
     function IsExec: boolean;
-
     function LinksCount: integer;
     function GetLinksInfo(AIndex: integer): TEntityViewLinkInfo;
     function LinkedFields: TStringList;
@@ -74,21 +67,12 @@ type
     property Options[const AName: string]: string read GetOptions;
   end;
 
-  IEntityOperInfo = interface
-  ['{5371BFFD-75DA-4064-B6EA-B98CC3D341FC}']
-  //  function Fields: TFields;
-   // function Params: TParams;
-    function IsSelect: boolean;
-    function GetOptions(const AName: string): string;
-    property Options[const AName: string]: string read GetOptions;
-  end;
 
   IEntityInfo = interface
   ['{92D6D592-F914-4870-BBC7-0FED51D128C4}']
     function SchemeName: string;
     function Fields: TFields;
     function GetViewInfo(const AViewName: string): IEntityViewInfo;
-    function GetOperInfo(const AOperName: string): IEntityOperInfo;
     function ViewExists(const AViewName: string): boolean;
 
     function GetOptions(const AName: string): string;
@@ -131,10 +115,10 @@ type
     function GetValue(const AName: string): Variant;
     procedure SetValue(const AName: string; AValue: Variant);
     property Values[const AName: string]: Variant read GetValue write SetValue;
-    function ViewInfo: IEntityViewInfo;
+    function Info: IEntityViewInfo;
 
     procedure SynchronizeOnEntityChange(const AEntityName, AViewName: string;
-      ALinkKind: TEntityViewLinkKind = lkPK; const AFieldName: string = '');
+      const AFieldName: string = '');
 
   end;
 
@@ -147,7 +131,7 @@ type
     function ResultData: TDataSet;
     function Execute(AParams: array of variant): TDataSet; overload;
     function Execute: TDataSet; overload;    
-    function OperInfo: IEntityOperInfo;
+    function Info: IEntityViewInfo;
   end;
 
   IEntity = interface
@@ -157,7 +141,7 @@ type
       AInstanceID: string = ''): IEntityView;
     function GetOper(const AOperName: string; AWorkItem: TWorkItem;
       AInstanceID: string = ''): IEntityOper;
-    function EntityInfo: IEntityInfo;
+    function Info: IEntityInfo;
   end;
 
   IDataSetProxy = interface

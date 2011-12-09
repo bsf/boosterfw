@@ -79,7 +79,7 @@ begin
   if Assigned(fieldAux) and (VarToStr(fieldAux.Value) <> '') then
     ViewTitle := VarToStr(fieldAux.Value);
 
-  if not GetEVItem.ViewInfo.ReadOnly then
+  if not GetEVItem.Info.ReadOnly then
   begin
     View.CommandBar.AddCommand(COMMAND_SAVE,
       GetLocaleString(@COMMAND_SAVE_CAPTION), COMMAND_SAVE_SHORTCUT, CmdSave);

@@ -12,8 +12,8 @@ const
   ENT_METADATA_ENTITY = 'Entity';
   ENT_METADATA_OPER = 'Oper';
   ENT_METADATA_VIEW = 'View';
-  ENT_METADATA_LINKS = 'Links';
-  ENT_METADATA_LINKEDFIELDS = 'LinkedFields';
+  ENT_METADATA_VIEW_LINKS = 'ViewLinks';
+  ENT_METADATA_VIEW_LINKEDFIELDS = 'ViewLinkedFields';
 
   ENT_SETTING = 'BFW_INF_SETTING';
   ENT_SETTING_VIEW_META = 'META';
@@ -141,7 +141,7 @@ type
     function DataSet: TDataSet;
     function IsModified: boolean;
     function IsLoaded: boolean;
-    function ViewInfo: IEntityViewInfo;
+    function Info: IEntityViewInfo;
     function Load(AWorkItem: TWorkItem; AReload: boolean = true): TDataSet; overload;
     function Load(AParams: array of variant): TDataSet; overload;
     function Load: TDataSet; overload;
@@ -155,7 +155,7 @@ type
     procedure SetValue(const AName: string; AValue: Variant);
 
     procedure SynchronizeOnEntityChange(const AEntityName, AViewName: string;
-      ALinkKind: TEntityViewLinkKind = lkPK; const AFieldName: string = '');
+      const AFieldName: string = '');
 
   public
     class function ProviderKind: TProviderNameBuilder.TProviderKind; override;
@@ -172,7 +172,7 @@ type
     function ResultData: TDataSet;
     function Execute(AParams: array of variant): TDataSet; overload;
     function Execute: TDataSet; overload;
-    function OperInfo: IEntityOperInfo;
+    function Info: IEntityViewInfo;
   public
     class function ProviderKind: TProviderNameBuilder.TProviderKind;override;
   end;
@@ -209,22 +209,6 @@ type
     function ViewExists: boolean;
   end;
 
-  TEntityOperInfo = class(TComponent, IEntityOperInfo)
-  private
-    FMetaDS: TEntityDataSet;
-    FEntityName: string;
-    FOperName: string;
-    FIsSelect: boolean;
-    FOptions: TStringList;
-  protected
-    function IsSelect: boolean;
-    function GetOptions(const AName: string): string;
-  public
-    constructor Create(AOwner: TComponent; AConnection: TCustomRemoteServer); reintroduce;
-    destructor Destroy; override;
-    procedure LoadInfo;
-  end;
-
   TEntityInfo = class(TComponent, IEntityInfo)
   private
     FMetaDS: TEntityDataSet;
@@ -232,7 +216,6 @@ type
     FEntityName: string;
     FSchemeName: string;
     FOptions: TStringList;
-    FOperInfoDictionary: TDictionary<string, TEntityOperInfo>;
     FViewInfoDictionary: TDictionary<string, TEntityViewInfo>;
   protected
     //IEntityInfo
@@ -241,7 +224,6 @@ type
     function GetViewInfo(const AViewName: string): TEntityViewInfo;
     function GetViewInfoIntf(const AViewName: string): IEntityViewInfo;
     function IEntityInfo.GetViewInfo = GetViewInfoIntf;
-    function GetOperInfo(const AOperName: string): IEntityOperInfo;
     function ViewExists(const AViewName: string): boolean;
 
     function GetOptions(const AName: string): string;
@@ -278,7 +260,7 @@ type
       AInstanceID: string = ''): IEntityView;
     function GetOper(const AOperName: string; AWorkItem: TWorkItem;
       AInstanceID: string = ''): IEntityOper;
-    function EntityInfo: IEntityInfo;
+    function Info: IEntityInfo;
   public
     constructor Create(const AEntityName: string;
       AConnection: TCustomRemoteServer); reintroduce;
@@ -501,7 +483,7 @@ end;
 function TEntityService.EntityViewExists(
   const AEntityName, AEntityViewName: string): boolean;
 begin
-  Result := GetEntity(AEntityName).EntityInfo.ViewExists(AEntityViewName);
+  Result := GetEntity(AEntityName).Info.ViewExists(AEntityViewName);
 end;
 
 function TEntityService.GetDataSetProxy(AOwner: TComponent): IDataSetProxy;
@@ -665,7 +647,7 @@ begin
   inherited;
 end;
 
-function TEntity.EntityInfo: IEntityInfo;
+function TEntity.Info: IEntityInfo;
 begin
   if NoCacheMetadata then  FEntityInfo.LoadInfo;
 
@@ -703,7 +685,7 @@ var
   dsReadOnly: boolean;
 begin
   eInfo := EntityInfo;
-  vInfo := ViewInfo;
+  vInfo := Info;
   smInfo := SchemeInfo;
   smInfoDef := SchemeInfoDef;
 
@@ -774,14 +756,13 @@ var
   I: integer;
   linkInfo: TEntityViewLinkInfo;
 begin
-  for I := 0 to ViewInfo.LinksCount -1 do
+  for I := 0 to Info.LinksCount -1 do
   begin
-    linkInfo := ViewInfo.GetLinksInfo(I);
-    SynchronizeOnEntityChange(linkInfo.EntityName, linkInfo.ViewName,
-      linkInfo.LinkKind, linkInfo.FieldName);
+    linkInfo := Info.GetLinksInfo(I);
+    SynchronizeOnEntityChange(linkInfo.EntityName, linkInfo.ViewName, linkInfo.FieldName);
   end;
   FLinkedFields.Clear;
-  FLinkedFields.AddStrings(ViewInfo.LinkedFields);
+  FLinkedFields.AddStrings(Info.LinkedFields);
 end;
 
 procedure TEntityView.CancelUpdates;
@@ -831,7 +812,7 @@ function TEntityView.EntityInfo: IEntityInfo;
 begin
   Result := IEntityService(
     FWorkItem.Services[IEntityService]).
-     Entity[GetEntityName].EntityInfo;
+     Entity[GetEntityName].Info;
 end;
 
 
@@ -839,7 +820,7 @@ function TEntityView.GetPrimaryKeys: TStrings;
 begin
   if not FPrimaryKeysParsed then
   begin
-    ExtractStrings([';'], [], PChar(ViewInfo.PrimaryKey), FPrimaryKeys);
+    ExtractStrings([';'], [], PChar(Info.PrimaryKey), FPrimaryKeys);
     FPrimaryKeysParsed := true;
   end;
   Result := FPrimaryKeys;
@@ -857,8 +838,8 @@ begin
   SetDataSetAttribute(GetDataSet, DATASET_ATTR_ENTITY, GetEntityName);
   SetDataSetAttribute(GetDataSet, DATASET_ATTR_ENTITY_VIEW, ViewName);
 
-  SetDataSetAttribute(GetDataSet, DATASET_ATTR_PRIMARYKEY, ViewInfo.PrimaryKey);
-  if ViewInfo.ReadOnly then
+  SetDataSetAttribute(GetDataSet, DATASET_ATTR_PRIMARYKEY, Info.PrimaryKey);
+  if Info.ReadOnly then
     SetDataSetAttribute(GetDataSet, DATASET_ATTR_READONLY, 'Yes')
   else
     SetDataSetAttribute(GetDataSet, DATASET_ATTR_READONLY, 'No');
@@ -1003,13 +984,13 @@ begin
 
       if RequestDS.IsEmpty then
       begin
-        if cloneDS.Locate(ViewInfo.PrimaryKey, APrimaryKeyValues, []) then
+        if cloneDS.Locate(Info.PrimaryKey, APrimaryKeyValues, []) then
           cloneDS.Delete;
       end
       else
       begin
 
-        if not cloneDS.Locate(ViewInfo.PrimaryKey, APrimaryKeyValues, []) then
+        if not cloneDS.Locate(Info.PrimaryKey, APrimaryKeyValues, []) then
         begin
           if cloneDS.IsEmpty then
             cloneDS.Append
@@ -1032,7 +1013,7 @@ begin
 
 
         if SyncRecord then
-          GetDataSet.Locate(ViewInfo.PrimaryKey, APrimaryKeyValues, []);
+          GetDataSet.Locate(Info.PrimaryKey, APrimaryKeyValues, []);
       end;
 
     finally
@@ -1089,19 +1070,15 @@ begin
   FDataSet.Post;
 end;
 
-procedure TEntityView.SynchronizeOnEntityChange(const AEntityName, AViewName: string;
-  ALinkKind: TEntityViewLinkKind; const AFieldName: string);
+procedure TEntityView.SynchronizeOnEntityChange(const AEntityName, AViewName,
+   AFieldName: string);
 var
   eventTopic: string;
 begin
-  case ALinkKind of
-    lkPK:
-      eventTopic := format(ET_ENTITY_VIEW_RELOAD_LINKS_PK, [AEntityName, AViewName]);
-    lkLF:
-      eventTopic := format(ET_ENTITY_VIEW_RELOAD_LINKS_LF, [AEntityName, AViewName, AFieldName]);
-    else
-      eventTopic := '';
-  end;
+  if AFieldName = '' then
+   eventTopic := format(ET_ENTITY_VIEW_RELOAD_LINKS_PK, [AEntityName, AViewName])
+  else
+   eventTopic := format(ET_ENTITY_VIEW_RELOAD_LINKS_LF, [AEntityName, AViewName, AFieldName]);
 
   if eventTopic <> '' then
     GetWorkItem.Root.EventTopics[eventTopic].
@@ -1113,11 +1090,11 @@ begin
   GetDataSet.UndoLastChange(true);
 end;
 
-function TEntityView.ViewInfo: IEntityViewInfo;
+function TEntityView.Info: IEntityViewInfo;
 begin
   Result := IEntityService(
     FWorkItem.Services[IEntityService]).
-      Entity[GetEntityName].EntityInfo.GetViewInfo(ViewName);
+      Entity[GetEntityName].Info.GetViewInfo(ViewName);
 end;
 
 function TEntityView.ViewName: string;
@@ -1212,17 +1189,17 @@ begin
 
   if FDataSet.Active then FDataSet.Close;
 
-  if OperInfo.IsSelect then
-    FDataSet.Open
+  if Info.IsExec then
+    FDataSet.Execute
   else
-    FDataSet.Execute;
+    FDataSet.Open;
 end;
 
-function TEntityOper.OperInfo: IEntityOperInfo;
+function TEntityOper.Info: IEntityViewInfo;
 begin
   Result := IEntityService(
     FWorkItem.Services[IEntityService]).
-      Entity[FEntityName].EntityInfo.GetOperInfo(OperName);
+      Entity[FEntityName].Info.GetViewInfo(OperName);
 end;
 
 function TEntityOper.OperName: string;
@@ -1851,7 +1828,6 @@ begin
   FMetaDS.Params.AddParameter.Name := 'EntityName';
 
   FViewInfoDictionary := TDictionary<string, TEntityViewInfo>.Create;
-  FOperInfoDictionary := TDictionary<string, TEntityOperInfo>.Create;
 end;
 
 destructor TEntityInfo.Destroy;
@@ -1859,36 +1835,13 @@ begin
   FFields.Free;
   FOptions.Free;
   FViewInfoDictionary.Free;
-  FOperInfoDictionary.Free;
+
   inherited;
 end;
 
 function TEntityInfo.Fields: TFields;
 begin
   Result := FFields;
-end;
-
-function TEntityInfo.GetOperInfo(const AOperName: string): IEntityOperInfo;
-var
-  item: TEntityOperInfo;
-  doLoadInfo: boolean;
-begin
-
-  doLoadInfo := NoCacheMetadata;
-
-  if not FOperInfoDictionary.TryGetValue(AOperName, item) then
-  begin
-    item := TEntityOperInfo.Create(Self, FMetaDS.RemoteServer);
-    item.FEntityName := FEntityName;
-    item.FOperName := AOperName;
-    FOperInfoDictionary.Add(AOperName, item);
-    doLoadInfo := true;
-  end;
-
-  if doLoadInfo then item.LoadInfo;
-
-  Result := item as IEntityOperInfo;
-
 end;
 
 function TEntityInfo.GetOptions(const AName: string): string;
@@ -1951,55 +1904,6 @@ begin
   Result := GetViewInfo(AViewName).ViewExists;
 end;
 
-{ TEntityOperInfo }
-
-constructor TEntityOperInfo.Create(AOwner: TComponent;
-  AConnection: TCustomRemoteServer);
-begin
-  inherited Create(AOwner);
-
-  FOptions := TStringList.Create;
-
-  FMetaDS := TEntityDataSet.Create(Self);
-  FMetaDS.CommandText := ENT_METADATA_OPER;
-  FMetaDS.ProviderName := METADATA_PROVIDER;
-  FMetaDS.RemoteServer := AConnection;
-  FMetaDS.Params.AddParameter.Name := 'EntityName';
-  FMetaDS.Params.AddParameter.Name := 'OperName';
-
-end;
-
-destructor TEntityOperInfo.Destroy;
-begin
-  FOptions.Free;
-  inherited;
-end;
-
-function TEntityOperInfo.GetOptions(const AName: string): string;
-begin
-  Result := FOptions.Values[AName];
-end;
-
-function TEntityOperInfo.IsSelect: boolean;
-begin
-  Result := FIsSelect;
-end;
-
-procedure TEntityOperInfo.LoadInfo;
-begin
-  FMetaDS.Close;
-  FMetaDS.Params.ParamValues['EntityName'] := FEntityName;
-  FMetaDS.Params.ParamValues['OperName'] := FOperName;
-  FMetaDS.Open;
-
-  FOptions.Clear;
-  if not FMetaDS.IsEmpty then
-  begin
-    FIsSelect := FMetaDS['is_exec'] = 0;
-    ExtractStrings([';'], [], PWideChar(VarToStr(FMetaDS['OPTIONS'])), FOptions);
-  end;
-
-end;
 
 { TEntityViewInfo }
 
@@ -2099,7 +2003,7 @@ begin
 
   FLinkInfoDictionary.Clear;
   FMetaDS.Close;
-  FMetaDS.CommandText := ENT_METADATA_LINKS;
+  FMetaDS.CommandText := ENT_METADATA_VIEW_LINKS;
   FMetaDS.Params.Clear;
   FMetaDS.Params.AddParameter.Name := 'EntityName';
   FMetaDS.Params.AddParameter.Name := 'ViewName';
@@ -2112,14 +2016,13 @@ begin
     linkInfo.EntityName := VarToStr(FMetaDS['linked_entityname']);
     linkInfo.ViewName := VarToStr(FMetaDS['linked_viewname']);
     linkInfo.FieldName := VarToStr(FMetaDS['linked_field']);
-    linkInfo.LinkKind := TEntityViewLinkKind(FMetaDS['link_kind']);
     FLinkInfoDictionary.Add(linkInfo);
     FMetaDS.Next;
   end;
 
   FLinkedFields.Clear;
   FMetaDS.Close;
-  FMetaDS.CommandText := ENT_METADATA_LINKEDFIELDS;
+  FMetaDS.CommandText := ENT_METADATA_VIEW_LINKEDFIELDS;
   FMetaDS.Params.Clear;
   FMetaDS.Params.AddParameter.Name := 'EntityName';
   FMetaDS.Params.AddParameter.Name := 'ViewName';

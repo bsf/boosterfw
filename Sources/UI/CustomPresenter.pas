@@ -418,7 +418,7 @@ var
   viewURI: string;
   instID: string;
 begin
-  instID := Activity.Params[TViewActivityParams.PresenterID]; //  as TViewActivityData).PresenterID;
+  instID := Activity.Params[TViewActivityParams.PresenterID];
   viewURI := Activity.URI;
   instWI := FindPresenterWI(viewURI + instID);
   if not Assigned(instWI) then

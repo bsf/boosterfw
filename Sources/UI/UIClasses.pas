@@ -265,14 +265,17 @@ type
   private
     FPresenterClass: TPresenterClass;
     FViewClass: TViewClass;
+    FPresenterIDParam: string;
   public
-    constructor Create(APresenterClass: TPresenterClass; AViewClass: TViewClass);
+    constructor Create(APresenterClass: TPresenterClass; AViewClass: TViewClass;
+      const APresenterIDParam: string = '');
 
     //IActivityHandler
     procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
     //
     property PresenterClass: TPresenterClass read FPresenterClass;
     property ViewClass: TViewClass read FViewClass;
+    property PresenterIDParam: string read FPresenterIDParam;
 
   end;
 
@@ -311,15 +314,18 @@ end;
 
 procedure TViewActivityHandler.Execute(Sender: TWorkItem; Activity: IActivity);
 begin
+  if PresenterIDParam <> '' then
+    Activity.Params[TViewActivityParams.PresenterID] := Activity.Params[PresenterIDParam];
   Activity.Outs[TViewActivityOuts.ModalResult] := Unassigned;
   FPresenterClass.Execute(Sender, Activity, FViewClass);
 end;
 
 constructor TViewActivityHandler.Create(APresenterClass: TPresenterClass;
-  AViewClass: TViewClass);
+  AViewClass: TViewClass; const APresenterIDParam: string);
 begin
   FPresenterClass := APresenterClass;
   FViewClass := AViewClass;
+  FPresenterIDParam := APresenterIDParam;
 end;
 
 { TViewExtension }

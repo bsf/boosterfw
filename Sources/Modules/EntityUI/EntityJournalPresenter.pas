@@ -59,7 +59,7 @@ begin
   if cResult then
   begin
     try
-      if GetEVJrn.DataSet.Locate(GetEVJrn.ViewInfo.PrimaryKey, WorkItem.State['ITEM_ID'], []) then
+      if GetEVJrn.DataSet.Locate(GetEVJrn.Info.PrimaryKey, WorkItem.State['ITEM_ID'], []) then
       begin
         GetEVJrn.DataSet.Delete;
         GetEVJrn.Save;

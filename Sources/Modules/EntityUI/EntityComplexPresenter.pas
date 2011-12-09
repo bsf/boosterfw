@@ -213,7 +213,7 @@ begin
   GetEVDetails.SynchronizeOnEntityChange(GetEVDetails.EntityName, ENT_VIEW_DETAIL_NEW_DEFAULT);
   GetEVDetails.SynchronizeOnEntityChange(GetEVDetails.EntityName, ENT_VIEW_DETAIL_DEFAULT);
 
-  if not GetEVDetails.ViewInfo.ReadOnly then
+  if not GetEVDetails.Info.ReadOnly then
    GetEVDetails.ImmediateSave := true;
 
   (GetView as IEntityComplexView).LinkData(GetEVHead.DataSet, GetEVDetails.DataSet);

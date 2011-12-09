@@ -159,7 +159,7 @@ begin
   try
     if View.SelectionItems.Count = 1 then
     begin
-      if GetEVItems.DataSet.Locate(GetEVItems.ViewInfo.PrimaryKey, View.SelectionItems.First, []) then
+      if GetEVItems.DataSet.Locate(GetEVItems.Info.PrimaryKey, View.SelectionItems.First, []) then
         try
           GetEVItems.DataSet.Delete;
           GetEVItems.Save;
@@ -171,7 +171,7 @@ begin
     else
     begin
       for I := View.SelectionItems.Count - 1 downto 0 do
-        if GetEVItems.DataSet.Locate(GetEVItems.ViewInfo.PrimaryKey, View.SelectionItems[I], []) then
+        if GetEVItems.DataSet.Locate(GetEVItems.Info.PrimaryKey, View.SelectionItems[I], []) then
           GetEVItems.DataSet.Delete;
       try
         GetEVItems.Save;

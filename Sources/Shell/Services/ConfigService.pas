@@ -56,7 +56,6 @@ type
    // FHost: string;
     FWorkItem: TWorkItem;
     function ParseValue(const Value: string): string;
-    function GetValueFromCommandLine(const AName: string): string;
     function GetStoredValue(const AName: string; ALevel: TSettingStorageLevel): string;
     procedure SetStoredValue(const AName, AValue: string; ALevel: TSettingStorageLevel);
     function GetStoredLevel(const AName: string; ALevel: TSettingStorageLevel): TSettingStorageLevel;

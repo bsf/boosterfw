@@ -152,7 +152,7 @@ begin
   if cResult then
   begin
     try
-      if GetEVList.DataSet.Locate(GetEVList.ViewInfo.PrimaryKey, WorkItem.State['ITEM_ID'], []) then
+      if GetEVList.DataSet.Locate(GetEVList.Info.PrimaryKey, WorkItem.State['ITEM_ID'], []) then
       begin
         GetEVList.DataSet.Delete;
         GetEVList.Save;

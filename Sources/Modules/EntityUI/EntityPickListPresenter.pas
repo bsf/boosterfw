@@ -57,7 +57,7 @@ var
 begin
   if View.Selection.Count = 0 then Exit;
   GetEVList.DataSet.Locate(
-    GetEVList.ViewInfo.PrimaryKey,
+    GetEVList.Info.PrimaryKey,
     View.Selection.First, []);
 
   for I := 0 to GetEVList.DataSet.FieldCount - 1 do
