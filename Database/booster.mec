@@ -8,7 +8,7 @@ GenerateConnectDB=0
 IncludePassword=0
 SetGenerators=0
 IncludeDescriptions=1
-DescAsUpdate=1
+DescAsUpdate=0
 UseComment=0
 ExtractComputedFieldsSeparately=0
 CommitAfter=500
@@ -76,7 +76,14 @@ Procedure_21=BFW_UTL_SP_STRING_LEN
 Procedure_22=BFW_UTL_SP_STRING_REPLACE
 Procedure_23=BFW_UTL_SP_STRING_SUB
 [Triggers]
-Count=0
+Count=7
+Trigger_0=BFW_INF_MSG_BU
+Trigger_1=BFW_SEC_PERMISSIONS_BD
+Trigger_2=BFW_SEC_POLICIES_BD
+Trigger_3=BFW_SEC_POLICIES_BU
+Trigger_4=BFW_SEC_USERS_BD
+Trigger_5=BFW_SEC_USERS_BI
+Trigger_6=BFW_SEC_USERS_BU
 [Generators]
 Count=1
 Generator_0=BFW_INF_MSG_GEN

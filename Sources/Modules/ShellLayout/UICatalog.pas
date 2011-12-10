@@ -104,7 +104,9 @@ class procedure TUICatalog.LoadStyles(AWorkItem: TWorkItem);
     color: integer;
   begin
     if ColorDictionary.TryGetValue(UpperCase(AValue), color) then
-      AStyle.Color := color;
+      AStyle.Color := color
+    else if StrToIntDef(AValue, -1) <> -1 then
+      AStyle.Color := StrToInt(AValue);
   end;
 
   procedure FontColorSet(const AValue: string; AStyle: TcxStyle);
@@ -112,7 +114,9 @@ class procedure TUICatalog.LoadStyles(AWorkItem: TWorkItem);
     color: integer;
   begin
     if ColorDictionary.TryGetValue(UpperCase(AValue), color) then
-      AStyle.TextColor := color;
+      AStyle.TextColor := color
+    else if StrToIntDef(AValue, -1) <> -1 then
+      AStyle.TextColor := StrToInt(AValue);
   end;
 
   procedure FontStyleSet(const AValue: string; AStyle: TcxStyle);
