@@ -1,7 +1,11 @@
 program BoosterLauncher;
 
 uses
-  CoreClasses, bfwApp, bfwModules, ConfigServiceIntf, classes;
+  CoreClasses,
+  bfwApp,
+  bfwModules,
+  ConfigServiceIntf,
+  classes;
 
 {$R *.res}
 
