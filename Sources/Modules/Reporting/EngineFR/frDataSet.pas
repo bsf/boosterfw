@@ -27,7 +27,7 @@ implementation
 {$R frDataSet.res}
 
 uses
-  frxIBXRTTI,
+  frxIBXRTTI,  fs_iinterpreter,
 {$IFNDEF NO_EDITORS}
   frxIBXEditor,
 {$ENDIF}
@@ -80,6 +80,7 @@ begin
   frxParamsToTParams(Self, FDSProxy.Params);
 end;
 
+{////////////// REGISTERED ////////////////////////////////////////////////}
 var
   Bitmap: TBitmap;
 
@@ -99,9 +100,25 @@ begin
   Result := Bitmap;
 end;
 
+type
+  TFunctions = class(TfsRTTIModule)
+  public
+   constructor Create(AScript: TfsScript); override;
+  end;
+
+{ TFunctions }
+
+constructor TFunctions.Create;
+begin
+  inherited Create(AScript);
+  AScript.AddClass(TfrDataSet, 'TfrxCustomQuery');
+end;
+
+ 
 initialization
 
   frxObjects.RegisterObject1(TfrDataSet, LoadImage('FR_DATASET_IMAGE'));
+  fsRTTIModules.Add(TFunctions);
 
 finalization
   frxObjects.Unregister(TfrDataSet);

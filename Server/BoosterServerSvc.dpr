@@ -2,6 +2,7 @@ program BoosterServerSvc;
 
 uses
   SvcMgr,
+  midaslib,
   ServerContainerSvc in 'ServerContainerSvc.pas' {ServerContainer2: TService},
   ServerMethods in 'ServerMethods.pas' {BoosterFrameWork: TDSServerModule},
   DAL in '..\Sources\DAL\DAL.pas',
