@@ -110,9 +110,14 @@ begin
   FReport.OnBeforePrint := OnBeforePrintReport;
 //  FReport.OldStyleProgress := true;
   FReport.OnAfterPrintReport := OnAfterPrintReport;
-  FIBXComponents := TfrxIBXComponents.Create(Self);
-  FIBXComponents.DefaultDatabase := DAL_IBE.GlobalIBDatabase;
-//   TIBDataBase(AConnection.GetStubConnectionComponent);
+
+
+  if DAL_IBE.GlobalIBDatabase <> nil then
+  begin
+    FIBXComponents := TfrxIBXComponents.Create(Self);
+    FIBXComponents.DefaultDatabase := DAL_IBE.GlobalIBDatabase;
+  end;
+
   FXLSExportFilter := TfrxXLSExport.Create(Self);
   FCSVExportFilter := TfrxCSVExport.Create(Self);
 end;
@@ -153,7 +158,8 @@ end;
 
 procedure TFastReportLauncher.EndHandler(Sender: TObject);
 begin
-  if FIBXComponents.DefaultDatabase.DefaultTransaction.InTransaction then
+
+  if (FIBXComponents <> nil) and  FIBXComponents.DefaultDatabase.DefaultTransaction.InTransaction then
     FIBXComponents.DefaultDatabase.DefaultTransaction.Commit;
 end;
 
@@ -171,13 +177,13 @@ begin
   try
     FReport.LoadFromFile(GetReportFileName);
     FReport.ReportOptions.Name := ChangeFileExt(ExtractFileName(GetReportFileName), '');
-    if FIBXComponents.DefaultDatabase.DefaultTransaction.InTransaction then
+    if (FIBXComponents <> nil) and FIBXComponents.DefaultDatabase.DefaultTransaction.InTransaction then
       FIBXComponents.DefaultDatabase.DefaultTransaction.Commit;
 
     try
       FReport.PrepareReport(false);
     finally
-      if FIBXComponents.DefaultDatabase.DefaultTransaction.InTransaction then
+      if (FIBXComponents <> nil) and  FIBXComponents.DefaultDatabase.DefaultTransaction.InTransaction then
         FIBXComponents.DefaultDatabase.DefaultTransaction.Commit;
     end;
 
