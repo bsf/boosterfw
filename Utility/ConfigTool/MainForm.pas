@@ -19,7 +19,7 @@ uses
   cxRichEdit, cxCustomPivotGrid, cxDBPivotGrid, Menus, cxButtons,
   cxExportPivotGridLink, cxCheckComboBox, cxDBCheckComboBox, cxCheckListBox,
   cxDBCheckListBox, IBUpdateSQL, DBXDataSnap, DBXCommon, DSConnect, SqlExpr,
-  DSHTTPLayer;
+  DSHTTPLayer, cxColorComboBox;
 
 type
   TForm2 = class(TForm)

@@ -344,7 +344,10 @@ procedure TWindowItem.Show;
 begin
   FView.Parent := FForm;
   if FInfo.Modal then
-    FForm.ShowModal
+  begin
+    if not FForm.Visible then //check
+      FForm.ShowModal
+  end
   else
   if Owner.InheritsFrom(TMdiWorkspace) then
   begin

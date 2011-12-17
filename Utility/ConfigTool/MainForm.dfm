@@ -2,8 +2,8 @@ object Form2: TForm2
   Left = 0
   Top = 0
   Caption = 'Form2'
-  ClientHeight = 552
-  ClientWidth = 970
+  ClientHeight = 555
+  ClientWidth = 983
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -32,8 +32,10 @@ object Form2: TForm2
     StyleHot.LookAndFeel.Kind = lfOffice11
     TabOrder = 0
     OnClick = cxGroupBox1Click
-    Height = 552
-    Width = 970
+    ExplicitWidth = 970
+    ExplicitHeight = 552
+    Height = 555
+    Width = 983
     object Button1: TButton
       Left = 416
       Top = 152
@@ -62,8 +64,9 @@ object Form2: TForm2
       Align = alTop
       Caption = 'cxGroupBox2'
       TabOrder = 2
+      ExplicitWidth = 966
       Height = 175
-      Width = 966
+      Width = 979
       object cxButton1: TcxButton
         Left = 24
         Top = 15
@@ -169,6 +172,8 @@ object Form2: TForm2
         Version = 1
       end
       object cxDBVerticalGrid1NAME: TcxDBEditorRow
+        Properties.EditPropertiesClassName = 'TcxColorComboBoxProperties'
+        Properties.EditProperties.CustomColors = <>
         Properties.DataBinding.FieldName = 'NAME'
         ID = 2
         ParentID = -1
@@ -299,8 +304,8 @@ object Form2: TForm2
       'lc_ctype=WIN1251')
     DefaultTransaction = IBTransaction1
     SQLDialect = 1
-    Left = 752
-    Top = 80
+    Left = 744
+    Top = 72
   end
   object IBTransaction1: TIBTransaction
     DefaultDatabase = IBDatabase1
@@ -358,13 +363,11 @@ object Form2: TForm2
         '.Data.DbxClientDriver,Version=15.0.0.0,Culture=neutral,PublicKey' +
         'Token=91d62ebb5b0d1b1b'
       'Filters={}')
-    Connected = True
     Left = 648
     Top = 128
     UniqueId = '{C7173710-E5AA-4D5A-B5E8-3C28577619BF}'
   end
   object DSProviderConnection1: TDSProviderConnection
-    Connected = True
     SQLConnection = SQLConnection1
     Left = 880
     Top = 224
