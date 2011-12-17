@@ -261,6 +261,9 @@ procedure TcxVGridViewHelper.LoadPreference(AGrid: TcxDBVerticalGrid);
     _section := 'COMMON';
     AGrid.OptionsView.ValueWidth :=
       AStorage.ReadInteger(_section, 'ValueWidth', AGrid.OptionsView.ValueWidth);
+    AGrid.OptionsView.RowHeaderWidth :=
+      AStorage.ReadInteger(_section, 'RowHeaderWidth', AGrid.OptionsView.RowHeaderWidth);
+
   end;
 
 var
@@ -849,6 +852,7 @@ procedure TcxVGridViewHelper.SavePreference(AGrid: TcxDBVerticalGrid);
   begin
     _section := 'COMMON';
     AStorage.WriteInteger(_section, 'ValueWidth', AGrid.OptionsView.ValueWidth);
+    AStorage.WriteInteger(_section, 'RowHeaderWidth', AGrid.OptionsView.RowHeaderWidth);
   end;
 
 var
