@@ -4,7 +4,8 @@ interface
 uses cxVGrid, cxDBVGrid, Contnrs, controls, CustomView, classes, sysutils, db,
   EntityServiceIntf, cxButtonEdit, cxEdit, CoreClasses, StrUtils, Variants,
   cxInplaceContainer, cxDBLookupComboBox, cxDropDownEdit, menus, cxCheckBox, forms,
-  UIClasses, cxCalendar, typinfo, cxImage, graphics, inifiles, ShellIntf;
+  UIClasses, cxCalendar, typinfo, cxImage, graphics, inifiles, ShellIntf,
+  cxColorComboBox;
 
 const
   EDITOR_DATA_ENTITY = 'EntityName';
@@ -34,6 +35,7 @@ type
     procedure InitComboBoxEditor(ARow: TcxDBEditorRow; ADataSet: TDataSet);
     procedure InitCheckBoxEditor(ARow: TcxDBEditorRow);
     procedure InitImageEditor(ARow: TcxDBEditorRow);
+    procedure InitColorEditor(ARow: TcxDBEditorRow);
     procedure ImageRow_OnAssignPicture(Sender: TObject; const Picture: TPicture);
 
     procedure TuneGridForDataSet(AGrid: TcxDBVerticalGrid;
@@ -464,6 +466,9 @@ begin
     else if SameText(editorTyp, FIELD_ATTR_EDITOR_IMAGE) then
        InitImageEditor(AEditorRow)
 
+    else if SameText(editorTyp, FIELD_ATTR_EDITOR_COLOR) then
+       InitColorEditor(AEditorRow)
+
     else if AField is TDateTimeField then
     begin
       AEditorRow.Properties.EditPropertiesClass := TcxDateEditProperties;
@@ -631,6 +636,20 @@ begin
     UseAlignmentWhenInplace := true;
   end;
 
+end;
+
+procedure TcxVGridViewHelper.InitColorEditor(ARow: TcxDBEditorRow);
+begin
+  ARow.Properties.EditPropertiesClass := TcxColorComboBoxProperties;
+  with TcxColorComboBoxProperties(ARow.Properties.EditProperties) do
+  begin
+    ClearKey := TextToShortCut('Del');
+    ColorValueFormat := cxcvInteger;
+    AllowSelectColor := true;
+    ShowDescriptions := false;
+    ImmediatePost := true;
+   // PrepareList := cxplHTML4;
+  end;
 end;
 
 procedure TcxVGridViewHelper.InitComboBoxEditor(ARow: TcxDBEditorRow;

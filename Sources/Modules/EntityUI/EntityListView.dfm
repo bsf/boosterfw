@@ -53,6 +53,7 @@ inherited frEntityListView: TfrEntityListView
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
         DataController.Summary.SummaryGroups = <>
+        Filtering.ColumnFilteredItemsList = True
         FilterRow.ApplyChanges = fracImmediately
         OptionsBehavior.IncSearch = True
         OptionsBehavior.PullFocusing = True

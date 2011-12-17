@@ -32,7 +32,7 @@ const
 
   COMMAND_SAVE = 'commands.view.save';
  // COMMAND_SAVE_CAPTION = 'Сохранить';
-  COMMAND_SAVE_SHORTCUT = 'Ctrl+S;Ctrl+Enter';
+  COMMAND_SAVE_SHORTCUT = 'Ctrl+S;Shift+Enter';
 
   COMMAND_OK = 'commands.view.ok';
 //  COMMAND_OK_CAPTION = 'OK';

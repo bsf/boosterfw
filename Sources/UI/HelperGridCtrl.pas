@@ -49,6 +49,16 @@ type
     constructor Create; override;
   end;
 
+  TGridFilterRowShowMenuItem = class(TMenuItem)
+  private
+    FAction: TAction;
+    FGrid: TcxGridTableView;
+    procedure OnClickHandler(Sender: TObject);
+    procedure OnUpdateHandler(Sender: TObject);
+  public
+    constructor Create(AOwner: TComponent; AGrid: TcxGridTableView); reintroduce;
+  end;
+
   TGridQuickFilterExtMenuItem = class(TMenuItem)
   private
     FAction: TAction;
@@ -217,6 +227,10 @@ begin
   AMenu.Items.Add(mi);
   mi := TGridQuickFilterResetExtMenuItem.Create(AMenu, AGridView);
   AMenu.Items.Add(mi);
+  mi := TGridFilterRowShowMenuItem.Create(AMenu, AGridView);
+  AMenu.Items.Add(mi);
+
+
 end;
 
 function TcxGridViewHelper.FindGridViewByDataSet(
@@ -973,6 +987,32 @@ begin
 //  Active := false;
 end;
 
+
+{ TGridFilterRowShowMenuItem }
+
+constructor TGridFilterRowShowMenuItem.Create(AOwner: TComponent;
+  AGrid: TcxGridTableView);
+begin
+  inherited Create(AOwner);
+  FGrid := AGrid;
+  FAction := TAction.Create(AOwner);
+  FAction.OnExecute := OnClickHandler;
+  FAction.OnUpdate := OnUpdateHandler;
+  FAction.ShortCut := TextToShortCut('Ctrl+F');
+  FAction.Visible := false;
+  Self.Action := FAction;
+end;
+
+procedure TGridFilterRowShowMenuItem.OnClickHandler(Sender: TObject);
+begin
+  FGrid.FilterRow.Visible := not FGrid.FilterRow.Visible;
+  FGrid.FilterRow.ApplyChanges := fracImmediately;
+end;
+
+procedure TGridFilterRowShowMenuItem.OnUpdateHandler(Sender: TObject);
+begin
+
+end;
 
 initialization
   RegisterViewHelperClass(TcxGridViewHelper);

@@ -9,9 +9,11 @@ const
  // COMMAND_OK = 'commands://picklist.ok';
   COMMAND_FILTER_CHANGED = 'commands://picklist.filter.changed';
   COMMAND_DATA_RELOAD =  'command://picklist.data.reload';
-
+  COMMAND_SHOW_CLOSED = '{B821AEAE-5C78-42F4-819F-E898DB24B4C7}';
   ENT_VIEW_PICKLIST = 'PickList';
-  
+
+  SHOW_CLOSED_PARAM = 'SHOW_CLOSED';
+
 type
 
   TEntityPickListPresenter = class(TEntityDialogPresenter)
@@ -21,6 +23,7 @@ type
     function View: IEntityPickListView;
     procedure OnViewReady; override;
     procedure OnViewShow; override;
+    procedure CmdShowClosed(Sender: TObject);
     procedure CmdCancel(Sender: TObject); virtual;
     procedure CmdOK(Sender: TObject); virtual;
     procedure CmdFilterChanged(Sender: TObject); virtual;
@@ -69,10 +72,17 @@ begin
 end;
 
 
+procedure TEntityPickListPresenter.CmdShowClosed(Sender: TObject);
+begin
+  WorkItem.State[SHOW_CLOSED_PARAM] := 1;
+  GetEVList.Reload;
+end;
+
 procedure TEntityPickListPresenter.OnViewReady;
 begin
   ViewTitle := ViewInfo.Title;
   WorkItem.State['ModalResult'] := mrCancel;
+  WorkItem.State[SHOW_CLOSED_PARAM] := 0;
 
   WorkItem.Commands[COMMAND_CANCEL].SetHandler(CmdCancel);
   WorkItem.Commands[COMMAND_CANCEL].Caption := GetLocaleString(@COMMAND_CANCEL_CAPTION);
@@ -83,6 +93,11 @@ begin
   WorkItem.Commands[COMMAND_OK].Caption := GetLocaleString(@COMMAND_OK_CAPTION);
   WorkItem.Commands[COMMAND_OK].ShortCut := 'Enter';
   (GetView as IEntityPickListView).CommandBar.AddCommand(COMMAND_OK);
+
+  WorkItem.Commands[COMMAND_SHOW_CLOSED].SetHandler(CmdShowClosed);
+  WorkItem.Commands[COMMAND_SHOW_CLOSED].Caption := 'Отображать закрытые'; //GetLocaleString(@COMMAND_SHOW_CLOSED);
+//  WorkItem.Commands[COMMAND_SHOW_CLOSED].ShortCut := 'Enter';
+  (GetView as IEntityPickListView).CommandBar.AddCommand(COMMAND_SHOW_CLOSED);
 
   WorkItem.Commands[COMMAND_DATA_RELOAD].SetHandler(CmdDataReload);
   WorkItem.Commands[COMMAND_FILTER_CHANGED].SetHandler(CmdFilterChanged);

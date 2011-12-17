@@ -28,7 +28,6 @@ type
     frxReport1: TfrxReport;
     Button1: TButton;
     ClientDataSet1: TClientDataSet;
-    DBGrid1: TDBGrid;
     DataSetProvider1: TDataSetProvider;
     cxGroupBox2: TcxGroupBox;
     cxButton1: TcxButton;
@@ -57,6 +56,9 @@ type
     cxDBMRUEdit1: TcxDBMRUEdit;
     SQLConnection1: TSQLConnection;
     DSProviderConnection1: TDSProviderConnection;
+    cxGrid1DBTableView1: TcxGridDBTableView;
+    cxGrid1Level1: TcxGridLevel;
+    cxGrid1: TcxGrid;
     procedure dxNavBar1Item1Click(Sender: TObject);
     procedure dxNavBar1Item2Click(Sender: TObject);
     procedure cxMRUEdit1PropertiesInitPopup(Sender: TObject);

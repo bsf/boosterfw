@@ -219,7 +219,7 @@ procedure TEntityListPresenter.CmdSelector(Sender: TObject);
 const
   FMT_VIEW_SELECTOR = 'Views.%s.Selector';
 begin
-  with WorkItem.Activities[format(FMT_VIEW_SELECTOR, [EntityName])] do
+  with WorkItem.Activities[format(FMT_VIEW_SELECTOR, [GetSelectorEntityName])] do
   begin
     Params.Assign(WorkItem);
     Execute(WorkItem);

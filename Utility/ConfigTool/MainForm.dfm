@@ -32,8 +32,6 @@ object Form2: TForm2
     StyleHot.LookAndFeel.Kind = lfOffice11
     TabOrder = 0
     OnClick = cxGroupBox1Click
-    ExplicitWidth = 970
-    ExplicitHeight = 552
     Height = 555
     Width = 983
     object Button1: TButton
@@ -45,26 +43,12 @@ object Form2: TForm2
       TabOrder = 0
       OnClick = Button1Click
     end
-    object DBGrid1: TDBGrid
-      Left = 654
-      Top = 296
-      Width = 275
-      Height = 233
-      DataSource = DataSource1
-      TabOrder = 1
-      TitleFont.Charset = DEFAULT_CHARSET
-      TitleFont.Color = clWindowText
-      TitleFont.Height = -11
-      TitleFont.Name = 'Tahoma'
-      TitleFont.Style = []
-    end
     object cxGroupBox2: TcxGroupBox
       Left = 2
       Top = 2
       Align = alTop
       Caption = 'cxGroupBox2'
-      TabOrder = 2
-      ExplicitWidth = 966
+      TabOrder = 1
       Height = 175
       Width = 979
       object cxButton1: TcxButton
@@ -147,7 +131,7 @@ object Form2: TForm2
       Width = 646
       Height = 346
       OptionsView.RowHeaderWidth = 211
-      TabOrder = 3
+      TabOrder = 2
       DataController.DataSource = DataSource1
       Version = 1
       object cxDBVerticalGrid1ID: TcxDBEditorRow
@@ -173,12 +157,32 @@ object Form2: TForm2
       end
       object cxDBVerticalGrid1NAME: TcxDBEditorRow
         Properties.EditPropertiesClassName = 'TcxColorComboBoxProperties'
+        Properties.EditProperties.AllowSelectColor = True
+        Properties.EditProperties.ClearKey = 46
+        Properties.EditProperties.ColorComboStyle = cxccsComboList
         Properties.EditProperties.CustomColors = <>
         Properties.DataBinding.FieldName = 'NAME'
         ID = 2
         ParentID = -1
         Index = 2
         Version = 1
+      end
+    end
+    object cxGrid1: TcxGrid
+      Left = 664
+      Top = 280
+      Width = 250
+      Height = 200
+      TabOrder = 3
+      object cxGrid1DBTableView1: TcxGridDBTableView
+        NavigatorButtons.ConfirmDelete = False
+        DataController.Summary.DefaultGroupSummaryItems = <>
+        DataController.Summary.FooterSummaryItems = <>
+        DataController.Summary.SummaryGroups = <>
+        FilterRow.ApplyChanges = fracImmediately
+      end
+      object cxGrid1Level1: TcxGridLevel
+        GridView = cxGrid1DBTableView1
       end
     end
   end
