@@ -2,11 +2,11 @@ unit frReportFactory;
 
 interface
 uses windows, classes, CoreClasses, ReportCatalogConst, EntityServiceIntf,
-  SysUtils, db, ibdatabase,  ComObj, controls,
-  frxClass, frxExportXML, frxExportXLS, frxExportCSV, frxIBXComponents, frxDesgn,
+  SysUtils, db, ComObj, controls,
+  frxClass, frxExportXML, frxExportXLS, frxExportCSV, frxDesgn,
   frxChBox, frxCross, frxBarCode, frxDCtrl, variants,
   frReportPreviewPresenter, frReportPreviewView, UIClasses, frDataSet,
-  Generics.Collections, DAL_IBE;
+  Generics.Collections;
 
 const
   VIEW_FASTREPORT_PREVIEW = 'views.reports.fastreport.preview';
@@ -16,7 +16,6 @@ type
   TFastReportLauncher = class(TComponent, IReportLauncher)
   private
     FWorkItem: TWorkItem;
-    FIBXComponents: TfrxIBXComponents;
     FReport: TfrxReport;
     FXLSExportFilter: TfrxXLSExport;
     FCSVExportFilter: TfrxCSVExport;
@@ -28,7 +27,6 @@ type
     procedure OnAfterPrintReport(Sender: TObject);
     procedure OnReportGetValue(const VarName: String; var Value: Variant);
     procedure OnBeforePrintReport(Sender: TfrxReportComponent);
-    procedure EndHandler(Sender: TObject);
     procedure DoReportProgressStart(Sender: TfrxReport;
       ProgressType: TfrxProgressType; Progress: Integer);
     procedure DoReportProgress(Sender: TfrxReport;
@@ -106,17 +104,9 @@ begin
   FReport.OnProgress := DoReportProgress;
   FReport.OnProgressStart := DoReportProgressStart;
   FReport.OnProgressStop := DoReportProgressStop;
-  FReport.OnEndDoc := EndHandler;
   FReport.OnBeforePrint := OnBeforePrintReport;
 //  FReport.OldStyleProgress := true;
   FReport.OnAfterPrintReport := OnAfterPrintReport;
-
-
-  if DAL_IBE.GlobalIBDatabase <> nil then
-  begin
-    FIBXComponents := TfrxIBXComponents.Create(Self);
-    FIBXComponents.DefaultDatabase := DAL_IBE.GlobalIBDatabase;
-  end;
 
   FXLSExportFilter := TfrxXLSExport.Create(Self);
   FCSVExportFilter := TfrxCSVExport.Create(Self);
@@ -156,12 +146,6 @@ begin
     FProgressCallback(rpsFinish);
 end;
 
-procedure TFastReportLauncher.EndHandler(Sender: TObject);
-begin
-
-  if (FIBXComponents <> nil) and  FIBXComponents.DefaultDatabase.DefaultTransaction.InTransaction then
-    FIBXComponents.DefaultDatabase.DefaultTransaction.Commit;
-end;
 
 procedure TFastReportLauncher.Execute(Caller: TWorkItem; ALaunchMode: TReportLaunchMode;
    const ATitle: string; ProgressCallback: TReportProgressCallback);
@@ -177,15 +161,8 @@ begin
   try
     FReport.LoadFromFile(GetReportFileName);
     FReport.ReportOptions.Name := ChangeFileExt(ExtractFileName(GetReportFileName), '');
-    if (FIBXComponents <> nil) and FIBXComponents.DefaultDatabase.DefaultTransaction.InTransaction then
-      FIBXComponents.DefaultDatabase.DefaultTransaction.Commit;
 
-    try
-      FReport.PrepareReport(false);
-    finally
-      if (FIBXComponents <> nil) and  FIBXComponents.DefaultDatabase.DefaultTransaction.InTransaction then
-        FIBXComponents.DefaultDatabase.DefaultTransaction.Commit;
-    end;
+    FReport.PrepareReport(false);
 
     if ALaunchMode <> lmHold then
     begin

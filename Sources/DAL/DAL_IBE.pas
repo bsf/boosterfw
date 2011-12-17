@@ -114,10 +114,6 @@ type
     function GetProvider(const AProviderName: string): TDataSetProvider; override;
   end;
 
-
-var
-  GlobalIBDatabase: TIBDatabase;
-
 implementation
 
 {  function GetEntityAttrProviderName(const AEntityName, AViewName: string): string;
@@ -468,7 +464,6 @@ begin
   FDataBase.LoginPrompt := false;
 
   FRemoteServer := TDAL_IBE_RemoteServer.Create(Self);
-  GlobalIBDatabase := FDatabase;
 end;
 
 destructor TDAL_IBE.Destroy;

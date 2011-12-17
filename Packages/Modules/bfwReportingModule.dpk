@@ -33,10 +33,8 @@ requires
   dxmdsD15,
   dxNavBarD15,
   fs15,
-  fsIBX15,
   frx15,
   frxDB15,
-  frxIBX15,
   frxe15,
   fsDB15,
   dsnapcon;
@@ -74,8 +72,7 @@ contains
   xlReport in '..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlReport.pas',
   xlReportG2 in '..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlReportG2.pas',
   xlStdOPack in '..\..\Sources\Modules\Reporting\EngineXL\xlReportLibrary\Source\xlStdOPack.pas',
-  frDataSet in '..\..\Sources\Modules\Reporting\EngineFR\frDataSet.pas',
-  DAL in '..\..\Sources\DAL\DAL.pas',
-  DAL_IBE in '..\..\Sources\DAL\DAL_IBE.pas';
+  frDataSet in '..\..\Sources\Modules\Reporting\EngineFR\frDataSet.pas';
 
 end.
+

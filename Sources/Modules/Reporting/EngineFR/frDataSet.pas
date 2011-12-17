@@ -27,11 +27,7 @@ implementation
 {$R frDataSet.res}
 
 uses
-  frxIBXRTTI,  fs_iinterpreter,
-{$IFNDEF NO_EDITORS}
-  frxIBXEditor,
-{$ENDIF}
-  frxDsgnIntf, frxRes;
+  fs_iinterpreter, frxDsgnIntf, frxRes;
 
 { TfrReportDataSet }
 
