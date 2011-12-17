@@ -4,7 +4,7 @@ interface
 uses cxVGrid, cxDBVGrid, Contnrs, controls, CustomView, classes, sysutils, db,
   EntityServiceIntf, cxButtonEdit, cxEdit, CoreClasses, StrUtils, Variants,
   cxInplaceContainer, cxDBLookupComboBox, cxDropDownEdit, menus, cxCheckBox, forms,
-  UIClasses, cxCalendar, typinfo, cxImage, graphics;
+  UIClasses, cxCalendar, typinfo, cxImage, graphics, inifiles, ShellIntf;
 
 const
   EDITOR_DATA_ENTITY = 'EntityName';
@@ -59,6 +59,13 @@ type
     procedure GridRow_OnEditValueChanged(Sender: TObject);
 
     function WorkItem: TWorkItem;
+
+    //Preferences
+    function GetPreferenceFileName(AGrid: TcxDBVerticalGrid): string;
+    procedure LoadPreference(AGrid: TcxDBVerticalGrid);
+    procedure SavePreference(AGrid: TcxDBVerticalGrid);
+    procedure SaveAllPreference;
+
   protected
     //IViewHelper
     procedure ViewInitialize;
@@ -239,9 +246,59 @@ begin
        and
       (ADataSet =
        TcxDBVerticalGrid(_gridList[I]).DataController.DataSource.DataSet) then
-
+  begin
      TuneGridForDataSet(TcxDBVerticalGrid(_gridList[I]), ADataSet);
+     LoadPreference(TcxDBVerticalGrid(_gridList[I]));
+  end;
+end;
 
+procedure TcxVGridViewHelper.LoadPreference(AGrid: TcxDBVerticalGrid);
+
+  procedure LoadFromStorage(AGrid: TcxDBVerticalGrid; AStorage: TMemInifile);
+  var
+    _section: string;
+  begin
+    _section := 'COMMON';
+    AGrid.OptionsView.ValueWidth :=
+      AStorage.ReadInteger(_section, 'ValueWidth', AGrid.OptionsView.ValueWidth);
+  end;
+
+var
+  _storage: TMemInifile;
+  _strings: TStringList;
+  data: TMemoryStream;
+begin
+  data := TMemoryStream.Create;
+  try
+    App.UserProfile.LoadData((Owner as ICustomView).GetPreferencePath,
+      GetPreferenceFileName(AGrid), data);
+    data.Position := 0;
+
+    if (data.Size = 0) then
+    begin
+      //Default settings
+    end
+    else
+    begin
+      _storage := TMemInifile.Create('');
+      try
+        _strings := TStringList.Create;
+        try
+          _strings.LoadFromStream(data);
+          _storage.SetStrings(_strings);
+        finally
+          _strings.Free;
+        end;
+
+        LoadFromStorage(AGrid, _storage);
+
+      finally
+        _storage.Free
+      end;
+    end;
+  finally
+    data.free;
+  end;
 end;
 
 procedure TcxVGridViewHelper.PickListEditorButtonClick(Sender: TObject;
@@ -343,7 +400,7 @@ end;
 
 procedure TcxVGridViewHelper.ViewClose;
 begin
-
+  SaveAllPreference;
 end;
 
 procedure TcxVGridViewHelper.ViewInitialize;
@@ -724,6 +781,15 @@ begin
   Result := FGridList;
 end;
 
+function TcxVGridViewHelper.GetPreferenceFileName(
+  AGrid: TcxDBVerticalGrid): string;
+const
+  cnstGridPreferenceCategoryFmt = 'VGrid_%s';
+begin
+  Result := Format(cnstGridPreferenceCategoryFmt, [AGrid.Name]);
+
+end;
+
 procedure TcxVGridViewHelper.DBGrid_OnEditedHandler(Sender: TObject;
   ARowProperties: TcxCustomEditorRowProperties);
 var
@@ -764,6 +830,52 @@ begin
       Result := '';
     Done := true;
   end;
+end;
+
+procedure TcxVGridViewHelper.SaveAllPreference;
+var
+  I: integer;
+begin
+  for I := 0 to Owner.ComponentCount - 1 do
+    if Owner.Components[I] is TcxDBVerticalGrid then
+       SavePreference(TcxDBVerticalGrid(Owner.Components[I]));
+end;
+
+procedure TcxVGridViewHelper.SavePreference(AGrid: TcxDBVerticalGrid);
+
+  procedure SaveToStorage(AGrid: TcxDBVerticalGrid; AStorage: TMemInifile);
+  var
+    _section: string;
+  begin
+    _section := 'COMMON';
+    AStorage.WriteInteger(_section, 'ValueWidth', AGrid.OptionsView.ValueWidth);
+  end;
+
+var
+  _storage: TMemInifile;
+  _strings: TStringList;
+  data: TMemoryStream;
+begin
+  _storage := TMemInifile.Create('');
+  data := TMemoryStream.Create;
+  try
+    SaveToStorage(AGrid, _storage);
+
+    _strings := TStringList.Create;
+    try
+      _storage.GetStrings(_strings);
+      _strings.SaveToStream(data);
+    finally
+      _strings.Free;
+    end;
+
+    App.UserProfile.SaveData((Owner as ICustomView).GetPreferencePath,
+      GetPreferenceFileName(AGrid), data);
+  finally
+    _storage.Free;
+    data.free;
+  end;
+
 end;
 
 procedure TcxVGridViewHelper.SetFocusedField(ADataSet: TDataSet;
