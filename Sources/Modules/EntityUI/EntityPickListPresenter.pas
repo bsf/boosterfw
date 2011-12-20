@@ -94,11 +94,11 @@ begin
   WorkItem.Commands[COMMAND_OK].ShortCut := 'Enter';
   (GetView as IEntityPickListView).CommandBar.AddCommand(COMMAND_OK);
 
-  WorkItem.Commands[COMMAND_SHOW_CLOSED].SetHandler(CmdShowClosed);
+{  WorkItem.Commands[COMMAND_SHOW_CLOSED].SetHandler(CmdShowClosed);
   WorkItem.Commands[COMMAND_SHOW_CLOSED].Caption := 'Отображать закрытые'; //GetLocaleString(@COMMAND_SHOW_CLOSED);
 //  WorkItem.Commands[COMMAND_SHOW_CLOSED].ShortCut := 'Enter';
   (GetView as IEntityPickListView).CommandBar.AddCommand(COMMAND_SHOW_CLOSED);
-
+ }
   WorkItem.Commands[COMMAND_DATA_RELOAD].SetHandler(CmdDataReload);
   WorkItem.Commands[COMMAND_FILTER_CHANGED].SetHandler(CmdFilterChanged);
 
