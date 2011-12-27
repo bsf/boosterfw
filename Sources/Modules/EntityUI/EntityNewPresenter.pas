@@ -57,7 +57,14 @@ begin
   if nextActionID <> '' then
   begin
     nextAction := WorkItem.Activities[nextActionID];
-    nextAction.Params['ID'] := GetEVItem.Values['ID'];
+    if nextActionID = ACTION_ENTITY_ITEM then
+    begin
+       nextAction.Params[TEntityItemActionParams.ID] := GetEVItem.Values['ID'];
+       nextAction.Params[TEntityItemActionParams.EntityName] := EntityName;
+    end
+    else
+      nextAction.Params['ID'] := GetEVItem.Values['ID'];
+
     callerID := WorkItem.State['CALLER_ID'];
     if callerID <> '' then
       callerWI := FindWorkItem(callerID, WorkItem.Root);
@@ -111,7 +118,9 @@ begin
     nextOption := ViewInfo.OptionValue('Next');
 
     if (nextOption = '') or (SameText(nextOption, 'Item'))then
-      NextAction := format(VIEW_ITEM, [EntityName])
+      NextAction := ACTION_ENTITY_ITEM
+
+      //NextAction := format(VIEW_ITEM, [EntityName])
 
     else if SameText(nextOption, 'Collect') then
       NextAction := format(VIEW_COLLECT, [EntityName])

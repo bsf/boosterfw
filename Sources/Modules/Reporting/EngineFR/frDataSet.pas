@@ -42,6 +42,7 @@ end;
 
 destructor TfrDataSet.Destroy;
 begin
+  FSQL.OnChange := nil;
   FSQL.Free;
   inherited;
 end;

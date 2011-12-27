@@ -1343,7 +1343,7 @@ end;
 
 constructor TEntityDataSet.Create(AOwner: TComponent);
 begin
-  inherited;
+  inherited Create(AOwner);
   Self.OnReconcileError := ReconcileErrorHandler;
   FMasterLink := TEntityDataSetMasterLink.Create(Self);
 end;
