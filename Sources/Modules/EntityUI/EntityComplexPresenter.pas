@@ -132,6 +132,7 @@ begin
   with WorkItem.Activities[actionName] do
   begin
     Params['ID'] := WorkItem.State['DETAIL_ID'];
+    Params['DOC_ID'] := WorkItem.State['HID'];
     Execute(WorkItem);
   end;
 end;
