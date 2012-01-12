@@ -126,7 +126,7 @@ object Form2: TForm2
       end
     end
     object cxDBVerticalGrid1: TcxDBVerticalGrid
-      Left = 3
+      Left = 2
       Top = 183
       Width = 646
       Height = 346
@@ -156,11 +156,8 @@ object Form2: TForm2
         Version = 1
       end
       object cxDBVerticalGrid1NAME: TcxDBEditorRow
-        Properties.EditPropertiesClassName = 'TcxColorComboBoxProperties'
-        Properties.EditProperties.AllowSelectColor = True
-        Properties.EditProperties.ClearKey = 46
-        Properties.EditProperties.ColorComboStyle = cxccsComboList
-        Properties.EditProperties.CustomColors = <>
+        Properties.EditPropertiesClassName = 'TcxMemoProperties'
+        Properties.EditProperties.ScrollBars = ssHorizontal
         Properties.DataBinding.FieldName = 'NAME'
         ID = 2
         ParentID = -1

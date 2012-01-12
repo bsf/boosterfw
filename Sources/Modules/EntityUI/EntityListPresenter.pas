@@ -10,7 +10,7 @@ const
   COMMAND_SELECTOR = '{0D2B32E3-7CE0-4775-A2D3-3A91ED2AFEFB}';//'commands.view.selector';
   INFOTEXT_FIELD_NAME = 'INFO';
 
-  ENT_VIEW_LIST = 'List';
+
 
   ENT_VIEW_NEW_DEFAULT = 'New';
   ENT_VIEW_ITEM_DEFAULT = 'Item';
@@ -18,7 +18,10 @@ const
 
 type
   TEntityListPresenter = class(TEntityContentPresenter)
+  const
+    ENT_VIEW_LIST = 'List';
   private
+    FIsReady: boolean;
     FSelectorInitialized: boolean;
     function UseSelector: boolean;
     function GetSelectorEntityName: string;
@@ -34,6 +37,7 @@ type
     procedure EViewListChangedHandler(ADataSet: TDataSet);
     function View: IEntityListView;
   protected
+    function EntityViewName: string; override;
     function OnGetWorkItemState(const AName: string): Variant; override;
     //
     function GetEVList: IEntityView;
@@ -86,6 +90,8 @@ begin
 end;
 
 function TEntityListPresenter.OnGetWorkItemState(const AName: string): Variant;
+var
+  ds: TDataSet;
 begin
   if SameText(AName, 'ITEM_ID') or SameText(AName, 'ID') then
     Result := View.Selection.First
@@ -95,6 +101,12 @@ begin
     Result := View.Selection.AsString(',')
   else if SameText(AName, 'LIST_ID_ARRAY') then
     Result := View.Selection.AsArray
+  else if FIsReady then
+  begin
+    ds := App.Entities[EntityName].GetView(EntityViewName, WorkItem).DataSet;
+    if ds.FindField(AName) <> nil then
+      Result := ds[AName];
+  end
   else
     Result := inherited OnGetWorkItemState(AName);
 
@@ -161,14 +173,13 @@ begin
   (GetView as IEntityListView).SetListDataSet(GetEVList.DataSet);
 
 
-  inherited;
+  FIsReady := true;
+
 
 end;
 
 
 function TEntityListPresenter.GetEVList: IEntityView;
-var
-  evName: string;
 begin
   if not FSelectorInitialized then
   begin
@@ -176,9 +187,14 @@ begin
     FSelectorInitialized := true;
   end;
 
-  evName := EntityViewName;
-  if evName = '' then evName := ENT_VIEW_LIST;
-  Result := GetEView(EntityName, evName);
+  Result := GetEView(EntityName, EntityViewName);
+end;
+
+function TEntityListPresenter.EntityViewName: string;
+begin
+  Result := inherited EntityViewName;
+  if Result = '' then
+    Result := ENT_VIEW_LIST;
 end;
 
 procedure TEntityListPresenter.EViewListChangedHandler(

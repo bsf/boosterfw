@@ -72,8 +72,11 @@ var
 begin
   ViewTitle := ViewInfo.Title;
 
-  fieldAux := GetEVItem.DataSet.FindField('VIEW_TITLE');
+
+  fieldAux := GetEVItem.DataSet.FindField('UI_TITLE');
   if not Assigned(fieldAux) then
+    fieldAux := GetEVItem.DataSet.FindField('VIEW_TITLE')
+  else if not Assigned(fieldAux) then
     fieldAux := GetEVItem.DataSet.FindField('NAME');
 
   if Assigned(fieldAux) and (VarToStr(fieldAux.Value) <> '') then

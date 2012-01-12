@@ -141,8 +141,8 @@ type
       EntityViewNameOption = 'EntityViewName';
 
    protected
-     function EntityName: string;
-     function EntityViewName: string;
+     function EntityName: string; virtual;
+     function EntityViewName: string; virtual;
    end;
 
    TEntityDialogPresenter = class(TCustomDialogPresenter)

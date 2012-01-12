@@ -5,7 +5,7 @@ uses cxVGrid, cxDBVGrid, Contnrs, controls, CustomView, classes, sysutils, db,
   EntityServiceIntf, cxButtonEdit, cxEdit, CoreClasses, StrUtils, Variants,
   cxInplaceContainer, cxDBLookupComboBox, cxDropDownEdit, menus, cxCheckBox, forms,
   UIClasses, cxCalendar, typinfo, cxImage, graphics, inifiles, ShellIntf,
-  cxColorComboBox;
+  cxColorComboBox, cxMemo, stdctrls;
 
 const
   EDITOR_DATA_ENTITY = 'EntityName';
@@ -36,6 +36,7 @@ type
     procedure InitCheckBoxEditor(ARow: TcxDBEditorRow);
     procedure InitImageEditor(ARow: TcxDBEditorRow);
     procedure InitColorEditor(ARow: TcxDBEditorRow);
+    procedure InitMemoEditor(ARow: TcxDBEditorRow);
     procedure ImageRow_OnAssignPicture(Sender: TObject; const Picture: TPicture);
 
     procedure TuneGridForDataSet(AGrid: TcxDBVerticalGrid;
@@ -469,6 +470,10 @@ begin
     else if SameText(editorTyp, FIELD_ATTR_EDITOR_COLOR) then
        InitColorEditor(AEditorRow)
 
+    else if SameText(editorTyp, FIELD_ATTR_EDITOR_MEMO) then
+       InitMemoEditor(AEditorRow)
+
+
     else if AField is TDateTimeField then
     begin
       AEditorRow.Properties.EditPropertiesClass := TcxDateEditProperties;
@@ -485,7 +490,10 @@ begin
        InitLookupEditor(AEditorRow, AField.DataSet)
 
     else if SameText(editorTyp, FIELD_ATTR_EDITOR_CHECKBOX) then
-       InitCheckBoxEditor(AEditorRow);
+       InitCheckBoxEditor(AEditorRow)
+
+    else if SameText(editorTyp, FIELD_ATTR_EDITOR_MEMO) then
+        InitMemoEditor(AEditorRow);
 
     AEditorRow.Properties.Options.Editing := false;
     AEditorRow.Properties.Options.ShowEditButtons := eisbNever;
@@ -595,6 +603,17 @@ begin
           ListFieldNames := ListFieldNames + ';' + lookupDS.DataSet.Fields[I].FieldName;
       end;
     end;
+  end;
+end;
+
+procedure TcxVGridViewHelper.InitMemoEditor(ARow: TcxDBEditorRow);
+begin
+  ARow.Properties.EditPropertiesClass := TcxMemoProperties;
+  with TcxMemoProperties(ARow.Properties.EditProperties) do
+  begin
+    WordWrap := false;
+    WantReturns := false;
+    ScrollBars := ssVertical;
   end;
 end;
 

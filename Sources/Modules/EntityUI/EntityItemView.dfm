@@ -14,6 +14,7 @@ inherited frEntityItemView: TfrEntityItemView
       Align = alClient
       LayoutStyle = lsMultiRecordView
       LookAndFeel.Kind = lfOffice11
+      OptionsView.CellAutoHeight = True
       OptionsView.ShowEditButtons = ecsbAlways
       OptionsView.CategoryExplorerStyle = True
       OptionsView.GridLineColor = clBtnFace
@@ -21,12 +22,13 @@ inherited frEntityItemView: TfrEntityItemView
       OptionsView.ValueWidth = 300
       OptionsBehavior.AlwaysShowEditor = True
       OptionsBehavior.GoToNextCellOnEnter = True
+      OptionsBehavior.GoToNextCellOnTab = True
+      OptionsBehavior.RowSizing = True
       OptionsData.Appending = False
       OptionsData.Deleting = False
       OptionsData.Inserting = False
       TabOrder = 0
       DataController.DataSource = ItemDataSource
-      ExplicitLeft = 3
       ExplicitTop = 48
       Version = 1
     end
