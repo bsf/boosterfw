@@ -91,8 +91,8 @@ procedure TEntityComplexPresenter.CmdDetailNew(Sender: TObject);
     begin
       actionURI := WorkItem.Activities[format(VIEW_DETAIL_NEW_URI, [EntityName])];
       actionURI.Execute(WorkItem);
-      if actionURI.Params[TViewActivityOuts.ModalResult] = mrOk then
-        Result := actionURI.Params['URI']
+      if actionURI.Outs[TViewActivityOuts.ModalResult] = mrOk then
+        Result := actionURI.Outs['URI']
       else
         Result := '';
     end
