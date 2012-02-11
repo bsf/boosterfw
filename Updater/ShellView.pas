@@ -14,6 +14,7 @@ type
     ProgressBar: TProgressBar;
     btUserCancel: TButton;
     lbInfo: TLabel;
+    lbVerInfo: TLabel;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btUserCancelClick(Sender: TObject);
@@ -35,7 +36,7 @@ type
     procedure SetProgressMax(AValue: integer);
     procedure SetTitle(const AValue: string);
     procedure SetInfo(const AValue: string);
-
+    procedure SetVerInfo(const AValue: string);
   end;
 
 implementation
@@ -51,6 +52,7 @@ end;
 procedure TfrMain.FormCreate(Sender: TObject);
 begin
   FProgressCoeff := 1;
+  lbVerInfo.Caption := '';
 end;
 
 procedure TfrMain.FormShow(Sender: TObject);
@@ -95,6 +97,11 @@ begin
   if FTitle = '' then
     FTitle := 'Update Booster Framework';
   Caption := FTitle;
+end;
+
+procedure TfrMain.SetVerInfo(const AValue: string);
+begin
+  lbVerInfo.Caption := AValue;
 end;
 
 procedure TfrMain.WMShellShow(var Message: TMessage);

@@ -292,6 +292,7 @@ begin
 
     FShellView.SetTitle(FConfig.Values['Title']);
     FShellView.SetInfo(FConfig.Values['Info']);
+    FShellView.SetVerInfo(FCurVer + ' -> ' + FNewVer);
 
     Application.Run;
   end;

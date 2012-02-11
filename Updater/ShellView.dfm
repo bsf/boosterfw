@@ -32,6 +32,13 @@ object frMain: TfrMain
     Font.Style = []
     ParentFont = False
   end
+  object lbVerInfo: TLabel
+    Left = 8
+    Top = 81
+    Width = 44
+    Height = 13
+    Caption = 'lbVerInfo'
+  end
   object ProgressBar: TProgressBar
     Left = 8
     Top = 27
