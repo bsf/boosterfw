@@ -140,6 +140,7 @@ begin
     raise Exception.Create('MainForm class not setting');
 
   Application.CreateForm(ShellFormClass, FShell);
+  FShell.Visible := false;
 
   OnShellInitialization;
 
@@ -153,6 +154,7 @@ begin
 
   OnStart;
 
+  FShell.Visible := true;
   Application.Run;
 
   WorkItem.EventTopics[etAppStoped].Fire;

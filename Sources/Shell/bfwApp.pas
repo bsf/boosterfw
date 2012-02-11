@@ -21,6 +21,8 @@ type
     procedure SplashShow;
     procedure SplashHide;
     procedure SplashUpdate;
+    procedure UpdateApplication;
+
   protected
     procedure AddServices; override;
     procedure OnStart; override;
@@ -52,9 +54,12 @@ begin
   WorkItem.Services.Add(
     IConfigurationService(TConfigurationService.Create(Self, WorkItem)));
 
+  UpdateApplication;
+
   //UI
   WorkItem.Services.Add(
     TUIService.Create(Self, WorkItem) as IUIService);
+
 
   //Security
   securityService := TSecurityService.Create(Self, WorkItem);
@@ -92,6 +97,72 @@ end;
 function TApp.UI: IUIService;
 begin
   Result := WorkItem.Services[IUIService] as IUIService;
+end;
+
+
+procedure TApp.UpdateApplication;
+
+  function CheckUpdateStarted(const AUpdateFolder: string): boolean;
+  var
+    updateProcessID: string;
+    hFile: THandle;
+  begin
+    // —оздаем в страничной пам€ти 1-байтовый "файл" с уникальным
+    // именем updateProcessID, проецируем его в свое адресное пространство
+    // и провер€ем, был ли он создан или просто открыт.
+    updateProcessID := StringReplace(AUpdateFolder + '.updateProcess', '\', '.', [rfReplaceAll]); //slash bad simbol for CreateFileMappin
+
+    hFile := CreateFileMapping(INVALID_HANDLE_VALUE, nil, PAGE_READONLY, 0, 1, PChar(updateProcessID));
+
+    Result := (GetLastError = ERROR_ALREADY_EXISTS);
+
+    CloseHandle(hFile);
+
+  end;
+
+const
+  const_UpdaterFileName = 'BoosterUpdater.exe';
+
+var
+  cpResult: boolean;
+  startInfo: TStartupInfo;
+  procInfo: TProcessInformation;
+  commandLine: string;
+  updateFolder: string;
+begin
+
+
+  if Settings['Updater.Enabled'] <> '1' then Exit;
+
+  updateFolder := ExtractFilePath(ParamStr(0)) + 'Update\';
+
+  if not DirectoryExists(updateFolder) then Exit;
+
+
+  if CheckUpdateStarted(updateFolder) then Halt(0);
+
+  commandLine := updateFolder + const_UpdaterFileName + ' ' + ParamStr(0); //System.CmdLine;
+
+  FillChar(StartInfo, SizeOf(TStartUpInfo), #0);
+  FillChar(ProcInfo, SizeOf(TProcessInformation), #0);
+  StartInfo.cb := SizeOf(TStartUpInfo);
+  StartInfo.dwFlags      := STARTF_USESHOWWINDOW or STARTF_FORCEONFEEDBACK;
+  StartInfo.wShowWindow := SW_SHOWNORMAL;
+
+  UniqueString(commandLine);
+
+  cpResult := CreateProcess(nil, pchar(commandLine), nil, nil, true,
+    NORMAL_PRIORITY_CLASS, nil, nil, startInfo, procInfo);
+
+  if cpResult then
+  begin
+    WaitForInputIdle(procInfo.hProcess, INFINITE); // ждем завершени€ инициализации
+    WaitforSingleObject(procInfo.hProcess, INFINITE); // ждем завершени€ процесса
+    CloseHandle(procInfo.hThread); // закрываем дескриптор процесса
+    CloseHandle(procInfo.hProcess); // закрываем дескриптор потока
+  end;
+
+
 end;
 
 function TApp.UserProfile: IProfile;

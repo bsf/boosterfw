@@ -19,7 +19,8 @@ uses
   cxRichEdit, cxCustomPivotGrid, cxDBPivotGrid, Menus, cxButtons,
   cxExportPivotGridLink, cxCheckComboBox, cxDBCheckComboBox, cxCheckListBox,
   cxDBCheckListBox, IBUpdateSQL, DBXDataSnap, DBXCommon, DSConnect, SqlExpr,
-  DSHTTPLayer, cxColorComboBox;
+  DSHTTPLayer, cxColorComboBox, IdBaseComponent, IdComponent, IdTCPConnection,
+  IdTCPClient, IdHTTP;
 
 type
   TForm2 = class(TForm)
@@ -59,6 +60,7 @@ type
     cxGrid1DBTableView1: TcxGridDBTableView;
     cxGrid1Level1: TcxGridLevel;
     cxGrid1: TcxGrid;
+    IdHTTP1: TIdHTTP;
     procedure dxNavBar1Item1Click(Sender: TObject);
     procedure dxNavBar1Item2Click(Sender: TObject);
     procedure cxMRUEdit1PropertiesInitPopup(Sender: TObject);
