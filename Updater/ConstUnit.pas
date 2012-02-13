@@ -16,6 +16,7 @@ type
     procedure SetProgressMax(AValue: integer);
     procedure SetTitle(const AValue: string);
     procedure SetInfo(const AValue: string);
+    procedure SetVerInfo(const AValue: string);
   end;
 
 implementation

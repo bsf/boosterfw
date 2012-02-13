@@ -4,6 +4,7 @@ interface
 uses classes, inifiles, ConfigServiceIntf, sysutils;
 
 const
+  APPCONFIG_APP_SECTION = 'App';
   APPCONFIG_DEFAULT_SECTION = 'Default';
 
 type
@@ -56,9 +57,8 @@ begin
   end;
 
   for I := FAliases.Count - 1 downto 0 do
-    if (Pos('.HOST.', UpperCase(FAliases[I])) > 0) or
-       (Pos('.USER.', UpperCase(FAliases[I])) > 0) or
-       (SameText(FAliases[I], APPCONFIG_DEFAULT_SECTION)) then
+    if SameText(FAliases[I], APPCONFIG_APP_SECTION) or
+       SameText(FAliases[I], APPCONFIG_DEFAULT_SECTION) then
        FAliases.Delete(I);
   Result := FAliases;
 
@@ -85,7 +85,7 @@ var
 begin
   fileName := '';
   case ALevel of
-    slCommon: begin
+    slDefault: begin
       section := APPCONFIG_DEFAULT_SECTION;
       fileName := FConfigFileName;
     end;
@@ -134,7 +134,7 @@ var
 begin
   fileName := '';
   case ALevel of
-    slCommon: begin
+    slDefault: begin
       section := APPCONFIG_DEFAULT_SECTION;
       fileName := FConfigFileName;
     end;

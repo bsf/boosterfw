@@ -1,40 +1,51 @@
 unit Updater;
 
 interface
-uses classes, constUnit, forms, sysutils, windows, DBXJSON, wininet;
+uses classes, constUnit, forms, sysutils, windows, DBXJSON, wininet,
+  OleAuto, IOUtils, dialogs;
+
 
 type
   TUpdater = class(TComponent)
+  const
+    UPDATE_FILE_MARKER = 'update_package';
+
   private
     FUserCancel: boolean;
 
+    FSilent: boolean;
     FProcessMarker: THandle;
     FUpdateFolder: string;
+    FUpdateFolderUnzip: string;
     FUpdateFileName: string;
+
     FAppFileName: string;
+    FAppID: string;
+    FLastUpdate: string;
     FCurVer: string;
     FNewVer: string;
     FNewVerUrl: string;
 
-
     FConfigFileName: string;
     FConfig: TStringList;
+    FRunMode: string;
     FServerUrl: string;
-    FAppID: string;
 
     FShellView: IShellView;
     FShellViewClass: TFormClass;
     FShellViewObj: TForm;
 
+    procedure InstallUpdate;
+    procedure CheckUpdate;
+
     procedure SetShellViewClass(const Value: TFormClass);
 
-    function GetProcessMarker: THandle;
+    function GetProcessMarker(const ASuffix: string): THandle;
     function GetCurrentAppVersion(const AFileName: string): string;
     function GetNewAppVersionInfo(const CurVer, AppID, ServerURL: string;
       var NewVer, NewVerUrl: string): boolean;
 
-    function DownloadUpdate(const AURL, AFileName: string): boolean;
-    function InstallUpdate: boolean;
+    procedure DownloadUpdate(const AURL, AFileName: string);
 
     procedure SetViewProgressMax(AValue: integer);
     procedure SetViewProgressPosition(AValue: integer);
@@ -52,25 +63,78 @@ implementation
 
 { TUpdater }
 
+procedure TUpdater.CheckUpdate;
+var
+  idx: integer;
+begin
+
+  FConfigFileName := ChangeFileExt(ParamStr(0), '.ini');
+  if not FileExists(FConfigFileName) then Exit;
+  FConfig.LoadFromFile(FConfigFileName);
+
+  FAppID := FConfig.Values['AppID'];
+  if FAppID = '' then FAppID := 'BoosterLauncher';
+
+  FLastUpdate := FConfig.Values['LastUpdate'];
+
+  FCurVer := GetCurrentAppVersion(FAppFileName);
+  if FCurVer = '' then Exit;
+
+  FServerUrl := FConfig.Values['Server'];
+  if FServerUrl = '' then Exit;
+
+  if GetNewAppVersionInfo(FCurVer, FAppID, FServerURL, FNewVer, FNewVerUrl) then
+  begin
+    FProcessMarker := GetProcessMarker('.updateCheck');
+    if FProcessMarker = 0 then Exit;
+
+    FUpdateFolder := ExtractFilePath(ParamStr(0)) + 'Downloads\' + FNewVer + '\';
+    if not DirectoryExists(FUpdateFolder) then
+      if not ForceDirectories(FUpdateFolder) then Exit;
+
+    idx := LastDelimiter('\:/', FNewVerUrl);
+    FUpdateFileName := Copy(FNewVerUrl, idx + 1, MaxInt);
+    FUpdateFileName := FUpdateFolder + FUpdateFileName;
+
+
+    Application.Initialize;
+    Application.CreateForm(FShellViewClass, FShellViewObj);
+    FShellViewObj.GetInterface(IShellView, FShellView);
+
+    FShellView.SetOnShowCallback(OnShellShow);
+    FShellView.SetOnUserCancelCallback(OnUserCancel);
+
+    FShellView.SetTitle(FConfig.Values['Title']);
+    FShellView.SetInfo(FConfig.Values['Info']);
+    FShellView.SetVerInfo(FCurVer + ' -> ' + FNewVer);
+
+    if not FSilent then
+      Application.Run
+    else
+      DownloadUpdate(FNewVerUrl, FUpdateFileName);
+
+  end;
+
+
+end;
+
 constructor TUpdater.Create(AOwner: TComponent);
 begin
   inherited ;
-
   FConfig := TStringList.Create;
-  FProcessMarker := GetProcessMarker;
-
 end;
 
 destructor TUpdater.Destroy;
 begin
 
   FConfig.Free;
+
   CloseHandle(FProcessMarker);
 
   inherited;
 end;
 
-function TUpdater.DownloadUpdate(const AURL, AFileName: string): boolean;
+procedure TUpdater.DownloadUpdate(const AURL, AFileName: string);
 var
   hInet: HINTERNET;
   hFile: HINTERNET;
@@ -79,12 +143,13 @@ var
   bytesRead: DWORD;
   sizeDownloaded: integer;
   fSize: integer;
-  err: boolean;
+  fMarker: TStringList;
+  fMarkerName: string;
+  errDownload: boolean;
 begin
-  Result := false;
 
-  err := false;
   sizeDownloaded := 0;
+  errDownload := false;
 
   AssignFile(f, AFileName);
   if FileExists(AFileName) then
@@ -112,10 +177,11 @@ begin
       InternetSetFilePointer(hFile, sizeDownloaded, nil, 0, 0); //Cместимся
 
       repeat
-        err := InternetReadFile(hFile, @buffer, SizeOf(buffer), bytesRead); //Читаем буфер
-
-        if err = false then //Ошибка чтения
+        if not InternetReadFile(hFile, @buffer, SizeOf(buffer), bytesRead) then //Читаем буфер
+        begin
+          errDownload := true;
           break;
+        end;
 
         BlockWrite(f, buffer, bytesRead); //Пишем в файл
 
@@ -127,10 +193,25 @@ begin
 
     end;
 
+    if (not FUserCancel) and (not errDownload) then
+    begin
+      sizeDownloaded := FileSize(f); //Откуда докачать
+      if sizeDownloaded = fSize then
+      begin
+        fMarker := TStringList.Create;
+        try
+          fMarker.Add(FUpdateFileName);
+          fMarkerName := ExtractFilePath(FAppFileName) + UPDATE_FILE_MARKER;
+          if FileExists(fMarkerName) then
+            Sysutils.DeleteFile(fMarkerName);
+          fMarker.SaveToFile(fMarkerName);
+        finally
+          fMarker.Free;
+        end;
+      end;
+    end;
+
     CloseFile(f);
-
-    Result := (not FUserCancel) and (not err);
-
     InternetCloseHandle(hFile);
 
   end;
@@ -209,23 +290,27 @@ begin
 
 end;
 
-function TUpdater.GetProcessMarker: THandle;
+function TUpdater.GetProcessMarker(const ASuffix: string): THandle;
 var
-  updateProcessID: string;
+  I: integer;
+  processMarker: string;
 begin
-    // Создаем в страничной памяти 1-байтовый "файл" с уникальным
-    // именем updateProcessID, проецируем его в свое адресное пространство
-    // и проверяем, был ли он создан или просто открыт.
-  updateProcessID := StringReplace(ExtractFilePath(ParamStr(0)) + '.updateProcess', '\', '.', [rfReplaceAll]); //slash bad simbol for CreateFileMappin
+  processMarker := ParamStr(0);
+  for I := 1 to Length(processMarker) do
+    if processMarker[I] = '\' then
+      processMarker[I] := '/';
 
-  Result := CreateFileMapping(INVALID_HANDLE_VALUE, nil, PAGE_READONLY, 0, 1, PChar(updateProcessID));
+  processMarker := processMarker + ASuffix;
 
+
+  Result := CreateMutex(nil, false, PWideChar(processMarker));
 
   if GetLastError = ERROR_ALREADY_EXISTS then
     Result := 0;
 end;
 
-function TUpdater.InstallUpdate: boolean;
+
+procedure TUpdater.InstallUpdate;
 begin
 
 end;
@@ -233,12 +318,7 @@ end;
 procedure TUpdater.OnShellShow;
 begin
   try
-    if DownloadUpdate(FNewVerUrl, FUpdateFileName) then
-      if InstallUpdate then
-      begin
-
-      end;
-
+    DownloadUpdate(FNewVerUrl, FUpdateFileName);
   finally
     Application.Terminate;
   end;
@@ -251,51 +331,21 @@ end;
 
 procedure TUpdater.Run;
 var
-  idx: integer;
+  runModeSwitch: string;
 begin
-  if FProcessMarker = 0 then Exit;
 
-  FAppFileName := ParamStr(1);
+  FindCmdLineSwitch('app', FAppFileName);
   if FAppFileName = '' then Exit;
 
-  FConfigFileName := ChangeFileExt(ParamStr(0), '.ini');
-  if not FileExists(FConfigFileName) then Exit;
-  FConfig.LoadFromFile(FConfigFileName);
+  FSilent := FindCmdLineSwitch('silent');
 
-  FServerUrl := FConfig.Values['Server'];
-  if FServerUrl = '' then Exit;
+  FindCmdLineSwitch('mode', runModeSwitch);
+  if runModeSwitch = '' then Exit;
 
-  FAppID := FConfig.Values['AppID'];
-  if FAppID = '' then FAppID := 'BoosterLauncher';
-
-  FCurVer := GetCurrentAppVersion(FAppFileName);
-  if FCurVer = '' then Exit;
-
-  if GetNewAppVersionInfo(FCurVer, FAppID, FServerURL, FNewVer, FNewVerUrl) then
-  begin
-
-    FUpdateFolder := ExtractFilePath(ParamStr(0)) + 'Downloads\' + FNewVer + '\';
-
-    if not DirectoryExists(FUpdateFolder) then
-      if not ForceDirectories(FUpdateFolder) then Exit;
-
-    idx := LastDelimiter('\:/', FNewVerUrl);
-    FUpdateFileName := Copy(FNewVerUrl, idx + 1, MaxInt);
-    FUpdateFileName := FUpdateFolder + FUpdateFileName;
-
-    Application.Initialize;
-    Application.CreateForm(FShellViewClass, FShellViewObj);
-    FShellViewObj.GetInterface(IShellView, FShellView);
-
-    FShellView.SetOnShowCallback(OnShellShow);
-    FShellView.SetOnUserCancelCallback(OnUserCancel);
-
-    FShellView.SetTitle(FConfig.Values['Title']);
-    FShellView.SetInfo(FConfig.Values['Info']);
-    FShellView.SetVerInfo(FCurVer + ' -> ' + FNewVer);
-
-    Application.Run;
-  end;
+  if SameText(runModeSwitch, 'Install') then
+    InstallUpdate
+  else if SameText(runModeSwitch, 'Check') then
+    CheckUpdate;
 
 end;
 

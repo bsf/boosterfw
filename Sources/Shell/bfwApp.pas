@@ -22,7 +22,6 @@ type
     procedure SplashHide;
     procedure SplashUpdate;
     procedure UpdateApplication;
-
   protected
     procedure AddServices; override;
     procedure OnStart; override;
@@ -102,17 +101,55 @@ end;
 
 procedure TApp.UpdateApplication;
 
-  function CheckUpdateStarted(const AUpdateFolder: string): boolean;
+type
+  UpdaterRunMode = (rmInstall, rmCheck);
+
+  procedure RunUpdater(ARunMode: UpdaterRunMode);
+  const
+    const_UpdaterFileName = 'BoosterUpdater.exe';
+
   var
-    updateProcessID: string;
+    cpResult: boolean;
+    startInfo: TStartupInfo;
+    procInfo: TProcessInformation;
+    commandLine: string;
+    modeSwitch: string;
+  begin
+    case ARunMode of
+      rmInstall: modeSwitch := 'Install';
+      rmCheck: modeSwitch := 'Check';
+    end;
+
+    commandLine := ExtractFilePath(ParamStr(0)) + 'Update\' + const_UpdaterFileName +
+      ' -silent ' + ' -app ' + ParamStr(0) + ' -mode ' + modeSwitch;
+
+    FillChar(StartInfo, SizeOf(TStartUpInfo), #0);
+    FillChar(ProcInfo, SizeOf(TProcessInformation), #0);
+    StartInfo.cb := SizeOf(TStartUpInfo);
+    StartInfo.dwFlags     := STARTF_USESHOWWINDOW or STARTF_FORCEONFEEDBACK;
+    StartInfo.wShowWindow := SW_SHOWNORMAL;
+
+    UniqueString(commandLine);
+
+    cpResult := CreateProcess(nil, pchar(commandLine), nil, nil, true,
+      NORMAL_PRIORITY_CLASS, nil, nil, startInfo, procInfo);
+
+    if cpResult then
+    begin
+    //  WaitForInputIdle(procInfo.hProcess, INFINITE); // ждем завершения инициализации
+   //   WaitforSingleObject(procInfo.hProcess, INFINITE); // ждем завершения процесса
+      CloseHandle(procInfo.hThread); // закрываем дескриптор процесса
+      CloseHandle(procInfo.hProcess); // закрываем дескриптор потока
+    end;
+
+  end;
+
+  function CheckProcessStarted(const AProcessMarker: string): boolean;
+  var
     hFile: THandle;
   begin
-    // Создаем в страничной памяти 1-байтовый "файл" с уникальным
-    // именем updateProcessID, проецируем его в свое адресное пространство
-    // и проверяем, был ли он создан или просто открыт.
-    updateProcessID := StringReplace(AUpdateFolder + '.updateProcess', '\', '.', [rfReplaceAll]); //slash bad simbol for CreateFileMappin
 
-    hFile := CreateFileMapping(INVALID_HANDLE_VALUE, nil, PAGE_READONLY, 0, 1, PChar(updateProcessID));
+    hFile := CreateMutex(nil, false, PChar(AProcessMarker));
 
     Result := (GetLastError = ERROR_ALREADY_EXISTS);
 
@@ -121,46 +158,30 @@ procedure TApp.UpdateApplication;
   end;
 
 const
-  const_UpdaterFileName = 'BoosterUpdater.exe';
+  const_NeedInstallFile = 'update_package';
 
 var
-  cpResult: boolean;
-  startInfo: TStartupInfo;
-  procInfo: TProcessInformation;
-  commandLine: string;
-  updateFolder: string;
+  processMarker: string;
+  I: integer;
 begin
-
 
   if Settings['Updater.Enabled'] <> '1' then Exit;
 
-  updateFolder := ExtractFilePath(ParamStr(0)) + 'Update\';
+  processMarker := ParamStr(0);
+  for I := 1 to Length(processMarker) do
+    if processMarker[I] = '\' then
+      processMarker[I] := '/';
 
-  if not DirectoryExists(updateFolder) then Exit;
+  if CheckProcessStarted(processMarker + '.updateInstall') then Halt(0);
 
-
-  if CheckUpdateStarted(updateFolder) then Halt(0);
-
-  commandLine := updateFolder + const_UpdaterFileName + ' ' + ParamStr(0); //System.CmdLine;
-
-  FillChar(StartInfo, SizeOf(TStartUpInfo), #0);
-  FillChar(ProcInfo, SizeOf(TProcessInformation), #0);
-  StartInfo.cb := SizeOf(TStartUpInfo);
-  StartInfo.dwFlags      := STARTF_USESHOWWINDOW or STARTF_FORCEONFEEDBACK;
-  StartInfo.wShowWindow := SW_SHOWNORMAL;
-
-  UniqueString(commandLine);
-
-  cpResult := CreateProcess(nil, pchar(commandLine), nil, nil, true,
-    NORMAL_PRIORITY_CLASS, nil, nil, startInfo, procInfo);
-
-  if cpResult then
+  if FileExists(ExtractFilePath(ParamStr(0)) + const_NeedInstallFile) then
   begin
-    WaitForInputIdle(procInfo.hProcess, INFINITE); // ждем завершения инициализации
-    WaitforSingleObject(procInfo.hProcess, INFINITE); // ждем завершения процесса
-    CloseHandle(procInfo.hThread); // закрываем дескриптор процесса
-    CloseHandle(procInfo.hProcess); // закрываем дескриптор потока
+    RunUpdater(rmInstall);
+    Halt(0);
   end;
+
+  if not CheckProcessStarted(processMarker + '.updateCheck') then
+    RunUpdater(rmCheck);
 
 
 end;

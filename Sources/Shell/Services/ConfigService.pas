@@ -508,7 +508,7 @@ end;
 constructor TSetting.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FStorageLevels := [slHostProfile, slAlias, slCommon];// [Low(TSettingStorageLevel)..High(TSettingStorageLevel)] - [slNone];
+  FStorageLevels := [slHostProfile, slAlias, slDefault];// [Low(TSettingStorageLevel)..High(TSettingStorageLevel)] - [slNone];
 end;
 
 function TSetting.GetCaption: string;

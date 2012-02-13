@@ -7,7 +7,7 @@ const
   ET_PROFILE_CHANGED = '{78AA14D4-3317-4723-861F-044FE9D76A27}';
 
 type
-  TSettingStorageLevel = (slNone, slUserProfile, slHostProfile, slAlias, slCommon);
+  TSettingStorageLevel = (slNone, slUserProfile, slHostProfile, slAlias, slDefault, slApp);
   TSettingStorageLevels = set of TSettingStorageLevel;
 
   TSettingEditor = (seString, seInteger, seBoolean);

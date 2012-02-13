@@ -106,7 +106,7 @@
 						<Source Name="MainSource">BoosterUpdater.dpr</Source>
 					</Source>
 					<Parameters>
-						<Parameters Name="RunParams">D:\PRJ\HERMES\HermesXE\External\Boosterfw\Output\BoosterLauncher.exe</Parameters>
+						<Parameters Name="RunParams">-silent -app D:\PRJ\HERMES\HermesXE\External\Boosterfw\Output\BoosterLauncher.exe -mode check</Parameters>
 					</Parameters>
 				</Delphi.Personality>
 				<Platforms>

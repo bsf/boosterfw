@@ -68,7 +68,7 @@ begin
   storageLevel := slNone;
 
   if AField.DataSet = FCommonAppSettingsData then
-    storageLevel := slCommon
+    storageLevel := slDefault
   else if AField.DataSet = FAliasAppSettingsData then
     storageLevel := slAlias
   else if AField.DataSet = FHostAppSettingsData then
@@ -76,9 +76,9 @@ begin
 
   App.Settings.GetItemByName(AField.Origin).SetStoredValue(VarToStr(AField.Value), storageLevel);
 
-  if storageLevel = slCommon then
+  if storageLevel = slDefault then
   begin
-    ReloadSettingValue(FCommonAppSettingsData, AField.Origin, slCommon);
+    ReloadSettingValue(FCommonAppSettingsData, AField.Origin, slDefault);
     ReloadSettingValue(FAliasAppSettingsData, AField.Origin, slAlias);
     ReloadSettingValue(FHostAppSettingsData, AField.Origin, slHostProfile);
   end
@@ -155,7 +155,7 @@ procedure TSettingsPresenter.InitAppSettingsData;
 
 begin
   FCommonAppSettingsData := TdxMemData.Create(Self);
-  InitData(FCommonAppSettingsData, slCommon);
+  InitData(FCommonAppSettingsData, slDefault);
 
   FAliasAppSettingsData := TdxMemData.Create(Self);
   InitData(FAliasAppSettingsData, slAlias);

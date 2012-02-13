@@ -122,7 +122,7 @@ begin
     Category := 'Уведомления';
     DefaultValue := '0';
     Editor := seBoolean;
-    StorageLevels := [slUserProfile, slHostProfile, slAlias, slCommon];
+    StorageLevels := [slUserProfile, slHostProfile, slAlias, slDefault];
   end;
 
   with App.Settings.Add(SETTING_RECEIVER_INTERVAL) do
@@ -131,7 +131,7 @@ begin
     Category := 'Уведомления';
     DefaultValue := IntToStr(const_ReceiveIntervalDef);
     Editor := seInteger;
-    StorageLevels := [slUserProfile, slHostProfile, slAlias, slCommon];
+    StorageLevels := [slUserProfile, slHostProfile, slAlias, slDefault];
   end;
 
 end;
