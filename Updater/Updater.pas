@@ -2,13 +2,14 @@ unit Updater;
 
 interface
 uses classes, constUnit, forms, sysutils, windows, DBXJSON, wininet,
-  OleAuto, IOUtils, dialogs;
+  IOUtils, dialogs;
 
 
 type
   TUpdater = class(TComponent)
   const
     UPDATE_FILE_MARKER = 'update_package';
+    LAST_UPDATE_FILE_MARKER = 'last_update_package';
 
   private
     FUserCancel: boolean;
@@ -16,20 +17,14 @@ type
     FSilent: boolean;
     FProcessMarker: THandle;
     FUpdateFolder: string;
-    FUpdateFolderUnzip: string;
     FUpdateFileName: string;
 
     FAppFileName: string;
-    FAppID: string;
-    FLastUpdate: string;
-    FCurVer: string;
-    FNewVer: string;
     FNewVerUrl: string;
 
     FConfigFileName: string;
     FConfig: TStringList;
     FRunMode: string;
-    FServerUrl: string;
 
     FShellView: IShellView;
     FShellViewClass: TFormClass;
@@ -40,9 +35,12 @@ type
 
     procedure SetShellViewClass(const Value: TFormClass);
 
+    function GetLastUpdatePackage: string;
+    procedure SetLastUpdatePackage(const APackageName: string);
+
     function GetProcessMarker(const ASuffix: string): THandle;
     function GetCurrentAppVersion(const AFileName: string): string;
-    function GetNewAppVersionInfo(const CurVer, AppID, ServerURL: string;
+    function GetNewAppVersionInfo(const CurVer, AppID, LastUpdatePackage, ServerURL: string;
       var NewVer, NewVerUrl: string): boolean;
 
     procedure DownloadUpdate(const AURL, AFileName: string);
@@ -66,29 +64,32 @@ implementation
 procedure TUpdater.CheckUpdate;
 var
   idx: integer;
+  lastUpdatePackage: string;
+  serverURL: string;
+  curVer: string;
+  newVer: string;
+  appID: string;
+  newVerUrl: string;
 begin
 
-  FConfigFileName := ChangeFileExt(ParamStr(0), '.ini');
-  if not FileExists(FConfigFileName) then Exit;
-  FConfig.LoadFromFile(FConfigFileName);
+  appID := FConfig.Values['AppID'];
+  if appID = '' then
+    appID := ChangeFileExt(ExtractFileName(FAppFileName), '');
 
-  FAppID := FConfig.Values['AppID'];
-  if FAppID = '' then FAppID := 'BoosterLauncher';
+  curVer := GetCurrentAppVersion(FAppFileName);
+  if curVer = '' then Exit;
 
-  FLastUpdate := FConfig.Values['LastUpdate'];
+  serverUrl := FConfig.Values['Server'];
+  if serverUrl = '' then Exit;
 
-  FCurVer := GetCurrentAppVersion(FAppFileName);
-  if FCurVer = '' then Exit;
+  lastUpdatePackage := GetLastUpdatePackage;
 
-  FServerUrl := FConfig.Values['Server'];
-  if FServerUrl = '' then Exit;
-
-  if GetNewAppVersionInfo(FCurVer, FAppID, FServerURL, FNewVer, FNewVerUrl) then
+  if GetNewAppVersionInfo(curVer, appID, lastUpdatePackage, serverURL, newVer, FNewVerUrl) then
   begin
     FProcessMarker := GetProcessMarker('.updateCheck');
     if FProcessMarker = 0 then Exit;
 
-    FUpdateFolder := ExtractFilePath(ParamStr(0)) + 'Downloads\' + FNewVer + '\';
+    FUpdateFolder := ExtractFilePath(ParamStr(0)) + 'Downloads\' + newVer + '\';
     if not DirectoryExists(FUpdateFolder) then
       if not ForceDirectories(FUpdateFolder) then Exit;
 
@@ -106,7 +107,7 @@ begin
 
     FShellView.SetTitle(FConfig.Values['Title']);
     FShellView.SetInfo(FConfig.Values['Info']);
-    FShellView.SetVerInfo(FCurVer + ' -> ' + FNewVer);
+    FShellView.SetVerInfo(curVer + ' -> ' + newVer);
 
     if not FSilent then
       Application.Run
@@ -234,7 +235,28 @@ begin
 
 end;
 
-function TUpdater.GetNewAppVersionInfo(const CurVer, AppID, ServerURL: string;
+function TUpdater.GetLastUpdatePackage: string;
+var
+  f: TStringList;
+  fName: string;
+begin
+  Result := '';
+  fName := ExtractFilePath(ParamStr(0)) + LAST_UPDATE_FILE_MARKER;
+  if FileExists(fName) then
+  begin
+    f := TStringList.Create;
+    try
+      f.LoadFromFile(fName);
+      if f.Count > 0  then
+        Result := f[0];
+    finally
+      f.Free;
+    end;
+  end;
+
+end;
+
+function TUpdater.GetNewAppVersionInfo(const CurVer, AppID, LastUpdatePackage, ServerURL: string;
   var NewVer, NewVerUrl: string): boolean;
 var
   hSession: HInternet;
@@ -259,6 +281,9 @@ begin
   hSession:= InternetOpen('BoosterUpdater', INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0);
 
   url := serverURL + '?q=GetNewVersion' + '&a=' + appID + '&c=' + CurVer;
+  if LastUpdatePackage <> '' then
+    url := url + '&l=' + LastUpdatePackage;
+
   hUrl := InternetOpenUrl(hSession, PWideChar(url), nil, 0, 0, 0);
 
   for I := 1 to 1024 do Buffer[I] := #0;
@@ -268,7 +293,6 @@ begin
 
     responseText := Copy(buffer, 1, bufferLen);
     SetLength(responseText, bufferLen);
-    //responseText := '{"ver":"2012.02.11","url":"https://github.com/downloads/bsf/boosterfw/BoosterApp.zip"}';
     responseObj := TJSONObject.ParseJSONValue(responseText) as TJSONObject;
     if Assigned(responseObj) then //парсинг прошел успешно - считываем названия пар
     begin
@@ -295,7 +319,7 @@ var
   I: integer;
   processMarker: string;
 begin
-  processMarker := ParamStr(0);
+  processMarker := FAppFileName;
   for I := 1 to Length(processMarker) do
     if processMarker[I] = '\' then
       processMarker[I] := '/';
@@ -311,7 +335,119 @@ end;
 
 
 procedure TUpdater.InstallUpdate;
+
+  function RunUpdatePackage(const AUpdatePackage: string): boolean;
+  var
+    cpResult: boolean;
+    startInfo: TStartupInfo;
+    procInfo: TProcessInformation;
+    commandLine: string;
+    exitCode: DWORD;
+  begin
+    Result := false;
+    commandLine := AUpdatePackage + ' ' + FAppFileName;
+    if FSilent then
+      commandLine := commandLine + ' /silent';
+
+    FillChar(StartInfo, SizeOf(TStartUpInfo), #0);
+    FillChar(ProcInfo, SizeOf(TProcessInformation), #0);
+    StartInfo.cb := SizeOf(TStartUpInfo);
+    StartInfo.dwFlags     := STARTF_USESHOWWINDOW or STARTF_FORCEONFEEDBACK;
+    StartInfo.wShowWindow := SW_SHOWNORMAL;
+
+    UniqueString(commandLine);
+
+    cpResult := CreateProcess(nil, pchar(commandLine), nil, nil, true,
+       NORMAL_PRIORITY_CLASS, nil, nil, startInfo, procInfo);
+
+    if cpResult then
+    begin
+      WaitForInputIdle(procInfo.hProcess, INFINITE); // ждем завершения инициализации
+      WaitforSingleObject(procInfo.hProcess, INFINITE); // ждем завершения процесса
+      GetExitCodeProcess(procInfo.hProcess, exitCode);
+      CloseHandle(procInfo.hThread); // закрываем дескриптор процесса
+      CloseHandle(procInfo.hProcess); // закрываем дескриптор потока
+
+      Result := exitCode = 0;
+    end;
+  end;
+
+  procedure RunApplication;
+  var
+    cpResult: boolean;
+    startInfo: TStartupInfo;
+    procInfo: TProcessInformation;
+    commandLine: string;
+    exitCode: DWORD;
+  begin
+
+    commandLine := FAppFileName;
+
+    FillChar(StartInfo, SizeOf(TStartUpInfo), #0);
+    FillChar(ProcInfo, SizeOf(TProcessInformation), #0);
+    StartInfo.cb := SizeOf(TStartUpInfo);
+    StartInfo.dwFlags     := STARTF_USESHOWWINDOW or STARTF_FORCEONFEEDBACK;
+    StartInfo.wShowWindow := SW_SHOWNORMAL;
+
+    UniqueString(commandLine);
+
+    cpResult := CreateProcess(nil, pchar(commandLine), nil, nil, true,
+       NORMAL_PRIORITY_CLASS, nil, nil, startInfo, procInfo);
+
+    if cpResult then
+    begin
+      CloseHandle(procInfo.hThread); // закрываем дескриптор процесса
+      CloseHandle(procInfo.hProcess); // закрываем дескриптор потока
+    end;
+
+  end;
+
+var
+  cpResult: boolean;
+  startInfo: TStartupInfo;
+  procInfo: TProcessInformation;
+  commandLine: string;
+  exitCode: DWORD;
+
+  fMarkerName: string;
+  fMarkerName2: string;
+  fMarker: TStringList;
+  fUpdatePackage: string;
+  fNoStartApp: boolean;
 begin
+
+  fMarkerName := ExtractFilePath(FAppFileName) + UPDATE_FILE_MARKER;
+  if not FileExists(fMarkerName) then Exit;
+
+  fUpdatePackage := '';
+  fMarker := TStringList.Create;
+  try
+    fMarker.LoadFromFile(fMarkerName);
+    if fMarker.Count > 0 then
+      fUpdatePackage := fMarker[0];
+  finally
+    fMarker.Free;
+  end;
+
+  if not FileExists(fUpdatePackage) then
+  begin
+    SysUtils.DeleteFile(fMarkerName);
+    Exit;
+  end;
+
+  FProcessMarker := GetProcessMarker('.updateInstall');
+  if FProcessMarker = 0 then Exit;
+
+  if RunUpdatePackage(fUpdatePackage) then
+  begin
+    SysUtils.DeleteFile(fMarkerName);
+
+    SetLastUpdatePackage(ExtractFileName(fUpdatePackage));
+
+    RunApplication;
+
+  end;
+
 
 end;
 
@@ -333,6 +469,9 @@ procedure TUpdater.Run;
 var
   runModeSwitch: string;
 begin
+  FConfigFileName := ChangeFileExt(ParamStr(0), '.ini');
+  if not FileExists(FConfigFileName) then Exit;
+  FConfig.LoadFromFile(FConfigFileName);
 
   FindCmdLineSwitch('app', FAppFileName);
   if FAppFileName = '' then Exit;
@@ -349,11 +488,25 @@ begin
 
 end;
 
+procedure TUpdater.SetLastUpdatePackage(const APackageName: string);
+var
+  f: TStringList;
+  fName: string;
+begin
+  fName := ExtractFilePath(ParamStr(0)) + LAST_UPDATE_FILE_MARKER;
+  f := TStringList.Create;
+  try
+    f.Add(APackageName);
+    f.SaveToFile(fName);
+  finally
+    f.Free;
+  end;
+end;
+
 procedure TUpdater.SetShellViewClass(const Value: TFormClass);
 begin
   FShellViewClass := Value;
 end;
-
 
 procedure TUpdater.SetViewProgressMax(AValue: integer);
 begin
