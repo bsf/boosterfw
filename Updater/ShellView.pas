@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ComCtrls, wininet, constUnit, StdCtrls;
+  Dialogs, ComCtrls, wininet, ShellViewIntf, StdCtrls;
 
 const
   WM_SHELL_SHOW = wm_USER + 100;

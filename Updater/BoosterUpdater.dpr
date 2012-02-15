@@ -3,7 +3,8 @@ program BoosterUpdater;
 uses
   ShellView in 'ShellView.pas' {frMain},
   ConstUnit in 'ConstUnit.pas',
-  Updater in 'Updater.pas';
+  Updater in 'Updater.pas',
+  ShellViewIntf in 'ShellViewIntf.pas';
 
 {$R *.res}
 

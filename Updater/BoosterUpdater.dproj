@@ -56,6 +56,7 @@
 			</DCCReference>
 			<DCCReference Include="ConstUnit.pas"/>
 			<DCCReference Include="Updater.pas"/>
+			<DCCReference Include="ShellViewIntf.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

@@ -1,7 +1,7 @@
 unit Updater;
 
 interface
-uses classes, constUnit, forms, sysutils, windows, DBXJSON, wininet,
+uses classes, ShellViewIntf, forms, sysutils, windows, DBXJSON, wininet,
   IOUtils, dialogs;
 
 
@@ -10,6 +10,7 @@ type
   const
     UPDATE_FILE_MARKER = 'update_package';
     LAST_UPDATE_FILE_MARKER = 'last_update_package';
+    AGENT_NAME = 'BoosterUpdater';
 
   private
     FUserCancel: boolean;
@@ -21,10 +22,10 @@ type
 
     FAppFileName: string;
     FNewVerUrl: string;
+    FStartAppAfterInstall: boolean;
 
     FConfigFileName: string;
     FConfig: TStringList;
-    FRunMode: string;
 
     FShellView: IShellView;
     FShellViewClass: TFormClass;
@@ -69,7 +70,6 @@ var
   curVer: string;
   newVer: string;
   appID: string;
-  newVerUrl: string;
 begin
 
   appID := FConfig.Values['AppID'];
@@ -186,7 +186,7 @@ begin
 
         BlockWrite(f, buffer, bytesRead); //Пишем в файл
 
-        sizeDownloaded := sizeDownloaded + bytesRead;
+        sizeDownloaded := sizeDownloaded + integer(bytesRead);
         Application.ProcessMessages;
         SetViewProgressPosition(sizeDownloaded);
 
@@ -291,7 +291,7 @@ begin
   if InternetReadFile(hUrl, @buffer, SizeOf(buffer), bufferLen) then
   begin
 
-    responseText := Copy(buffer, 1, bufferLen);
+    responseText := UTF8String(Copy(buffer, 1, bufferLen));
     SetLength(responseText, bufferLen);
     responseObj := TJSONObject.ParseJSONValue(responseText) as TJSONObject;
     if Assigned(responseObj) then //парсинг прошел успешно - считываем названия пар
@@ -378,7 +378,6 @@ procedure TUpdater.InstallUpdate;
     startInfo: TStartupInfo;
     procInfo: TProcessInformation;
     commandLine: string;
-    exitCode: DWORD;
   begin
 
     commandLine := FAppFileName;
@@ -403,17 +402,9 @@ procedure TUpdater.InstallUpdate;
   end;
 
 var
-  cpResult: boolean;
-  startInfo: TStartupInfo;
-  procInfo: TProcessInformation;
-  commandLine: string;
-  exitCode: DWORD;
-
   fMarkerName: string;
-  fMarkerName2: string;
   fMarker: TStringList;
   fUpdatePackage: string;
-  fNoStartApp: boolean;
 begin
 
   fMarkerName := ExtractFilePath(FAppFileName) + UPDATE_FILE_MARKER;
@@ -444,7 +435,8 @@ begin
 
     SetLastUpdatePackage(ExtractFileName(fUpdatePackage));
 
-    RunApplication;
+    if FStartAppAfterInstall then
+      RunApplication;
 
   end;
 
@@ -477,6 +469,7 @@ begin
   if FAppFileName = '' then Exit;
 
   FSilent := FindCmdLineSwitch('silent');
+  FStartAppAfterInstall := FindCmdLineSwitch('runApp');
 
   FindCmdLineSwitch('mode', runModeSwitch);
   if runModeSwitch = '' then Exit;

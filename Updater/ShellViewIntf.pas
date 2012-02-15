@@ -1,9 +1,6 @@
-unit ConstUnit;
+unit ShellViewIntf;
 
 interface
-
-const
-  AGENT_NAME = 'BoosterUpdater';
 
 type
   TShellCallbackProc = procedure of object;

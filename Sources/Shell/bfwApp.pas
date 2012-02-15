@@ -121,7 +121,7 @@ type
     end;
 
     commandLine := ExtractFilePath(ParamStr(0)) + 'Update\' + const_UpdaterFileName +
-      ' -silent ' + ' -app ' + ParamStr(0) + ' -mode ' + modeSwitch;
+      ' -silent -runApp ' + ' -app ' + ParamStr(0) + ' -mode ' + modeSwitch;
 
     FillChar(StartInfo, SizeOf(TStartUpInfo), #0);
     FillChar(ProcInfo, SizeOf(TProcessInformation), #0);
