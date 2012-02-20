@@ -1,5 +1,7 @@
 inherited frEntityPickListView: TfrEntityPickListView
   Caption = 'frEntityPickListView'
+  ExplicitWidth = 676
+  ExplicitHeight = 543
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
@@ -15,6 +17,7 @@ inherited frEntityPickListView: TfrEntityPickListView
       ParentColor = False
       Style.BorderStyle = ebsNone
       Style.Color = clInfoBk
+      Style.Edges = [bLeft, bTop, bRight, bBottom]
       Style.LookAndFeel.Kind = lfOffice11
       StyleDisabled.LookAndFeel.Kind = lfOffice11
       StyleFocused.LookAndFeel.Kind = lfOffice11
@@ -31,10 +34,9 @@ inherited frEntityPickListView: TfrEntityPickListView
         Anchors = [akLeft, akTop, akRight, akBottom]
         Properties.OnChange = edFilterPropertiesChange
         TabOrder = 0
-        ExplicitWidth = 619
         Width = 611
       end
-      object cxLabel1: TcxLabel
+      object lbFilter: TcxLabel
         Left = 2
         Top = 2
         Align = alLeft
@@ -45,39 +47,98 @@ inherited frEntityPickListView: TfrEntityPickListView
         AnchorY = 15
       end
     end
-    object grList: TcxGrid
+    object pcListContainer: TcxPageControl
       Left = 2
       Top = 31
       Width = 666
       Height = 445
+      ActivePage = tsTreeList
       Align = alClient
-      TabOrder = 0
+      HideTabs = True
+      ImageBorder = 1
       LookAndFeel.Kind = lfOffice11
-      ExplicitWidth = 674
-      ExplicitHeight = 453
-      object grListView: TcxGridDBTableView
-        NavigatorButtons.ConfirmDelete = False
-        OnCellDblClick = grListViewCellDblClick
-        DataController.DataSource = ListDataSource
-        DataController.Summary.DefaultGroupSummaryItems = <>
-        DataController.Summary.FooterSummaryItems = <>
-        DataController.Summary.SummaryGroups = <>
-        OptionsBehavior.IncSearch = True
-        OptionsCustomize.ColumnsQuickCustomization = True
-        OptionsData.Deleting = False
-        OptionsData.Editing = False
-        OptionsData.Inserting = False
-        OptionsView.ColumnAutoWidth = True
-        OptionsView.GroupByBox = False
-        OptionsView.Indicator = True
+      LookAndFeel.NativeStyle = False
+      TabOrder = 0
+      TabStop = False
+      ClientRectBottom = 445
+      ClientRectRight = 666
+      ClientRectTop = 0
+      object tsGridList: TcxTabSheet
+        Caption = 'tsGridList'
+        ImageIndex = 0
+        ExplicitLeft = 4
+        ExplicitTop = 4
+        ExplicitWidth = 658
+        ExplicitHeight = 437
+        object grList: TcxGrid
+          Left = 0
+          Top = 0
+          Width = 666
+          Height = 445
+          Align = alClient
+          TabOrder = 0
+          LookAndFeel.Kind = lfOffice11
+          ExplicitTop = -2
+          ExplicitWidth = 658
+          ExplicitHeight = 437
+          object grListView: TcxGridDBTableView
+            NavigatorButtons.ConfirmDelete = False
+            OnCellDblClick = grListViewCellDblClick
+            DataController.DataSource = ListDataSource
+            DataController.Summary.DefaultGroupSummaryItems = <>
+            DataController.Summary.FooterSummaryItems = <>
+            DataController.Summary.SummaryGroups = <>
+            OptionsBehavior.IncSearch = True
+            OptionsCustomize.ColumnsQuickCustomization = True
+            OptionsData.Deleting = False
+            OptionsData.Editing = False
+            OptionsData.Inserting = False
+            OptionsView.ColumnAutoWidth = True
+            OptionsView.GroupByBox = False
+            OptionsView.Indicator = True
+          end
+          object grListLevel1: TcxGridLevel
+            GridView = grListView
+          end
+        end
       end
-      object grListLevel1: TcxGridLevel
-        GridView = grListView
+      object tsTreeList: TcxTabSheet
+        Caption = 'tsTreeList'
+        ImageIndex = 1
+        ExplicitLeft = -16
+        ExplicitTop = -6
+        object grTreeList: TcxDBTreeList
+          Left = 0
+          Top = 0
+          Width = 666
+          Height = 445
+          Align = alClient
+          Bands = <>
+          LookAndFeel.Kind = lfOffice11
+          OptionsBehavior.ExpandOnIncSearch = True
+          OptionsCustomizing.BandVertSizing = False
+          OptionsCustomizing.ColumnsQuickCustomization = True
+          OptionsData.Editing = False
+          OptionsData.Deleting = False
+          OptionsSelection.CellSelect = False
+          OptionsView.ColumnAutoWidth = True
+          RootValue = -1
+          TabOrder = 0
+          OnDblClick = grTreeListDblClick
+          ExplicitLeft = 264
+          ExplicitTop = 112
+          ExplicitWidth = 250
+          ExplicitHeight = 150
+        end
       end
     end
   end
+  inherited ActionList: TActionList
+    Left = 62
+    Top = 110
+  end
   object ListDataSource: TDataSource
-    Left = 48
-    Top = 146
+    Left = 144
+    Top = 106
   end
 end

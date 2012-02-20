@@ -112,6 +112,7 @@ type
     procedure Disconnect; override;
     function RemoteServer: TCustomRemoteServer; override;
     function GetProvider(const AProviderName: string): TDataSetProvider; override;
+    procedure ClearCacheMetadata; override;
   end;
 
 implementation
@@ -342,8 +343,8 @@ begin
   FQueryRefresh.SQL.Text := AResultData.ByName('SQL_Refresh').AsString;
   FQueryInsertDef.SQL.Text := AResultData.ByName('SQL_InsertDef').AsString;
 
-   if Trim(FQuery.SQL.Text) = '' then
-       raise Exception.CreateFmt('SQL is empty for %s.%s', [FEntityName, FViewName]);
+  if Trim(FQuery.SQL.Text) = '' then
+    raise Exception.CreateFmt('SQL is empty for %s.%s', [FEntityName, FViewName]);
 
 end;
 
@@ -411,6 +412,19 @@ end;
 
 
 { TDAL_IBX }
+
+procedure TDAL_IBE.ClearCacheMetadata;
+var
+  prov: TDataSetProvider;
+begin
+  for prov in FProviders.Values do
+  begin
+    if prov is TIBEntityViewProvider then
+      (prov as TIBEntityViewProvider).ReloadMetadata
+    else if prov is TIBEntityOperProvider then
+      (prov as TIBEntityOperProvider).ReloadMetadata;
+  end;
+end;
 
 procedure TDAL_IBE.Connect(const AConnectionString: string);
 const

@@ -300,7 +300,6 @@ type
     function GetEntityList: TStringList;
   protected
     //IEntityManagerService
-    procedure ClearConnectionCache;
     function GetDataSetProxy(AOwner: TComponent): IDataSetProxy;
     function EntityExists(const AEntityName: string): boolean;
     function EntityViewExists(const AEntityName, AEntityViewName: string): boolean;
@@ -311,7 +310,7 @@ type
 
     procedure Connect(const AConnectionEngine, AConnectionParams: string);
     procedure Disconnect;
-
+    procedure ClearMetadataCache;
 
   public
     constructor Create(AOwner: TComponent; AWorkItem: TWorkItem); reintroduce;
@@ -413,11 +412,21 @@ end;
 
 { TEntityManagerService }
 
-procedure TEntityService.ClearConnectionCache;
+procedure TEntityService.ClearMetadataCache;
 var
   I: integer;
 begin
-  for I := FEntities.Count -1 downto 0 do  FEntities.Delete(I);
+  FEntityList.Clear;
+  FSchemeInfoDictionary.Clear;
+
+  for I := 0 to FEntities.Count - 1 do
+  begin
+    TEntity(FEntities[I]).FEntityInfo.FViewInfoDictionary.Clear;
+    TEntity(FEntities[I]).FEntityInfo.LoadInfo;
+  end;
+
+  if Assigned(FDAL) then
+    FDAL.ClearCacheMetadata;
 end;
 
 procedure TEntityService.Connect(const AConnectionEngine,
@@ -463,8 +472,11 @@ begin
 end;
 
 procedure TEntityService.Disconnect;
+var
+  I: integer;
 begin
-  ClearConnectionCache;
+  for I := FEntities.Count -1 downto 0 do  FEntities.Delete(I);
+  //ClearConnectionCache;
 
   if FDAL <> nil then
   begin

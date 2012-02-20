@@ -2,6 +2,7 @@ inherited frEntityListView: TfrEntityListView
   Left = 636
   Top = 519
   Caption = 'frEntityListView'
+  ExplicitWidth = 320
   ExplicitHeight = 543
   PixelsPerInch = 96
   TextHeight = 13

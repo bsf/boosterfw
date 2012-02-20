@@ -90,36 +90,14 @@ type
   end;
  }
 
-  IEntityItemView = interface(IContentView)
-  ['{1DBB5B01-51A0-4BB0-85D2-D6724AEDC6F4}']
-    procedure SetItemDataSet(ADataSet: TDataSet);
-  end;
 
 
-  IEntityListView = interface(IContentView)
-  ['{B1E6FCB6-EAC1-4B63-880F-C662B09579B4}']
-    function Selection: ISelection;
-    procedure SetListDataSet(ADataSet: TDataSet);
-    procedure SetInfoText(const AText: string);    
-  end;
 
 
-  IEntityPickListView = interface(IDialogView)
-  ['{87CC1751-FFA3-4F9E-9336-5C4E9D765593}']
-    function Selection: ISelection;
-    procedure SetFilterText(const AText: string);
-    function GetFilterText: string;
-    procedure SetListDataSet(ADataSet: TDataSet);
-  end;
+  
 
 
-  IEntityJournalView = interface(IContentView)
-  ['{254B9732-7666-4733-BC3C-6D9D078FC5A7}']
-    function Selection: ISelection;
-    function Tabs: ITabs;
-    procedure SetInfoText(const AText: string);
-    procedure SetJournalDataSet(ADataSet: TDataSet);
-  end;
+  
 
   TEntityOrgChartActivityParams = record
     const

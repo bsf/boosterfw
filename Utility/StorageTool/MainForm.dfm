@@ -49,25 +49,86 @@ object Form1: TForm1
     end
   end
   object cxGrid1: TcxGrid
-    Left = 352
-    Top = 144
+    Left = 349
+    Top = 0
     Width = 545
     Height = 385
     TabOrder = 1
     object cxGrid1DBTableView1: TcxGridDBTableView
       NavigatorButtons.ConfirmDelete = False
+      DataController.DataSource = DataSource1
       DataController.Summary.DefaultGroupSummaryItems = <>
       DataController.Summary.FooterSummaryItems = <>
       DataController.Summary.SummaryGroups = <>
       DateTimeHandling.Grouping = dtgByMonth
-      object cxGrid1DBTableView1Column1: TcxGridDBColumn
-        Styles.Content = cxStyle1
+      object cxGrid1DBTableView1PARENT: TcxGridDBColumn
+        DataBinding.FieldName = 'PARENT'
       end
-      object cxGrid1DBTableView1Column2: TcxGridDBColumn
+      object cxGrid1DBTableView1ID: TcxGridDBColumn
+        DataBinding.FieldName = 'ID'
+      end
+      object cxGrid1DBTableView1NAME: TcxGridDBColumn
+        DataBinding.FieldName = 'NAME'
+      end
+      object cxGrid1DBTableView1PARENT_ID: TcxGridDBColumn
+        DataBinding.FieldName = 'PARENT_ID'
       end
     end
     object cxGrid1Level1: TcxGridLevel
       GridView = cxGrid1DBTableView1
+    end
+  end
+  object cxDBTreeList1: TcxDBTreeList
+    Left = 384
+    Top = 391
+    Width = 497
+    Height = 206
+    Bands = <
+      item
+      end>
+    DataController.DataSource = DataSource1
+    DataController.ParentField = 'PARENT_ID'
+    DataController.KeyField = 'ID'
+    OptionsView.ColumnAutoWidth = True
+    OptionsView.GridLines = tlglHorz
+    OptionsView.Indicator = True
+    RootValue = -1
+    TabOrder = 2
+    object cxDBTreeList1PARENT: TcxDBTreeListColumn
+      DataBinding.FieldName = 'PARENT'
+      Width = 122
+      Position.ColIndex = 2
+      Position.RowIndex = 0
+      Position.BandIndex = 0
+      Summary.FooterSummaryItems = <>
+      Summary.GroupFooterSummaryItems = <>
+    end
+    object cxDBTreeList1ID: TcxDBTreeListColumn
+      DataBinding.FieldName = 'ID'
+      Width = 44
+      Position.ColIndex = 1
+      Position.RowIndex = 0
+      Position.BandIndex = 0
+      Summary.FooterSummaryItems = <>
+      Summary.GroupFooterSummaryItems = <>
+    end
+    object cxDBTreeList1NAME: TcxDBTreeListColumn
+      DataBinding.FieldName = 'NAME'
+      Width = 224
+      Position.ColIndex = 0
+      Position.RowIndex = 0
+      Position.BandIndex = 0
+      Summary.FooterSummaryItems = <>
+      Summary.GroupFooterSummaryItems = <>
+    end
+    object cxDBTreeList1PARENT_ID: TcxDBTreeListColumn
+      DataBinding.FieldName = 'PARENT_ID'
+      Width = 76
+      Position.ColIndex = 3
+      Position.RowIndex = 0
+      Position.BandIndex = 0
+      Summary.FooterSummaryItems = <>
+      Summary.GroupFooterSummaryItems = <>
     end
   end
   object DataSource1: TDataSource
@@ -261,7 +322,7 @@ object Form1: TForm1
     end
   end
   object Query1: TQuery
-    Left = 544
-    Top = 64
+    Left = 304
+    Top = 48
   end
 end

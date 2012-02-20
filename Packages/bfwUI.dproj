@@ -99,6 +99,7 @@
 				<Form>frCustomContentView</Form>
 			</DCCReference>
 			<DCCReference Include="..\Sources\UI\UIStr.pas"/>
+			<DCCReference Include="..\Sources\UI\HelperTreeISelection.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

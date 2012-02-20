@@ -2,7 +2,7 @@ unit UICatalog;
 
 interface
 uses classes, coreClasses, db, EntityServiceIntf, UIServiceIntf, variants,
-  cxStyles, graphics, windows, generics.collections, sysutils;
+  cxStyles, graphics, windows, generics.collections, sysutils, ShellIntf;
 
 type
   TUICatalog = class(TComponent)
@@ -15,11 +15,13 @@ type
     OPTION_ENTITYVIEWNAME = 'ENTITYVIEWNAME';
 
   private
+    FWorkItem: TWorkItem;
+    procedure ReloadConfigurationHandler(EventData: Variant);
     class procedure LoadUI(AWorkItem: TWorkItem);
     class procedure LoadStyles(AWorkItem: TWorkItem);
-  public
     class procedure Load(AWorkItem: TWorkItem);
-
+  public
+    constructor Create(AOwner: TComponent; AWorkItem: TWorkItem); reintroduce;
   end;
 
 implementation
@@ -91,10 +93,24 @@ end;
 { TActivityCatalog }
 
 
+constructor TUICatalog.Create(AOwner: TComponent; AWorkItem: TWorkItem);
+begin
+  inherited Create(AOwner);
+  FWorkItem := AWorkItem;
+  Load(FWorkItem);
+//  FWorkItem.EventTopics[ET_LOAD_CONFIGURATION].AddSubscription(Self, LoadConfigurationHandler);
+  FWorkItem.EventTopics[ET_RELOAD_CONFIGURATION].AddSubscription(Self, ReloadConfigurationHandler);
+end;
+
 class procedure TUICatalog.Load(AWorkItem: TWorkItem);
 begin
   LoadUI(AWorkItem);
   LoadStyles(AWorkItem);
+end;
+
+procedure TUICatalog.ReloadConfigurationHandler(EventData: Variant);
+begin
+  Load(FWorkItem);
 end;
 
 class procedure TUICatalog.LoadStyles(AWorkItem: TWorkItem);

@@ -6,6 +6,7 @@ resourcestring
   VIEW_USER_PREFERENCES_TITLE = 'Preferences';
   COMMAND_CLOSE_APP_CAPTION = 'Exit';
   COMMAND_SHOW_ABOUT_CAPTION = 'About...';
+
   MAIN_MENU_CAPTION = 'Main Menu';
   StrWaitMessage = 'Loading data. Wait, please...';
   COMMAND_RESET_CAPTION = 'Reset';

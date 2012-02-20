@@ -1,7 +1,7 @@
 unit Activities;
 
 interface
-uses classes, CoreClasses, HashList, graphics, sysutils, variants;
+uses classes, CoreClasses, HashList, graphics, sysutils, variants, menus;
 
 type
   TActivityData = class(TComponent, IActivityData)
@@ -33,6 +33,7 @@ type
     FGroup: string;
     FMenuIndex: integer;
     FShortCut: string;
+    FShortCutI: TShortCut;
     FImage: Graphics.TBitmap;
     FUsePermission: boolean;
     FOptions: TStringList;
@@ -94,7 +95,9 @@ type
     function Count: integer;
     function GetItem(AIndex: integer): IActivity;
     function IndexOf(const URI: string): integer;
+    procedure Remove(const URI: string);
     function FindOrCreate(const URI: string): IActivity;
+    function IsShortCut(AWorkItem: TWorkItem; AShortCut: TShortCut): Boolean;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -165,6 +168,23 @@ begin
   Result := FItems.IndexOf(URI);
 end;
 
+function TActivities.IsShortCut(AWorkItem: TWorkItem; AShortCut: TShortCut): Boolean;
+var
+  I: Integer;
+begin
+  Result := False;
+  if AShortCut = scNone then Exit;
+
+  for I := 0 to FItems.Count - 1 do
+    if FItems.Items[I].FShortCutI = AShortCut then
+    begin
+       Result := true;
+       FItems.Items[I].Execute(AWorkItem);
+       Exit;
+    end;
+
+end;
+
 procedure TActivities.RegisterHandler(const ActivityClass: string;
   AHandler: TActivityHandler);
 begin
@@ -175,6 +195,15 @@ procedure TActivities.RegisterPermissionHandler(
   AHandler: IActivityPermissionHandler);
 begin
   FPermissionHandler := AHandler;
+end;
+
+procedure TActivities.Remove(const URI: string);
+var
+  idx: integer;
+begin
+  idx := IndexOf(URI);
+  if idx <> -1 then
+    FItems.Delete(idx);
 end;
 
 { TActivityInfo }
@@ -303,6 +332,7 @@ end;
 procedure TActivity.SetShortCut(const Value: string);
 begin
   FShortCut := Value;
+  FShortCutI := TextToShortCut(FShortCut);
 end;
 
 procedure TActivity.SetTitle(const Value: string);

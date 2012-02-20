@@ -117,6 +117,13 @@ var
   I: integer;
   category: TdxNavBarGroup;
 begin
+  FNavBar.BeginUpdate;
+  try
+    FNavBar.Groups.Clear;
+    FNavBar.Items.Clear;
+  finally
+    FNavBar.EndUpdate;
+  end;
 
   category := FindOrCreateCategory(GetLocaleString(@MAIN_MENU_CAPTION)); // 'Главное меню');
 

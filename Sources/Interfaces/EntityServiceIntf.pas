@@ -183,7 +183,7 @@ type
 
     procedure Connect(const AConnectionEngine, AConnectionParams: string);
     procedure Disconnect;
-
+    procedure ClearMetadataCache;
   end;
 
 

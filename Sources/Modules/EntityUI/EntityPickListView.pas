@@ -9,29 +9,39 @@ uses
   EntityCatalogConst, cxStyles, cxCustomData, cxFilter, cxData,
   cxDataStorage, DB, cxDBData, cxGridLevel, cxClasses, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
-  cxLabel, cxTextEdit, EntityCatalogIntf, EntityPickListPresenter, UIClasses;
+  cxLabel, cxTextEdit, EntityCatalogIntf, EntityPickListPresenter, UIClasses,
+  cxPC, cxTL, cxTLdxBarBuiltInMenu, cxInplaceContainer, cxTLData, cxDBTL;
 
 type
   TfrEntityPickListView = class(TfrCustomDialogView, IEntityPickListView)
     ListDataSource: TDataSource;
     pnFilter: TcxGroupBox;
     edFilter: TcxTextEdit;
-    cxLabel1: TcxLabel;
+    lbFilter: TcxLabel;
+    pcListContainer: TcxPageControl;
+    tsGridList: TcxTabSheet;
+    tsTreeList: TcxTabSheet;
     grList: TcxGrid;
     grListView: TcxGridDBTableView;
     grListLevel1: TcxGridLevel;
+    grTreeList: TcxDBTreeList;
     procedure edFilterPropertiesChange(Sender: TObject);
     procedure grListViewCellDblClick(Sender: TcxCustomGridTableView;
       ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton;
       AShift: TShiftState; var AHandled: Boolean);
+    procedure grTreeListDblClick(Sender: TObject);
   private
+    FViewMode: TPickListViewMode;
+    FCanParentSelect: boolean;
+
   protected
     //IPickListView
     function Selection: ISelection;
     procedure SetFilterText(const AText: string);
     function GetFilterText: string;
     procedure SetListDataSet(ADataSet: TDataSet);
-
+    procedure SetViewMode(AViewMode: TPickListViewMode);
+    procedure SetCanParentSelect(AValue: boolean);
   end;
 
 
@@ -50,7 +60,15 @@ end;
 
 function TfrEntityPickListView.Selection: ISelection;
 begin
-  Result := GetChildInterface(grListView.Name) as ISelection;
+  if FViewMode = pvmTreeList then
+    Result := GetChildInterface(grTreeList.Name) as ISelection
+  else
+    Result := GetChildInterface(grListView.Name) as ISelection;
+end;
+
+procedure TfrEntityPickListView.SetCanParentSelect(AValue: boolean);
+begin
+  FCanParentSelect := AValue;
 end;
 
 procedure TfrEntityPickListView.SetFilterText(const AText: string);
@@ -65,6 +83,27 @@ begin
   LinkDataSet(ListDataSource, ADataSet);
 end;
 
+procedure TfrEntityPickListView.SetViewMode(AViewMode: TPickListViewMode);
+begin
+  FViewMode := AViewMode;
+  case FViewMode of
+    pvmList: begin
+      grTreeList.DataController.DataSource := nil;
+      grListView.DataController.DataSource := ListDataSource;
+      pcListContainer.ActivePage := tsGridList;
+      pnFilter.Visible := true;
+    end;
+
+    pvmTreeList: begin
+      grListView.DataController.DataSource := nil;
+      grTreeList.DataController.DataSource := ListDataSource;
+      pcListContainer.ActivePage := tsTreeList;
+      pnFilter.Visible := false;
+    end;
+  end;
+
+end;
+
 procedure TfrEntityPickListView.edFilterPropertiesChange(
   Sender: TObject);
 begin
@@ -77,6 +116,14 @@ procedure TfrEntityPickListView.grListViewCellDblClick(
   AShift: TShiftState; var AHandled: Boolean);
 begin
   WorkItem.Commands[COMMAND_OK].Execute;
+end;
+
+procedure TfrEntityPickListView.grTreeListDblClick(Sender: TObject);
+begin
+  if (grTreeList.SelectionCount > 0) and
+     (not grTreeList.Selections[0].HasVisibleChildren) then
+    WorkItem.Commands[COMMAND_OK].Execute;
+
 end;
 
 end.

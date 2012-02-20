@@ -20,6 +20,7 @@ type
     procedure Disconnect; virtual; abstract;
     function RemoteServer: TCustomRemoteServer; virtual; abstract;
     function GetProvider(const AProviderName: string): TDataSetProvider; virtual; abstract;
+    procedure ClearCacheMetadata; virtual;
     property NoCacheMetadata: boolean read FNoCacheMetadata write FNoCacheMetadata;
   end;
 
@@ -116,6 +117,11 @@ begin
   Result := format('%s%.2d%s%s', [kindLabel, Length(AEntityName), AEntityName, AViewName]);
 end;
 { TCustomDAL }
+
+procedure TCustomDAL.ClearCacheMetadata;
+begin
+
+end;
 
 class function TCustomDAL.EngineName: string;
 begin

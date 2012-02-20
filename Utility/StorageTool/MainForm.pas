@@ -33,7 +33,6 @@ type
     cxGrid1DBTableView1: TcxGridDBTableView;
     cxGrid1Level1: TcxGridLevel;
     cxGrid1: TcxGrid;
-    cxGrid1DBTableView1Column1: TcxGridDBColumn;
     cxStyleRepository1: TcxStyleRepository;
     cxStyle1: TcxStyle;
     cxGridTableViewStyleSheet1: TcxGridTableViewStyleSheet;
@@ -53,8 +52,16 @@ type
     cxStyle14: TcxStyle;
     cxStyle15: TcxStyle;
     cxStyle16: TcxStyle;
-    cxGrid1DBTableView1Column2: TcxGridDBColumn;
     Query1: TQuery;
+    cxGrid1DBTableView1PARENT: TcxGridDBColumn;
+    cxGrid1DBTableView1ID: TcxGridDBColumn;
+    cxGrid1DBTableView1NAME: TcxGridDBColumn;
+    cxGrid1DBTableView1PARENT_ID: TcxGridDBColumn;
+    cxDBTreeList1: TcxDBTreeList;
+    cxDBTreeList1PARENT: TcxDBTreeListColumn;
+    cxDBTreeList1ID: TcxDBTreeListColumn;
+    cxDBTreeList1NAME: TcxDBTreeListColumn;
+    cxDBTreeList1PARENT_ID: TcxDBTreeListColumn;
     procedure cxDBComboBox1PropertiesInitPopup(Sender: TObject);
   private
     { Private declarations }

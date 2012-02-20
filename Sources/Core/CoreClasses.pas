@@ -142,6 +142,9 @@ type
     property Value[const AName: string]: Variant read GetValue write SetValue; default;
   end;
 
+  IActivityVisual = interface
+
+  end;
 
   IActivity = interface
   ['{D9404645-31DF-4505-8972-BD29B4D5F85F}']
@@ -150,6 +153,8 @@ type
     procedure SetActivityClass(const Value: string);
     function GetActivityClass: string;
     property ActivityClass: string read GetActivityClass write SetActivityClass;
+
+    //function Visual: IActivityVisual;
 
     procedure SetTitle(const Value: string);
     function GetTitle: string;
@@ -202,7 +207,9 @@ type
     function Count: integer;
     function GetItem(AIndex: integer): IActivity;
     function IndexOf(const URI: string): integer;
+    procedure Remove(const URI: string);
     function FindOrCreate(const URI: string): IActivity;
+    function IsShortCut(AWorkItem: TWorkItem; AShortCut: TShortCut): Boolean;
     property Activity[const URI: string]: IActivity read FindOrCreate; default;
   end;
 
@@ -637,7 +644,8 @@ end;
 
 function TWorkItem.GetEventTopics: IEventTopics;
 begin
-  FEventTopics.GetInterface(IEventTopics, Result);
+//  FEventTopics.GetInterface(IEventTopics, Result);
+  Root.FEventTopics.GetInterface(IEventTopics, Result);
 end;
 
 function TWorkItem.GetItems: IItems;

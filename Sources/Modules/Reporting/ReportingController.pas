@@ -29,6 +29,7 @@ type
     FReportCatalog: TReportCatalog;
     FFactories: TComponentList;
 
+    procedure ReloadConfigurationHandler(EventData: Variant);
     procedure LoadCatalogItems;
     procedure UnLoadCatalogItem(AItem: TReportCatalogItem);
 
@@ -186,6 +187,11 @@ begin
       LoadItem(FReportCatalog.Groups[I].Items[Y]);
 end;
 
+procedure TReportingController.ReloadConfigurationHandler(EventData: Variant);
+begin
+  LoadCatalogItems;
+end;
+
 procedure TReportingController.Initialize;
 begin
   FFactories := TComponentList.Create(false);
@@ -211,6 +217,8 @@ begin
 
   WorkItem.Activities[TReportLauncherPresenter.ACTIVITY_REPORT_LAUNCHER].
     RegisterHandler(TViewActivityHandler.Create(TReportLauncherPresenter, TfrReportLauncherView));
+
+  WorkItem.EventTopics[ET_RELOAD_CONFIGURATION].AddSubscription(Self, ReloadConfigurationHandler);
 
   LoadCatalogItems;
 

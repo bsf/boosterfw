@@ -68,6 +68,7 @@ contains
   ITabsImpl in '..\Sources\UI\ITabsImpl.pas',
   CustomDialogView in '..\Sources\UI\CustomDialogView.pas' {frCustomDialogView},
   CustomContentView in '..\Sources\UI\CustomContentView.pas' {frCustomContentView},
-  UIStr in '..\Sources\UI\UIStr.pas';
+  UIStr in '..\Sources\UI\UIStr.pas',
+  HelperTreeISelection in '..\Sources\UI\HelperTreeISelection.pas';
 
 end.

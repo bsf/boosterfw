@@ -15,9 +15,22 @@ const
   SHOW_CLOSED_PARAM = 'SHOW_CLOSED';
 
 type
+  TPickListViewMode = (pvmList, pvmTreeList);
+
+
+  IEntityPickListView = interface(IDialogView)
+  ['{87CC1751-FFA3-4F9E-9336-5C4E9D765593}']
+    function Selection: ISelection;
+    procedure SetFilterText(const AText: string);
+    function GetFilterText: string;
+    procedure SetListDataSet(ADataSet: TDataSet);
+    procedure SetViewMode(AViewMode: TPickListViewMode);
+    procedure SetCanParentSelect(AValue: boolean);
+  end;
 
   TEntityPickListPresenter = class(TEntityDialogPresenter)
   private
+    FViewMode: TPickListViewMode;
     procedure SetFilter(const AText: string);
   protected
     function View: IEntityPickListView;
@@ -84,6 +97,14 @@ begin
   WorkItem.State['ModalResult'] := mrCancel;
   WorkItem.State[SHOW_CLOSED_PARAM] := 0;
 
+
+  if ViewInfo.OptionValue('ViewMode') = 'Tree' then
+    FViewMode := pvmTreeList
+  else
+    FViewMode := pvmList;
+
+  View.SetViewMode(FViewMode);
+
   WorkItem.Commands[COMMAND_CANCEL].SetHandler(CmdCancel);
   WorkItem.Commands[COMMAND_CANCEL].Caption := GetLocaleString(@COMMAND_CANCEL_CAPTION);
   WorkItem.Commands[COMMAND_CANCEL].ShortCut := 'Esc';
@@ -92,13 +113,8 @@ begin
   WorkItem.Commands[COMMAND_OK].SetHandler(CmdOK);
   WorkItem.Commands[COMMAND_OK].Caption := GetLocaleString(@COMMAND_OK_CAPTION);
   WorkItem.Commands[COMMAND_OK].ShortCut := 'Enter';
-  (GetView as IEntityPickListView).CommandBar.AddCommand(COMMAND_OK);
+  View.CommandBar.AddCommand(COMMAND_OK);
 
-{  WorkItem.Commands[COMMAND_SHOW_CLOSED].SetHandler(CmdShowClosed);
-  WorkItem.Commands[COMMAND_SHOW_CLOSED].Caption := 'Отображать закрытые'; //GetLocaleString(@COMMAND_SHOW_CLOSED);
-//  WorkItem.Commands[COMMAND_SHOW_CLOSED].ShortCut := 'Enter';
-  (GetView as IEntityPickListView).CommandBar.AddCommand(COMMAND_SHOW_CLOSED);
- }
   WorkItem.Commands[COMMAND_DATA_RELOAD].SetHandler(CmdDataReload);
   WorkItem.Commands[COMMAND_FILTER_CHANGED].SetHandler(CmdFilterChanged);
 
@@ -134,8 +150,8 @@ end;
 
 procedure TEntityPickListPresenter.SetFilter(const AText: string);
 const
-  FilterByName = 'Substring(upper(name), 1, %d) = upper(''%s'')';
-  FilterByID = 'ID = %d';
+  FilterByName = '(Substring(upper(name), 1, %d) = upper(''%s''))';
+  FilterByID = '(ID = %d)';
 
 var
   filterStr: string;
@@ -143,16 +159,27 @@ var
   searchID: integer;
 begin
   searchText := Trim(AText);
-  if not TryStrToInt(searchText, searchID) then
-    filterStr := format(FilterByName, [length(searchText), searchText])
+
+  if FViewMode = pvmList then
+  begin
+    if TryStrToInt(searchText, searchID) then
+    begin
+      filterStr := format(FilterByID, [searchID]);
+      filterStr := filterStr + ' or ' +
+      format(FilterByName, [length(searchText), searchText]);
+    end
+    else
+      filterStr := format(FilterByName, [length(searchText), searchText]);
+
+    GetEVList.DataSet.Filter := filterStr;
+    GetEVList.DataSet.Filtered := filterStr <> '';
+
+    View.SetFilterText(searchText);
+  end
   else
-    filterStr := format(FilterByID, [searchID]);
-
-  GetEVList.DataSet.Filter := filterStr;
-  GetEVList.DataSet.Filtered := filterStr <> '';
-
-  View.SetFilterText(searchText);
-
+  begin
+    if GetEVList.DataSet.Locate('NAME', searchText, [loCaseInsensitive, loPartialKey]) then;
+  end;
 end;
 
 function TEntityPickListPresenter.View: IEntityPickListView;

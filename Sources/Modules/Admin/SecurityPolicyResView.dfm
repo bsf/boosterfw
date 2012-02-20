@@ -4,7 +4,8 @@ inherited frSecurityPolicyResView: TfrSecurityPolicyResView
   Caption = 'frSecurityPolicyResView'
   ClientHeight = 626
   ClientWidth = 1031
-  ExplicitWidth = 320
+  ExplicitWidth = 1037
+  ExplicitHeight = 654
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
@@ -186,8 +187,11 @@ inherited frSecurityPolicyResView: TfrSecurityPolicyResView
       end
     end
   end
+  inherited ActionList: TActionList
+    Left = 54
+  end
   object cxEditRepository1: TcxEditRepository
-    Left = 90
+    Left = 138
     Top = 120
     object PermColumnProp: TcxEditRepositoryCheckBoxItem
       Properties.AllowGrayed = True

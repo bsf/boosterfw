@@ -146,8 +146,6 @@ object frMain: TfrMain
       ParentColor = False
       Style = 9
       TabOrder = 1
-      ExplicitLeft = -2
-      ExplicitTop = -2
       ClientRectBottom = 403
       ClientRectRight = 686
       ClientRectTop = 0

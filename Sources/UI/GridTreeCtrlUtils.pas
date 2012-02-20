@@ -5,34 +5,22 @@ uses cxTL, cxTLdxBarBuiltInMenu, cxTLData, cxDBTL,
   Contnrs, controls, CustomView, classes, sysutils, db,
   EntityServiceIntf, cxButtonEdit, cxEdit, CoreClasses, StrUtils, Variants,
   CustomPresenter, cxInplaceContainer, cxDBLookupComboBox, menus, cxCheckBox,
-  UIClasses;
+  UIClasses, inifiles, ShellIntf;
 
 type
-  TcxTreeGridViewHelper = class(TViewHelper, IViewHelper)
+  TcxTreeGridViewHelper = class(TViewHelper, IViewHelper, IViewDataSetHelper)
   private
     FGridList: TComponentList;
 
-    //PickListEditor
-   { procedure PickListEditorButtonClick(Sender: TObject; AButtonIndex: Integer);
-    procedure PickListEditorValueChanged(Sender: TObject);
-    procedure PickListEditorExecute(ADataSet: TDataSet;
-      const AFieldName, APickNameFilter: string);
-
-    procedure InitRowEditor(AEditorRow: TcxDBEditorRow; AField: TField);
-    procedure InitPickListEditor(ARow: TcxDBEditorRow);
-    procedure InitLookupEditor(ARow: TcxDBEditorRow; ADataSet: TDataSet);
-    procedure InitCheckBoxEditor(ARow: TcxDBEditorRow);
-    }
-
     procedure TuneGridForDataSet(AGrid: TcxDBTreeList; ADataSet: TDataSet);
 
-   // procedure CreateAllItems(AGrid: TcxDBVerticalGrid; ADataSet: TDataSet);
     function GetGridList: TComponentList;
 
-   {  function FindEditorRowByFieldName(AGrid: TcxDBVerticalGrid;
-       const AFieldName: string): TcxDBEditorRow;
-     function FindOrCreateCategoryRow(AGrid: TcxDBVerticalGrid;
-       const ACaption: string): TcxCategoryRow;}
+    function GetPreferenceFileName(ATree: TcxCustomTreeList): string;
+    procedure LoadPreference(ATree: TcxCustomTreeList);
+    procedure SavePreference(ATree: TcxCustomTreeList);
+    procedure SaveAllPreference; //(AGridView: TcxCustomGridView; AData: TStream);
+
   protected
     //IViewHelper
     procedure ViewInitialize;
@@ -41,9 +29,10 @@ type
     //IViewDataSetHelper
     procedure LinkDataSet(ADataSource: TDataSource; ADataSet: TDataSet);
     procedure FocusDataSetControl(ADataSet: TDataSet; const AFieldName: string; var Done: boolean);
-    function GetFocusedField(ADataSet: TDataSet): string;
-    procedure SetFocusedField(ADataSet: TDataSet; const AFieldName: string);
-    procedure SetFocusedFieldChangedHandler(AHandler: TViewFocusedFieldChangedHandler);
+
+    function GetFocusedField(ADataSet: TDataSet; var Done: boolean): string;
+    procedure SetFocusedField(ADataSet: TDataSet; const AFieldName: string; var Done: boolean);
+    procedure SetFocusedFieldChangedHandler(AHandler: TViewFocusedFieldChangedHandler; var Done: boolean);
 
   public
     constructor Create(AOwner: TfrCustomView); override;
@@ -73,7 +62,9 @@ begin
 
 end;
 
-function TcxTreeGridViewHelper.GetFocusedField(ADataSet: TDataSet): string;
+
+function TcxTreeGridViewHelper.GetFocusedField(ADataSet: TDataSet;
+  var Done: boolean): string;
 begin
 
 end;
@@ -91,6 +82,15 @@ begin
 
 end;
 
+function TcxTreeGridViewHelper.GetPreferenceFileName(
+  ATree: TcxCustomTreeList): string;
+const
+  cnstGridPreferenceCategoryFmt = 'Tree_%s';
+begin
+  Result := Format(cnstGridPreferenceCategoryFmt, [ATree.Name]);
+
+end;
+
 procedure TcxTreeGridViewHelper.LinkDataSet(ADataSource: TDataSource;
   ADataSet: TDataSet);
 var
@@ -103,18 +103,155 @@ begin
        and
       (ADataSet =
        TcxDBTreeList(_gridList[I]).DataController.DataSource.DataSet) then
+    begin
+      TuneGridForDataSet(TcxDBTreeList(_gridList[I]), ADataSet);
+      LoadPreference(TcxDBTreeList(_gridList[I]));
+    end;
+end;
 
-     TuneGridForDataSet(TcxDBTreeList(_gridList[I]), ADataSet);
+
+procedure TcxTreeGridViewHelper.LoadPreference(ATree: TcxCustomTreeList);
+
+  procedure LoadDBTreeList(ATree: TcxDBTreeList; AStorage: TMemInifile);
+  var
+    I: integer;
+    _section: string;
+  begin
+    //_section := 'COMMON';
+    //AView.OptionsView.Footer :=
+      //AStorage.ReadBool(_section, 'Footer', AView.OptionsView.Footer);
+
+    // begin setup position
+    for I := 0 to ATree.ColumnCount - 1 do
+    begin
+      _section := 'COLUMN_' + TcxDBItemDataBinding(ATree.Columns[I].DataBinding).FieldName;
+      ATree.Columns[I].Position.ColIndex :=
+        AStorage.ReadInteger(_section, 'ColIndex', ATree.Columns[I].Position.ColIndex);
+    end;
+
+    for I := 0 to ATree.ColumnCount - 1 do
+    begin
+      _section := 'COLUMN_' + TcxDBItemDataBinding(ATree.Columns[I].DataBinding).FieldName;
+      ATree.Columns[I].Width :=
+        AStorage.ReadInteger(_section, 'Width', ATree.Columns[I].Width);
+      if ATree.Columns[I].Options.Customizing then
+        ATree.Columns[I].Visible := AStorage.ReadBool(_section, 'Visible', ATree.Columns[I].Visible);
+
+        //Summary
+     { ATree.Columns[I].Summary.FooterKind :=
+        TcxSummaryKind(
+        AStorage.ReadInteger(_section + '_Summary', 'FooterKind', Ord(AView.Columns[I].Summary.FooterKind)));}
+    end;
+
+  end;
+var
+  _storage: TMemInifile;
+  _strings: TStringList;
+  data: TMemoryStream;
+begin
+  data := TMemoryStream.Create;
+  try
+    App.UserProfile.LoadData((Owner as ICustomView).GetPreferencePath,
+      GetPreferenceFileName(ATree), data);
+    data.Position := 0;
+
+    if (data.Size = 0) then
+    begin
+      ATree.ApplyBestFit;
+    end
+    else
+    begin
+      _storage := TMemInifile.Create('');
+      try
+        _strings := TStringList.Create;
+        try
+          _strings.LoadFromStream(data);
+          _storage.SetStrings(_strings);
+        finally
+          _strings.Free;
+        end;
+        if ATree is TcxDBTreeList then
+          LoadDBTreeList(TcxDBTreeList(ATree), _storage)
+        else
+          ATree.RestoreFromStream(data, false, false, ATree.Name);
+      finally
+        _storage.Free
+      end;
+    end;
+  finally
+    data.free;
+  end;
+
+end;
+
+procedure TcxTreeGridViewHelper.SaveAllPreference;
+var
+  I: integer;
+begin
+  for I := 0 to Owner.ComponentCount - 1 do
+    if Owner.Components[I] is TcxCustomTreeList then
+      SavePreference(TcxCustomTreeList(Owner.Components[I]));
+end;
+
+procedure TcxTreeGridViewHelper.SavePreference(ATree: TcxCustomTreeList);
+
+  procedure SaveDBTreeList(ATree: TcxDBTreeList; AStorage: TMemInifile);
+  var
+    I: integer;
+    _section: string;
+  begin
+   // _section := 'COMMON';
+   // AStorage.WriteBool(_section, 'Footer', AView.OptionsView.Footer);
+
+    for I := 0 to ATree.ColumnCount - 1 do
+    begin
+      _section := 'COLUMN_' + TcxDBItemDataBinding(ATree.Columns[I].DataBinding).FieldName;
+      AStorage.WriteInteger(_section, 'ColIndex', ATree.Columns[I].Position.ColIndex);
+      AStorage.WriteBool(_section, 'Visible', ATree.Columns[I].Visible);
+      AStorage.WriteInteger(_section, 'Width', ATree.Columns[I].Width);
+      //footer
+      //AStorage.WriteInteger(_section + '_Summary', 'FooterKind', Ord(AView.Columns[I].Summary.FooterKind) );
+    end
+
+  end;
+var
+  _storage: TMemInifile;
+  _strings: TStringList;
+  data: TMemoryStream;
+begin
+  _storage := TMemInifile.Create('');
+  data := TMemoryStream.Create;
+  try
+    if ATree is TcxDBTreeList then
+      SaveDBTreeList(TcxDBTreeList(ATree), _storage)
+    else
+      ATree.StoreToStream(data, ATree.Name);
+
+    _strings := TStringList.Create;
+    try
+      _storage.GetStrings(_strings);
+      _strings.SaveToStream(data);
+    finally
+      _strings.Free;
+    end;
+
+    App.UserProfile.SaveData((Owner as ICustomView).GetPreferencePath,
+      GetPreferenceFileName(ATree), data);
+  finally
+    _storage.Free;
+    data.free;
+  end;
+
 end;
 
 procedure TcxTreeGridViewHelper.SetFocusedField(ADataSet: TDataSet;
-  const AFieldName: string);
+  const AFieldName: string; var Done: boolean);
 begin
 
 end;
 
 procedure TcxTreeGridViewHelper.SetFocusedFieldChangedHandler(
-  AHandler: TViewFocusedFieldChangedHandler);
+  AHandler: TViewFocusedFieldChangedHandler; var Done: boolean);
 begin
 
 end;
@@ -126,6 +263,7 @@ var
   //CategoryCaption: string;
   //I: integer;
   primaryKey: string;
+  parentField: TField;
 begin
   if not Assigned(ADataSet) then Exit;
 
@@ -139,6 +277,17 @@ begin
       grController.KeyField := ADataSet.Fields[0].FieldName;
   end;
 
+  if grController.ParentField = '' then
+  begin
+    parentField := ADataSet.FindField('PARENT_ID');
+    if parentField = nil then
+      parentField := ADataSet.FindField('PARENTID');
+    if parentField = nil then
+      parentField := ADataSet.FindField('PARENT');
+
+    if parentField <> nil then
+      grController.ParentField := parentField.FieldName;
+  end;
 
   grController.CreateAllItems;
 
@@ -171,7 +320,7 @@ end;
 
 procedure TcxTreeGridViewHelper.ViewClose;
 begin
-
+  SaveAllPreference;
 end;
 
 procedure TcxTreeGridViewHelper.ViewInitialize;

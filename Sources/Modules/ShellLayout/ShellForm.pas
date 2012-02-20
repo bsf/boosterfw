@@ -31,6 +31,7 @@ const
 
   COMMAND_SHOW_ABOUT = '{9421F2C7-F526-4858-975B-B01698C70530}';
   COMMAND_CLOSE_APP = '{1E3FCF4E-9E40-4D5B-ADE4-3F78428CA24B}';
+  COMMAND_RELOAD_CONFIGURATION = '{E94B5DA4-980A-428B-98A4-9DEC73E63980}';
 
 type
   TfrMain = class(TCustomShellForm)
@@ -76,6 +77,7 @@ type
     FContentWorkspace: TTabbedWorkspace;
     FDialogWorkspace: TDialogWorkspace;
     FWaitBox: TShellWaitBox;
+    FUICatalog: TUICatalog;
 
     FViewStyleController: TViewStyleController;
     FNavBarControlManager: TdxNavBarControlManager;
@@ -109,8 +111,15 @@ type
         procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
       end;
 
-    type
       TShowAboutHandler = class(TActivityHandler)
+        procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
+      end;
+
+      TReloadConfigurationHandler = class(TActivityHandler)
+      private
+        FNavBar: TdxNavBarControlManager;
+      public
+        constructor Create(ANavBar: TdxNavBarControlManager);
         procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
       end;
 
@@ -202,20 +211,16 @@ begin
 
   //Events Link
   FWorkItem.EventTopics[ET_STATUSBARMESSAGE].AddSubscription(Self, StatusUpdateHandler);
-
   FWorkItem.EventTopics[ET_NOTIFY_MESSAGE].AddSubscription(Self, NotifyMessageHandler);
   CloseNotifyPanel;
 
-{  FWorkItem.EventTopics[ET_REPORT_PROGRESS_START].AddSubscription(Self, WaitProgressStartHandler);
-  FWorkItem.EventTopics[ET_REPORT_PROGRESS_FINISH].AddSubscription(Self, WaitProgressStopHandler);
-  FWorkItem.EventTopics[ET_REPORT_PROGRESS_PROCESS].AddSubscription(Self, WaitProgressUpdateHandler);
- }
   FWorkItem.EventTopics[etAppStarted].AddSubscription(Self, AppStartedHandler);
   FWorkItem.EventTopics[etAppStoped].AddSubscription(Self, AppStopedHandler);
 
   RegisterShellCommands;
 
-  TUICatalog.Load(FWorkItem);
+  FUICatalog := TUICatalog.Create(Self, FWorkItem);
+
 
 end;
 
@@ -247,6 +252,8 @@ end;
 
 procedure TfrMain.AppStartedHandler(EventData: Variant);
 begin
+  FWorkItem.EventTopics[ET_LOAD_CONFIGURATION].Fire;
+
   FViewStyleController.LoadPreferences;
 
   FNavBarControlManager.BuildMainMenu;
@@ -267,8 +274,15 @@ begin
 end;
 
 procedure TfrMain.FormShortCut(var Msg: TWMKey; var Handled: Boolean);
+var
+  shortCut: TShortCut;
+  ShiftState: TShiftState;
 begin
-  if assigned(FContentWorkspace) then
+  ShiftState := KeyDataToShiftState(Msg.KeyData);
+  ShortCut := Menus.ShortCut(Msg.CharCode, ShiftState);
+
+  Handled := FWorkItem.Activities.IsShortCut(FWorkItem, shortCut);
+  if (not Handled) and assigned(FContentWorkspace) then
     FContentWorkspace.ShortCutHandler(Msg, Handled);
 end;
 
@@ -305,8 +319,17 @@ begin
     Group := GetLocaleString(@MENU_GROUP_SERVICE);
     UsePermission := true;
   end;
+
   WorkItem.Activities.RegisterHandler(VIEW_NOTIFYSENDER,
     TViewActivityHandler.Create(TNotifySenderPresenter, TfrNotifySenderView));
+
+  with WorkItem.Activities[COMMAND_RELOAD_CONFIGURATION] do
+  begin
+    MenuIndex := -1;
+    ShortCut := 'Ctrl+F12';
+    RegisterHandler(TReloadConfigurationHandler.Create(FNavBarControlManager));
+  end;
+
 end;
 
 
@@ -398,6 +421,27 @@ end;
 procedure TfrMain.TShowAboutHandler.Execute(Sender: TWorkItem; Activity: IActivity);
 begin
   ShellAboutShow;
+end;
+
+{ TfrMain.TReloadConfigurationHandler }
+
+constructor TfrMain.TReloadConfigurationHandler.Create(
+  ANavBar: TdxNavBarControlManager);
+begin
+  FNavBar := ANavBar;
+end;
+
+procedure TfrMain.TReloadConfigurationHandler.Execute(Sender: TWorkItem;
+  Activity: IActivity);
+begin
+
+  Sender.EventTopics[ET_RELOAD_CONFIGURATION].Fire;
+
+  App.Entities.ClearMetadataCache;
+
+  FNavBar.SavePreference;
+  FNavBar.BuildMainMenu;
+  FNavBar.LoadPreference;
 end;
 
 end.
