@@ -104,6 +104,7 @@ begin
     FViewMode := pvmList;
 
   View.SetViewMode(FViewMode);
+  View.SetCanParentSelect(ViewInfo.OptionExists('CanParentSelect'));
 
   WorkItem.Commands[COMMAND_CANCEL].SetHandler(CmdCancel);
   WorkItem.Commands[COMMAND_CANCEL].Caption := GetLocaleString(@COMMAND_CANCEL_CAPTION);

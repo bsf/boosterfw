@@ -42,7 +42,6 @@ contains
   bfwApp in '..\Sources\Shell\bfwApp.pas',
   ShellLogin in '..\Sources\Shell\ShellLogin.pas',
   ShellLoginForm in '..\Sources\Shell\ShellLoginForm.pas' {fmShellLogin},
-  ShellSplashForm in '..\Sources\Shell\ShellSplashForm.pas' {frShellSplash},
   ConfigService in '..\Sources\Shell\Services\ConfigService.pas',
   ConfigStorage in '..\Sources\Shell\Services\ConfigStorage.pas',
   EntityService in '..\Sources\Shell\Services\EntityService.pas',

@@ -23,7 +23,7 @@ uses
   cxGridCustomView, cxGridCustomTableView, cxGridTableView,
   cxGridDBTableView, cxGrid, dxOffice11, UIServiceIntf,
   NotifyReceiver, NotifySenderPresenter, NotifySenderView,
-  UICatalog, ShellLayoutStr;
+  UICatalog, ShellLayoutStr, SplashForm;
 
 const
   STATUSBAR_INFO_PANEL = 0;
@@ -78,9 +78,13 @@ type
     FDialogWorkspace: TDialogWorkspace;
     FWaitBox: TShellWaitBox;
     FUICatalog: TUICatalog;
+    FSplash: TSplash;
 
     FViewStyleController: TViewStyleController;
     FNavBarControlManager: TdxNavBarControlManager;
+
+    procedure SplashShow;
+    procedure SplashHide;
 
     procedure CloseNotifyPanel;
     procedure ShowNotifyPanel;
@@ -221,7 +225,7 @@ begin
 
   FUICatalog := TUICatalog.Create(Self, FWorkItem);
 
-
+  SplashShow;
 end;
 
 procedure TfrMain.StatusUpdateHandler(EventData: Variant);
@@ -258,6 +262,8 @@ begin
 
   FNavBarControlManager.BuildMainMenu;
   FNavBarControlManager.LoadPreference;
+
+  SplashHide;
 
   FWorkItem.EventTopics[ET_ENTITY_VIEW_OPEN_START].AddSubscription(Self, WaitProgressStartHandler);
   FWorkItem.EventTopics[ET_ENTITY_VIEW_OPEN_FINISH].AddSubscription(Self, WaitProgressStopHandler);
@@ -326,7 +332,7 @@ begin
   with WorkItem.Activities[COMMAND_RELOAD_CONFIGURATION] do
   begin
     MenuIndex := -1;
-    ShortCut := 'Ctrl+F12';
+    ShortCut := 'F12';
     RegisterHandler(TReloadConfigurationHandler.Create(FNavBarControlManager));
   end;
 
@@ -386,6 +392,24 @@ begin
 
   Application.Restore;
   Application.BringToFront;
+end;
+
+procedure TfrMain.SplashHide;
+begin
+  if Assigned(FSplash) then
+  begin
+    FSplash.Hide;
+    FreeAndNil(FSplash);
+  end;
+end;
+
+procedure TfrMain.SplashShow;
+begin
+  if not Assigned(FSplash) then
+  begin
+    FSplash := TSplash.Create;
+    FSplash.Show('', 0);
+  end;
 end;
 
 procedure TfrMain.grNotifyListViewDataControllerAfterDelete(

@@ -34,6 +34,9 @@ type
     FViewMode: TPickListViewMode;
     FCanParentSelect: boolean;
 
+    function CmdOKCondition(const CommandName: string;
+      Sender: TObject): boolean;
+
   protected
     //IPickListView
     function Selection: ISelection;
@@ -42,6 +45,7 @@ type
     procedure SetListDataSet(ADataSet: TDataSet);
     procedure SetViewMode(AViewMode: TPickListViewMode);
     procedure SetCanParentSelect(AValue: boolean);
+    procedure OnInitialize; override;
   end;
 
 
@@ -104,6 +108,19 @@ begin
 
 end;
 
+function TfrEntityPickListView.CmdOKCondition(const CommandName: string;
+  Sender: TObject): boolean;
+begin
+  Result := true;
+  if FViewMode = pvmTreeList then
+    Result :=
+      (grTreeList.SelectionCount > 0) and
+      ((not grTreeList.Selections[0].HasChildren)
+        or
+       (grTreeList.Selections[0].HasChildren and FCanParentSelect));
+
+end;
+
 procedure TfrEntityPickListView.edFilterPropertiesChange(
   Sender: TObject);
 begin
@@ -120,10 +137,16 @@ end;
 
 procedure TfrEntityPickListView.grTreeListDblClick(Sender: TObject);
 begin
-  if (grTreeList.SelectionCount > 0) and
-     (not grTreeList.Selections[0].HasVisibleChildren) then
-    WorkItem.Commands[COMMAND_OK].Execute;
+{  if (grTreeList.SelectionCount > 0) and
+     ((not grTreeList.Selections[0].HasChildren)
+       or
+      (grTreeList.Selections[0].HasChildren and FCanParentSelect)) then}
+  WorkItem.Commands[COMMAND_OK].Execute;
+end;
 
+procedure TfrEntityPickListView.OnInitialize;
+begin
+  WorkItem.Commands[COMMAND_OK].RegisterCondition(CmdOKCondition);
 end;
 
 end.

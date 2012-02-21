@@ -89,6 +89,9 @@
 			</DCCReference>
 			<DCCReference Include="..\..\Sources\Modules\ShellLayout\UICatalog.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\ShellLayout\ShellLayoutStr.pas"/>
+			<DCCReference Include="..\..\Sources\Modules\ShellLayout\SplashForm.pas">
+				<Form>frShellSplash</Form>
+			</DCCReference>
 			<RcCompile Include="..\..\Sources\Modules\ShellLayout\Shell.rc">
 				<Form>Shell.res</Form>
 			</RcCompile>

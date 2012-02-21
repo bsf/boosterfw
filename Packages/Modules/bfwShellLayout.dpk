@@ -53,6 +53,7 @@ contains
   NotifySenderPresenter in '..\..\Sources\Modules\ShellLayout\NotifySenderPresenter.pas',
   NotifySenderView in '..\..\Sources\Modules\ShellLayout\NotifySenderView.pas' {frNotifySenderView},
   UICatalog in '..\..\Sources\Modules\ShellLayout\UICatalog.pas',
-  ShellLayoutStr in '..\..\Sources\Modules\ShellLayout\ShellLayoutStr.pas';
+  ShellLayoutStr in '..\..\Sources\Modules\ShellLayout\ShellLayoutStr.pas',
+  SplashForm in '..\..\Sources\Modules\ShellLayout\SplashForm.pas' {frShellSplash};
 
 end.

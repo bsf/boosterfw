@@ -24,10 +24,7 @@ type
     procedure LoadModules(Kind: TModuleKind);
     procedure UnLoadModules;
   protected
-    procedure OnLoadModule(const AModuleName, AInfo: string; Kind: TModuleKind); virtual;
-    procedure OnShellInitialization; virtual;
-    procedure OnStart; virtual;
-
+    //procedure OnLoadModule(const AModuleName, AInfo: string; Kind: TModuleKind); virtual;
     procedure AddServices; virtual;
   public
     class function AppInstance: TCustomApplication;
@@ -97,22 +94,6 @@ begin
     end;
 end;
 
-procedure TCustomApplication.OnLoadModule(const AModuleName, AInfo: string;
-  Kind: TModuleKind);
-begin
-
-end;
-
-procedure TCustomApplication.OnShellInitialization;
-begin
-
-end;
-
-procedure TCustomApplication.OnStart;
-begin
-
-end;
-
 procedure TCustomApplication.RegisterUnhandledExceptionHandler;
 begin
 
@@ -140,9 +121,6 @@ begin
     raise Exception.Create('MainForm class not setting');
 
   Application.CreateForm(ShellFormClass, FShell);
-  FShell.Visible := false;
-
-  OnShellInitialization;
 
   TCustomShellForm(FShell).Initialize(WorkItem);
 
@@ -152,9 +130,6 @@ begin
 
   WorkItem.EventTopics[etAppStarted].Fire;
 
-  OnStart;
-
-  FShell.Visible := true;
   Application.Run;
 
   WorkItem.EventTopics[etAppStoped].Fire;

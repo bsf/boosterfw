@@ -70,9 +70,6 @@
 			<DCCReference Include="..\Sources\Shell\ShellLoginForm.pas">
 				<Form>fmShellLogin</Form>
 			</DCCReference>
-			<DCCReference Include="..\Sources\Shell\ShellSplashForm.pas">
-				<Form>frShellSplash</Form>
-			</DCCReference>
 			<DCCReference Include="..\Sources\Shell\Services\ConfigService.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\ConfigStorage.pas"/>
 			<DCCReference Include="..\Sources\Shell\Services\EntityService.pas"/>

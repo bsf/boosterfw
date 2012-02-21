@@ -66,10 +66,6 @@ inherited frEntityPickListView: TfrEntityPickListView
       object tsGridList: TcxTabSheet
         Caption = 'tsGridList'
         ImageIndex = 0
-        ExplicitLeft = 4
-        ExplicitTop = 4
-        ExplicitWidth = 658
-        ExplicitHeight = 437
         object grList: TcxGrid
           Left = 0
           Top = 0
@@ -78,9 +74,6 @@ inherited frEntityPickListView: TfrEntityPickListView
           Align = alClient
           TabOrder = 0
           LookAndFeel.Kind = lfOffice11
-          ExplicitTop = -2
-          ExplicitWidth = 658
-          ExplicitHeight = 437
           object grListView: TcxGridDBTableView
             NavigatorButtons.ConfirmDelete = False
             OnCellDblClick = grListViewCellDblClick
@@ -105,8 +98,6 @@ inherited frEntityPickListView: TfrEntityPickListView
       object tsTreeList: TcxTabSheet
         Caption = 'tsTreeList'
         ImageIndex = 1
-        ExplicitLeft = -16
-        ExplicitTop = -6
         object grTreeList: TcxDBTreeList
           Left = 0
           Top = 0
@@ -125,10 +116,6 @@ inherited frEntityPickListView: TfrEntityPickListView
           RootValue = -1
           TabOrder = 0
           OnDblClick = grTreeListDblClick
-          ExplicitLeft = 264
-          ExplicitTop = 112
-          ExplicitWidth = 250
-          ExplicitHeight = 150
         end
       end
     end

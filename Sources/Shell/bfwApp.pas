@@ -4,7 +4,7 @@ interface
 
 uses windows, classes, forms, sysutils, graphics,
   CustomApp, CoreClasses, ShellIntf,
-  ShellLogin, ShellSplashForm,
+  ShellLogin,
   ConfigServiceIntf, ConfigService,
   SecurityIntf, SecurityService, SecurityController,
   EntityServiceIntf, EntityService,
@@ -17,16 +17,10 @@ type
   TApp = class(TCustomApplication, IApp)
   private
     FLogo: Graphics.TBitmap;
-    FSplash: TShellSplash;
-    procedure SplashShow;
-    procedure SplashHide;
-    procedure SplashUpdate;
     procedure UpdateApplication;
   protected
     procedure AddServices; override;
-    procedure OnStart; override;
-    procedure OnShellInitialization; override;
-    procedure OnLoadModule(const AModuleName, AInfo: string; Kind: TModuleKind); override;
+    procedure OnLoadModule(const AModuleName, AInfo: string; Kind: TModuleKind);
     //IApp
     function Version: string;
     function Logo: Graphics.TBitmap;
@@ -80,17 +74,6 @@ function TApp.Settings: ISettings;
 begin
   Result := IConfigurationService(WorkItem.
     Services[IConfigurationService]).Settings;
-end;
-
-procedure TApp.OnShellInitialization;
-begin
-  SplashShow;
-end;
-
-
-procedure TApp.OnStart;
-begin
-  SplashHide;
 end;
 
 function TApp.UI: IUIService;
@@ -244,25 +227,7 @@ end;
 
 procedure TApp.OnLoadModule(const AModuleName, AInfo: string; Kind: TModuleKind);
 begin
-  SplashUpdate;
+
 end;
-
-procedure TApp.SplashHide;
-begin
-  if Assigned(FSplash) then FSplash.Hide;
-end;
-
-procedure TApp.SplashShow;
-begin
-//  FSplash := TShellSplash.Create;
- // FSplash.Show('', 100);
-end;
-
-procedure TApp.SplashUpdate;
-begin
-  if Assigned(FSplash) then FSplash.Update('');
-end;
-
-
 
 end.
