@@ -49,8 +49,8 @@ begin
   FForm.lbInfoText.Caption := AInfoStr;
   FForm.ProgressBar.Max := CountUpdate + 1;
   FForm.ProgressBar.Position := 0;
-  FForm.Update;
   FForm.imgLogo.Picture.Bitmap.Assign(App.Logo);
+  FForm.Update;
 end;
 
 procedure TSplash.Update(AInfoStr: string; AIncrement: boolean);

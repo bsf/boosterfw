@@ -671,15 +671,14 @@ var
   Idx: integer;
 begin
   Result := Unassigned;
-  if Assigned(FController) then
+
+  Idx := FStateNames.IndexOf(AName);
+  if Idx <> - 1 then
+    Result := FStateValues[Idx];
+
+  if VarIsEmpty(Result) and Assigned(FController) then
     Result := FController.OnGetWorkItemState(AName);
 
-  if VarIsEmpty(Result) then
-  begin
-    Idx := FStateNames.IndexOf(AName);
-    if Idx <> - 1 then
-      Result := FStateValues[Idx];
-  end;
 end;
 
 function TWorkItem.GetWorkItems: IWorkItems;

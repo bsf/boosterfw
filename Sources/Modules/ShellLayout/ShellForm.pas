@@ -164,7 +164,7 @@ begin
       begin
         Application.ShowException(E);
         Result := true;
-      end;  
+      end;
     end;
     if not Result then Exit;
   end
@@ -186,6 +186,9 @@ end;
 
 procedure TfrMain.Initialize(AWorkItem: TWorkItem);
 begin
+  SplashShow;
+  Visible := false;
+
   Self.Color := dxOffice11ToolbarsColor1;
   Panel1.Color := Self.Color;
   pcMain.Color := Self.Color;
@@ -225,7 +228,6 @@ begin
 
   FUICatalog := TUICatalog.Create(Self, FWorkItem);
 
-  SplashShow;
 end;
 
 procedure TfrMain.StatusUpdateHandler(EventData: Variant);
@@ -264,6 +266,8 @@ begin
   FNavBarControlManager.LoadPreference;
 
   SplashHide;
+  Visible := true;
+  Update;
 
   FWorkItem.EventTopics[ET_ENTITY_VIEW_OPEN_START].AddSubscription(Self, WaitProgressStartHandler);
   FWorkItem.EventTopics[ET_ENTITY_VIEW_OPEN_FINISH].AddSubscription(Self, WaitProgressStopHandler);
