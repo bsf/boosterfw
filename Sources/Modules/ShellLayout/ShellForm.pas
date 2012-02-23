@@ -187,7 +187,6 @@ end;
 procedure TfrMain.Initialize(AWorkItem: TWorkItem);
 begin
   SplashShow;
-  Visible := false;
 
   Self.Color := dxOffice11ToolbarsColor1;
   Panel1.Color := Self.Color;
@@ -266,8 +265,6 @@ begin
   FNavBarControlManager.LoadPreference;
 
   SplashHide;
-  Visible := true;
-  Update;
 
   FWorkItem.EventTopics[ET_ENTITY_VIEW_OPEN_START].AddSubscription(Self, WaitProgressStartHandler);
   FWorkItem.EventTopics[ET_ENTITY_VIEW_OPEN_FINISH].AddSubscription(Self, WaitProgressStopHandler);
@@ -400,6 +397,7 @@ end;
 
 procedure TfrMain.SplashHide;
 begin
+  exit;
   if Assigned(FSplash) then
   begin
     FSplash.Hide;
@@ -409,6 +407,7 @@ end;
 
 procedure TfrMain.SplashShow;
 begin
+  exit;
   if not Assigned(FSplash) then
   begin
     FSplash := TSplash.Create;
