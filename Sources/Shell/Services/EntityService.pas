@@ -118,11 +118,9 @@ type
   TEntityView = class(TEntityAttr, IEntityView)
   private
     FDataSetInitialized: boolean;
-
     FPrimaryKeys: TStringList;
-    FPrimaryKeysParsed: boolean;
     FLinkedFields: TStringList;
-    function GetPrimaryKeys: TStrings;
+    procedure ApplyPKInfo;
     procedure ApplyFieldInfo;
     procedure ApplyLinksInfo;
     procedure InitDataSetAttributes;
@@ -777,6 +775,12 @@ begin
   FLinkedFields.AddStrings(Info.LinkedFields);
 end;
 
+procedure TEntityView.ApplyPKInfo;
+begin
+  FPrimaryKeys.Clear;
+  ExtractStrings([';',','], [], PChar(Info.PrimaryKey), FPrimaryKeys);
+end;
+
 procedure TEntityView.CancelUpdates;
 begin
   GetDataSet.CancelUpdates;
@@ -827,16 +831,6 @@ begin
      Entity[GetEntityName].Info;
 end;
 
-
-function TEntityView.GetPrimaryKeys: TStrings;
-begin
-  if not FPrimaryKeysParsed then
-  begin
-    ExtractStrings([';'], [], PChar(Info.PrimaryKey), FPrimaryKeys);
-    FPrimaryKeysParsed := true;
-  end;
-  Result := FPrimaryKeys;
-end;
 
 function TEntityView.GetValue(const AName: string): Variant;
 begin
@@ -891,6 +885,7 @@ begin
     GetWorkItem.Root.EventTopics[ET_ENTITY_VIEW_OPEN_START].Fire;
     try
       FDataSet.Open;
+      ApplyPKInfo;
       ApplyFieldInfo;
       ApplyLinksInfo;
     finally
@@ -951,10 +946,10 @@ var
 begin
   if (not GetDataSet.Active) or VarIsEmpty(APrimaryKeyValues) then Exit;
 
-  if GetPrimaryKeys.Count = 0 then
+  if FPrimaryKeys.Count = 0 then
     raise Exception.CreateFmt('Primary key for view %s not setting', [GetAttrName]);
 
-  if GetPrimaryKeys.Count <> GetPrimayKevValueCount then
+  if FPrimaryKeys.Count <> GetPrimayKevValueCount then
     raise Exception.CreateFmt('Bad count primary key values for view %s ', [GetAttrName]);
 
   cloneDS := TClientDataSet.Create(nil);
@@ -969,14 +964,14 @@ begin
     cloneDS.Params.Assign(GetDataSet.Params);
     cloneDS.Params.AssignValues(GetDataSet.Params);
 
-    for I := 0 to GetPrimaryKeys.Count -1 do
+    for I := 0 to FPrimaryKeys.Count -1 do
     begin
       if VarIsArray(APrimaryKeyValues) then
         PValue := APrimaryKeyValues[I]
       else
         PValue := APrimaryKeyValues;
 
-      PName := GetPrimaryKeys[I];
+      PName := FPrimaryKeys[I];
       P := cloneDS.Params.FindParam(PName);
       if P = nil then
         cloneDS.Params.CreateParam(ftUnknown, PName, ptInput).Value := PValue
@@ -1134,11 +1129,11 @@ var
   eventData: Variant;
 begin
 
-  if (GetPrimaryKeys.Count <> 0) and (not FDataSet.IsEmpty) then
+  if (FPrimaryKeys.Count <> 0) and (not FDataSet.IsEmpty) then
   begin
-    eventData := VarArrayCreate([0, GetPrimaryKeys.Count], varVariant);
-    for I := 0 to GetPrimaryKeys.Count - 1 do
-      eventData[I] := GetValue(GetPrimaryKeys[I]);
+    eventData := VarArrayCreate([0, FPrimaryKeys.Count], varVariant);
+    for I := 0 to FPrimaryKeys.Count - 1 do
+      eventData[I] := GetValue(FPrimaryKeys[I]);
 
     GetWorkItem.Root.EventTopics[format(ET_ENTITY_VIEW_RELOAD_LINKS_PK,
         [FEntityName, ViewName])].Fire(eventData);

@@ -85,6 +85,10 @@ var
 begin
   fileName := '';
   case ALevel of
+    slApp: begin
+      section := APPCONFIG_APP_SECTION;
+      fileName := FConfigFileName;
+    end;
     slDefault: begin
       section := APPCONFIG_DEFAULT_SECTION;
       fileName := FConfigFileName;
@@ -134,6 +138,10 @@ var
 begin
   fileName := '';
   case ALevel of
+    slApp: begin
+      section := APPCONFIG_APP_SECTION;
+      fileName := FConfigFileName;
+    end;
     slDefault: begin
       section := APPCONFIG_DEFAULT_SECTION;
       fileName := FConfigFileName;
