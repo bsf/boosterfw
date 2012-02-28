@@ -20,7 +20,7 @@ uses
   cxExportPivotGridLink, cxCheckComboBox, cxDBCheckComboBox, cxCheckListBox,
   cxDBCheckListBox, IBUpdateSQL, DBXDataSnap, DBXCommon, DSConnect, SqlExpr,
   DSHTTPLayer, cxColorComboBox, IdBaseComponent, IdComponent, IdTCPConnection,
-  IdTCPClient, IdHTTP;
+  IdTCPClient, IdHTTP, cxTL, cxTLdxBarBuiltInMenu, cxTLData, cxDBTL;
 
 type
   TForm2 = class(TForm)
@@ -61,6 +61,9 @@ type
     cxGrid1Level1: TcxGridLevel;
     cxGrid1: TcxGrid;
     IdHTTP1: TIdHTTP;
+    cxTreeList1: TcxTreeList;
+    cxDBTreeList1: TcxDBTreeList;
+    cxDBTreeList1cxDBTreeListColumn1: TcxDBTreeListColumn;
     procedure dxNavBar1Item1Click(Sender: TObject);
     procedure dxNavBar1Item2Click(Sender: TObject);
     procedure cxMRUEdit1PropertiesInitPopup(Sender: TObject);

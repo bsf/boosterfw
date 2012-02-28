@@ -104,14 +104,16 @@ inherited frEntityPickListView: TfrEntityPickListView
           Width = 666
           Height = 445
           Align = alClient
-          Bands = <>
+          Bands = <
+            item
+            end>
           LookAndFeel.Kind = lfOffice11
           OptionsBehavior.ExpandOnIncSearch = True
+          OptionsBehavior.IncSearch = True
           OptionsCustomizing.BandVertSizing = False
           OptionsCustomizing.ColumnsQuickCustomization = True
           OptionsData.Editing = False
           OptionsData.Deleting = False
-          OptionsSelection.CellSelect = False
           OptionsView.ColumnAutoWidth = True
           RootValue = -1
           TabOrder = 0

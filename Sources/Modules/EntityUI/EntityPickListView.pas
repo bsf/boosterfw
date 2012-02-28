@@ -53,6 +53,10 @@ implementation
 
 {$R *.dfm}
 
+type
+  TcxDBTreeListHack = class(TcxDBTreeList)
+
+  end;
 { TfrCustomEntityPickListView }
 
 
@@ -76,15 +80,44 @@ begin
 end;
 
 procedure TfrEntityPickListView.SetFilterText(const AText: string);
+var
+  col: TcxDBTreeListColumn;
 begin
   edFilter.Properties.OnChange := nil;
   edFilter.Text := AText;
   edFilter.Properties.OnChange := edFilterPropertiesChange;
+
+  if FViewMode = pvmTreeList then
+  begin
+    col := grTreeList.GetColumnByFieldName('Name');
+    if col <> nil then
+    begin
+      col.MakeVisible;
+      col.Focused := true;
+      TcxDBTreeListHack(grTreeList).Controller.IncSearchText := AText;
+    end;
+  end;
 end;
 
 procedure TfrEntityPickListView.SetListDataSet(ADataSet: TDataSet);
+var
+  col: TcxDBTreeListColumn;
 begin
   LinkDataSet(ListDataSource, ADataSet);
+
+  if FViewMode = pvmTreeList then
+  begin
+    grTreeList.Root.Collapse(true);
+    col := grTreeList.GetColumnByFieldName('Name');
+    if col <> nil then
+    begin
+      col.MakeVisible;
+      col.Focused := true;
+    end;
+
+    //if grTreeList.VisibleColumnCount > 0 then
+      //grTreeList.VisibleColumns[0].Focused := true;
+  end;
 end;
 
 procedure TfrEntityPickListView.SetViewMode(AViewMode: TPickListViewMode);
@@ -137,11 +170,8 @@ end;
 
 procedure TfrEntityPickListView.grTreeListDblClick(Sender: TObject);
 begin
-{  if (grTreeList.SelectionCount > 0) and
-     ((not grTreeList.Selections[0].HasChildren)
-       or
-      (grTreeList.Selections[0].HasChildren and FCanParentSelect)) then}
-  WorkItem.Commands[COMMAND_OK].Execute;
+  if  grTreeList.HitTest.HitAtColumn then
+    WorkItem.Commands[COMMAND_OK].Execute;
 end;
 
 procedure TfrEntityPickListView.OnInitialize;

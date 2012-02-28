@@ -166,8 +166,8 @@ object Form2: TForm2
       end
     end
     object cxGrid1: TcxGrid
-      Left = 664
-      Top = 280
+      Left = 224
+      Top = 183
       Width = 250
       Height = 200
       TabOrder = 3
@@ -180,6 +180,32 @@ object Form2: TForm2
       end
       object cxGrid1Level1: TcxGridLevel
         GridView = cxGrid1DBTableView1
+      end
+    end
+    object cxTreeList1: TcxTreeList
+      Left = 682
+      Top = 312
+      Width = 250
+      Height = 150
+      Bands = <>
+      TabOrder = 4
+    end
+    object cxDBTreeList1: TcxDBTreeList
+      Left = 664
+      Top = 256
+      Width = 250
+      Height = 150
+      Bands = <
+        item
+        end>
+      RootValue = -1
+      TabOrder = 5
+      object cxDBTreeList1cxDBTreeListColumn1: TcxDBTreeListColumn
+        Position.ColIndex = 0
+        Position.RowIndex = 0
+        Position.BandIndex = 0
+        Summary.FooterSummaryItems = <>
+        Summary.GroupFooterSummaryItems = <>
       end
     end
   end

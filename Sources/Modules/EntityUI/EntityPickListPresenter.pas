@@ -179,7 +179,8 @@ begin
   end
   else
   begin
-    if GetEVList.DataSet.Locate('NAME', searchText, [loCaseInsensitive, loPartialKey]) then;
+    if GetEVList.DataSet.Locate('NAME', searchText, [loCaseInsensitive, loPartialKey]) then
+      View.SetFilterText(searchText);
   end;
 end;
 
