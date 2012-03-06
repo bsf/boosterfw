@@ -5,7 +5,7 @@ uses cxTL, cxTLdxBarBuiltInMenu, cxTLData, cxDBTL,
   Contnrs, controls, CustomView, classes, sysutils, db,
   EntityServiceIntf, cxButtonEdit, cxEdit, CoreClasses, StrUtils, Variants,
   CustomPresenter, cxInplaceContainer, cxDBLookupComboBox, menus, cxCheckBox,
-  UIClasses, inifiles, ShellIntf;
+  UIClasses, inifiles, ShellIntf, cxStyles;
 
 type
   TcxTreeGridViewHelper = class(TViewHelper, IViewHelper, IViewDataSetHelper)
@@ -20,6 +20,13 @@ type
     procedure LoadPreference(ATree: TcxCustomTreeList);
     procedure SavePreference(ATree: TcxCustomTreeList);
     procedure SaveAllPreference; //(AGridView: TcxCustomGridView; AData: TStream);
+
+    //Style
+    procedure OnGetColumnStyle(Sender: TcxCustomTreeList; AColumn: TcxTreeListColumn;
+      ANode: TcxTreeListNode; var AStyle: TcxStyle);
+
+    procedure OnGetRowStyle(Sender: TcxCustomTreeList; AColumn: TcxTreeListColumn;
+      ANode: TcxTreeListNode; var AStyle: TcxStyle);
 
   protected
     //IViewHelper
@@ -184,6 +191,22 @@ begin
 
 end;
 
+procedure TcxTreeGridViewHelper.OnGetColumnStyle(Sender: TcxCustomTreeList;
+  AColumn: TcxTreeListColumn; ANode: TcxTreeListNode; var AStyle: TcxStyle);
+begin
+
+end;
+
+procedure TcxTreeGridViewHelper.OnGetRowStyle(Sender: TcxCustomTreeList;
+  AColumn: TcxTreeListColumn; ANode: TcxTreeListNode; var AStyle: TcxStyle);
+begin
+  if ANode = nil then Exit;
+
+  AStyle := TcxStyle(App.UI.Styles[VarToStr(ANode.Values[(Sender as TcxDBTreeList).
+    GetColumnByFieldName(FIELD_UI_ROW_STYLE).ItemIndex])]);
+
+end;
+
 procedure TcxTreeGridViewHelper.SaveAllPreference;
 var
   I: integer;
@@ -290,6 +313,9 @@ begin
   end;
 
   grController.CreateAllItems;
+
+  if ADataSet.FindField(FIELD_UI_ROW_STYLE) <> nil then
+    AGrid.Styles.OnGetContentStyle := OnGetRowStyle;
 
 {  for I := 0 to ADataSet.FieldCount - 1 do
   begin

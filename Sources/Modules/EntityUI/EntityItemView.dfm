@@ -2,7 +2,6 @@ inherited frEntityItemView: TfrEntityItemView
   Left = 393
   Top = 331
   Caption = 'frEntityItemView'
-  ExplicitWidth = 320
   ExplicitHeight = 543
   PixelsPerInch = 96
   TextHeight = 13
@@ -30,12 +29,14 @@ inherited frEntityItemView: TfrEntityItemView
       OptionsData.Inserting = False
       TabOrder = 0
       DataController.DataSource = ItemDataSource
-      ExplicitTop = 48
       Version = 1
     end
     inherited pnButtons: TcxGroupBox
       TabOrder = 1
     end
+  end
+  inherited ActionList: TActionList
+    Left = 46
   end
   object ItemDataSource: TDataSource
     Left = 106

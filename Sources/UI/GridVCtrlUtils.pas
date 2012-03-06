@@ -5,7 +5,7 @@ uses cxVGrid, cxDBVGrid, Contnrs, controls, CustomView, classes, sysutils, db,
   EntityServiceIntf, cxButtonEdit, cxEdit, CoreClasses, StrUtils, Variants,
   cxInplaceContainer, cxDBLookupComboBox, cxDropDownEdit, menus, cxCheckBox, forms,
   UIClasses, cxCalendar, typinfo, cxImage, graphics, inifiles, ShellIntf,
-  cxColorComboBox, cxMemo, stdctrls;
+  cxColorComboBox, cxMemo, stdctrls, cxStyles;
 
 const
   EDITOR_DATA_ENTITY = 'EntityName';
@@ -179,7 +179,7 @@ begin
 
   Result := TcxCategoryRow(AGrid.Add(TcxCategoryRow));
   Result.Expanded := true;
-  Result.Options.ShowExpandButton := false;
+  Result.Options.ShowExpandButton := true;
   Result.Options.TabStop := false;
   Result.Properties.Caption := ACaption;    
 end;
@@ -398,6 +398,11 @@ begin
     end
     else
    }
+    grEditorRow.Styles.Header :=
+      TcxStyle(App.UI.Styles[GetFieldAttribute(ADataSet.Fields[I], FIELD_ATTR_STYLE_HEADER)]);
+    grEditorRow.Styles.Content :=
+      TcxStyle(App.UI.Styles[GetFieldAttribute(ADataSet.Fields[I], FIELD_ATTR_STYLE_CONTENT)]);
+
     InitRowEditor(grEditorRow, ADataSet.Fields[I]);
 
   end

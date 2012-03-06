@@ -110,6 +110,7 @@ type
     destructor Destroy; override;
     procedure Connect(const AConnectionString: string); override;
     procedure Disconnect; override;
+    procedure Reconnect; override;
     function RemoteServer: TCustomRemoteServer; override;
     function GetProvider(const AProviderName: string): TDataSetProvider; override;
     procedure ClearCacheMetadata; override;
@@ -529,6 +530,15 @@ begin
       (Result as TIBEntityViewProvider).ReloadMetadata
     else if Result is TIBEntityOperProvider then
       (Result as TIBEntityOperProvider).ReloadMetadata;
+  end;
+end;
+
+procedure TDAL_IBE.Reconnect;
+begin
+  if FDatabase.Connected then
+  begin
+    FDatabase.Connected := false;
+    FDatabase.Connected := true;
   end;
 end;
 

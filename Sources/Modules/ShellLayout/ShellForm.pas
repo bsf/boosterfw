@@ -462,9 +462,9 @@ procedure TfrMain.TReloadConfigurationHandler.Execute(Sender: TWorkItem;
   Activity: IActivity);
 begin
 
-  Sender.EventTopics[ET_RELOAD_CONFIGURATION].Fire;
-
   App.Entities.ClearMetadataCache;
+
+  Sender.EventTopics[ET_RELOAD_CONFIGURATION].Fire;
 
   FNavBar.SavePreference;
   FNavBar.BuildMainMenu;

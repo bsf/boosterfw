@@ -58,6 +58,8 @@ contains
   EntityPickListPresenter in '..\..\Sources\Modules\EntityUI\EntityPickListPresenter.pas',
   EntityPickListView in '..\..\Sources\Modules\EntityUI\EntityPickListView.pas' {frEntityPickListView},
   EntitySelectorPresenter in '..\..\Sources\Modules\EntityUI\EntitySelectorPresenter.pas',
-  EntitySelectorView in '..\..\Sources\Modules\EntityUI\EntitySelectorView.pas' {frEntitySelectorView};
+  EntitySelectorView in '..\..\Sources\Modules\EntityUI\EntitySelectorView.pas' {frEntitySelectorView},
+  EntityTreeListView in '..\..\Sources\Modules\EntityUI\EntityTreeListView.pas' {frEntityTreeListView},
+  EntityTreeListPresenter in '..\..\Sources\Modules\EntityUI\EntityTreeListPresenter.pas';
 
 end.

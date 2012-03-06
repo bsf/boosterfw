@@ -205,6 +205,7 @@ begin
 
         strList.Clear;
         ExtractStrings([';'], [], PWideChar(VarToStr(list['OPTIONS'])), strList);
+        Options.Clear;
         Options.AddStrings(strList);
         Options.Add(OPTION_ENTITYNAME + '=' + VarToStr(list['ENTITYNAME']));
         Options.Add(OPTION_ENTITYVIEWNAME + '=' + VarToStr(list['VIEWNAME']));

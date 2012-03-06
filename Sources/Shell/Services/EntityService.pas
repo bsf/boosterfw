@@ -414,6 +414,10 @@ procedure TEntityService.ClearMetadataCache;
 var
   I: integer;
 begin
+
+  FDAL.Reconnect;
+  FDAL.ClearCacheMetadata;
+
   FEntityList.Clear;
   FSchemeInfoDictionary.Clear;
 
@@ -423,8 +427,6 @@ begin
     TEntity(FEntities[I]).FEntityInfo.LoadInfo;
   end;
 
-  if Assigned(FDAL) then
-    FDAL.ClearCacheMetadata;
 end;
 
 procedure TEntityService.Connect(const AConnectionEngine,
@@ -473,8 +475,7 @@ procedure TEntityService.Disconnect;
 var
   I: integer;
 begin
-  for I := FEntities.Count -1 downto 0 do  FEntities.Delete(I);
-  //ClearConnectionCache;
+  for I := FEntities.Count -1 downto 0 do FEntities.Delete(I);
 
   if FDAL <> nil then
   begin

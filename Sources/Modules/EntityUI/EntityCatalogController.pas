@@ -6,6 +6,7 @@ uses classes, CoreClasses,  ShellIntf, Variants, db, Contnrs,
   StrUtils, SecurityIntf, controls,
   EntityJournalPresenter, EntityJournalView,
   EntityListPresenter, EntityListView,
+  EntityTreeListPresenter, EntityTreeListView,
   EntityNewPresenter, EntityNewView,
   EntityItemPresenter, EntityItemView,
   EntityComplexPresenter, EntityComplexView,
@@ -230,6 +231,7 @@ begin
     RegisterHandler('IEntityComplexView', TViewActivityHandler.Create(TEntityComplexPresenter, TfrEntityComplexView));
     RegisterHandler('IEntityCollectView', TViewActivityHandler.Create(TEntityCollectPresenter, TfrEntityCollectView));
     RegisterHandler('IEntityListView', TViewActivityHandler.Create(TEntityListPresenter, TfrEntityListView));
+    RegisterHandler('IEntityTreeListView', TViewActivityHandler.Create(TEntityTreeListPresenter, TfrEntityTreeListView));
     RegisterHandler('IEntityPickListView', TEntityPickListActivityHandler.Create(TEntityPickListPresenter, TfrEntityPickListView));
     RegisterHandler('IEntityJournalView', TViewActivityHandler.Create(TEntityJournalPresenter, TfrEntityJournalView));
     RegisterHandler('IEntitySelectorView', TViewActivityHandler.Create(TEntitySelectorPresenter, TfrEntitySelectorView));

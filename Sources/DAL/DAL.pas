@@ -18,6 +18,7 @@ type
     class function EngineName: string; virtual;
     procedure Connect(const AConnectionString: string); virtual; abstract;
     procedure Disconnect; virtual; abstract;
+    procedure Reconnect; virtual; abstract;
     function RemoteServer: TCustomRemoteServer; virtual; abstract;
     function GetProvider(const AProviderName: string): TDataSetProvider; virtual; abstract;
     procedure ClearCacheMetadata; virtual;

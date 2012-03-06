@@ -103,6 +103,10 @@
 			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntitySelectorView.pas">
 				<Form>frEntitySelectorView</Form>
 			</DCCReference>
+			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityTreeListView.pas">
+				<Form>frEntityTreeListView</Form>
+			</DCCReference>
+			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityTreeListPresenter.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

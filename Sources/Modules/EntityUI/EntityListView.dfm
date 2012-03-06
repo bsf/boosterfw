@@ -2,8 +2,6 @@ inherited frEntityListView: TfrEntityListView
   Left = 636
   Top = 519
   Caption = 'frEntityListView'
-  ExplicitWidth = 320
-  ExplicitHeight = 543
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
@@ -72,7 +70,7 @@ inherited frEntityListView: TfrEntityListView
     end
   end
   object ListDataSource: TDataSource
-    Left = 20
-    Top = 158
+    Left = 44
+    Top = 190
   end
 end
