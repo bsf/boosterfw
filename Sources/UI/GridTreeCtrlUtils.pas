@@ -284,9 +284,11 @@ procedure TcxTreeGridViewHelper.TuneGridForDataSet(
 var
   grController: TcxDBTreeListDataController;
   //CategoryCaption: string;
-  //I: integer;
+  I: integer;
   primaryKey: string;
   parentField: TField;
+  col: TcxDBTreeListColumn;
+  field: TField;
 begin
   if not Assigned(ADataSet) then Exit;
 
@@ -314,33 +316,37 @@ begin
 
   grController.CreateAllItems;
 
+  if GetDataSetAttribute(ADataSet, DATASET_ATTR_READONLY) = 'Yes' then
+    with AGrid.OptionsData do
+    begin
+      Editing := false;
+      Inserting := false;
+      Deleting := false;
+    end;
+
   if ADataSet.FindField(FIELD_UI_ROW_STYLE) <> nil then
     AGrid.Styles.OnGetContentStyle := OnGetRowStyle;
 
-{  for I := 0 to ADataSet.FieldCount - 1 do
+  //Tune columns
+  for I := 0 to ADataSet.FieldCount - 1 do
   begin
-    grEditorRow := FindEditorRowByFieldName(AGrid, ADataSet.Fields[I].FieldName);
+    field := ADataSet.Fields[I];
+    col := AGrid.GetColumnByFieldName(field);
 
-    //Category
-    CategoryCaption := GetFieldAttribute(ADataSet.Fields[I], 'band');
-    if  CategoryCaption <> '' then
-    begin
-      grCategoryRow := FindOrCreateCategoryRow(AGrid, CategoryCaption);
-      grEditorRow.Parent := grCategoryRow;
-    end;
+    col.Visible := field.Visible;
+    col.Options.Customizing :=  not (GetFieldAttribute(field, FIELD_ATTR_HIDDEN) = '1');
 
     //Editor
-    if ADataSet.Fields[I].ReadOnly then
+    if field.ReadOnly then
     begin
-    //  grEditorRow.Options.TabStop := false;
-      grEditorRow.Properties.Options.Editing := false;
-      grEditorRow.Properties.Options.ShowEditButtons := eisbNever;
-    end
-    else
-      InitRowEditor(grEditorRow, ADataSet.Fields[I]);
+      col.Options.Editing := false;
+      col.Options.ShowEditButtons := eisbNever;
+    end;
+    //else
+     // InitRowEditor(grEditorRow, ADataSet.Fields[I]);
 
   end
- }
+
 
 end;
 
