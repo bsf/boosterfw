@@ -260,12 +260,28 @@ procedure TcxVGridViewHelper.LoadPreference(AGrid: TcxDBVerticalGrid);
   procedure LoadFromStorage(AGrid: TcxDBVerticalGrid; AStorage: TMemInifile);
   var
     _section: string;
+    I: integer;
   begin
     _section := 'COMMON';
     AGrid.OptionsView.ValueWidth :=
       AStorage.ReadInteger(_section, 'ValueWidth', AGrid.OptionsView.ValueWidth);
     AGrid.OptionsView.RowHeaderWidth :=
       AStorage.ReadInteger(_section, 'RowHeaderWidth', AGrid.OptionsView.RowHeaderWidth);
+
+    for I := 0 to AGrid.Rows.Count - 1 do
+    begin
+
+      if AGrid.Rows[I] is TcxCategoryRow then
+      begin
+        _section := 'BAND_' + IntToStr(I);
+        if AStorage.SectionExists(_section) then
+        begin
+          AGrid.Rows[I].Expanded :=
+            AStorage.ReadBool(_section, 'Expanded', AGrid.Rows[I].Expanded);
+        end;
+      end;
+
+    end;
 
   end;
 
@@ -356,6 +372,7 @@ var
   grCategoryRow: TcxCategoryRow;
   grEditorRow: TcxDBEditorRow;
   I: integer;
+  field: TField;
   primaryKey: string;
 begin
   if not Assigned(ADataSet) then Exit;
@@ -379,31 +396,27 @@ begin
 
   for I := 0 to ADataSet.FieldCount - 1 do
   begin
-    grEditorRow := FindEditorRowByFieldName(AGrid, ADataSet.Fields[I].FieldName);
+    field := ADataSet.Fields[I];
+    grEditorRow := FindEditorRowByFieldName(AGrid, field.FieldName);
 
     //Category
-    CategoryCaption := GetFieldAttribute(ADataSet.Fields[I], 'band');
+    CategoryCaption := GetFieldAttribute(field, 'band');
     if  CategoryCaption <> '' then
     begin
       grCategoryRow := FindOrCreateCategoryRow(AGrid, CategoryCaption);
       grEditorRow.Parent := grCategoryRow;
+      if grCategoryRow.Expanded then
+        grCategoryRow.Expanded := not CheckFieldAttribute(field, FIELD_ATTR_BANDCOLLAPSED);
     end;
 
-    //Editor
-{    if ADataSet.Fields[I].ReadOnly then
-    begin
-    //  grEditorRow.Options.TabStop := false;
-      grEditorRow.Properties.Options.Editing := false;
-      grEditorRow.Properties.Options.ShowEditButtons := eisbNever;
-    end
-    else
-   }
+    //Style
     grEditorRow.Styles.Header :=
-      TcxStyle(App.UI.Styles[GetFieldAttribute(ADataSet.Fields[I], FIELD_ATTR_STYLE_HEADER)]);
+      TcxStyle(App.UI.Styles[GetFieldAttribute(field, FIELD_ATTR_STYLE_HEADER)]);
     grEditorRow.Styles.Content :=
-      TcxStyle(App.UI.Styles[GetFieldAttribute(ADataSet.Fields[I], FIELD_ATTR_STYLE_CONTENT)]);
+      TcxStyle(App.UI.Styles[GetFieldAttribute(field, FIELD_ATTR_STYLE_CONTENT)]);
 
-    InitRowEditor(grEditorRow, ADataSet.Fields[I]);
+    //Editor
+    InitRowEditor(grEditorRow, field);
 
   end
 
@@ -892,10 +905,20 @@ procedure TcxVGridViewHelper.SavePreference(AGrid: TcxDBVerticalGrid);
   procedure SaveToStorage(AGrid: TcxDBVerticalGrid; AStorage: TMemInifile);
   var
     _section: string;
+    I: integer;
   begin
     _section := 'COMMON';
     AStorage.WriteInteger(_section, 'ValueWidth', AGrid.OptionsView.ValueWidth);
     AStorage.WriteInteger(_section, 'RowHeaderWidth', AGrid.OptionsView.RowHeaderWidth);
+
+    for I := 0 to AGrid.Rows.Count - 1 do
+    begin
+      if AGrid.Rows[I] is TcxCategoryRow then
+      begin
+        _section := 'BAND_' + IntToStr(I);
+        AStorage.WriteBool(_section, 'Expanded', AGrid.Rows[I].Expanded);
+      end;
+    end;
   end;
 
 var

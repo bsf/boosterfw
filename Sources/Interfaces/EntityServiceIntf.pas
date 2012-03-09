@@ -15,6 +15,8 @@ const
   FIELD_ATTR_FIELDID = 'FieldID';
   FIELD_ATTR_REQUIRED = 'Required';
 
+  FIELD_ATTR_BANDCOLLAPSED = 'BandCollapsed';
+
   FIELD_ATTR_STYLE_CONTENT = 'Style';
   FIELD_ATTR_STYLE_HEADER = 'Style.Header';
 
@@ -186,7 +188,7 @@ type
     procedure ClearMetadataCache;
   end;
 
-
+function CheckFieldAttribute(AField: TField; const AttributeName: string): boolean;
 function GetFieldAttribute(AField: TField; const AttributeName: string): string;
 procedure GetFieldAttributeList(AField: TField; AList: TStrings);
 procedure SetFieldAttribute(AField: TField; const AttributeName, AValue: string);
@@ -247,6 +249,11 @@ begin
   end;
 
   Result := TFieldAttributes(attr).FAttr;
+end;
+
+function CheckFieldAttribute(AField: TField; const AttributeName: string): boolean;
+begin
+  Result := GetFieldAttr(AField).IndexOf(AttributeName) <> -1;
 end;
 
 function GetFieldAttribute(AField: TField; const AttributeName: string): string;

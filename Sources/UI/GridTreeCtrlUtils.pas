@@ -331,7 +331,7 @@ begin
   for I := 0 to ADataSet.FieldCount - 1 do
   begin
     field := ADataSet.Fields[I];
-    col := AGrid.GetColumnByFieldName(field);
+    col := AGrid.GetColumnByFieldName(field.FieldName);
 
     col.Visible := field.Visible;
     col.Options.Customizing :=  not (GetFieldAttribute(field, FIELD_ATTR_HIDDEN) = '1');
