@@ -17,6 +17,7 @@ type
 
   TEntityItemPresenter = class(TEntityContentPresenter)
   private
+    FEntityViewReady: boolean;
     procedure CmdCancel(Sender: TObject);
     procedure CmdSave(Sender: TObject);
     function View: IEntityItemView;
@@ -118,6 +119,8 @@ begin
 
   if WorkItem.State['NEXT_ACTION'] <> '' then
     WorkItem.Commands[COMMAND_SAVE].Caption := GetLocaleString(@COMMAND_NEXT_CAPTION); //'ƒ‡ÎÂÂ >>';
+
+
 end;
 
 function TEntityItemPresenter.GetEVItem: IEntityView;
@@ -127,13 +130,21 @@ begin
   evName := EntityViewName;
   if evName = '' then evName := ENT_VIEW_ITEM;
   Result := GetEView(EntityName, evName);
+  FEntityViewReady := true;
 end;
 
-function TEntityItemPresenter.OnGetWorkItemState(
-  const AName: string): Variant;
+function TEntityItemPresenter.OnGetWorkItemState(const AName: string): Variant;
+var
+  ds: TDataSet;
 begin
   {if SameText(AName, 'ID') then
     Result := GetEVItem.Values['ID']; –≈ ”–—»ﬂ !!!}
+  if FEntityViewReady then
+  begin
+    ds := App.Entities[EntityName].GetView(EntityViewName, WorkItem).DataSet;
+    if ds.FindField(AName) <> nil then
+      Result := ds[AName];
+  end;
 end;
 
 function TEntityItemPresenter.View: IEntityItemView;

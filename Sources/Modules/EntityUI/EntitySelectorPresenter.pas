@@ -50,6 +50,8 @@ begin
 end;
 
 procedure TEntitySelectorPresenter.OnViewReady;
+var
+  fInfo: TField;
 begin
   ViewTitle := ViewInfo.Title;
   WorkItem.State['ModalResult'] := mrCancel;
@@ -60,6 +62,9 @@ begin
   View.CommandBar.AddCommand(COMMAND_OK,
     GetLocaleString(@COMMAND_OK_CAPTION), 'Enter', cmdOK);
 
+  fInfo := GetEVList.DataSet.FindField('INFO');
+  if fInfo <> nil then fInfo.Visible := false;
+  
   View.LinkData(GetEVList.DataSet);
 end;
 

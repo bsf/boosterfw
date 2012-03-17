@@ -14,6 +14,7 @@ type
     pnInfo: TcxGroupBox;
     grList: TcxDBTreeList;
     ListDataSource: TDataSource;
+    procedure grListDblClick(Sender: TObject);
   private
     { Private declarations }
   protected
@@ -27,6 +28,13 @@ implementation
 {$R *.dfm}
 
 { TfrEntityTreeListView }
+
+procedure TfrEntityTreeListView.grListDblClick(Sender: TObject);
+begin
+  if grList.HitTest.HitAtColumn and (grList.SelectionCount > 0) and
+      (not grList.Selections[0].HasChildren) then
+    WorkItem.Commands[COMMAND_OPEN].Execute;
+end;
 
 function TfrEntityTreeListView.Selection: ISelection;
 begin

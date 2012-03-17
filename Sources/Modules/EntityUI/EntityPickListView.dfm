@@ -1,7 +1,5 @@
 inherited frEntityPickListView: TfrEntityPickListView
   Caption = 'frEntityPickListView'
-  ExplicitWidth = 676
-  ExplicitHeight = 543
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox

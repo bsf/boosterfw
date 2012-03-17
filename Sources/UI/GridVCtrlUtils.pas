@@ -61,6 +61,10 @@ type
 
     procedure GridRow_OnEditValueChanged(Sender: TObject);
 
+    procedure GridRow_OnPropertiesGetEditProperties(
+      Sender: TcxCustomEditorRowProperties; ARecordIndex: Integer;
+      var AProperties: TcxCustomEditProperties);
+
     function WorkItem: TWorkItem;
 
     //Preferences
@@ -181,7 +185,8 @@ begin
   Result.Expanded := true;
   Result.Options.ShowExpandButton := true;
   Result.Options.TabStop := false;
-  Result.Properties.Caption := ACaption;    
+  Result.Properties.Caption := ACaption;
+  Result.Visible := false;
 end;
 
 procedure TcxVGridViewHelper.FocusDataSetControl(ADataSet: TDataSet;
@@ -197,6 +202,8 @@ begin
     row := nil;
     for I := 0 to grid.Rows.Count - 1 do
     begin
+      if not (grid.Rows[I] is TcxDBEditorRow) then Continue;
+
       row := grid.Rows[I] as TcxDBEditorRow;
       if AFieldName <> '' then
       begin
@@ -365,6 +372,10 @@ end;
 procedure TcxVGridViewHelper.TuneGridForDataSet(AGrid: TcxDBVerticalGrid;
   ADataSet: TDataSet);
 
+  procedure SetUIAttrField(AField: TField);
+  begin
+
+  end;
 
 var
   grController: TcxDBVerticalGridDataController;
@@ -401,12 +412,15 @@ begin
 
     //Category
     CategoryCaption := GetFieldAttribute(field, 'band');
-    if  CategoryCaption <> '' then
+    if  (CategoryCaption <> '') then
     begin
       grCategoryRow := FindOrCreateCategoryRow(AGrid, CategoryCaption);
       grEditorRow.Parent := grCategoryRow;
       if grCategoryRow.Expanded then
         grCategoryRow.Expanded := not CheckFieldAttribute(field, FIELD_ATTR_BANDCOLLAPSED);
+
+      if not grCategoryRow.Visible then
+        grCategoryRow.Visible := field.Visible;
     end;
 
     //Style
@@ -417,6 +431,8 @@ begin
 
     //Editor
     InitRowEditor(grEditorRow, field);
+
+
 
   end
 
@@ -503,7 +519,7 @@ begin
   end
   else
   begin
-  
+
     if SameText(editorTyp, FIELD_ATTR_EDITOR_LOOKUP) then
        InitLookupEditor(AEditorRow, AField.DataSet)
 
@@ -582,7 +598,7 @@ begin
   eviewID := ADataSet.Name + '_lookupData_' + field.FieldName;
 
   lookupDS := TDataSource.Create(ARow);
-  lookupDS.DataSet := svc.Entity[entityName].GetView(eviewName, WorkItem, eviewID).Load;
+  lookupDS.DataSet := svc.Entity[entityName].GetView(eviewName, WorkItem, eviewID).Load(WorkItem);
 
 
   ARow.Properties.EditPropertiesClass := TcxLookupComboBoxProperties;
@@ -863,6 +879,12 @@ end;
 procedure TcxVGridViewHelper.GridRow_OnEditValueChanged(Sender: TObject);
 begin
   TcxCustomEdit(Sender).PostEditValue;
+end;
+
+procedure TcxVGridViewHelper.GridRow_OnPropertiesGetEditProperties(
+  Sender: TcxCustomEditorRowProperties; ARecordIndex: Integer;
+  var AProperties: TcxCustomEditProperties);
+begin
 end;
 
 procedure TcxVGridViewHelper.Grid_OnEditValueChanged(Sender: TObject;

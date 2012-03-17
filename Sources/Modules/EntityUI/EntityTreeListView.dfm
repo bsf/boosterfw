@@ -51,8 +51,7 @@ inherited frEntityTreeListView: TfrEntityTreeListView
       OptionsView.GridLines = tlglBoth
       RootValue = -1
       TabOrder = 2
-      ExplicitLeft = 1
-      ExplicitTop = 78
+      OnDblClick = grListDblClick
     end
   end
   object ListDataSource: TDataSource

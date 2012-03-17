@@ -693,7 +693,10 @@ var
   eFieldInfo: TField;
   smFieldInfo: TField;
   smFieldInfoDef: TField;
+  uiField: TField;
   dsReadOnly: boolean;
+  rowReadOnly: boolean;
+  applyUIFieldProp: boolean;
 begin
   eInfo := EntityInfo;
   vInfo := Info;
@@ -701,6 +704,15 @@ begin
   smInfoDef := SchemeInfoDef;
 
   dsReadOnly := GetDataSetAttribute(GetDataSet, DATASET_ATTR_READONLY) = 'Yes';
+  applyUIFieldProp := not GetDataSet.IsEmpty;
+
+  rowReadOnly := false;
+  if applyUIFieldProp then
+  begin
+    uiField := GetDataSet.FindField(FIELD_UI_ROW_READONLY);
+    if uiField <> nil then
+      rowReadOnly := uiField.AsInteger = 1;
+  end;
 
   for I := 0 to GetDataSet.FieldCount - 1 do
   begin
@@ -745,6 +757,20 @@ begin
 
     if dsReadOnly then
       F.ReadOnly := true;
+
+    if applyUIFieldProp then
+    begin
+      uiField := GetDataSet.FindField(format(FIELD_UI_READONLY_FMT, [F.FieldName]));
+      if uiField <> nil then
+        F.ReadOnly := uiField.AsInteger = 1;
+
+      if rowReadOnly then
+        F.ReadOnly := true;
+
+      uiField := GetDataSet.FindField(format(FIELD_UI_VISIBLE_FMT, [F.FieldName]));
+      if uiField <> nil then
+        F.Visible := uiField.AsInteger = 1;
+    end;
 
     if (not F.ReadOnly) and F.Required then
     begin
@@ -1164,7 +1190,8 @@ begin
   for I := 0 to FDataSet.FieldCount - 1 do
   begin
     field := FDataSet.Fields[I];
-    if (GetFieldAttribute(field, FIELD_ATTR_REQUIRED) = '1') and (not field.ReadOnly) and field.IsNull then
+    if (GetFieldAttribute(field, FIELD_ATTR_REQUIRED) = '1') and
+       (not field.ReadOnly) and field.Visible and field.IsNull then
     begin
       field.FocusControl;
       raise Exception.CreateFmt(ERROR_MSG_FIELD_REQUIRE, [field.DisplayLabel]);

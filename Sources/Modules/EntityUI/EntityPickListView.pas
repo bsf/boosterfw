@@ -170,7 +170,9 @@ end;
 
 procedure TfrEntityPickListView.grTreeListDblClick(Sender: TObject);
 begin
-  if  grTreeList.HitTest.HitAtColumn then
+  if  grTreeList.HitTest.HitAtColumn and
+      (grTreeList.SelectionCount > 0) and
+      (not grTreeList.Selections[0].HasChildren)  then
     WorkItem.Commands[COMMAND_OK].Execute;
 end;
 
