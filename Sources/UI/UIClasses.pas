@@ -314,8 +314,14 @@ end;
 
 procedure TViewActivityHandler.Execute(Sender: TWorkItem; Activity: IActivity);
 begin
-  if PresenterIDParam <> '' then
-    Activity.Params[TViewActivityParams.PresenterID] := Activity.Params[PresenterIDParam];
+  if VarIsEmpty(Activity.Params[TViewActivityParams.PresenterID]) then
+  begin
+    if PresenterIDParam <> '' then
+      Activity.Params[TViewActivityParams.PresenterID] := Activity.Params[PresenterIDParam]
+    else
+      Activity.Params[TViewActivityParams.PresenterID] := Activity.Params['ID'];
+  end;
+
   Activity.Outs[TViewActivityOuts.ModalResult] := Unassigned;
   FPresenterClass.Execute(Sender, Activity, FViewClass);
 end;

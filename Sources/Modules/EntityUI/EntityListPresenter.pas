@@ -100,7 +100,7 @@ function TEntityListPresenter.OnGetWorkItemState(const AName: string): Variant;
 var
   ds: TDataSet;
 begin
-  if SameText(AName, 'ITEM_ID') or SameText(AName, 'ID') then
+  if SameText(AName, 'ITEM_ID') {or SameText(AName, 'ID')} then
     Result := View.Selection.First
   else if SameText(AName, 'LIST_ID_STR') then
     Result := View.Selection.AsString

@@ -157,7 +157,7 @@ begin
 
   FReportCatalogItem :=
    (WorkItem.Services[IReportCatalogService] as IReportCatalogService).
-      GetItem(WorkItem.State['ReportURI']);
+      GetItem(WorkItem.State['ReportURI']);                          //Reinit on reload!!!
 
   ViewHidden := Sender.Params[TReportLaunchParams.LaunchMode] <> 0;
 
