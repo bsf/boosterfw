@@ -65,7 +65,6 @@
 			<DCCReference Include="dxGDIPlusD15.dcp"/>
 			<DCCReference Include="cxEditorsD15.dcp"/>
 			<DCCReference Include="cxDataD15.dcp"/>
-			<DCCReference Include="cxExtEditorsD15.dcp"/>
 			<DCCReference Include="dxBarD15.dcp"/>
 			<DCCReference Include="dxComnD15.dcp"/>
 			<DCCReference Include="cxPageControlD15.dcp"/>

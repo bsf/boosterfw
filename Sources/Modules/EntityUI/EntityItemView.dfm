@@ -28,8 +28,6 @@ inherited frEntityItemView: TfrEntityItemView
       OptionsData.Inserting = False
       TabOrder = 0
       DataController.DataSource = ItemDataSource
-      ExplicitLeft = 1
-      ExplicitTop = 41
       Version = 1
     end
     inherited pnButtons: TcxGroupBox

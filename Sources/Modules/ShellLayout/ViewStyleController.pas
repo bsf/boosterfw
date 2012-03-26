@@ -2,7 +2,7 @@ unit ViewStyleController;
 
 interface
 uses classes, SysUtils, ShellIntf, cxLookAndFeels, dxSkinsCore, dxSkinsForm,
-  dxSkinsDefaultPainters, dxSkinsdxNavBar2Painter, dxSkinsdxStatusBarPainter,
+  dxSkinsDefaultPainters, dxSkinsdxNavBarPainter, dxSkinsdxStatusBarPainter,
   dxSkinsdxBarPainter, dxSkinscxPCPainter, CoreClasses, ConfigServiceIntf,
   strUtils, forms;
 

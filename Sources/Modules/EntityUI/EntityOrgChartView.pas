@@ -16,6 +16,7 @@ type
   TfrEntityOrgChartView = class(TfrCustomContentView, IEntityOrgChartView)
     OrgChart: TdxDbOrgChart;
     OrgChartDataSource: TDataSource;
+    procedure OrgChartLoadNode(Sender: TObject; Node: TdxOcNode);
   private
   protected
     procedure LinkData(AData: TDataSet);
@@ -38,6 +39,31 @@ begin
   OrgChart.HeightFieldName := 'Height';
   OrgChart.ShapeFieldName := 'Shape';
   LinkDataSet(OrgChartDataSource, AData);
+end;
+
+procedure TfrEntityOrgChartView.OrgChartLoadNode(Sender: TObject;
+  Node: TdxOcNode);
+
+  function GetTextWidth(AFont: TFont; const AText: string): integer;
+  var
+    BM: TBitmap;
+  begin
+    BM := TBitmap.Create;
+    try
+      BM.Canvas.Font := AFont;
+      Result := BM.Canvas.TextWidth(AText);
+    finally
+      BM.Free;
+    end;
+  end;
+
+var textWidth: integer;
+begin
+  textWidth := GetTextWidth(OrgChart.Font, Node.Text);
+  if textWidth > Node.Width then
+    Node.Width := textWidth;
+  if Node.Width < 120 then
+    Node.Width := 120;
 end;
 
 procedure TfrEntityOrgChartView.Rotate;

@@ -39,7 +39,6 @@ requires
   dxGDIPlusD15,
   cxEditorsD15,
   cxDataD15,
-  cxExtEditorsD15,
   dxBarD15,
   dxComnD15,
   cxPageControlD15,
