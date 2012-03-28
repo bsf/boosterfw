@@ -23,7 +23,7 @@ uses
   cxGridCustomView, cxGridCustomTableView, cxGridTableView,
   cxGridDBTableView, cxGrid, dxOffice11, UIServiceIntf,
   NotifyReceiver, NotifySenderPresenter, NotifySenderView,
-  UICatalog, ShellLayoutStr, SplashForm;
+  UICatalog, ShellLayoutStr, SplashForm, cxPCdxBarPopupMenu;
 
 const
   STATUSBAR_INFO_PANEL = 0;
@@ -32,6 +32,7 @@ const
   COMMAND_SHOW_ABOUT = '{9421F2C7-F526-4858-975B-B01698C70530}';
   COMMAND_CLOSE_APP = '{1E3FCF4E-9E40-4D5B-ADE4-3F78428CA24B}';
   COMMAND_RELOAD_CONFIGURATION = '{E94B5DA4-980A-428B-98A4-9DEC73E63980}';
+  COMMAND_SHOWVIEWINFO = '{5BB48548-EF9C-4778-B1B5-A41D5FA89285}';
 
 type
   TfrMain = class(TCustomShellForm)
@@ -127,6 +128,10 @@ type
         procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
       end;
 
+      TShowViewInfoHandler = class(TActivityHandler)
+      public
+        procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
+      end;
   public
     constructor Create(AOwner: TComponent); override;
     procedure Initialize(AWorkItem: TWorkItem); override;
@@ -337,6 +342,13 @@ begin
     RegisterHandler(TReloadConfigurationHandler.Create(FNavBarControlManager));
   end;
 
+  with WorkItem.Activities[COMMAND_SHOWVIEWINFO] do
+  begin
+    MenuIndex := -1;
+    ShortCut := 'F11';
+    RegisterHandler(TShowViewInfoHandler.Create);
+  end;
+
 end;
 
 
@@ -469,6 +481,13 @@ begin
   FNavBar.SavePreference;
   FNavBar.BuildMainMenu;
   FNavBar.LoadPreference;
+end;
+
+{ TfrMain.TShowViewInfoHandler }
+
+procedure TfrMain.TShowViewInfoHandler.Execute(Sender: TWorkItem;
+  Activity: IActivity);
+begin
 end;
 
 end.

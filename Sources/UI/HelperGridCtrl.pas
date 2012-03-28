@@ -8,7 +8,7 @@ uses classes, forms, cxGridPopupMenu, cxGrid, menus, inifiles, variants, cxDBDat
   cxGridStdPopupMenu, cxGridMenuOperations, cxGridHeaderPopupMenuItems,
   cxGridDBBandedTableView, EntityServiceIntf, cxCustomData, cxFilter, cxGraphics,
   cxDBLookupComboBox, cxCheckBox, UIClasses, ShellIntf, cxStyles, UIStr,
-  coreClasses;
+  coreClasses, cxControls;
 
 
 

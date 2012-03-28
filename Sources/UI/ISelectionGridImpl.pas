@@ -3,7 +3,7 @@ unit ISelectionGridImpl;
 interface
 uses classes, UIClasses, CustomView, cxGrid, cxGridCustomTableView, cxGridTableView,
   Variants, sysutils, contnrs, cxGridDBTableView, cxGridDBBandedTableView,
-  CoreClasses;
+  CoreClasses, cxDBData, cxGridDBDataDefinitions, db;
 
 type
 
@@ -116,12 +116,14 @@ var
   KeyColumnIndex: integer;
 begin
   Result := Unassigned;
-  if Count > 0 then
+  if Count > 0  then
+    Result := GetItem(0);
+{  if Count > 0 then
   begin
     KeyColumnIndex := GetKeyColumnIndex;
     if KeyColumnIndex <> -1 then
       Result := FGridView.Controller.SelectedRecords[0].Values[KeyColumnIndex];
-  end;
+  end;}
 
 end;
 
@@ -133,10 +135,43 @@ end;
 function TISelectionGridImpl.GetItem(AIndex: integer): Variant;
 var
   KeyColumnIndex: integer;
+  DataController: TcxGridDBDataController;
+  KeyFields: TList;
+  I: integer;
+  field: TField;
+  valIndex: integer;
 begin
+  Result := Unassigned;
+
+  DataController := nil;
+
+  if FGridView is TcxGridDBTableView then
+    DataController := TcxGridDBTableView(FGridView).DataController
+  else if FGridView is TcxGridDBBandedTableView then
+    DataController := TcxGridDBBandedTableView(FGridView).DataController;
+
+  if DataController = nil then Exit;
+
+  KeyFields := TList.Create;
+  try
+    DataController.GetKeyDBFields(KeyFields);
+    for I := 0 to KeyFields.Count - 1 do
+    begin
+      valIndex := DataController.GetItemByFieldName(TField(KeyFields[I]).FieldName).Index;
+      if I = 0 then
+        Result := FGridView.Controller.SelectedRecords[AIndex].Values[valIndex]
+      else
+        Result := VarToStr(Result) + '.' +
+          VarToStr(FGridView.Controller.SelectedRecords[AIndex].Values[valIndex]);
+    end;
+
+  finally
+    KeyFields.Free;
+  end;
+{
   KeyColumnIndex := GetKeyColumnIndex;
   if KeyColumnIndex <> -1 then
-    Result := FGridView.Controller.SelectedRecords[AIndex].Values[KeyColumnIndex];
+    Result := FGridView.Controller.SelectedRecords[AIndex].Values[KeyColumnIndex];}
 end;
 
 
@@ -148,7 +183,7 @@ begin
     Result :=
       TcxGridDBTableView(FGridView).GetColumnByFieldName(
         TcxGridDBTableView(FGridView).DataController.KeyFieldNames).Index
-        
+
   else if FGridView is TcxGridDBBandedTableView then
     Result :=
       TcxGridDBBandedTableView(FGridView).GetColumnByFieldName(

@@ -163,7 +163,7 @@ var
   dsStates: TDataSet;
 begin
   ViewTitle := ViewInfo.Title;
-  FreeOnViewClose := false;
+//  FreeOnViewClose := false;
   
   dsStates := GetEVStates.DataSet;
   while not dsStates.Eof do

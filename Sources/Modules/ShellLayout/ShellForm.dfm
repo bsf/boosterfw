@@ -141,11 +141,11 @@ object frMain: TfrMain
       Align = alClient
       Color = clBtnFace
       Focusable = False
+      ParentColor = False
+      TabOrder = 1
+      Properties.Style = 9
       LookAndFeel.Kind = lfOffice11
       LookAndFeel.NativeStyle = False
-      ParentColor = False
-      Style = 9
-      TabOrder = 1
       ClientRectBottom = 403
       ClientRectRight = 686
       ClientRectTop = 0
@@ -190,7 +190,6 @@ object frMain: TfrMain
         TabStop = False
         LookAndFeel.Kind = lfOffice11
         object grNotifyListView: TcxGridTableView
-          NavigatorButtons.ConfirmDelete = False
           OnCellDblClick = grNotifyListViewCellDblClick
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <>

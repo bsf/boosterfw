@@ -2,6 +2,7 @@ inherited frEntityListView: TfrEntityListView
   Left = 636
   Top = 519
   Caption = 'frEntityListView'
+  ExplicitHeight = 543
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
@@ -44,7 +45,6 @@ inherited frEntityListView: TfrEntityListView
       LookAndFeel.Kind = lfOffice11
       LookAndFeel.NativeStyle = False
       object grListView: TcxGridDBTableView
-        NavigatorButtons.ConfirmDelete = False
         FilterBox.Position = fpTop
         OnCellDblClick = grListViewCellDblClick
         DataController.DataSource = ListDataSource
