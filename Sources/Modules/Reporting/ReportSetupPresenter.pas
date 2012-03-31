@@ -45,13 +45,13 @@ implementation
 procedure TReportSetupPresenter.ItemSelectedChangedHandler(Sender: TObject);
 begin
   View.SetItemLinksDataSet(GetEVItemLinks.DataSet);
-  if (not VarIsEmpty(View.GetItemSelection)) and
+ { if (not VarIsEmpty(View.GetItemSelection)) and
     (not GetEVItems.DataSet.IsEmpty) and (GetEVItems.Values['EDITOR'] = 'List') then
     View.SetItemLinksLookupDataSet(GetEVItemLinksLookup.DataSet)
     //LinkDataSet('ItemLinksLookup', GetEVItemLinksLookup.DataSet)
   else
-    View.SetItemLinksLookupDataSet(nil);
-    //View.LinkDataSet('ItemLinksLookup', nil);
+    View.SetItemLinksLookupDataSet(nil);       }
+
 end;
 
 procedure TReportSetupPresenter.EVItemLinksAfterInsert(DataSet: TDataSet);
@@ -63,7 +63,7 @@ end;
 function TReportSetupPresenter.GetEVItemLinks: IEntityView;
 begin
   Result := GetEView(ENT_RPT_SETUP, 'ItemLinks', [FReportID, View.GetItemSelection]);
-  Result.Reload;
+  Result.Load;
   Result.ImmediateSave := true;
   Result.DataSet.AfterInsert := EVItemLinksAfterInsert;
 end;
@@ -73,7 +73,7 @@ var
   _lookupE: string;
   _lookupEV: string;
 begin
-  GetEVItemEditor.Reload;
+{  GetEVItemEditor.Load;
   if GetEVItemEditor.DataSet.Locate('EPRM', 'EntityName', []) then
     _lookupE := GetEVItemEditor.Values['EVAL']
   else
@@ -84,7 +84,7 @@ begin
   if (_lookupE = '') or (_lookupEV = '') then
     raise Exception.Create('Entity view for lookup not setting!');
 
-  Result := GetEView(_lookupE, _lookupEV, []);
+  Result := GetEView(_lookupE, _lookupEV, []);}
 end;
 
 function TReportSetupPresenter.GetEVItems: IEntityView;

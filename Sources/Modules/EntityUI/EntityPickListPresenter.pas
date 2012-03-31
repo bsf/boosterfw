@@ -59,7 +59,7 @@ end;
 
 procedure TEntityPickListPresenter.CmdDataReload(Sender: TObject);
 begin
-  GetEVList.Reload;
+  GetEVList.Load;
 end;
 
 procedure TEntityPickListPresenter.CmdFilterChanged(Sender: TObject);
@@ -88,7 +88,7 @@ end;
 procedure TEntityPickListPresenter.CmdShowClosed(Sender: TObject);
 begin
   WorkItem.State[SHOW_CLOSED_PARAM] := 1;
-  GetEVList.Reload;
+  GetEVList.Load;
 end;
 
 procedure TEntityPickListPresenter.OnViewReady;

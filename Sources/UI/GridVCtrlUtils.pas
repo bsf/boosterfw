@@ -598,7 +598,7 @@ begin
   eviewID := ADataSet.Name + '_lookupData_' + field.FieldName;
 
   lookupDS := TDataSource.Create(ARow);
-  lookupDS.DataSet := svc.Entity[entityName].GetView(eviewName, WorkItem, eviewID).Load(WorkItem);
+  lookupDS.DataSet := svc.Entity[entityName].GetView(eviewName, WorkItem, eviewID).Load;
 
 
   ARow.Properties.EditPropertiesClass := TcxLookupComboBoxProperties;

@@ -56,8 +56,8 @@ type
 
   protected
     //TAbstractController
-    function OnGetWorkItemState(const AName: string): Variant; override;
-    procedure OnSetWorkItemState(const AName: string; const AValue: Variant); override;
+    function OnGetWorkItemState(const AName: string; var Done: boolean): Variant; override;
+    procedure OnSetWorkItemState(const AName: string; const AValue: Variant; var Done: boolean); override;
 
     //
     function View: IReportLauncherView;
@@ -531,10 +531,13 @@ begin
 end;
 
 function TReportLauncherPresenter.OnGetWorkItemState(
-  const AName: string): Variant;
+  const AName: string; var Done: boolean): Variant;
 begin
   if Assigned(FParamDataSet) and FParamDataSet.Active and (FParamDataSet.FindField(AName) <> nil) then
+  begin
     Result := FParamDataSet[AName];
+    Done := true;
+  end;
 end;
 
 procedure TReportLauncherPresenter.CmdClose(Sender: TObject);
@@ -624,7 +627,7 @@ begin
 end;
 
 procedure TReportLauncherPresenter.OnSetWorkItemState(const AName: string;
-  const AValue: Variant);
+  const AValue: Variant; var Done: boolean);
 var
   field: TField;
 begin
@@ -633,7 +636,10 @@ begin
     FParamDataSet.Edit;
     field := FParamDataSet.FindField(AName);
     if Assigned(field) then
+    begin
       field.Value := AValue;
+      Done := true;
+    end;
     FParamDataSet.Post;
   end;
 end;

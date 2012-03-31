@@ -24,7 +24,7 @@ type
     function View: IEntityOrgChartView;
     function GetEVChart: IEntityView;
   protected
-    function OnGetWorkItemState(const AName: string): Variant; override;
+    function OnGetWorkItemState(const AName: string; var Done: boolean): Variant; override;
     procedure OnViewReady; override;
   end;
 
@@ -43,7 +43,7 @@ end;
 
 procedure TEntityOrgChartPresenter.CmdReload(Sender: TObject);
 begin
-  GetEVChart.Reload;
+  GetEVChart.Load;
 end;
 
 procedure TEntityOrgChartPresenter.CmdRotate(Sender: TObject);
@@ -67,10 +67,13 @@ begin
 end;
 
 function TEntityOrgChartPresenter.OnGetWorkItemState(
-  const AName: string): Variant;
+  const AName: string; var Done: boolean): Variant;
 begin
   if SameText(AName, 'ITEM_ID') then
-    Result := GetEVChart.Values['ID'];
+  begin
+    Result := GetEVChart.DataSet['ID'];
+    Done := true;
+  end;
 end;
 
 procedure TEntityOrgChartPresenter.OnViewReady;

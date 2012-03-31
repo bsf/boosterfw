@@ -39,7 +39,7 @@ type
     function View: IEntityComplexView;
   protected
     procedure OnUpdateCommandStatus; override;
-    function OnGetWorkItemState(const AName: string): Variant; override;
+    function OnGetWorkItemState(const AName: string; var Done: boolean): Variant; override;
     procedure OnInit(Sender: IActivity); override;
     procedure OnViewReady; override;
     function GetEVHead: IEntityView;
@@ -148,10 +148,13 @@ begin
 end;
 
 function TEntityComplexPresenter.OnGetWorkItemState(
-  const AName: string): Variant;
+  const AName: string; var Done: boolean): Variant;
 begin
   if SameText(AName, 'DETAIL_ID') then
+  begin
     Result := (GetView as IEntityComplexView).DetailSelection.First;
+    Done := true;
+  end;
 end;
 
 procedure TEntityComplexPresenter.OnInit(Sender: IActivity);
@@ -250,7 +253,7 @@ end;
 procedure TEntityComplexPresenter.CmdReload(Sender: TObject);
 begin
 //  GetEVHead.Reload;
-  GetEVDetails.Reload;
+  GetEVDetails.Load;
 end;
 
 procedure TEntityComplexPresenter.CmdDetailCollect(Sender: TObject);

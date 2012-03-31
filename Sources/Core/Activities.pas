@@ -74,7 +74,7 @@ type
 
     procedure RegisterHandler(AHandler: TActivityHandler);
 
-    procedure Execute(Sender: TWorkItem);
+    procedure Execute(Sender: TWorkItem; BindingRule: string = '');
   public
     constructor Create(AOwner: TComponent; const AURI: string); reintroduce;
     destructor Destroy; override;
@@ -143,6 +143,8 @@ begin
   begin
     if Activity.FUsePermission and Assigned(FPermissionHandler) then
       FPermissionHandler.DemandPermission(Activity);
+
+    //bind activity params
 
     FHandlers.Items[idx].Execute(Sender, Activity);
   end;
@@ -227,11 +229,29 @@ begin
   inherited;
 end;
 
-procedure TActivity.Execute(Sender: TWorkItem);
+procedure TActivity.Execute(Sender: TWorkItem; BindingRule: string);
+var
+  strList: TStringList;
+  I: integer;
 begin
   FOuts.ResetValues;
   try
+
+    if BindingRule <> '' then
+    begin
+      strList := TStringList.Create;
+      try
+        ExtractStrings([';'], [], PWideChar(BindingRule), strList);
+        for I := 0 to strList.Count - 1 do
+          FParams.SetValue(strList.Names[I],
+            Sender.State[strList.ValueFromIndex[I]]);
+      finally
+        strList.Free;
+      end;
+    end;
+
     (Owner as TActivities).ExecuteActivity(Sender, Self);
+
   finally
     FParams.ResetValues;
   end;

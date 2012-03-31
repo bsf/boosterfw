@@ -10,7 +10,7 @@ uses
   cxData, cxDataStorage, DB, cxDBData, cxSplitter, cxGridLevel, cxClasses,
   cxGridCustomView, cxGridCustomTableView, cxGridTableView, UIClasses,
   cxGridDBTableView, cxGrid,  cxDBLookupComboBox, cxTextEdit, cxMemo,
-  cxLookAndFeels, ReportSetupPresenter;
+  cxLookAndFeels, ReportSetupPresenter, cxPCdxBarPopupMenu;
 
 
 type

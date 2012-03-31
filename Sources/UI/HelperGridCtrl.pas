@@ -496,19 +496,31 @@ procedure TcxGridViewHelper.LoadPreference(AGridView: TcxCustomGridView);
   var
     I: integer;
     _section: string;
+    colArray: array of string;
+    colIdx: integer;
   begin
     _section := 'COMMON';
     AView.OptionsView.Footer :=
       AStorage.ReadBool(_section, 'Footer', AView.OptionsView.Footer);
 
-    // begin setup position
+    //setup position
+    SetLength(colArray, AView.ColumnCount);
+    for I := 0 to AView.ColumnCount - 1 do
+      colArray[I] := AView.Columns[I].DataBinding.FieldName;
+
     for I := 0 to AView.ColumnCount - 1 do
     begin
       _section := 'COLUMN_' + AView.Columns[I].DataBinding.FieldName;
-      AView.Columns[I].Index :=
-        AStorage.ReadInteger(_section, 'ColIndex', AView.Columns[I].Index);
+      colIdx := AStorage.ReadInteger(_section, 'ColIndex', AView.Columns[I].Index);
+      if colIdx > (AView.ColumnCount - 1) then
+        colIdx := AView.Columns[I].Index;
+      colArray[colIdx] := AView.Columns[I].DataBinding.FieldName;
     end;
 
+    for I := 0 to High(colArray) do
+      AView.GetColumnByFieldName(colArray[I]).Index := I;
+
+    //setup etc
     for I := 0 to AView.ColumnCount - 1 do
     begin
       _section := 'COLUMN_' + AView.Columns[I].DataBinding.FieldName;

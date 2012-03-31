@@ -190,7 +190,7 @@ type
 
     procedure RegisterHandler(AHandler: TActivityHandler);
 
-    procedure Execute(Sender: TWorkItem);
+    procedure Execute(Sender: TWorkItem; BindingRule: string = '');
 
   end;
 
@@ -319,8 +319,8 @@ type
   private
     function GetWorkItem: TWorkItem;
   protected
-    function OnGetWorkItemState(const AName: string): Variant; virtual;
-    procedure OnSetWorkItemState(const AName: string; const Value: Variant); virtual;
+    function OnGetWorkItemState(const AName: string; var Done: boolean): Variant; virtual;
+    procedure OnSetWorkItemState(const AName: string; const Value: Variant; var Done: boolean); virtual;
     procedure Terminate; virtual;
     procedure Run; virtual;
     procedure Activate; virtual;
@@ -669,16 +669,20 @@ end;
 function TWorkItem.GetState(const AName: string): Variant;
 var
   Idx: integer;
+  Done: boolean;
 begin
   Result := Unassigned;
+  Done := false;
 
-  Idx := FStateNames.IndexOf(AName);
-  if Idx <> - 1 then
-    Result := FStateValues[Idx];
+  if Assigned(FController) then
+    Result := FController.OnGetWorkItemState(AName, Done);
 
-  if VarIsEmpty(Result) and Assigned(FController) then
-    Result := FController.OnGetWorkItemState(AName);
-
+  if not Done { VarIsEmpty(Result)} then
+  begin
+    Idx := FStateNames.IndexOf(AName);
+    if Idx <> - 1 then
+      Result := FStateValues[Idx];
+  end;
 end;
 
 function TWorkItem.GetWorkItems: IWorkItems;
@@ -739,15 +743,15 @@ begin
 end;
 
 function TWorkItemController.OnGetWorkItemState(
-  const AName: string): Variant;
+  const AName: string; var Done: boolean): Variant;
 begin
 
 end;
 
 procedure TWorkItemController.OnSetWorkItemState(const AName: string;
-  const Value: Variant);
+  const Value: Variant; var Done: boolean);
 begin
-
+  Done := false;
 end;
 
 procedure TWorkItemController.Run;
@@ -763,18 +767,24 @@ end;
 procedure TWorkItem.SetState(const AName: string; const Value: Variant);
 var
   Idx: integer;
+  Done: boolean;
 begin
-  Idx := FStateNames.IndexOf(AName);
-  if Idx = - 1 then
-  begin
-    Idx := FStateNames.Add(AName);
-    SetLength(FStateValues, Idx + 1);
-  end;
-
-  FStateValues[Idx] := Value;
+  Done := false;
 
   if Assigned(FController) then
-    FController.OnSetWorkItemState(AName, Value);
+    FController.OnSetWorkItemState(AName, Value, Done);
+
+  if not Done then
+  begin
+    Idx := FStateNames.IndexOf(AName);
+    if Idx = - 1 then
+    begin
+      Idx := FStateNames.Add(AName);
+      SetLength(FStateValues, Idx + 1);
+    end;
+
+    FStateValues[Idx] := Value;
+  end;
 end;
 
 { TWorkItems }

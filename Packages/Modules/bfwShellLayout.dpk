@@ -35,7 +35,8 @@ requires
   dxNavBarD15,
   dxSkinscxPCPainterD15,
   dxSkinsdxBarPainterD15,
-  dxSkinsdxNavBarPainterD15;
+  dxSkinsdxNavBarPainterD15,
+  cxPageControldxBarPopupMenuD15;
 
 contains
   bfwShellLayoutModuleInit in '..\..\Sources\Modules\ShellLayout\bfwShellLayoutModuleInit.pas',

@@ -46,7 +46,7 @@ type
 
     procedure ReloadCallerWorkItem;
   protected
-    function OnGetWorkItemState(const AName: string): Variant; override;
+    function OnGetWorkItemState(const AName: string; var Done: boolean): Variant; override;
     procedure OnUpdateCommandStatus; override;
     procedure OnViewReady; override;
   end;
@@ -62,9 +62,9 @@ end;
 
 procedure TEntityCollectPresenter.CmdReload(Sender: TObject);
 begin
-  GetEVList.Reload;
-  GetEVInfo.Reload;
-  GetEVItems.Reload;
+  GetEVList.Load;
+  GetEVInfo.Load;
+  GetEVItems.Load;
 end;
 
 function TEntityCollectPresenter.GetEVList: IEntityView;
@@ -78,8 +78,9 @@ begin
 end;
 
 function TEntityCollectPresenter.OnGetWorkItemState(
-  const AName: string): Variant;
+  const AName: string; var Done: boolean): Variant;
 begin
+  Done := true;
   if SameText(AName, 'ITEM_ID') then
     Result := View.SelectionItems.First
   else if SameText(AName, 'LIST_ID') then
@@ -87,8 +88,9 @@ begin
   else if SameText(AName, 'HID') then
     Result := WorkItem.State['ID']
   else if (not SameText(AName, 'ID')) and GetEVList.IsLoaded and (GetEVList.DataSet.FindField(AName) <> nil) then
-    Result := GetEVList.DataSet[AName];
-
+    Result := GetEVList.DataSet[AName]
+  else
+    Done := false;
 end;
 
 
@@ -176,14 +178,14 @@ begin
       try
         GetEVItems.Save;
       except
-        GetEVItems.Reload;
+        GetEVItems.Load;
         raise;
       end;
     end;
   finally
-    GetEVInfo.Reload;
+    GetEVInfo.Load;
     if ViewInfo.OptionExists('ReloadList') then
-      GetEVList.Reload;
+      GetEVList.Load;
     ReloadCallerWorkItem;  
   end;
 end;
@@ -262,10 +264,10 @@ begin
       oper.Execute;
     end;
   finally
-    GetEVInfo.Reload;
-    GetEVItems.Reload;
+    GetEVInfo.Load;
+    GetEVItems.Load;
     if ViewInfo.OptionExists('ReloadList') then
-      GetEVList.Reload;
+      GetEVList.Load;
     ReloadCallerWorkItem;
     GetEVItems.ReloadLinksData;
   end;

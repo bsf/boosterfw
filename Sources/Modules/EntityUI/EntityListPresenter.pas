@@ -45,7 +45,7 @@ type
     function View: IEntityListView;
   protected
     function EntityViewName: string; override;
-    function OnGetWorkItemState(const AName: string): Variant; override;
+    function OnGetWorkItemState(const AName: string; var Done: boolean): Variant; override;
     //
     function GetEVList: IEntityView;
 
@@ -60,7 +60,7 @@ implementation
 
 procedure TEntityListPresenter.CmdReload(Sender: TObject);
 begin
-  GetEVList.Reload;
+  GetEVList.Load;
 end;
 
 
@@ -96,10 +96,12 @@ begin
     Result := Unassigned;
 end;
 
-function TEntityListPresenter.OnGetWorkItemState(const AName: string): Variant;
+function TEntityListPresenter.OnGetWorkItemState(const AName: string;
+  var Done: boolean): Variant;
 var
   ds: TDataSet;
 begin
+  Done := true;
   if SameText(AName, 'ITEM_ID') {or SameText(AName, 'ID')} then
     Result := View.Selection.First
   else if SameText(AName, 'LIST_ID_STR') then
@@ -110,35 +112,20 @@ begin
     Result := View.Selection.AsArray
   else if FIsReady then
   begin
+    Done := false;
     ds := App.Entities[EntityName].GetView(EntityViewName, WorkItem).DataSet;
     if ds.FindField(AName) <> nil then
+    begin
+      Done := true;
       Result := ds[AName];
+    end;
   end
   else
-    Result := inherited OnGetWorkItemState(AName);
-
-{  else if SameText(AName, 'IDList') then
   begin
-    Result := '';
-    for I := 0 to View.Selection.Count - 1 do
-      if Result = '' then
-        Result := VarToStr(View.Selection[I])
-      else
-        Result := Result + ';' + VarToStr(View.Selection[I]);
-  end
-  else if SameText(Result, 'IDList2') then
-  begin
-    Result := '';
-    for I := 0 to View.Selection.Count - 1 do
-      if Result = '' then
-        Result := VarToStr(View.Selection[I])
-      else
-        Result := Result + ',' + VarToStr(View.Selection[I]);
-  end
-  else
+    Done := false;
+    Result := inherited OnGetWorkItemState(AName, Done);
+  end;
 
-    Result := inherited OnGetWorkItemState(AName);
- }
 end;
 
 
@@ -266,7 +253,7 @@ var
   ds: TDataSet;
   I: integer;
 begin
-  ds := App.Entities[GetSelectorEntityName].GetView('Selector', WorkItem).Load(WorkItem);
+  ds := App.Entities[GetSelectorEntityName].GetView('Selector', WorkItem).Load;
   for I := 0 to ds.FieldCount - 1 do
     WorkItem.State[ds.Fields[I].FieldName] := ds.Fields[I].Value;
   UpdateInfoText;
@@ -277,7 +264,7 @@ var
   txt: string;
 begin
   txt := VarToStr(App.Entities[GetSelectorEntityName].
-    GetView('SelectorInfo', WorkItem).Load(WorkItem)[INFOTEXT_FIELD_NAME]);
+    GetView('SelectorInfo', WorkItem).Load[INFOTEXT_FIELD_NAME]);
   //txt := VarToStr(WorkItem.State[INFOTEXT_FIELD_NAME]);
 
   if GetView <> nil then

@@ -22,9 +22,8 @@ type
     procedure CmdCancel(Sender: TObject);
     procedure CmdSave(Sender: TObject);
     function View: IEntityNewView;
-    procedure ReloadCallerWorkItem;
   protected
-    function OnGetWorkItemState(const AName: string): Variant; override;
+    function OnGetWorkItemState(const AName: string; var Done: boolean): Variant; override;
     function GetEVItem: IEntityView; virtual;
     //
     procedure OnViewReady; override;
@@ -46,37 +45,34 @@ var
   callerID: string;
   callerWI: TWorkItem;
 begin
-  nextAction := nil;
-  callerWI := nil;
 
   GetEVItem.Save;
 
-  if ViewInfo.OptionExists('ReloadCaller') then
-    ReloadCallerWorkItem;
+  callerWI := WorkItem.Root.WorkItems.Find(CallerURI);
+  if callerWI = nil then
+    callerWI := WorkItem.Parent;
 
+  if ViewInfo.OptionExists('ReloadCaller') then
+    callerWI.Commands[COMMAND_RELOAD].Execute;
+
+  nextAction := nil;
   nextActionID := WorkItem.State['NEXT_ACTION'];
   if nextActionID <> '' then
-  begin
     nextAction := WorkItem.Activities[nextActionID];
-    if nextActionID = ACTION_ENTITY_ITEM then
-    begin
-       nextAction.Params[TEntityItemActionParams.ID] := GetEVItem.Values['ID'];
-       nextAction.Params[TEntityItemActionParams.EntityName] := EntityName;
-    end
-    else
-      nextAction.Params['ID'] := GetEVItem.Values['ID'];
 
-    callerID := WorkItem.State['CALLER_ID'];
-    if callerID <> '' then
-      callerWI := FindWorkItem(callerID, WorkItem.Root);
-    if not Assigned(callerWI) then
-      callerWI := WorkItem.Parent;
+  if nextAction <> nil then
+  begin
+    if nextActionID = ACTION_ENTITY_ITEM then
+       nextAction.Params[TEntityItemActionParams.EntityName] := EntityName;
+
+    nextAction.Params.Assign(WorkItem);
   end;
 
   CloseView;
 
   if Assigned(nextAction) then
     nextAction.Execute(callerWI);
+
 end;
 
 procedure TEntityNewPresenter.OnViewReady;
@@ -137,16 +133,21 @@ begin
   if WorkItem.State['NEXT_ACTION'] <> '' then
     WorkItem.Commands[COMMAND_SAVE].Caption := GetLocaleString(@COMMAND_NEXT_CAPTION);
 
+  if GetEVItem.DataSet.IsEmpty then
+  begin
+    GetEVItem.DataSet.Insert;
+    //Result.DataSet.Post;
+  end;
 end;
 
 function TEntityNewPresenter.GetEVItem: IEntityView;
 var
   mField: TField;
-  evName: string;
 begin
-  evName := EntityViewName;
-  if evName = '' then evName := ENT_VIEW_NEW;
-  Result := GetEView(EntityName, evName);
+  Result := (WorkItem.Services[IEntityService] as IEntityService).
+    Entity[EntityName].GetView(EntityViewName, WorkItem);
+
+  Result.Load(false);
 
   if Result.IsLoaded and (not Result.IsModified) then
   begin
@@ -158,11 +159,12 @@ begin
       Result.DataSet.Post;
     end;
   end;
+
   FEntityViewReady := true;
 end;
 
 function TEntityNewPresenter.OnGetWorkItemState(
-  const AName: string): Variant;
+  const AName: string; var Done: boolean): Variant;
 var
   ds: TDataSet;
 begin
@@ -172,7 +174,10 @@ begin
   begin
     ds := App.Entities[EntityName].GetView(EntityViewName, WorkItem).DataSet;
     if ds.FindField(AName) <> nil then
+    begin
       Result := ds[AName];
+      Done := true;
+    end;
   end;
 end;
 
@@ -181,13 +186,5 @@ begin
   Result := GetView as IEntityNewView;
 end;
 
-procedure TEntityNewPresenter.ReloadCallerWorkItem;
-var
-  CallerWI: TWorkItem;
-begin
-  CallerWI := WorkItem.Root.WorkItems.Find(CallerURI);
-  if CallerWI <> nil then
-    CallerWI.Commands[COMMAND_RELOAD].Execute;
-end;
 
 end.

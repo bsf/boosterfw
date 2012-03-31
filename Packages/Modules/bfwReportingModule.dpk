@@ -37,7 +37,8 @@ requires
   frxDB15,
   frxe15,
   fsDB15,
-  dsnapcon;
+  dsnapcon,
+  cxPageControldxBarPopupMenuD15;
 
 contains
   bfwReportingModuleInit in '..\..\Sources\Modules\Reporting\bfwReportingModuleInit.pas',

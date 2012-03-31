@@ -39,8 +39,8 @@ type
     class function GetWorkspaceDefault: string; virtual;
 
     // AbstractPresenter
-    function OnGetWorkItemState(const AName: string): Variant; override;
-    procedure OnSetWorkItemState(const AName: string; const Value: Variant); override;
+    function OnGetWorkItemState(const AName: string; var Done: boolean): Variant; override;
+    procedure OnSetWorkItemState(const AName: string; const Value: Variant; var Done: boolean); override;
     procedure Terminate; override;
     procedure Activate; override;
     procedure Deactivate; override;
@@ -285,7 +285,7 @@ begin
 
   if not Result.IsLoaded then
     Result.Load;
- 
+
 end;
 
 function TCustomPresenter.GetEView(const AEntityName,
@@ -294,12 +294,12 @@ var
   I: integer;
 begin
   Result := App.Entities[AEntityName].GetView(AEntityViewNAME, WorkItem);
-
-  for I := 0 to Result.Params.Count - 1 do
+  Result.Load(false);
+ { for I := 0 to Result.Params.Count - 1 do
     Result.Params[I].Value := WorkItem.State[Result.Params[I].Name];
 
   if not Result.IsLoaded then
-    Result.Load;
+    Result.Load;}
 
 end;
 
@@ -346,14 +346,17 @@ begin
 
 end;
 
-function TCustomPresenter.OnGetWorkItemState(const AName: string): Variant;
+function TCustomPresenter.OnGetWorkItemState(const AName: string; var Done: boolean): Variant;
 begin
   if Assigned(FView) then
+  begin
     Result := GetView.Value[AName];
+    Done := not VarIsEmpty(Result);
+  end;
 end;
 
 procedure TCustomPresenter.OnSetWorkItemState(const AName: string;
-  const Value: Variant);
+  const Value: Variant; var Done: boolean);
 begin
   if Assigned(FView) then
   begin

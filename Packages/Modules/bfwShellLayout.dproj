@@ -63,6 +63,7 @@
 			<DCCReference Include="dxSkinscxPCPainterD15.dcp"/>
 			<DCCReference Include="dxSkinsdxBarPainterD15.dcp"/>
 			<DCCReference Include="dxSkinsdxNavBarPainterD15.dcp"/>
+			<DCCReference Include="cxPageControldxBarPopupMenuD15.dcp"/>
 			<DCCReference Include="..\..\Sources\Modules\ShellLayout\bfwShellLayoutModuleInit.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\ShellLayout\ShellAbout.pas">
 				<Form>frShellAbout</Form>

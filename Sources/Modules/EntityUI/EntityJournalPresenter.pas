@@ -44,7 +44,7 @@ type
   protected
     function View: IEntityJournalView;
     procedure OnUpdateCommandStatus; override;
-    function OnGetWorkItemState(const AName: string): Variant; override;
+    function OnGetWorkItemState(const AName: string; var Done: boolean): Variant; override;
     procedure OnViewReady; override;
 
     function GetEVJrn: IEntityView; virtual;
@@ -103,7 +103,7 @@ end;
 
 procedure TEntityJournalPresenter.CmdReload(Sender: TObject);
 begin
-  GetEVJrn.Reload;
+  GetEVJrn.Load;
 end;
 
 procedure TEntityJournalPresenter.CmdSelector(Sender: TObject);
@@ -245,15 +245,16 @@ var
   ds: TDataSet;
   I: integer;
 begin
-  ds := App.Entities[GetSelectorEntityName].GetView('Selector', WorkItem).Load(WorkItem);
+  ds := App.Entities[GetSelectorEntityName].GetView('Selector', WorkItem).Load;
   for I := 0 to ds.FieldCount - 1 do
     WorkItem.State[ds.Fields[I].FieldName] := ds.Fields[I].Value;
   UpdateInfoText;
 end;
 
 function TEntityJournalPresenter.OnGetWorkItemState(
-  const AName: string): Variant;
+  const AName: string; var Done: boolean): Variant;
 begin
+  Done := true;
   if SameText(AName, 'ITEM_ID') then
     Result := View.Selection.First
   else if SameText('STATE_ID', AName) then
@@ -273,8 +274,10 @@ begin
     end
   end
   else
-    Result := inherited OnGetWorkItemState(AName);
-
+  begin
+    Done := false;
+    Result := inherited OnGetWorkItemState(AName, Done);
+  end;
 end;
 
 procedure TEntityJournalPresenter.OnUpdateCommandStatus;
@@ -311,7 +314,7 @@ var
   txt: string;
 begin
   txt := VarToStr(App.Entities[GetSelectorEntityName].
-     GetView('SelectorInfo', WorkItem).Load(WorkItem)['Info']);
+     GetView('SelectorInfo', WorkItem).Load['Info']);
 
   if GetView <> nil then
     (GetView as IEntityJournalView).SetInfoText(txt);

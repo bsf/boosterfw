@@ -6,9 +6,6 @@ uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
   SysUtils, Variants, ShellIntf, CustomContentPresenter, db,
   EntityCatalogIntf, EntityCatalogConst, UIStr;
 
-const
-  ENT_VIEW_ITEM = 'Item';
-
 type
   IEntityItemView = interface(IContentView)
   ['{1DBB5B01-51A0-4BB0-85D2-D6724AEDC6F4}']
@@ -23,7 +20,7 @@ type
     function View: IEntityItemView;
     procedure ReloadCallerWorkItem;
   protected
-    function OnGetWorkItemState(const AName: string): Variant; override;
+    function OnGetWorkItemState(const AName: string; var Done: boolean): Variant; override;
     function GetEVItem: IEntityView; virtual;
     //
     procedure OnViewReady; override;
@@ -44,32 +41,32 @@ var
   nextAction: IActivity;
   callerID: string;
   callerWI: TWorkItem;
-
 begin
-  callerWI := nil;
 
   GetEVItem.Save;
 
   if ViewInfo.OptionExists('ReloadCaller') then
     ReloadCallerWorkItem;
 
+  nextAction := nil;
   nextActionID := WorkItem.State['NEXT_ACTION'];
   if nextActionID <> '' then
-  begin
     nextAction := WorkItem.Activities[nextActionID];
-    nextAction.Params['ID'] := GetEVItem.Values['ID'];
 
-    callerID := WorkItem.State['CALLER_ID'];
-    if callerID <> '' then
-      callerWI := FindWorkItem(callerID, WorkItem.Root);
-    if not Assigned(callerWI) then
-      callerWI := WorkItem.Parent;
-  end;
+  callerWI := nil;
+  callerID := WorkItem.State['CALLER_ID'];
+  if callerID <> '' then
+    callerWI := FindWorkItem(callerID, WorkItem.Root);
+  if not Assigned(callerWI) then
+    callerWI := WorkItem.Parent;
+
+  if Assigned(nextAction) then
+    nextAction.Params.Assign(WorkItem);
 
   CloseView;
 
   if Assigned(nextAction) then
-    nextAction.Execute(callerWI);   //callerWI может быть не инициализ. !!!
+    nextAction.Execute(callerWI);
 end;
 
 procedure TEntityItemPresenter.OnViewReady;
@@ -124,16 +121,17 @@ begin
 end;
 
 function TEntityItemPresenter.GetEVItem: IEntityView;
-var
-  evName: string;
 begin
-  evName := EntityViewName;
-  if evName = '' then evName := ENT_VIEW_ITEM;
-  Result := GetEView(EntityName, evName);
+  Result := (WorkItem.Services[IEntityService] as IEntityService).
+    Entity[EntityName].GetView(EntityViewName, WorkItem);
+
+  Result.Load(false);
+
   FEntityViewReady := true;
 end;
 
-function TEntityItemPresenter.OnGetWorkItemState(const AName: string): Variant;
+function TEntityItemPresenter.OnGetWorkItemState(const AName: string;
+  var Done: boolean): Variant;
 var
   ds: TDataSet;
 begin
@@ -143,7 +141,10 @@ begin
   begin
     ds := App.Entities[EntityName].GetView(EntityViewName, WorkItem).DataSet;
     if ds.FindField(AName) <> nil then
+    begin
       Result := ds[AName];
+      Done := true;
+    end;
   end;
 end;
 

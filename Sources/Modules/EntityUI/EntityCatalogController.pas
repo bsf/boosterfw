@@ -403,7 +403,7 @@ begin
     Delete(valueName, 1, Pos('.', valueName));
     eviewName := AnsiLeftStr(valueName, Pos('.', valueName) - 1);
     Delete(valueName, 1, Pos('.', valueName));
-    Result := App.Entities[entityName].GetView(eviewName, WorkItem).Values[valueName];
+    Result := App.Entities[entityName].GetView(eviewName, WorkItem).DataSet[valueName];
   end
   else
     Result := AValue;

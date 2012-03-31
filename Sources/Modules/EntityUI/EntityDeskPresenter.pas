@@ -35,7 +35,7 @@ type
     procedure TabChangedHandler;
     procedure SelectionChangedHandler;
   protected
-    function OnGetWorkItemState(const AName: string): Variant; override;
+    function OnGetWorkItemState(const AName: string; var Done: boolean): Variant; override;
     procedure OnUpdateCommandStatus; override;
     procedure OnViewReady; override;
   end;
@@ -51,7 +51,7 @@ end;
 
 procedure TEntityDeskPresenter.CmdReload(Sender: TObject);
 begin
-  GetEVList.Reload;
+  GetEVList.Load;
 end;
 
 function TEntityDeskPresenter.GetEVList: IEntityView;
@@ -65,8 +65,9 @@ begin
 end;
 
 function TEntityDeskPresenter.OnGetWorkItemState(
-  const AName: string): Variant;
+  const AName: string; var Done: boolean): Variant;
 begin
+  Done := true;
   if GetEVParams.IsLoaded and (GetEVParams.DataSet.FindField(AName) <> nil) then
   begin
     if GetEVParams.DataSet.State = dsEdit then GetEVParams.DataSet.Post;
@@ -81,7 +82,8 @@ begin
       GetEVStates.DataSet.Locate('NAME', View.Tabs.TabCaption[View.Tabs.Active], []);
       result := GetEVStates.DataSet['ID'];
     end;
-  end
+  end else
+    Done := false;
 end;
 
 procedure TEntityDeskPresenter.OnViewReady;
@@ -126,7 +128,7 @@ begin
      GetLocaleString(@COMMAND_STATE_CHANGE_PREV_CAPTION), '', CmdStateChange,
      GetLocaleString(@COMMAND_STATE_CHANGE_CAPTION));
 
-  GetEVParams.Load(WorkItem);
+  GetEVParams.Load;
 
   GetEVList.SynchronizeOnEntityChange(GetEVList.EntityName, ENT_VIEW_NEW_DEFAULT);
   GetEVList.SynchronizeOnEntityChange(GetEVList.EntityName, ENT_VIEW_ITEM_DEFAULT);

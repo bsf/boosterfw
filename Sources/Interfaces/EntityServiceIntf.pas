@@ -100,12 +100,9 @@ type
     function EntityName: string;
     function ViewName: string;
     function Params: TParams;
-    procedure ParamsBind(Source: TWorkItem = nil);
     function DataSet: TDataSet;
-    function Load(AWorkItem: TWorkItem; AReload: boolean = true): TDataSet; overload;
     function Load(AParams: array of variant): TDataSet; overload;
-    function Load: TDataSet; overload;
-    procedure Reload;
+    function Load(AReload: boolean = true; AutoBindingParams: boolean = true): TDataSet; overload;
     procedure ReloadRecord(APrimaryKeyValues: Variant;
       SyncRecord: boolean = false);
     procedure ReloadLinksData;
@@ -117,9 +114,6 @@ type
     procedure CancelUpdates;
     function IsModified: boolean;
     function IsLoaded: boolean;
-    function GetValue(const AName: string): Variant;
-    procedure SetValue(const AName: string; AValue: Variant);
-    property Values[const AName: string]: Variant read GetValue write SetValue;
     function Info: IEntityViewInfo;
 
     procedure SynchronizeOnEntityChange(const AEntityName, AViewName: string;

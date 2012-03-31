@@ -124,7 +124,6 @@ type
     procedure ApplyFieldInfo;
     procedure ApplyLinksInfo;
     procedure InitDataSetAttributes;
-    procedure CheckLoaded;
 
     procedure DoSynchronizeOnEntityChange(EventData: Variant);
 
@@ -140,17 +139,13 @@ type
     function IsModified: boolean;
     function IsLoaded: boolean;
     function Info: IEntityViewInfo;
-    function Load(AWorkItem: TWorkItem; AReload: boolean = true): TDataSet; overload;
     function Load(AParams: array of variant): TDataSet; overload;
-    function Load: TDataSet; overload;
-    procedure Reload;
+    function Load(AReload: boolean = true; AutoBindingParams: boolean = true): TDataSet; overload;
     procedure ReloadRecord(APrimaryKeyValues: Variant; SyncRecord: boolean = false);
     procedure ReloadLinksData;
     procedure Save;
     procedure UndoLastChange;
     procedure CancelUpdates;
-    function GetValue(const AName: string): Variant;
-    procedure SetValue(const AName: string; AValue: Variant);
 
     procedure SynchronizeOnEntityChange(const AEntityName, AViewName: string;
       const AFieldName: string = '');
@@ -813,12 +808,6 @@ begin
   GetDataSet.CancelUpdates;
 end;
 
-procedure TEntityView.CheckLoaded;
-begin
-  if not IsLoaded then
-    raise Exception.CreateFmt('Entity view %s not loaded', [ViewName]);
-end;
-
 constructor TEntityView.Create(AConnection: TCustomRemoteServer;
   const AEntityName, AttrName: string; AWorkItem: TWorkItem);
 begin
@@ -859,13 +848,6 @@ begin
 end;
 
 
-function TEntityView.GetValue(const AName: string): Variant;
-begin
-  CheckLoaded;
-  Result := FDataSet.FieldValues[AName];
-end;
-
-
 procedure TEntityView.InitDataSetAttributes;
 begin
   SetDataSetAttribute(GetDataSet, DATASET_ATTR_ENTITY, GetEntityName);
@@ -897,56 +879,49 @@ begin
     if Params.Count > I then
         Params[I].Value := AParams[I];
 
-  Result := Load;
+  Result := Load(true, false);
 
 end;
 
-function TEntityView.Load: TDataSet;
+function TEntityView.Load(AReload: boolean; AutoBindingParams: boolean): TDataSet;
+var
+  IsReloading: boolean;
 begin
   Result := FDataSet;
-  FDataSet.DisableControls;
-  try
-    if FDataSet.Active then
-      FDataSet.Close;
 
-    GetWorkItem.Root.EventTopics[ET_ENTITY_VIEW_OPEN_START].Fire;
+  if (not IsLoaded) or AReload then
+  begin
+    FDataSet.DisableControls;
     try
-      FDataSet.Open;
-      ApplyPKInfo;
-      ApplyFieldInfo;
-      ApplyLinksInfo;
+      IsReloading := IsLoaded;
+
+      if AutoBindingParams then
+        ParamsBind(FWorkItem);
+
+      if FDataSet.Active then
+        FDataSet.Close;
+
+      GetWorkItem.Root.EventTopics[ET_ENTITY_VIEW_OPEN_START].Fire;
+      try
+        FDataSet.Open;
+        if not IsReloading then
+        begin
+          ApplyPKInfo;
+          ApplyLinksInfo;
+        end;
+        ApplyFieldInfo;
+      finally
+        GetWorkItem.Root.EventTopics[ET_ENTITY_VIEW_OPEN_FINISH].Fire;
+      end;
     finally
-      GetWorkItem.Root.EventTopics[ET_ENTITY_VIEW_OPEN_FINISH].Fire;
+      FDataSet.EnableControls;
     end;
-  finally
-    FDataSet.EnableControls;
   end;
-
-
 end;
 
 class function TEntityView.ProviderKind: TProviderNameBuilder.TProviderKind;
 begin
   Result := pkEntityView;
-end;
-
-procedure TEntityView.Reload;
-begin
-  GetDataSet.DisableControls;
-  try
-    if GetDataSet.Active then
-      GetDataSet.Close;
-
-    GetWorkItem.Root.EventTopics[ET_ENTITY_VIEW_OPEN_START].Fire;
-    try
-      GetDataSet.Open;
-      ApplyFieldInfo;
-    finally
-      GetWorkItem.Root.EventTopics[ET_ENTITY_VIEW_OPEN_FINISH].Fire;
-    end;
-  finally
-    GetDataSet.EnableControls;
-  end;
 end;
 
 procedure TEntityView.ReloadRecord(APrimaryKeyValues: Variant; SyncRecord: boolean);
@@ -1096,14 +1071,6 @@ begin
     FWorkItem.Services[IEntityService]).GetSchemeInfo('');
 end;
 
-procedure TEntityView.SetValue(const AName: string; AValue: Variant);
-begin
-  CheckLoaded;
-  FDataSet.Edit;
-  FDataSet.FieldValues[AName] := AValue;
-  FDataSet.Post;
-end;
-
 procedure TEntityView.SynchronizeOnEntityChange(const AEntityName, AViewName,
    AFieldName: string);
 var
@@ -1136,20 +1103,6 @@ begin
   Result := GetAttrName;
 end;
 
-function TEntityView.Load(AWorkItem: TWorkItem;
-  AReload: boolean): TDataSet;
-var
-  I: integer;
-begin
-  for I := 0 to Params.Count - 1 do
-    Params[I].Value := AWorkItem.State[Params[I].Name];
-
-  if (not IsLoaded) or AReload then Load;
-
-  Result := DataSet;
-end;
-
-
 procedure TEntityView.ReloadLinksData;
 var
   I: integer;
@@ -1160,7 +1113,7 @@ begin
   begin
     eventData := VarArrayCreate([0, FPrimaryKeys.Count], varVariant);
     for I := 0 to FPrimaryKeys.Count - 1 do
-      eventData[I] := GetValue(FPrimaryKeys[I]);
+      eventData[I] := FDataSet[FPrimaryKeys[I]];
 
     GetWorkItem.Root.EventTopics[format(ET_ENTITY_VIEW_RELOAD_LINKS_PK,
         [FEntityName, ViewName])].Fire(eventData);
@@ -1172,7 +1125,7 @@ begin
     if FDataSet.IsEmpty and Assigned(Params.FindParam(FLinkedFields[I])) then
       eventData := Params.ParamValues[FLinkedFields[I]]
     else if (not FDataSet.IsEmpty) and Assigned(FDataSet.FindField(FLinkedFields[I])) then
-      eventData := GetValue(FLinkedFields[I])
+      eventData := FDataSet[FLinkedFields[I]]
     else
       eventData := Unassigned;
 
@@ -1610,8 +1563,7 @@ begin
 
   svc := FWorkItem.Services[IEntityService] as IEntityService;
   evMeta := svc.Entity[ENT_SETTING].GetView(ENT_SETTING_VIEW_META, FWorkItem);
-  evMeta.Reload;
-  dsMeta := evMeta.DataSet;
+  dsMeta := evMeta.Load(true, false);
   dsMeta.First;
   while not dsMeta.Eof do
   begin
