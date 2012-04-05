@@ -2,7 +2,7 @@ unit CoreClasses;
 
 interface
 uses SysUtils, Classes, Contnrs, Controls, Messages, ManagedList, Variants,
-  typinfo, windows, graphics;
+  typinfo, windows, graphics, StrUtils;
 
 const
   etAppStarted = 'Application.Started';
@@ -135,7 +135,7 @@ type
     function Count: integer;
     function ValueName(AIndex: integer): string;
     function IndexOf(const AName: string): integer;
-    procedure Assign(Source: TPersistent);
+    procedure Assign(Source: TPersistent; ABindingRule: string = '');
     procedure AssignTo(Dest: TPersistent);
     procedure SetValue(const AName: string; AValue: Variant);
     function GetValue(const AName: string): Variant;
@@ -185,12 +185,13 @@ type
     function OptionExists(const AName: string): boolean;
     function OptionValue(const AName: string): string;
 
+
     function Params: IActivityData;
     function Outs: IActivityData;
 
     procedure RegisterHandler(AHandler: TActivityHandler);
 
-    procedure Execute(Sender: TWorkItem; BindingRule: string = '');
+    procedure Execute(Sender: TWorkItem);
 
   end;
 

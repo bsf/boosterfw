@@ -238,44 +238,49 @@ type
   end;
 
 //------------------------------------------------------------------------------
+  TViewActivityOptions = record
+  const
+    Singleton = 'Singleton';
+    InstanceIdentifiers = 'InstID';
+  end;
+
   TViewActivityParams = record
-    const
-      PresenterID = 'PRESENTERID';
-      Workspace = 'WORKSPACE';
-      Title = 'TITLE';
+  const
+    InstanceID = 'InstanceID';
+    //PresenterID = 'PRESENTERID';
+    Workspace = 'WORKSPACE';
+    Title = 'TITLE';
   end;
 
   TViewActivityOuts = record
-    const
-      ModalResult = 'ModalResult';
+  const
+    ModalResult = 'ModalResult';
   end;
 
   TPickListActivityParams = record
-    const
-      Filter = 'FILTER';
+  const
+    Filter = 'FILTER';
   end;
 
   TPickListActivityOuts = record
-    const
-      ID = 'ID';
-      NAME = 'NAME';
+  const
+    ID = 'ID';
+    NAME = 'NAME';
   end;
 
   TViewActivityHandler = class(TActivityHandler)
   private
     FPresenterClass: TPresenterClass;
     FViewClass: TViewClass;
-    FPresenterIDParam: string;
   public
-    constructor Create(APresenterClass: TPresenterClass; AViewClass: TViewClass;
-      const APresenterIDParam: string = '');
+    constructor Create(APresenterClass: TPresenterClass; AViewClass: TViewClass);
 
     //IActivityHandler
     procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
     //
     property PresenterClass: TPresenterClass read FPresenterClass;
     property ViewClass: TViewClass read FViewClass;
-    property PresenterIDParam: string read FPresenterIDParam;
+
 
   end;
 
@@ -297,7 +302,8 @@ end;
 
 procedure RegisterViewExtension(AExtensionClass: TViewExtensionClass);
 begin
-  ExtensionClasses.Add(AExtensionClass);
+  if ExtensionClasses.IndexOf(AExtensionClass) = -1 then
+    ExtensionClasses.Add(AExtensionClass);
 end;
 
 procedure InstantiateViewExtensions(AView: TView);
@@ -314,24 +320,15 @@ end;
 
 procedure TViewActivityHandler.Execute(Sender: TWorkItem; Activity: IActivity);
 begin
-  if VarIsEmpty(Activity.Params[TViewActivityParams.PresenterID]) then
-  begin
-    if PresenterIDParam <> '' then
-      Activity.Params[TViewActivityParams.PresenterID] := Activity.Params[PresenterIDParam]
-    else
-      Activity.Params[TViewActivityParams.PresenterID] := Activity.Params['ID'];
-  end;
-
   Activity.Outs[TViewActivityOuts.ModalResult] := Unassigned;
   FPresenterClass.Execute(Sender, Activity, FViewClass);
 end;
 
 constructor TViewActivityHandler.Create(APresenterClass: TPresenterClass;
-  AViewClass: TViewClass; const APresenterIDParam: string);
+  AViewClass: TViewClass);
 begin
   FPresenterClass := APresenterClass;
   FViewClass := AViewClass;
-  FPresenterIDParam := APresenterIDParam;
 end;
 
 { TViewExtension }

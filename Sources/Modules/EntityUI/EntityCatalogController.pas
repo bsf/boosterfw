@@ -19,32 +19,6 @@ uses classes, CoreClasses,  ShellIntf, Variants, db, Contnrs,
 
 type
 
-  TEntityViewExtension = class(TViewExtension, IExtensionCommand)
-  private
-    function GetDataValue(const AValue: string): Variant;
-    procedure CmdHandlerCommand(Sender: TObject);
-    procedure CmdHandlerAction(Sender: TObject);
-    procedure CmdEntityOperExec(Sender: TObject);
-  protected
-    procedure CommandExtend;
-    procedure CommandUpdate;
-  public
-    class function CheckView(AView: IView): boolean; override;
-  end;
-
-
-{
-  TSecurityResActivityBuilder = class(TActivityBuilder)
-  private
-    FProvider: TEntitySecurityResProvider;
-    FWorkItem: TWorkItem;
-  public
-    constructor Create(WorkItem: TWorkItem);
-    destructor Destroy; override;
-    function ActivityClass: string; override;
-    procedure Build(ActivityInfo: IActivityInfo); override;
-  end;
-}
 
   TEntityCatalogController = class(TWorkItemController)
   protected
@@ -67,147 +41,11 @@ type
       TEntityPickListActivityHandler = class(TViewActivityHandler)
         procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
       end;
-      TEntityItemActivityHandler = class(TViewActivityHandler)
-        procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
-      end;
   end;
 
 implementation
 
 { TEntityCatalogController }
-(*
-procedure TEntityCatalogController.ActionEntityDetail(Sender: IAction);
-const
-  FMT_VIEW_ITEM = 'Views.%s.Detail';
-var
-  actionName: string;
-  action: IAction;
-  dsItemURI: TDataSet;
-  itemID: variant;
-  entityName: string;
-begin
-
-  itemID := (Sender.Data as TEntityItemActionData).ID;
-  entityName := (Sender.Data as TEntityItemActionData).EntityName;
-
-  if App.Entities.EntityViewExists(entityName, 'DetailURI') then
-  begin
-    dsItemURI := App.Entities[entityName].GetView('DetailURI', WorkItem).Load([itemID]);
-    actionName := dsItemURI['URI'];
-    if dsItemURI.FindField('ITEM_ID') <> nil then
-      itemID := dsItemURI['ITEM_ID'];
-  end
-  else
-    actionName := format(FMT_VIEW_ITEM, [entityName]);
-
-  if actionName <> '' then
-  begin
-    action := WorkItem.Actions[actionName];
-    action.Data.Assign(Sender.Caller);
-    action.Data.Value['ID'] := itemID;
-    action.Execute(Sender.Caller);
-  end;
-
-end;
-
-procedure TEntityCatalogController.ActionEntityDetailNew(Sender: IAction);
-const
-  FMT_VIEW_NEW_URI = 'Views.%s.DetailNewURI';
-  FMT_VIEW_NEW = 'Views.%s.DetailNew';
-
-var
-  actionURI: IAction;
-  actionName: string;
-  entityName: string;
-begin
-  entityName := (Sender.Data as TEntityNewActionData).EntityName;
-
-  if App.Entities.EntityViewExists(entityName, 'DetailNewURI') then
-  begin
-    actionURI := WorkItem.Actions[format(FMT_VIEW_NEW_URI, [entityName])];
-    actionURI.Execute(WorkItem);
-    if (actionURI.Data as TEntityPickListPresenterData).ModalResult = mrOk then
-      actionName := actionURI.Data.Value['URI']
-    else
-      actionName := '';
-  end
-  else
-    actionName := format(FMT_VIEW_NEW, [entityName]);
-
-  if actionName <> '' then
-  begin
-    WorkItem.Actions[actionName].Data.Assign(Sender.Caller);
-    //WorkItem.Actions[actionName].Data.HID := (Sender.Data as TEntityNewActionData).HID;
-    WorkItem.Actions[actionName].Execute(Sender.Caller);
-  end;
-
-end;
-
-procedure TEntityCatalogController.ActionEntityItem(Sender: IAction);
-const
-  FMT_VIEW_ITEM = 'Views.%s.Item';
-var
-  actionName: string;
-  action: IAction;
-  dsItemURI: TDataSet;
-  itemID: variant;
-  entityName: string;
-begin
-
-  itemID := (Sender.Data as TEntityItemActionData).ID;
-  entityName := (Sender.Data as TEntityItemActionData).EntityName;
-
-  if App.Entities.EntityViewExists(entityName, 'ItemURI') then
-  begin
-    dsItemURI := App.Entities[entityName].GetView('ItemURI', WorkItem).Load([itemID]);
-    actionName := dsItemURI['URI'];
-    if dsItemURI.FindField('ITEM_ID') <> nil then
-      itemID := dsItemURI['ITEM_ID'];
-  end
-  else
-    actionName := format(FMT_VIEW_ITEM, [entityName]);
-
-  if actionName <> '' then
-  begin
-    action := WorkItem.Actions[actionName];
-    action.Data.Assign(Sender.Caller);
-    action.Data.Value['ID'] := itemID;
-    action.Execute(Sender.Caller);
-  end;
-
-end;
-
-procedure TEntityCatalogController.ActionEntityNew(Sender: IAction);
-const
-  FMT_VIEW_NEW_URI = 'Views.%s.NewURI';
-  FMT_VIEW_NEW = 'Views.%s.New';
-
-var
-  actionURI: IAction;
-  actionName: string;
-  entityName: string;
-begin
-  entityName := (Sender.Data as TEntityNewActionData).EntityName;
-
-  if App.Entities.EntityViewExists(entityName, 'NewURI') then
-  begin
-    actionURI := WorkItem.Actions[format(FMT_VIEW_NEW_URI, [entityName])];
-    actionURI.Execute(WorkItem);
-    if (actionURI.Data as TEntityPickListPresenterData).ModalResult = mrOk then
-      actionName := actionURI.Data.Value['URI']
-    else
-      actionName := '';
-  end
-  else
-    actionName := format(FMT_VIEW_NEW, [entityName]);
-
-  if actionName <> '' then
-  begin
-    WorkItem.Actions[actionName].Data.Assign(Sender.Caller);
-    WorkItem.Actions[actionName].Execute(Sender.Caller);
-  end;
-end;
- *)
 procedure TEntityCatalogController.Initialize;
 begin
 
@@ -236,206 +74,13 @@ begin
     RegisterHandler('IEntityJournalView', TViewActivityHandler.Create(TEntityJournalPresenter, TfrEntityJournalView));
     RegisterHandler('IEntitySelectorView', TViewActivityHandler.Create(TEntitySelectorPresenter, TfrEntitySelectorView));
     RegisterHandler('IEntityDeskView', TViewActivityHandler.Create(TEntityDeskPresenter, TfrEntityDeskView));
-    RegisterHandler('IEntityOrgChartView',
-      TViewActivityHandler.Create(TEntityOrgChartPresenter, TfrEntityOrgChartView, 'ROOT_ID'));
+    RegisterHandler('IEntityOrgChartView', TViewActivityHandler.Create(TEntityOrgChartPresenter, TfrEntityOrgChartView));
   end;
 
-  RegisterViewExtension(TEntityViewExtension);
 end;
 
 
 
-{ TEntityViewExtension }
-
-class function TEntityViewExtension.CheckView(AView: IView): boolean;
-var
-  intf: IInterface;
-begin
-  AView.QueryInterface(ICustomView, intf);
-  Result := intf <> nil;
-end;
-
-procedure TEntityViewExtension.CmdEntityOperExec(Sender: TObject);
-var
-  intf: ICommand;
-  entityName: string;
-  operName: string;
-  oper: IEntityOper;
-  I: integer;
-  confirmText: string;
-  confirm: boolean;
-begin
-  Sender.GetInterface(ICommand, intf);
-
-
-  entityName := intf.Data['ENTITY'];
-  operName := intf.Data['OPER'];
-  confirmText := intf.Data['CONFIRM'];
-  if (confirmText <> '') then
-    confirm := App.UI.MessageBox.ConfirmYesNo(confirmText)
-  else
-    confirm := true;
-
-  if confirm then
-  begin
-    oper := App.Entities[entityName].GetOper(operName, WorkItem);
-    for I := 0 to oper.Params.Count - 1 do
-      oper.Params[I].Value := GetDataValue(intf.Data[oper.Params[I].Name]);
-
-    App.UI.WaitBox.StartWait;
-    try
-      oper.Execute;
-    finally
-      App.UI.WaitBox.StopWait;
-      WorkItem.Commands[COMMAND_RELOAD].Execute;
-    end;  
-  end;
-end;
-
-procedure TEntityViewExtension.CmdHandlerAction(Sender: TObject);
-var
-  intf: ICommand;
-  actionName: string;
-  action: IActivity;
-  cmdData: string;
-  dataList: TStringList;
-  I: integer;
-begin
-  Sender.GetInterface(ICommand, intf);
-  cmdData := intf.Data['CMD_DATA'];
-  actionName := intf.Data['HANDLER'];
-  intf := nil;
-
-  action := WorkItem.Activities[actionName];
-
-  dataList := TStringList.Create;
-  try
-    ExtractStrings([';'], [], PWideChar(cmdData), dataList);
-    for I := 0 to dataList.Count - 1 do
-      action.Params[dataList.Names[I]] :=  GetDataValue(dataList.ValueFromIndex[I]);
-  finally
-    dataList.Free;
-  end;
-
-  action.Execute(WorkItem);
-end;
-
-procedure TEntityViewExtension.CmdHandlerCommand(Sender: TObject);
-var
-  intf: ICommand;
-  cmdName: string;
-  cmdData: string;
-  dataList: TStringList;
-  I: integer;
-begin
-  Sender.GetInterface(ICommand, intf);
-  cmdName := intf.Data['HANDLER'];
-  cmdData := intf.Data['CMD_DATA'];
-
-  intf := WorkItem.Commands[cmdName];
-  dataList := TStringList.Create;
-  try
-    ExtractStrings([';'], [], PWideChar(cmdData), dataList);
-    for I := 0 to dataList.Count - 1 do
-      intf.Data[dataList.Names[I]] := GetDataValue(dataList.ValueFromIndex[I]);
-  finally
-    dataList.Free;
-  end;
-
-  intf.Execute;
-
-end;
-
-procedure TEntityViewExtension.CommandExtend;
-const
-  COMMAND_ENTITY_OPER_EXEC = 'view.commands.EntityOperExec';
-  ENTC_UI = 'BFW_UI';
-  ENTC_UI_VIEW_CMD = 'Commands';
-
-var
-  list: TDataSet;
-  cmd: ICommand;
-begin
-  if not Supports(GetView, ICustomView) then Exit;
-
-  list := App.Entities[ENTC_UI].GetView(ENTC_UI_VIEW_CMD, WorkItem).Load([GetView.ViewURI]);
-  while not list.Eof do
-  begin
-    cmd := WorkItem.Commands[list['CMD']];
-    cmd.Caption := list['CAPTION'];
-    cmd.Data['HANDLER'] := VarToStr(list['HANDLER']);
-    cmd.Data['CMD_DATA'] := VarToStr(list['CMD_DATA']);
-
-    if list['HANDLER_KIND'] = 1 then
-      cmd.SetHandler(CmdHandlerCommand)
-    else if list['HANDLER_KIND'] = 2 then
-      cmd.SetHandler(CmdHandlerAction);
-
-    (GetView as ICustomView).CommandBar.
-      AddCommand(cmd.Name, VarToStr(list['GRP']), list['DEF'] = 1);
-
-    list.Next;
-  end;
-
-  //embedded commands
-  WorkItem.Commands[COMMAND_ENTITY_OPER_EXEC].SetHandler(CmdEntityOperExec);
-end;
-
-procedure TEntityViewExtension.CommandUpdate;
-begin
-
-end;
-
-function TEntityViewExtension.GetDataValue(const AValue: string): Variant;
-const
-  const_WI_STATE = 'WI.';
-  const_EV_VALUE = 'EV.';
-
-var
-  valueName, entityName, eviewName: string;
-begin
-  if AnsiStartsText(const_WI_STATE, AValue) then
-    Result := WorkItem.State[StringReplace(AValue, const_WI_STATE, '', [rfIgnoreCase])]
-  else if AnsiStartsText(const_EV_VALUE, AValue) then
-  begin
-    valueName := StringReplace(AValue, const_EV_VALUE, '', [rfIgnoreCase]);
-    entityName := AnsiLeftStr(valueName, Pos('.', valueName) - 1);
-    Delete(valueName, 1, Pos('.', valueName));
-    eviewName := AnsiLeftStr(valueName, Pos('.', valueName) - 1);
-    Delete(valueName, 1, Pos('.', valueName));
-    Result := App.Entities[entityName].GetView(eviewName, WorkItem).DataSet[valueName];
-  end
-  else
-    Result := AValue;
-end;
-
-
-{ TSecurityResActivityBuilder }
-{
-function TSecurityResActivityBuilder.ActivityClass: string;
-begin
-  Result := 'ISecurityResProvider';
-end;
-
-procedure TSecurityResActivityBuilder.Build(ActivityInfo: IActivityInfo);
-begin
-  FProvider := TEntitySecurityResProvider.Create(nil, ActivityInfo.URI, FWorkItem);
-  (FWorkItem.Services[ISecurityService] as ISecurityService).
-    RegisterResProvider(FProvider);
-end;
-
-constructor TSecurityResActivityBuilder.Create(WorkItem: TWorkItem);
-begin
-  FWorkItem := WorkItem;
-end;
-
-destructor TSecurityResActivityBuilder.Destroy;
-begin
-  if Assigned(FProvider) then
-    FProvider.Free;
-  inherited;
-end;
- }
 { TEntityCatalogController.TEntityItemActionHandler }
 
 procedure TEntityCatalogController.TEntityItemActionHandler.Execute(
@@ -443,33 +88,49 @@ procedure TEntityCatalogController.TEntityItemActionHandler.Execute(
 const
   FMT_VIEW_ITEM = 'views.%s.Item';
 var
-  actionName: string;
+  viewURI: string;
   dsItemURI: TDataSet;
-  itemID: variant;
   entityName: string;
+  bindingRule: string;
+  I: integer;
+  field: TField;
 begin
 
-  itemID := Activity.Params[TEntityItemActionParams.ID];
   entityName := Activity.Params[TEntityItemActionParams.EntityName];
 
-  if App.Entities.EntityViewExists(entityName, 'ItemURI') then
+  bindingRule := Activity.Params[TEntityItemActionParams.BindingParams];
+  if bindingRule = '' then
+    bindingRule := TEntityItemActionParams.BindingParamsDef;
+
+  viewURI := Activity.Params[TEntityItemActionParams.ViewUri];
+
+  dsItemURI := nil;
+
+  if (viewURI = '') and App.Entities.EntityViewExists(entityName, 'ItemURI') then
   begin
-    dsItemURI := App.Entities[entityName].GetView('ItemURI', Sender).Load([itemID]);
-    actionName := dsItemURI['URI'];
-    if dsItemURI.FindField('ITEM_ID') <> nil then
-      itemID := dsItemURI['ITEM_ID'];
+    dsItemURI := App.Entities[entityName].GetView('ItemURI', Sender).Load(true, bindingRule);
+    viewURI := VarToStr(dsItemURI['URI']);
   end
   else
-    actionName := format(FMT_VIEW_ITEM, [entityName]);
+    viewURI := format(TEntityItemActionParams.ViewUriDef, [entityName]);
 
-  if actionName <> '' then
-    with Sender.Activities[actionName] do
-    begin
-      Params.Assign(Sender);
-      Params[TEntityItemActivityParams.ID] := itemID;
-      Params[TViewActivityParams.PresenterID] := VarToStr(itemID);
-      Execute(Sender);
-    end;
+  if viewURI = '' then Exit;
+
+  with Sender.Activities[viewURI] do
+  begin
+    Params.Assign(Sender, bindingRule);
+
+    if dsItemURI <> nil then
+      for I := 0 to Params.Count - 1 do
+      begin
+        field := dsItemURI.FindField(Params.ValueName(I));
+        if field <> nil then
+          Params.Value[Params.ValueName(I)] := field.Value;
+      end;
+
+    Execute(Sender);
+  end;
+
 
 end;
 
@@ -591,15 +252,5 @@ begin
   inherited Execute(Sender, Activity);
 end;
 
-{ TEntityCatalogController.TEntityItemActivityHandler }
-
-procedure TEntityCatalogController.TEntityItemActivityHandler.Execute(
-  Sender: TWorkItem; Activity: IActivity);
-begin
-  if VarIsEmpty(Activity.Params[TViewActivityParams.PresenterID]) then
-    Activity.Params[TViewActivityParams.PresenterID] :=
-      Activity.Params[TEntityItemActivityParams.ID];
-  inherited Execute(Sender, Activity);
-end;
 
 end.

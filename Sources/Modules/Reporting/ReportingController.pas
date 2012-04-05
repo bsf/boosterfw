@@ -280,7 +280,7 @@ begin
 
   with Sender.Activities[TReportLauncherPresenter.ACTIVITY_REPORT_LAUNCHER] do
   begin
-    Params[TViewActivityParams.PresenterID] := reportURI + Sender.ID;
+    Params[TViewActivityParams.InstanceID] := reportURI + Sender.ID;
     Params[TReportLaunchParams.ReportURI] := reportURI;
     Params[TReportLaunchParams.InitLayout] := layout;
 

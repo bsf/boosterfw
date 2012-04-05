@@ -18,40 +18,26 @@ const
 
 type
   TEntityActivityOptions = record
-    const
-      EntityName = 'EntityName';
-      EntityViewName = 'EntityViewName';
+  const
+    EntityName = 'EntityName';
+    EntityViewName = 'EntityViewName';
   end;
 
   TEntityNewActionParams = record
-    const
-      HID = 'HID';
-      EntityName = 'EntityName';
+  const
+    HID = 'HID';
+    EntityName = 'EntityName';
   end;
-
-{  TEntityNewActionData = class(TActionData)
-  private
-    FHID: variant;
-    FEntityName: string;
-  published
-    property HID: Variant read FHID write FHID;
-    property EntityName: string read FEntityName write FEntityName;
-  end;}
 
   TEntityItemActionParams = record
-    const
-      ID = 'ID';
-      EntityName = 'EntityName';
+  const
+    ID = 'ID';
+    ViewUri = 'ViewURI';
+    ViewUriDef = 'views.%s.Item';
+    EntityName = 'EntityName';
+    BindingParams = 'BindingParams';
+    BindingParamsDef = 'ID=ITEM_ID';
   end;
-
-  {TEntityItemActionData = class(TActionData)
-  private
-    FID: variant;
-    FEntityName: string;
-  published
-    property ID: variant read FID write FID;
-    property EntityName: string read FEntityName write FEntityName;
-  end;}
 
   TEntityNewActivityParams = record
     const
@@ -60,78 +46,37 @@ type
       NEXT_ACTION = 'NEXT_ACTION';
   end;
 
-  {
-  TEntityNewPresenterData = class(TEntityPresenterData)
-  private
-    FFocusField: string;
-    FNextAction: string;
-    FHID: variant;
-  published
-    property HID: Variant read FHID write FHID;
-    property FOCUS_FIELD: string read FFocusField write FFocusField;
-    property NEXT_ACTION: string read FNextAction write FNextAction;
-  end;
-   }
-
   TEntityItemActivityParams = record
     const
       ID = 'ID';
       FOCUS_FIELD = 'FOCUS_FIELD';
   end;
 
-{  TEntityItemPresenterData = class(TEntityPresenterData)
-  private
-    FFocusField: string;
-    FID: Variant;
-    procedure SetID(const Value: Variant);
-  published
-    property ID: Variant read FID write SetID;
-    property FOCUS_FIELD: string read FFocusField write FFocusField;
-  end;
- }
-
-
-
-
-
-  
-
-
-  
-
   TEntityOrgChartActivityParams = record
     const
       ROOT_ID = 'ROOT_ID';
   end;
 
-{  TEntityOrgChartData = class(TEntityPresenterData)
-  private
-    FROOT_ID: Variant;
-    procedure SetROOT_ID(const Value: Variant);
-  published
-    property ROOT_ID: Variant read FROOT_ID write SetROOT_ID;
+  TEntityContentPresenter = class(TCustomContentPresenter)
+  const
+    EntityNameOption = 'EntityName';
+    EntityViewNameOption = 'EntityViewName';
+
+  protected
+    function EntityName: string; virtual;
+    function EntityViewName: string; virtual;
   end;
- }
 
-   TEntityContentPresenter = class(TCustomContentPresenter)
-   const
-      EntityNameOption = 'EntityName';
-      EntityViewNameOption = 'EntityViewName';
+  TEntityDialogPresenter = class(TCustomDialogPresenter)
+  const
+    EntityNameOption = 'EntityName';
+    EntityViewNameOption = 'EntityViewName';
 
-   protected
-     function EntityName: string; virtual;
-     function EntityViewName: string; virtual;
-   end;
+  protected
+    function EntityName: string;
+    function EntityViewName: string;
+  end;
 
-   TEntityDialogPresenter = class(TCustomDialogPresenter)
-   const
-      EntityNameOption = 'EntityName';
-      EntityViewNameOption = 'EntityViewName';
-
-   protected
-     function EntityName: string;
-     function EntityViewName: string;
-   end;
 implementation
 
 

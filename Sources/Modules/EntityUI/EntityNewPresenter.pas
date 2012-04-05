@@ -42,7 +42,6 @@ procedure TEntityNewPresenter.CmdSave(Sender: TObject);
 var
   nextActionID: string;
   nextAction: IActivity;
-  callerID: string;
   callerWI: TWorkItem;
 begin
 

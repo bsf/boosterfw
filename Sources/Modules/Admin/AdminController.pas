@@ -94,7 +94,7 @@ end;
 procedure TAdminController.TSecurityPolicyActivityHandler.Execute(
   Sender: TWorkItem; Activity: IActivity);
 begin
-  Activity.Params[TViewActivityParams.PresenterID] :=
+  Activity.Params[TViewActivityParams.InstanceID] :=
     Activity.Params[TSecurityPolicyActivityParams.PolID];
   inherited Execute(Sender, Activity);
 end;
@@ -104,7 +104,7 @@ end;
 procedure TAdminController.TSecurityPermEffectiveActivityHandler.Execute(
   Sender: TWorkItem; Activity: IActivity);
 begin
-  Activity.Params[TViewActivityParams.PresenterID] :=
+  Activity.Params[TViewActivityParams.InstanceID] :=
     Activity.Params[TSecurityPermEffectiveActivityParams.PolID] +
     Activity.Params[TSecurityPermEffectiveActivityParams.PermID] +
     Activity.Params[TSecurityPermEffectiveActivityParams.ResID];

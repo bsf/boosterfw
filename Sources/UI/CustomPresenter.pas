@@ -290,17 +290,9 @@ end;
 
 function TCustomPresenter.GetEView(const AEntityName,
   AEntityViewName: string): IEntityView;
-var
-  I: integer;
 begin
   Result := App.Entities[AEntityName].GetView(AEntityViewNAME, WorkItem);
   Result.Load(false);
- { for I := 0 to Result.Params.Count - 1 do
-    Result.Params[I].Value := WorkItem.State[Result.Params[I].Name];
-
-  if not Result.IsLoaded then
-    Result.Load;}
-
 end;
 
 
@@ -322,7 +314,7 @@ begin
   begin
     WorkItem.State[AName] := GetView.Value[AName];
     OnViewValueChanged(AName);
-  end;  
+  end;
 end;
 
 procedure TCustomPresenter.OnViewValueChanged(const AName: string);
@@ -401,7 +393,7 @@ end;
 class procedure TCustomPresenter.Execute(Sender: TWorkItem; Activity: IActivity;
   AViewClass: TViewClass);
 
-  function FindPresenterWI(const PresenterID: string): TWorkItem;
+  function FindPresenterWI(const InstanceID: string): TWorkItem;
   var
     I: integer;
   begin
@@ -410,23 +402,59 @@ class procedure TCustomPresenter.Execute(Sender: TWorkItem; Activity: IActivity;
       Result := Sender.Root.WorkItems[I];
       if Assigned(Result.Controller) and
         (Result.Controller.ClassType.InheritsFrom(TCustomPresenter)) and
-        (Result.ID = PresenterID) then Exit;
+        (Result.ID = InstanceID) then Exit;
     end;
     Result := nil;
+  end;
+
+  function GetInstanceID: string;
+  var
+    lst: TStringList;
+    instIDParams: string;
+    I: integer;
+  begin
+    Result := VarToStr(Activity.Params[TViewActivityParams.InstanceID]);
+
+    if (Result = '') and (not activity.OptionExists(TViewActivityOptions.Singleton)) then
+    begin
+      instIDParams := activity.OptionValue(TViewActivityOptions.InstanceIdentifiers);
+      if instIDParams = '' then
+      begin
+        for I := 0 to activity.Params.Count - 1 do
+          if I = 0 then
+            instIDParams := activity.Params.ValueName(I)
+          else
+            instIDParams := instIDParams + ',' + activity.Params.ValueName(I);
+      end;
+
+      if instIDParams <> '' then
+      begin
+        lst := TStringList.Create;
+        try
+          ExtractStrings([','], [], PWideChar(instIDParams), lst);
+          for I := 0 to lst.Count - 1 do
+            Result := Result + VarToStr(Activity.Params[lst[I]]);
+        finally
+          lst.Free;
+        end;
+      end;
+    end;
+
+    Result := Activity.URI + Result;
   end;
 
 var
   instWI: TWorkItem;
   inst: TCustomPresenter;
-  viewURI: string;
   instID: string;
 begin
-  instID := Activity.Params[TViewActivityParams.PresenterID];
-  viewURI := Activity.URI;
-  instWI := FindPresenterWI(viewURI + instID);
+
+  instID := GetInstanceID;
+
+  instWI := FindPresenterWI(instID);
   if not Assigned(instWI) then
   begin
-    instWI := Sender.Root.WorkItems.Add(Self, ViewURI + instID);
+    instWI := Sender.Root.WorkItems.Add(Self, instID);
     try
       inst := instWI.Controller as TCustomPresenter;
       inst.Init(Sender, Activity, AViewClass);

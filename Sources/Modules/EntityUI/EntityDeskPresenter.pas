@@ -178,12 +178,16 @@ begin
 end;
 
 procedure TEntityDeskPresenter.CmdOpen(Sender: TObject);
+var
+  cmd: ICommand;
 begin
   if VarIsEmpty(WorkItem.State['ITEM_ID']) then Exit;
 
   with WorkItem.Activities[ACTION_ENTITY_ITEM] do
   begin
-    Params[TEntityItemActionParams.ID] := WorkItem.State['ITEM_ID'];
+    Sender.GetInterface(ICommand, cmd);
+    //Params[TEntityItemActionParams.ID] := WorkItem.State['ITEM_ID'];
+    Params[TEntityItemActionParams.BindingParams] := cmd.Data[TEntityItemActionParams.BindingParams];
     Params[TEntityItemActionParams.EntityName] := EntityName;
     Execute(WorkItem);
   end;

@@ -16,7 +16,7 @@ type
     function Count: integer;
     function ValueName(AIndex: integer): string;
     function IndexOf(const AName: string): integer;
-    procedure Assign(Source: TPersistent); override;
+    procedure Assign(Source: TPersistent; ABindingRule: string = ''); reintroduce;
     procedure AssignTo(Dest: TPersistent); override;
     procedure SetValue(const AName: string; AValue: Variant);
     function GetValue(const AName: string): Variant;
@@ -74,7 +74,7 @@ type
 
     procedure RegisterHandler(AHandler: TActivityHandler);
 
-    procedure Execute(Sender: TWorkItem; BindingRule: string = '');
+    procedure Execute(Sender: TWorkItem);
   public
     constructor Create(AOwner: TComponent; const AURI: string); reintroduce;
     destructor Destroy; override;
@@ -143,8 +143,6 @@ begin
   begin
     if Activity.FUsePermission and Assigned(FPermissionHandler) then
       FPermissionHandler.DemandPermission(Activity);
-
-    //bind activity params
 
     FHandlers.Items[idx].Execute(Sender, Activity);
   end;
@@ -229,26 +227,10 @@ begin
   inherited;
 end;
 
-procedure TActivity.Execute(Sender: TWorkItem; BindingRule: string);
-var
-  strList: TStringList;
-  I: integer;
+procedure TActivity.Execute(Sender: TWorkItem);
 begin
   FOuts.ResetValues;
   try
-
-    if BindingRule <> '' then
-    begin
-      strList := TStringList.Create;
-      try
-        ExtractStrings([';'], [], PWideChar(BindingRule), strList);
-        for I := 0 to strList.Count - 1 do
-          FParams.SetValue(strList.Names[I],
-            Sender.State[strList.ValueFromIndex[I]]);
-      finally
-        strList.Free;
-      end;
-    end;
 
     (Owner as TActivities).ExecuteActivity(Sender, Self);
 
@@ -378,20 +360,45 @@ begin
   Result := FNames[AIndex];
 end;
 
-procedure TActivityData.Assign(Source: TPersistent);
+procedure TActivityData.Assign(Source: TPersistent; ABindingRule: string);
 var
   I: integer;
+  bindingList: TStringList;
+  sName: string;
 begin
   ResetValues;
 
-  if Source is TWorkItem then
+  bindingList := TStringList.Create;
+  try
+    ExtractStrings([';'], [], PWideChar(ABindingRule), bindingList);
+
+    for I := 0 to FNames.Count - 1 do
+    begin
+      if bindingList.Count = 0 then
+        sName := FNames[I]
+      else
+        sName := bindingList.Values[FNames[I]];
+
+      if sName = '' then Continue;
+
+      if Source is TWorkItem then
+        SetValue(FNames[I], (Source as TWorkItem).State[sName])
+      else if (Source is TActivityData) and
+             ((Source as TActivityData).FNames.IndexOf(FNames[I]) <> -1) then
+        SetValue(FNames[I], (Source as TActivityData).GetValue(sName));
+    end;
+
+{  if Source is TWorkItem then
     for I := 0 to FNames.Count - 1 do
       SetValue(FNames[I], (Source as TWorkItem).State[FNames[I]]);
 
   if (Source is TActivityData) then
     for I := 0 to FNames.Count - 1 do
       if (Source as TActivityData).FNames.IndexOf(FNames[I]) <> -1 then
-        SetValue(FNames[I], (Source as TActivityData).GetValue(FNames[I]));
+        SetValue(FNames[I], (Source as TActivityData).GetValue(FNames[I]));}
+  finally
+    bindingList.Free;
+  end;
 end;
 
 procedure TActivityData.AssignTo(Dest: TPersistent);

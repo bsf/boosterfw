@@ -226,7 +226,7 @@ begin
     FReport.PreviewPages.SaveToStream(stream);
     with FWorkItem.Activities[VIEW_FR_PREVIEW] do
     begin
-      Params[TViewActivityParams.PresenterID] := CreateClassID;
+      Params[TViewActivityParams.InstanceID] := CreateClassID;
       Params[TViewActivityParams.Title] := ATitle;
       Params['DATA'] := integer(stream);
       Execute(FCallerWI);

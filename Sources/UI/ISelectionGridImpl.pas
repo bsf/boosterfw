@@ -17,7 +17,6 @@ type
     procedure OnGridViewFocusedRecordChanged(Sender: TcxCustomGridTableView;
       APrevFocusedRecord, AFocusedRecord: TcxCustomGridRecord;
       ANewItemRecordFocusingChanged: Boolean);
-    function GetKeyColumnIndex: integer;
   protected
     procedure SetChangedCommand(const AName: string);
     procedure SetSelectionChangedHandler(AHandler: TSelectionChangedHandler);
@@ -112,19 +111,10 @@ begin
 end;
 
 function TISelectionGridImpl.First: Variant;
-var
-  KeyColumnIndex: integer;
 begin
   Result := Unassigned;
   if Count > 0  then
     Result := GetItem(0);
-{  if Count > 0 then
-  begin
-    KeyColumnIndex := GetKeyColumnIndex;
-    if KeyColumnIndex <> -1 then
-      Result := FGridView.Controller.SelectedRecords[0].Values[KeyColumnIndex];
-  end;}
-
 end;
 
 function TISelectionGridImpl.GetCanMultiSelect: boolean;
@@ -134,11 +124,9 @@ end;
 
 function TISelectionGridImpl.GetItem(AIndex: integer): Variant;
 var
-  KeyColumnIndex: integer;
   DataController: TcxGridDBDataController;
   KeyFields: TList;
   I: integer;
-  field: TField;
   valIndex: integer;
 begin
   Result := Unassigned;
@@ -168,31 +156,8 @@ begin
   finally
     KeyFields.Free;
   end;
-{
-  KeyColumnIndex := GetKeyColumnIndex;
-  if KeyColumnIndex <> -1 then
-    Result := FGridView.Controller.SelectedRecords[AIndex].Values[KeyColumnIndex];}
 end;
 
-
-function TISelectionGridImpl.GetKeyColumnIndex: integer;
-begin
-  Result := -1;
-
-  if FGridView is TcxGridDBTableView then
-    Result :=
-      TcxGridDBTableView(FGridView).GetColumnByFieldName(
-        TcxGridDBTableView(FGridView).DataController.KeyFieldNames).Index
-
-  else if FGridView is TcxGridDBBandedTableView then
-    Result :=
-      TcxGridDBBandedTableView(FGridView).GetColumnByFieldName(
-        TcxGridDBBandedTableView(FGridView).DataController.KeyFieldNames).Index
-
-  else if FGridView.ColumnCount > 0 then
-    Result := 0;
-
-end;
 
 function TISelectionGridImpl.List: Variant;
 var

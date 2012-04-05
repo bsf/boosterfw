@@ -100,7 +100,7 @@ type
     procedure SetImmediateSave(Value: boolean);
     function GetImmediateSave: boolean;
     function Params: TParams;
-    procedure ParamsBind(Source: TWorkItem = nil);
+    procedure ParamsBind(const ABindingRule: string = '');
     function GetLastUpdateErrorMessage: string;
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
@@ -140,7 +140,7 @@ type
     function IsLoaded: boolean;
     function Info: IEntityViewInfo;
     function Load(AParams: array of variant): TDataSet; overload;
-    function Load(AReload: boolean = true; AutoBindingParams: boolean = true): TDataSet; overload;
+    function Load(AReload: boolean = true; AParamBindingRule: string = ''): TDataSet; overload;
     procedure ReloadRecord(APrimaryKeyValues: Variant; SyncRecord: boolean = false);
     procedure ReloadLinksData;
     procedure Save;
@@ -879,11 +879,11 @@ begin
     if Params.Count > I then
         Params[I].Value := AParams[I];
 
-  Result := Load(true, false);
+  Result := Load(true, '-');
 
 end;
 
-function TEntityView.Load(AReload: boolean; AutoBindingParams: boolean): TDataSet;
+function TEntityView.Load(AReload: boolean; AParamBindingRule: string): TDataSet;
 var
   IsReloading: boolean;
 begin
@@ -895,8 +895,7 @@ begin
     try
       IsReloading := IsLoaded;
 
-      if AutoBindingParams then
-        ParamsBind(FWorkItem);
+      ParamsBind(AParamBindingRule);
 
       if FDataSet.Active then
         FDataSet.Close;
@@ -1285,17 +1284,32 @@ begin
   Result := FDataSet.Params;
 end;
 
-procedure TEntityAttr.ParamsBind(Source: TWorkItem);
+procedure TEntityAttr.ParamsBind(const ABindingRule: string);
 var
-  sourceWI: TWorkItem;
   I: integer;
+  bindingList: TStringList;
+  sName: string;
 begin
-  sourceWI := Source;
-  if not Assigned(sourceWI) then
-    sourceWI := FWorkItem;
 
-  for I := 0 to Params.Count - 1 do
-    Params[I].Value := sourceWI.State[Params[I].Name];
+  bindingList := TStringList.Create;
+  try
+    ExtractStrings([';'], [], PWideChar(ABindingRule), bindingList);
+
+    for I := 0 to Params.Count - 1 do
+    begin
+      if bindingList.Count = 0 then
+        sName := Params[I].Name
+      else
+        sName := bindingList.Values[Params[I].Name];
+
+      if sName = '' then Continue;
+
+      Params[I].Value := FWorkItem.State[sName];
+    end;
+
+  finally
+    bindingList.Free;
+  end;
 
 end;
 
@@ -1563,7 +1577,7 @@ begin
 
   svc := FWorkItem.Services[IEntityService] as IEntityService;
   evMeta := svc.Entity[ENT_SETTING].GetView(ENT_SETTING_VIEW_META, FWorkItem);
-  dsMeta := evMeta.Load(true, false);
+  dsMeta := evMeta.Load(true, '-');
   dsMeta.First;
   while not dsMeta.Eof do
   begin

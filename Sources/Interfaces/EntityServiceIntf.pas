@@ -102,7 +102,7 @@ type
     function Params: TParams;
     function DataSet: TDataSet;
     function Load(AParams: array of variant): TDataSet; overload;
-    function Load(AReload: boolean = true; AutoBindingParams: boolean = true): TDataSet; overload;
+    function Load(AReload: boolean = true; AParamBindingRule: string = ''): TDataSet; overload;
     procedure ReloadRecord(APrimaryKeyValues: Variant;
       SyncRecord: boolean = false);
     procedure ReloadLinksData;
@@ -126,7 +126,7 @@ type
     function EntityName: string;  
     function OperName: string;
     function Params: TParams;
-    procedure ParamsBind(Source: TWorkItem = nil);
+    procedure ParamsBind(const ABindingRule: string = '');
     function ResultData: TDataSet;
     function Execute(AParams: array of variant): TDataSet; overload;
     function Execute: TDataSet; overload;    

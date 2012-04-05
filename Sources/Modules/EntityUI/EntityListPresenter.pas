@@ -4,7 +4,7 @@ interface
 uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
   cxClasses,
   SysUtils, Variants, ShellIntf, CustomContentPresenter,
-  EntityCatalogIntf, EntityCatalogConst, db, controls, UIStr;
+  EntityCatalogIntf, EntityCatalogConst, db, controls, UIStr, StrUtils;
 
 const
   COMMAND_SELECTOR = '{0D2B32E3-7CE0-4775-A2D3-3A91ED2AFEFB}';//'commands.view.selector';
@@ -98,8 +98,12 @@ end;
 
 function TEntityListPresenter.OnGetWorkItemState(const AName: string;
   var Done: boolean): Variant;
+const
+  const_EV_FIELD_PREFIX = 'EV.';
+
 var
   ds: TDataSet;
+  fieldName: string;
 begin
   Done := true;
   if SameText(AName, 'ITEM_ID') {or SameText(AName, 'ID')} then
@@ -110,14 +114,15 @@ begin
     Result := View.Selection.AsString(',')
   else if SameText(AName, 'LIST_ID_ARRAY') then
     Result := View.Selection.AsArray
-  else if FIsReady then
+  else if FIsReady and AnsiStartsText(const_EV_FIELD_PREFIX, AName) then
   begin
     Done := false;
+    fieldName := StringReplace(AName, const_EV_FIELD_PREFIX, '', [rfIgnoreCase]);
     ds := App.Entities[EntityName].GetView(EntityViewName, WorkItem).DataSet;
-    if ds.FindField(AName) <> nil then
+    if ds.FindField(fieldName) <> nil then
     begin
       Done := true;
-      Result := ds[AName];
+      Result := ds[fieldName];
     end;
   end
   else
@@ -212,13 +217,21 @@ begin
 end;
 
 procedure TEntityListPresenter.CmdOpen(Sender: TObject);
+var
+  cmd: ICommand;
 begin
   if VarIsEmpty(WorkItem.State['ITEM_ID']) then Exit;
 
   with WorkItem.Activities[ACTION_ENTITY_ITEM] do
   begin
-    Params[TEntityItemActionParams.ID] := WorkItem.State['ITEM_ID'];
+
+
+    //Params[TEntityItemActionParams.ID] := WorkItem.State['ITEM_ID'];
+    Sender.GetInterface(ICommand, cmd);
+    Params[TEntityItemActionParams.BindingParams] :=
+      cmd.Data[TEntityItemActionParams.BindingParams];
     Params[TEntityItemActionParams.EntityName] := EntityName;
+
     Execute(WorkItem);
   end;
 end;

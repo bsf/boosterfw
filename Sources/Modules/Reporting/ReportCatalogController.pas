@@ -55,7 +55,7 @@ begin
   action := WorkItem.Actions[VIEW_REPORT_LAUNCHER];
   action.ResetData;
   launcherData := action.Data as TReportLauncherActivityData;
-  launcherData.PresenterID := launchData.ReportURI + Sender.Caller.ID;
+  launcherData.InstanceID := launchData.ReportURI + Sender.Caller.ID;
   launcherData.ReportURI := launchData.ReportURI;
   launcherData.ImmediateRun := launchData.ImmediateRun;
   launcherData.AssignLaunchData(launchData);
