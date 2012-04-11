@@ -440,7 +440,7 @@ class procedure TCustomPresenter.Execute(Sender: TWorkItem; Activity: IActivity;
       end;
     end;
 
-    Result := Activity.URI + Result;
+    Result := Activity.URI + '.' + Result;
   end;
 
 var

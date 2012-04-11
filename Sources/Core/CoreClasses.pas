@@ -135,8 +135,8 @@ type
     function Count: integer;
     function ValueName(AIndex: integer): string;
     function IndexOf(const AName: string): integer;
-    procedure Assign(Source: TPersistent; ABindingRule: string = '');
-    procedure AssignTo(Dest: TPersistent);
+    procedure Assign(Source: TWorkItem; ABindingRule: string = '');
+    procedure AssignTo(Target: TWorkItem);
     procedure SetValue(const AName: string; AValue: Variant);
     function GetValue(const AName: string): Variant;
     property Value[const AName: string]: Variant read GetValue write SetValue; default;

@@ -32,6 +32,8 @@ type
     procedure AddCommand(const AName: string; AGroup: string = ''; ADefault: boolean = false); overload;
     procedure AddCommand(const AName, ACaption, AShortCut: string; AHandler: TNotifyEvent;
       AGroup: string = ''; ADefault: boolean = false); overload;
+    procedure AddCommand(const AName, ACaption, AShortCut: string;
+      AGroup: string; ADefault: boolean); overload;
   public
     constructor Create(AOwner: TForm; WorkItem: TWorkItem;
       ABar: TcxGroupBox; AButtonAlignment: TButtonAlignment = alLeft); reintroduce;
@@ -52,12 +54,11 @@ var
 begin
   commandAction := TAction.Create(FBar);
   commandAction.ActionList := FActionList;
+
   FWorkItem.Commands[AName].AddInvoker(commandAction);
   if AGroup <> '' then
   begin
     btn := FindOrCreateGroupButton(AGroup);
-    {if not Assigned(btn) then
-      raise Exception.CreateFmt('Command group %d for command % not found.', [GroupID, AName]);}
 
     mi := TMenuItem.Create(FBar);
     mi.Action := commandAction;
@@ -81,6 +82,18 @@ procedure TICommandBarImpl.AddCommand(const AName, ACaption,
   ADefault: boolean);
 begin
   FWorkItem.Commands[AName].Init(ACaption, AShortCut, AHandler);
+  AddCommand(AName, AGroup, ADefault);
+end;
+
+procedure TICommandBarImpl.AddCommand(const AName, ACaption, AShortCut: string;
+  AGroup: string; ADefault: boolean);
+begin
+  with FWorkItem.Commands[AName] do
+  begin
+    Caption := ACaption;
+    ShortCut := AShortCut;
+  end;
+
   AddCommand(AName, AGroup, ADefault);
 end;
 

@@ -26,43 +26,79 @@ type
     procedure Initialize; override;
 
     type
-      TEntityItemActionHandler = class(TActivityHandler)
+      TEntityItemDefaultHandler = class(TActivityHandler)
         procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
       end;
-      TEntityNewActionHandler = class(TActivityHandler)
+
+      TEntityNewDefaultHandler = class(TActivityHandler)
         procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
       end;
-      TEntityDetailNewActionHandler = class(TActivityHandler)
+
+      TEntityOperExecHandler = class(TActivityHandler)
+      const
+        CLS_ENTITY_OPER_EXEC = 'IEntityOperExec';
+      public
         procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
       end;
-      TEntityDetailActionHandler = class(TActivityHandler)
-        procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
-      end;
-      TEntityPickListActivityHandler = class(TViewActivityHandler)
-        procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
-      end;
+
   end;
 
 implementation
 
-{ TEntityCatalogController }
+procedure ParamsBinding(Source: IActivity; Target: TParams); overload;
+var
+  I: integer;
+  prm: TParam;
+  prmName: string;
+begin
+  for i := 0 to Source.Params.Count - 1 do
+  begin
+    prmName := Source.Params.ValueName(I);
+    prm := Target.FindParam(prmName);
+    if prm <> nil then
+      prm.Value := Source.Params[prmName];
+  end;
+end;
+
+procedure ParamsBinding(Source: TDataSet; Target: IActivity); overload;
+var
+  I: integer;
+  field: TField;
+  prmName: string;
+begin
+  for i := 0 to Target.Params.Count - 1 do
+  begin
+    prmName := Target.Params.ValueName(I);
+    field := Source.FindField(prmName);
+    if field <> nil then
+      Target.Params[prmName] := field.Value;
+  end;
+end;
+
+
+procedure ParamsBinding(Source: IActivity; Target: IActivity); overload;
+var
+  I: integer;
+  prmName: string;
+begin
+  for i := 0 to Source.Params.Count - 1 do
+  begin
+    prmName := Source.Params.ValueName(I);
+    if Target.Params.IndexOf(prmName) <> -1 then
+      Target.Params[prmName] := Source.Params[prmName];
+  end;
+end;
+
 procedure TEntityCatalogController.Initialize;
 begin
 
-  WorkItem.Activities[ACTION_ENTITY_ITEM].
-    RegisterHandler(TEntityItemActionHandler.Create);
-
-  WorkItem.Activities[ACTION_ENTITY_NEW].
-    RegisterHandler(TEntityNewActionHandler.Create);
-
-  WorkItem.Activities[ACTION_ENTITY_DETAIL].
-    RegisterHandler(TEntityDetailActionHandler.Create);
-
-  WorkItem.Activities[ACTION_ENTITY_DETAIL_NEW].
-    RegisterHandler(TEntityDetailNewActionHandler.Create);
-
   with WorkItem.Activities do
   begin
+    RegisterHandler(TEntityOperExecHandler.CLS_ENTITY_OPER_EXEC, TEntityOperExecHandler.Create);
+    //
+    RegisterHandler('IEntityNewDef', TEntityNewDefaultHandler.Create);
+    RegisterHandler('IEntityItemDef', TEntityItemDefaultHandler.Create);
+    //
     RegisterHandler('IEntityListView', TViewActivityHandler.Create(TEntityListPresenter, TfrEntityListView));
     RegisterHandler('IEntityNewView', TViewActivityHandler.Create(TEntityNewPresenter, TfrEntityNewView));
     RegisterHandler('IEntityItemView', TViewActivityHandler.Create(TEntityItemPresenter, TfrEntityItemView));
@@ -70,7 +106,7 @@ begin
     RegisterHandler('IEntityCollectView', TViewActivityHandler.Create(TEntityCollectPresenter, TfrEntityCollectView));
     RegisterHandler('IEntityListView', TViewActivityHandler.Create(TEntityListPresenter, TfrEntityListView));
     RegisterHandler('IEntityTreeListView', TViewActivityHandler.Create(TEntityTreeListPresenter, TfrEntityTreeListView));
-    RegisterHandler('IEntityPickListView', TEntityPickListActivityHandler.Create(TEntityPickListPresenter, TfrEntityPickListView));
+    RegisterHandler('IEntityPickListView', TViewActivityHandler.Create(TEntityPickListPresenter, TfrEntityPickListView));
     RegisterHandler('IEntityJournalView', TViewActivityHandler.Create(TEntityJournalPresenter, TfrEntityJournalView));
     RegisterHandler('IEntitySelectorView', TViewActivityHandler.Create(TEntitySelectorPresenter, TfrEntitySelectorView));
     RegisterHandler('IEntityDeskView', TViewActivityHandler.Create(TEntityDeskPresenter, TfrEntityDeskView));
@@ -81,67 +117,129 @@ end;
 
 
 
-{ TEntityCatalogController.TEntityItemActionHandler }
 
-procedure TEntityCatalogController.TEntityItemActionHandler.Execute(
+
+{ TEntityCatalogController.TEntityItemDefaultHandler }
+
+procedure TEntityCatalogController.TEntityItemDefaultHandler.Execute(
   Sender: TWorkItem; Activity: IActivity);
+
 const
-  FMT_VIEW_ITEM = 'views.%s.Item';
+  URI_FIELD = 'URI';
+//  ITEM_URI_VIEW = 'ItemURI';
+//  ViewUriDef = 'views.%s.Item';
+
+  OPTION_DEFAULT_URI = 'DefaultURI';
+  OPTION_EVIEW_URI = 'EViewURI';
+
 var
   viewURI: string;
   dsItemURI: TDataSet;
   entityName: string;
-  bindingRule: string;
-  I: integer;
-  field: TField;
+  evItemURI: IEntityView;
+  targetActivity: IActivity;
+  evUriName: string;
+  ViewUriDef: string;
+
 begin
 
-  entityName := Activity.Params[TEntityItemActionParams.EntityName];
+  ViewUriDef := Activity.OptionValue(OPTION_DEFAULT_URI);
+  evUriName := Activity.OptionValue(OPTION_EVIEW_URI);
 
-  bindingRule := Activity.Params[TEntityItemActionParams.BindingParams];
-  if bindingRule = '' then
-    bindingRule := TEntityItemActionParams.BindingParamsDef;
-
-  viewURI := Activity.Params[TEntityItemActionParams.ViewUri];
-
-  dsItemURI := nil;
-
-  if (viewURI = '') and App.Entities.EntityViewExists(entityName, 'ItemURI') then
+  entityName := Activity.OptionValue(TViewActivityOptions.EntityName);
+  if entityName = '-' then
   begin
-    dsItemURI := App.Entities[entityName].GetView('ItemURI', Sender).Load(true, bindingRule);
-    viewURI := VarToStr(dsItemURI['URI']);
-  end
-  else
-    viewURI := format(TEntityItemActionParams.ViewUriDef, [entityName]);
-
-  if viewURI = '' then Exit;
-
-  with Sender.Activities[viewURI] do
-  begin
-    Params.Assign(Sender, bindingRule);
-
-    if dsItemURI <> nil then
-      for I := 0 to Params.Count - 1 do
-      begin
-        field := dsItemURI.FindField(Params.ValueName(I));
-        if field <> nil then
-          Params.Value[Params.ValueName(I)] := field.Value;
-      end;
-
-    Execute(Sender);
+    if Sender.Controller is TEntityContentPresenter then
+      entityName := (Sender.Controller as TEntityContentPresenter).EntityName
+    else if Sender.Controller is TEntityDialogPresenter then
+      entityName := (Sender.Controller as TEntityDialogPresenter).EntityName
+    else
+      entityName := '';
   end;
 
+  if entityName = '' then Exit;
+
+  dsItemURI := nil;
+  viewURI := '';
+
+  if App.Entities.EntityViewExists(entityName, evUriName) then
+  begin
+    evItemURI := App.Entities[entityName].GetView(evUriName, Sender);
+    ParamsBinding(Activity, evItemURI.Params);
+
+    dsItemURI := App.Entities[entityName].GetView(evUriName, Sender).Load(true, '-');
+    viewURI := VarToStr(dsItemURI[URI_FIELD]);
+  end
+  else
+    viewURI := format(ViewUriDef, [entityName]);
+
+  if (viewURI = '') or SameText(viewURI, Activity.URI) then Exit;
+
+  targetActivity := Sender.Activities[viewURI];
+  ParamsBinding(Activity, targetActivity);
+  if dsItemURI <> nil then
+    ParamsBinding(dsItemURI, targetActivity);
+  targetActivity.Execute(Sender);
 
 end;
 
-{ TEntityCatalogController.TEntityNewActionHandler }
+{ TEntityCatalogController.TEntityOperExecHandler }
 
-procedure TEntityCatalogController.TEntityNewActionHandler.Execute(
+procedure TEntityCatalogController.TEntityOperExecHandler.Execute(
+  Sender: TWorkItem; Activity: IActivity);
+var
+  entityName: string;
+  operName: string;
+  oper: IEntityOper;
+  confirmText: string;
+  confirm: boolean;
+begin
+
+  entityName := Activity.OptionValue(TViewActivityOptions.EntityName);
+  operName := Activity.OptionValue(TViewActivityOptions.EntityViewName);
+  confirmText := Activity.OptionValue('CONFIRM');
+
+  if (confirmText <> '') then
+    confirm := App.UI.MessageBox.ConfirmYesNo(confirmText)
+  else
+    confirm := true;
+
+  if confirm then
+  begin
+    oper := App.Entities[entityName].GetOper(operName, Sender);
+
+    ParamsBinding(Activity, oper.Params);
+
+    App.UI.WaitBox.StartWait;
+    try
+      oper.Execute;
+    finally
+      App.UI.WaitBox.StopWait;
+      Sender.Commands[COMMAND_RELOAD].Execute;
+    end;
+  end;
+
+end;
+
+
+{ TEntityCatalogController.TEntityNewDefaultHandler }
+
+procedure TEntityCatalogController.TEntityNewDefaultHandler.Execute(
   Sender: TWorkItem; Activity: IActivity);
 const
+  URI_FIELD = 'URI';
   FMT_VIEW_NEW_URI = 'views.%s.NewURI';
-  FMT_VIEW_NEW = 'views.%s.New';
 
+  OPTION_DEFAULT_URI = 'DefaultURI';
+
+
+var
+  viewURI: string;
+  entityName: string;
+  targetActivity: IActivity;
+  actionURI: IActivity;
+  ViewUriDef: string;
+ {
 var
   actionURI: IActivity;
   actionName: string;
@@ -167,90 +265,45 @@ begin
       Params.Assign(Sender);
       Execute(Sender);
     end;
-
-end;
-
-{ TEntityCatalogController.TEntityDetailNewActionHandler }
-
-procedure TEntityCatalogController.TEntityDetailNewActionHandler.Execute(
-  Sender: TWorkItem; Activity: IActivity);
-const
-  FMT_VIEW_NEW_URI = 'views.%s.DetailNewURI';
-  FMT_VIEW_NEW = 'views.%s.DetailNew';
-
-var
-  actionURI: IActivity;
-  actionName: string;
-  entityName: string;
+}
 begin
-  entityName := Activity.Params['EntityName'];
 
-  if App.Entities.EntityViewExists(entityName, 'DetailNewURI') then
+  ViewUriDef := Activity.OptionValue(OPTION_DEFAULT_URI);
+
+  entityName := Activity.OptionValue(TViewActivityOptions.EntityName);
+  if entityName = '-' then
+  begin
+    if Sender.Controller is TEntityContentPresenter then
+      entityName := (Sender.Controller as TEntityContentPresenter).EntityName
+    else if Sender.Controller is TEntityDialogPresenter then
+      entityName := (Sender.Controller as TEntityDialogPresenter).EntityName
+    else
+      entityName := '';
+  end;
+
+  if entityName = '' then Exit;
+
+  viewURI := '';
+
+  if App.Entities.EntityViewExists(entityName, 'NewURI') then
   begin
     actionURI := Sender.Activities[format(FMT_VIEW_NEW_URI, [entityName])];
     actionURI.Execute(Sender);
     if actionURI.Outs[TViewActivityOuts.ModalResult] = mrOk then
-      actionName := actionURI.Outs['URI']
+      viewURI := actionURI.Outs['URI']
     else
-      actionName := '';
+      viewURI := '';
   end
   else
-    actionName := format(FMT_VIEW_NEW, [entityName]);
+    viewURI := format(ViewUriDef, [entityName]);
 
-  if actionName <> '' then
-    with Sender.Activities[actionName] do
-    begin
-      Params.Assign(Sender);
-      Execute(Sender);
-    end;
+  if (viewURI = '') or SameText(viewURI, Activity.URI) then Exit;
 
-end;
+  targetActivity := Sender.Activities[viewURI];
+  ParamsBinding(Activity, targetActivity);
+  targetActivity.Execute(Sender);
 
-{ TEntityCatalogController.TEntityDetailActionHandler }
-
-procedure TEntityCatalogController.TEntityDetailActionHandler.Execute(
-  Sender: TWorkItem; Activity: IActivity);
-const
-  FMT_VIEW_ITEM = 'views.%s.Detail';
-var
-  actionName: string;
-  dsItemURI: TDataSet;
-  itemID: variant;
-  entityName: string;
-begin
-
-  itemID := Activity.Params['ID'];
-  entityName := Activity.Params[TEntityItemActionParams.EntityName];
-
-  if App.Entities.EntityViewExists(entityName, 'DetailURI') then
-  begin
-    dsItemURI := App.Entities[entityName].GetView('DetailURI', Sender).Load([itemID]);
-    actionName := dsItemURI['URI'];
-    if dsItemURI.FindField('ITEM_ID') <> nil then
-      itemID := dsItemURI['ITEM_ID'];
-  end
-  else
-    actionName := format(FMT_VIEW_ITEM, [entityName]);
-
-  if actionName <> '' then
-    with Sender.Activities[actionName] do
-    begin
-      Params.Assign(Sender);
-      Params[TEntityItemActionParams.ID] := itemID;
-      Execute(Sender);
-    end;
 
 end;
-
-{ TEntityCatalogController.TEntityPickListActivityHandler }
-
-procedure TEntityCatalogController.TEntityPickListActivityHandler.Execute(
-  Sender: TWorkItem; Activity: IActivity);
-begin
-  Activity.Outs[TPickListActivityOuts.ID] := Unassigned;
-  Activity.Outs[TPickListActivityOuts.NAME] := Unassigned;
-  inherited Execute(Sender, Activity);
-end;
-
 
 end.

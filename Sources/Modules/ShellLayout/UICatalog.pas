@@ -12,9 +12,6 @@ type
     ENTC_UI_VIEW_LIST = 'List';
     ENTC_UI_VIEW_CMD = 'Commands';
     ENTC_UI_VIEW_STYLES = 'Styles';
-    OPTION_ENTITYNAME = 'ENTITYNAME';
-    OPTION_ENTITYVIEWNAME = 'ENTITYVIEWNAME';
-    OPTION_ID = 'ID';
 
   private
     FWorkItem: TWorkItem;
@@ -27,11 +24,13 @@ type
 
   type
     TViewCommandExtension = class(TViewExtension, IExtensionCommand)
+    const
+      CMDPROXY_DATA_HANDLER = 'PROXY_HANDLER';
+      CMDPROXY_DATA_HANDLER_KIND = 'PROXY_HANDLER_KIND';
+      CMDPROXY_DATA_PARAMS = 'PROXY_PARAMS';
+
     private
-      function GetDataValue(const AValue: string): Variant;
-      procedure CmdHandlerCommand(Sender: TObject);
-      procedure CmdHandlerAction(Sender: TObject);
-      procedure CmdEntityOperExec(Sender: TObject);
+      procedure CommandProxyHandler(Sender: TObject);
     protected
       procedure CommandExtend;
       procedure CommandUpdate;
@@ -115,7 +114,6 @@ begin
   inherited Create(AOwner);
   FWorkItem := AWorkItem;
   Load(FWorkItem);
-//  FWorkItem.EventTopics[ET_LOAD_CONFIGURATION].AddSubscription(Self, LoadConfigurationHandler);
   FWorkItem.EventTopics[ET_RELOAD_CONFIGURATION].AddSubscription(Self, ReloadConfigurationHandler);
 end;
 
@@ -230,19 +228,8 @@ begin
         ExtractStrings([';'], [], PWideChar(VarToStr(list['OPTIONS'])), strList);
         Options.Clear;
         Options.AddStrings(strList);
-        Options.Add(OPTION_ENTITYNAME + '=' + entityName);
-        Options.Add(OPTION_ENTITYVIEWNAME + '=' + entityViewName);
-
-        //auto add primary key
-{        if (entityName <> '') and (entityViewName <> '')
-            and svc.EntityViewExists(entityName, entityViewName) then
-        begin
-          strList.Clear;
-          ExtractStrings([',',';'], [],
-            PWideChar(svc.Entity[entityName].Info.GetViewInfo(entityViewName).PrimaryKey), strList);
-          for I := 0 to strList.Count - 1 do
-            Params[strList[I]] := Unassigned;
-        end;                                                     }
+        Options.Add(TViewActivityOptions.EntityName + '=' + entityName);
+        Options.Add(TViewActivityOptions.EntityViewName + '=' + entityViewName);
 
         strList.Clear;
         ExtractStrings([',',';'], [], PWideChar(VarToStr(list['PARAMS'])), strList);
@@ -273,135 +260,60 @@ begin
   Result := intf <> nil;
 end;
 
-procedure TUICatalog.TViewCommandExtension.CmdEntityOperExec(Sender: TObject);
-var
-  intf: ICommand;
-  entityName: string;
-  operName: string;
-  oper: IEntityOper;
-  I: integer;
-  confirmText: string;
-  confirm: boolean;
-begin
-  Sender.GetInterface(ICommand, intf);
-
-
-  entityName := intf.Data['ENTITY'];
-  operName := intf.Data['OPER'];
-  confirmText := intf.Data['CONFIRM'];
-  if (confirmText <> '') then
-    confirm := App.UI.MessageBox.ConfirmYesNo(confirmText)
-  else
-    confirm := true;
-
-  if confirm then
-  begin
-    oper := App.Entities[entityName].GetOper(operName, WorkItem);
-    for I := 0 to oper.Params.Count - 1 do
-      oper.Params[I].Value := GetDataValue(intf.Data[oper.Params[I].Name]);
-
-    App.UI.WaitBox.StartWait;
-    try
-      oper.Execute;
-    finally
-      App.UI.WaitBox.StopWait;
-      WorkItem.Commands[COMMAND_RELOAD].Execute;
-    end;
-  end;
-
-end;
-
-procedure TUICatalog.TViewCommandExtension.CmdHandlerAction(Sender: TObject);
-var
-  intf: ICommand;
-  actionName: string;
-  action: IActivity;
-  cmdData: string;
-  dataList: TStringList;
-  I: integer;
-begin
-  Sender.GetInterface(ICommand, intf);
-  cmdData := intf.Data['CMD_DATA'];
-  actionName := intf.Data['HANDLER'];
-  intf := nil;
-
-  action := WorkItem.Activities[actionName];
-
-  dataList := TStringList.Create;
-  try
-    ExtractStrings([';'], [], PWideChar(cmdData), dataList);
-    for I := 0 to dataList.Count - 1 do
-      action.Params[dataList.Names[I]] :=  GetDataValue(dataList.ValueFromIndex[I]);
-  finally
-    dataList.Free;
-  end;
-
-  action.Execute(WorkItem);
-
-end;
-
-procedure TUICatalog.TViewCommandExtension.CmdHandlerCommand(Sender: TObject);
-var
-  intf: ICommand;
-  cmdName: string;
-  cmdData: string;
-  dataList: TStringList;
-  I: integer;
-begin
-  Sender.GetInterface(ICommand, intf);
-  cmdName := intf.Data['HANDLER'];
-  cmdData := intf.Data['CMD_DATA'];
-
-  intf := WorkItem.Commands[cmdName];
-  dataList := TStringList.Create;
-  try
-    ExtractStrings([';'], [], PWideChar(cmdData), dataList);
-    for I := 0 to dataList.Count - 1 do
-      intf.Data[dataList.Names[I]] := GetDataValue(dataList.ValueFromIndex[I]);
-  finally
-    dataList.Free;
-  end;
-
-  intf.Execute;
-
-end;
 
 procedure TUICatalog.TViewCommandExtension.CommandExtend;
-const
-  COMMAND_ENTITY_OPER_EXEC = 'view.commands.EntityOperExec';
 var
   list: TDataSet;
   cmd: ICommand;
-  handlerKind: integer;
+  cmdID: string;
+  cmdExists: boolean;
+  I: integer;
 begin
   if not Supports(GetView, ICustomView) then Exit;
 
   list := App.Entities[ENTC_UI].GetView(ENTC_UI_VIEW_CMD, WorkItem).Load([GetView.ViewURI]);
   while not list.Eof do
   begin
-    cmd := WorkItem.Commands[list['CMD']];
-    cmd.Caption := list['CAPTION'];
-    cmd.Data['HANDLER'] := VarToStr(list['HANDLER']);
-    cmd.Data['CMD_DATA'] := VarToStr(list['CMD_DATA']);
-    cmd.Data['BINDINGPARAMS'] := VarToStr(list['PARAMS']);
+    cmdID := list['CMD'];
 
-    handlerKind := list['HANDLER_KIND'];
-
-    case handlerKind of
-      1: cmd.SetHandler(CmdHandlerCommand);
-      2: cmd.SetHandler(CmdHandlerAction);
+    cmdExists := false;
+    for I := 0 to WorkItem.Commands.Count - 1 do
+    begin
+      cmdExists := SameText(WorkItem.Commands.GetItem(I).ID, cmdID);
+      if cmdExists then Break;
     end;
 
+    cmd := WorkItem.Commands[cmdID];
 
-    if handlerKind in [1, 2] then
+    cmd.Data[CMDPROXY_DATA_HANDLER] := VarToStr(list['HANDLER']);
+    cmd.Data[CMDPROXY_DATA_PARAMS] := VarToStr(list['PARAMS']);
+    cmd.SetHandler(CommandProxyHandler);
+
+    if not cmdExists then
       (GetView as ICustomView).CommandBar.
-        AddCommand(cmd.Name, VarToStr(list['GRP']), list['DEF'] = 1);
+        AddCommand(cmd.Name, VarToStr(list['CAPTION']), '', VarToStr(list['GRP']), list['DEF'] = 1);
 
     list.Next;
   end;
 
-  //embedded commands
-  WorkItem.Commands[COMMAND_ENTITY_OPER_EXEC].SetHandler(CmdEntityOperExec);
+end;
+
+procedure TUICatalog.TViewCommandExtension.CommandProxyHandler(Sender: TObject);
+var
+  intf: ICommand;
+  activity: IActivity;
+  cmdHandler: string;
+  cmdParams: string;
+
+begin
+  Sender.GetInterface(ICommand, intf);
+
+  cmdHandler := intf.Data[CMDPROXY_DATA_HANDLER];
+  cmdParams := intf.Data[CMDPROXY_DATA_PARAMS];
+
+  activity := WorkItem.Activities[cmdHandler];
+  activity.Params.Assign(WorkItem, cmdParams);
+  activity.Execute(WorkItem);
 
 end;
 
@@ -410,30 +322,6 @@ begin
 
 end;
 
-function TUICatalog.TViewCommandExtension.GetDataValue(
-  const AValue: string): Variant;
-const
-  const_WI_STATE = 'WI.';
-  const_EV_VALUE = 'EV.';
-
-var
-  valueName, entityName, eviewName: string;
-begin
-  if AnsiStartsText(const_WI_STATE, AValue) then
-    Result := WorkItem.State[StringReplace(AValue, const_WI_STATE, '', [rfIgnoreCase])]
-  else if AnsiStartsText(const_EV_VALUE, AValue) then
-  begin
-    valueName := StringReplace(AValue, const_EV_VALUE, '', [rfIgnoreCase]);
-    entityName := AnsiLeftStr(valueName, Pos('.', valueName) - 1);
-    Delete(valueName, 1, Pos('.', valueName));
-    eviewName := AnsiLeftStr(valueName, Pos('.', valueName) - 1);
-    Delete(valueName, 1, Pos('.', valueName));
-    Result := App.Entities[entityName].GetView(eviewName, WorkItem).DataSet[valueName];
-  end
-  else
-    Result := AValue;
-
-end;
 
 initialization
   ColorDictionaryInit;

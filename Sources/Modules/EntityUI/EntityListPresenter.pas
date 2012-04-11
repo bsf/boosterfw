@@ -28,6 +28,11 @@ type
   const
     ENT_VIEW_LIST = 'List';
   private
+    FCanEdit: boolean;
+    FCanOpen: boolean;
+    FCanAdd: boolean;
+    FCanDelete: boolean;
+
     FIsReady: boolean;
     FSelectorInitialized: boolean;
     function UseSelector: boolean;
@@ -36,15 +41,14 @@ type
     procedure UpdateInfoText;
     procedure CmdReload(Sender: TObject);
 
-    procedure CmdNew(Sender: TObject);
-    procedure CmdOpen(Sender: TObject);
     procedure CmdDelete(Sender: TObject);
     procedure CmdSelector(Sender: TObject);
 
     procedure EViewListChangedHandler(ADataSet: TDataSet);
+    procedure SelectionChangedHandler;
     function View: IEntityListView;
   protected
-    function EntityViewName: string; override;
+    procedure OnUpdateCommandStatus; override;
     function OnGetWorkItemState(const AName: string; var Done: boolean): Variant; override;
     //
     function GetEVList: IEntityView;
@@ -134,6 +138,22 @@ begin
 end;
 
 
+procedure TEntityListPresenter.OnUpdateCommandStatus;
+begin
+  WorkItem.Commands[COMMAND_NEW].Status := csDisabled;
+  WorkItem.Commands[COMMAND_OPEN].Status := csDisabled;
+  WorkItem.Commands[COMMAND_DELETE].Status := csDisabled;
+
+  if (FCanAdd or FCanEdit) then
+    WorkItem.Commands[COMMAND_NEW].Status := csEnabled;
+
+  if (View.Selection.Count > 0) and (FCanOpen or FCanEdit) then
+    WorkItem.Commands[COMMAND_OPEN].Status := csEnabled;
+
+  if (View.Selection.Count > 0) and (FCanDelete or FCanEdit) then
+    WorkItem.Commands[COMMAND_DELETE].Status := csEnabled;
+end;
+
 procedure TEntityListPresenter.OnViewReady;
 begin
   FreeOnViewClose := true;
@@ -155,13 +175,18 @@ begin
   if UseSelector then
     View.CommandBar.AddCommand(COMMAND_SELECTOR, GetLocaleString(@COMMAND_SELECTOR_CAPTION), '', CmdSelector);
 
-  if ViewInfo.OptionExists('CanAdd') or ViewInfo.OptionExists('CanEdit') then
-    View.CommandBar.AddCommand(COMMAND_NEW, GetLocaleString(@COMMAND_NEW_CAPTION), COMMAND_NEW_SHORTCUT, CmdNew);
+  FCanEdit := ViewInfo.OptionExists('CanEdit');
+  FCanAdd := ViewInfo.OptionExists('CanAdd');
+  FCanOpen := ViewInfo.OptionExists('CanOpen');
+  FCanDelete := ViewInfo.OptionExists('CanDelete');
 
-  if ViewInfo.OptionExists('CanOpen') or ViewInfo.OptionExists('CanEdit') then
-    View.CommandBar.AddCommand(COMMAND_OPEN, GetLocaleString(@COMMAND_OPEN_CAPTION), COMMAND_OPEN_SHORTCUT, CmdOpen);
+  if FCanAdd or FCanEdit then
+    View.CommandBar.AddCommand(COMMAND_NEW, GetLocaleString(@COMMAND_NEW_CAPTION), COMMAND_NEW_SHORTCUT, '', false);
 
-  if ViewInfo.OptionExists('CanDelete') or ViewInfo.OptionExists('CanEdit') then
+  if FCanOpen or FCanEdit then
+    View.CommandBar.AddCommand(COMMAND_OPEN, GetLocaleString(@COMMAND_OPEN_CAPTION), COMMAND_OPEN_SHORTCUT, '', false);
+
+  if FCanDelete or FCanEdit then
     View.CommandBar.AddCommand(COMMAND_DELETE, GetLocaleString(@COMMAND_DELETE_CAPTION), COMMAND_DELETE_SHORTCUT, CmdDelete);
 
   GetEVList.SynchronizeOnEntityChange(GetEVList.EntityName, ENT_VIEW_NEW_DEFAULT);
@@ -174,9 +199,16 @@ begin
 
   FIsReady := true;
 
+  View.Selection.SetSelectionChangedHandler(SelectionChangedHandler);
 
+  SelectionChangedHandler;
 end;
 
+
+procedure TEntityListPresenter.SelectionChangedHandler;
+begin
+  UpdateCommandStatus;
+end;
 
 function TEntityListPresenter.GetEVList: IEntityView;
 begin
@@ -189,13 +221,6 @@ begin
   Result := GetEView(EntityName, EntityViewName);
 end;
 
-function TEntityListPresenter.EntityViewName: string;
-begin
-  Result := inherited EntityViewName;
-  if Result = '' then
-    Result := ENT_VIEW_LIST;
-end;
-
 procedure TEntityListPresenter.EViewListChangedHandler(
   ADataSet: TDataSet);
 begin
@@ -206,36 +231,6 @@ begin
     raise;
   end;
 end;
-
-procedure TEntityListPresenter.CmdNew(Sender: TObject);
-begin
-  with WorkItem.Activities[ACTION_ENTITY_NEW] do
-  begin
-    Params[TEntityNewActionParams.EntityName] := EntityName;
-    Execute(WorkItem);
-  end;
-end;
-
-procedure TEntityListPresenter.CmdOpen(Sender: TObject);
-var
-  cmd: ICommand;
-begin
-  if VarIsEmpty(WorkItem.State['ITEM_ID']) then Exit;
-
-  with WorkItem.Activities[ACTION_ENTITY_ITEM] do
-  begin
-
-
-    //Params[TEntityItemActionParams.ID] := WorkItem.State['ITEM_ID'];
-    Sender.GetInterface(ICommand, cmd);
-    Params[TEntityItemActionParams.BindingParams] :=
-      cmd.Data[TEntityItemActionParams.BindingParams];
-    Params[TEntityItemActionParams.EntityName] := EntityName;
-
-    Execute(WorkItem);
-  end;
-end;
-
 
 
 procedure TEntityListPresenter.CmdSelector(Sender: TObject);

@@ -316,6 +316,8 @@ procedure LoadFieldsInfo(AFields: TFields; AConnection: TCustomRemoteServer;
 var
   NoCacheMetadata: boolean;
 
+
+
 implementation
 
 procedure LoadFieldsInfo(AFields: TFields; AConnection: TCustomRemoteServer;
@@ -402,6 +404,38 @@ begin
   end;
 end;
 
+var
+  APP_VER: integer;
+
+procedure InitAppVer;
+var
+  exeDate: TDateTime;
+  Year, Month, Day, Hour, Min, Sec, MSec: Word;
+  sMonth, sDay, sHour: string;
+  sResult: string;
+begin
+  exeDate := FileDateToDateTime(FileAge(ParamStr(0)));
+  DecodeDate(exeDate, Year, Month, Day);
+  DecodeTime(exeDate, Hour, Min, Sec, MSec);
+
+  if Month < 10 then
+    sMonth := '0' + IntToStr(Month)
+  else
+    sMonth := IntToStr(Month);
+
+  if Day < 10 then
+    sDay := '0' + IntToStr(Day)
+  else
+    sDay := IntToStr(Day);
+
+  if Hour < 10 then
+    sHour := '0' + IntToStr(Hour)
+  else
+    sHour := IntToStr(Hour);
+
+  sResult := format('%d%s%s%s', [Year, sMonth, sDay, sHour]);
+  APP_VER := StrToIntDef(sResult, 0);
+end;
 
 { TEntityManagerService }
 
@@ -1297,6 +1331,13 @@ begin
 
     for I := 0 to Params.Count - 1 do
     begin
+
+      if Params[I].Name = 'APP_VER' then
+      begin
+        Params[I].Value := APP_VER;
+        Continue;
+      end;
+
       if bindingList.Count = 0 then
         sName := Params[I].Name
       else
@@ -2055,5 +2096,6 @@ end;
 
 initialization
   NoCacheMetadata := FindCmdLineSwitch('NoCacheMetadata');
+  InitAppVer;
 
 end.

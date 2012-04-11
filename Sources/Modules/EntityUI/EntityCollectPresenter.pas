@@ -34,8 +34,6 @@ type
     procedure CmdClose(Sender: TObject);
     procedure CmdReload(Sender: TObject);
     procedure CmdAddBulk(Sender: TObject);
-    procedure CmdAddItem(Sender: TObject);
-    procedure CmdOpen(Sender: TObject);
     procedure CmdDelete(Sender: TObject);
     procedure CmdListSelected(Sender: TObject);
     procedure CmdItemsSelected(Sender: TObject);
@@ -113,13 +111,13 @@ begin
   end
   else if ViewInfo.OptionExists('BulkMode') then
   begin
-    View.CommandBar.AddCommand(COMMAND_ADD_BULK, 'Добавить', 'Enter', CmdAddBulk, 'Добавить');
-    View.CommandBar.AddCommand(COMMAND_ADD_ITEM, 'Добавить запись', 'Ins', CmdAddItem, 'Добавить');
+    View.CommandBar.AddCommand(COMMAND_ADD_BULK, 'Добавить', 'Enter', CmdAddBulk, 'Добавить', true);
+    View.CommandBar.AddCommand(COMMAND_ADD_ITEM, 'Добавить запись', 'Ins', 'Добавить', false);
     View.SetCommandAddDef(COMMAND_ADD_BULK);
   end
   else
   begin
-    View.CommandBar.AddCommand(COMMAND_ADD_ITEM, 'Добавить', 'Enter', CmdAddItem);
+    View.CommandBar.AddCommand(COMMAND_ADD_ITEM, 'Добавить', 'Enter', '', false);
     View.SetCommandAddDef(COMMAND_ADD_ITEM);
   end;
 
@@ -127,7 +125,7 @@ begin
 
 //  if ViewInfo.OptionExists('CanOpenItem')  then
     View.CommandBar.AddCommand(COMMAND_OPEN, GetLocaleString(@COMMAND_OPEN_CAPTION),
-      COMMAND_OPEN_SHORTCUT, CmdOpen);
+      COMMAND_OPEN_SHORTCUT, '', false);
 
   //if ViewInfo.OptionExists('CanDelete') or ViewInfo.OptionExists('CanEdit') then
   View.CommandBar.AddCommand(COMMAND_DELETE, GetLocaleString(@COMMAND_DELETE_CAPTION),
@@ -189,29 +187,6 @@ begin
     ReloadCallerWorkItem;  
   end;
 end;
-
-procedure TEntityCollectPresenter.CmdAddItem(Sender: TObject);
-begin
-  with WorkItem.Activities[ACTION_ENTITY_DETAIL_NEW] do
-  begin
-    Params['HID'] := WorkItem.State['HID'];
-    Params['ENTITYNAME'] := EntityName;
-    Execute(WorkItem);
-  end;
-end;
-
-procedure TEntityCollectPresenter.CmdOpen(Sender: TObject);
-begin
-  if VarIsEmpty(WorkItem.State['ITEM_ID']) then Exit;
-
-  with WorkItem.Activities[ACTION_ENTITY_DETAIL] do
-  begin
-    Params['ID'] := WorkItem.State['ITEM_ID'];
-    Params['ENTITYNAME'] := EntityName;
-    Execute(WorkItem);
-  end;
-end;
-
 
 procedure TEntityCollectPresenter.OnUpdateCommandStatus;
 begin

@@ -80,7 +80,6 @@ type
     function GetData(const AName: string): Variant;
     procedure SetData(const AName: string; AValue: Variant);
 
-
     function CanExecute: boolean;
     function VetoObject: Exception;
     procedure RegisterCondition(ACondition: TCommandConditionMethod);

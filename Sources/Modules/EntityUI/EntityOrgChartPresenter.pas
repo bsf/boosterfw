@@ -36,7 +36,7 @@ procedure TEntityOrgChartPresenter.CmdOpenNode(Sender: TObject);
 begin
   with WorkItem.Activities[GetViewURI] do
   begin
-    Params[TEntityOrgChartActivityParams.ROOT_ID] := WorkItem.State['ITEM_ID'];
+    Params['ROOT_ID'] := WorkItem.State['ITEM_ID'];
     Execute(WorkItem);
   end;
 end;

@@ -1,7 +1,7 @@
 unit Activities;
 
 interface
-uses classes, CoreClasses, HashList, graphics, sysutils, variants, menus;
+uses classes, CoreClasses, HashList, graphics, sysutils, variants, menus, strUtils;
 
 type
   TActivityData = class(TComponent, IActivityData)
@@ -16,8 +16,8 @@ type
     function Count: integer;
     function ValueName(AIndex: integer): string;
     function IndexOf(const AName: string): integer;
-    procedure Assign(Source: TPersistent; ABindingRule: string = ''); reintroduce;
-    procedure AssignTo(Dest: TPersistent); override;
+    procedure Assign(Source: TWorkItem; ABindingRule: string = ''); reintroduce;
+    procedure AssignTo(Target: TWorkItem); reintroduce;
     procedure SetValue(const AName: string; AValue: Variant);
     function GetValue(const AName: string): Variant;
     //
@@ -360,60 +360,52 @@ begin
   Result := FNames[AIndex];
 end;
 
-procedure TActivityData.Assign(Source: TPersistent; ABindingRule: string);
+procedure TActivityData.Assign(Source: TWorkItem; ABindingRule: string);
+
+  function DecodeSourceValue(const AName: string): variant;
+  var
+    val: string;
+  begin
+    if StartsText('[', AName) and EndsText(']', AName) then
+    begin
+      val := AName;
+      Delete(val, 1, 1);
+      Delete(val, Length(val), 1);
+      Result := val;
+    end
+    else
+      Result := Source.State[AName];
+  end;
+
 var
   I: integer;
   bindingList: TStringList;
-  sName: string;
 begin
   ResetValues;
 
-  bindingList := TStringList.Create;
-  try
-    ExtractStrings([';'], [], PWideChar(ABindingRule), bindingList);
-
-    for I := 0 to FNames.Count - 1 do
-    begin
-      if bindingList.Count = 0 then
-        sName := FNames[I]
-      else
-        sName := bindingList.Values[FNames[I]];
-
-      if sName = '' then Continue;
-
-      if Source is TWorkItem then
-        SetValue(FNames[I], (Source as TWorkItem).State[sName])
-      else if (Source is TActivityData) and
-             ((Source as TActivityData).FNames.IndexOf(FNames[I]) <> -1) then
-        SetValue(FNames[I], (Source as TActivityData).GetValue(sName));
+  if ABindingRule <> '' then
+  begin
+    bindingList := TStringList.Create;
+    try
+      ExtractStrings([';'], [], PWideChar(ABindingRule), bindingList);
+      for I := 0 to bindingList.Count - 1 do
+        SetValue(bindingList.Names[I], DecodeSourceValue(bindingList.Values[bindingList.Names[I]]));
+    finally
+      bindingList.Free;
     end;
-
-{  if Source is TWorkItem then
+  end
+  else
     for I := 0 to FNames.Count - 1 do
-      SetValue(FNames[I], (Source as TWorkItem).State[FNames[I]]);
+      SetValue(FNames[I], Source.State[FNames[I]]);
 
-  if (Source is TActivityData) then
-    for I := 0 to FNames.Count - 1 do
-      if (Source as TActivityData).FNames.IndexOf(FNames[I]) <> -1 then
-        SetValue(FNames[I], (Source as TActivityData).GetValue(FNames[I]));}
-  finally
-    bindingList.Free;
-  end;
 end;
 
-procedure TActivityData.AssignTo(Dest: TPersistent);
+procedure TActivityData.AssignTo(Target: TWorkItem);
 var
   I: integer;
 begin
-  if Dest is TWorkItem then
-    for I := 0 to FNames.Count - 1 do
-      (Dest as TWorkItem).State[FNames[I]] := GetValue(FNames[I]);
-
-  if (Dest is TActivityData) then
-    for I := 0 to FNames.Count - 1 do
-      if (Dest as TActivityData).FNames.IndexOf(FNames[I]) <> -1 then
-        (Dest as TActivityData).SetValue(FNames[I], GetValue(FNames[I]));
-
+  for I := 0 to FNames.Count - 1 do
+    Target.State[FNames[I]] := GetValue(FNames[I]);
 end;
 
 function TActivityData.Count: integer;

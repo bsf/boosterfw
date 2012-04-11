@@ -11,6 +11,7 @@ const
 
   ENT_VIEW_JOURNAL = 'Journal';
   ENT_VIEW_STATES = 'States';
+  ENT_OPER_STATE_CHANGE_DEFAULT = 'StateChange';
 
   ENT_VIEW_NEW_DEFAULT = 'New';
   ENT_VIEW_ITEM_DEFAULT = 'Item';
@@ -28,6 +29,7 @@ type
 
   TEntityJournalPresenter = class(TEntityContentPresenter)
   private
+    FIsReady: boolean;
     FSelectorInitialized: boolean;
     procedure InitializeSelector;
     procedure UpdateInfoText;
@@ -37,8 +39,6 @@ type
     procedure CmdStateChange(Sender: TObject);
     procedure CmdDelete(Sender: TObject);
     function GetEVStates: IEntityView;
-    procedure CmdNew(Sender: TObject);
-    procedure CmdOpen(Sender: TObject);
     procedure CmdReload(Sender: TObject);
     procedure CmdSelector(Sender: TObject);
   protected
@@ -78,27 +78,6 @@ begin
     end;
   end;
 
-end;
-
-procedure TEntityJournalPresenter.CmdNew(Sender: TObject);
-begin
-  with WorkItem.Activities[ACTION_ENTITY_NEW] do
-  begin
-    Params[TEntityNewActionParams.EntityName] := EntityName;
-    Execute(WorkItem);
-  end;
-end;
-
-procedure TEntityJournalPresenter.CmdOpen(Sender: TObject);
-begin
-  if VarIsEmpty(WorkItem.State['ITEM_ID']) then Exit;
-
-  with WorkItem.Activities[ACTION_ENTITY_ITEM] do
-  begin
-    Params[TEntityItemActionParams.ID] := WorkItem.State['ITEM_ID'];
-    Params[TEntityItemActionParams.EntityName] := EntityName;
-    Execute(WorkItem);
-  end;
 end;
 
 procedure TEntityJournalPresenter.CmdReload(Sender: TObject);
@@ -164,7 +143,7 @@ var
 begin
   ViewTitle := ViewInfo.Title;
 //  FreeOnViewClose := false;
-  
+
   dsStates := GetEVStates.DataSet;
   while not dsStates.Eof do
   begin
@@ -186,11 +165,11 @@ begin
 
   View.CommandBar.
     AddCommand(COMMAND_NEW,
-      GetLocaleString(@COMMAND_NEW_CAPTION), COMMAND_NEW_SHORTCUT, CmdNew);
+      GetLocaleString(@COMMAND_NEW_CAPTION), COMMAND_NEW_SHORTCUT, '', false);
 
   View.CommandBar.
     AddCommand(COMMAND_OPEN,
-      GetLocaleString(@COMMAND_OPEN_CAPTION), COMMAND_OPEN_SHORTCUT, CmdOpen);
+      GetLocaleString(@COMMAND_OPEN_CAPTION), COMMAND_OPEN_SHORTCUT, '', false);
 
   View.CommandBar.
     AddCommand(COMMAND_DELETE,
@@ -215,9 +194,9 @@ begin
   View.Tabs.SetTabChangedHandler(TabChangedHandler);
   View.Selection.SetSelectionChangedHandler(SelectionChangedHandler);
 
-  inherited;
-
   TabChangedHandler;
+
+  FIsReady := true;
 end;
 
 function TEntityJournalPresenter.GetEVJrn: IEntityView;
@@ -253,6 +232,12 @@ end;
 
 function TEntityJournalPresenter.OnGetWorkItemState(
   const AName: string; var Done: boolean): Variant;
+const
+  const_EV_FIELD_PREFIX = 'EV.';
+var
+  ds: TDataSet;
+  fieldName: string;
+
 begin
   Done := true;
   if SameText(AName, 'ITEM_ID') then
@@ -272,6 +257,17 @@ begin
       GetEVStates.DataSet.Locate('NAME', View.Tabs.TabCaption[View.Tabs.Active], []);
       Result :=  GetEVStates.DataSet['DRANGE'];
     end
+  end
+  else if FIsReady and AnsiStartsText(const_EV_FIELD_PREFIX, AName) then
+  begin
+    Done := false;
+    fieldName := StringReplace(AName, const_EV_FIELD_PREFIX, '', [rfIgnoreCase]);
+    ds := App.Entities[EntityName].GetView(EntityViewName, WorkItem).DataSet;
+    if ds.FindField(fieldName) <> nil then
+    begin
+      Done := true;
+      Result := ds[fieldName];
+    end;
   end
   else
   begin

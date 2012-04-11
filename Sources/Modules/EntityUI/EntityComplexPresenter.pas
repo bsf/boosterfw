@@ -32,7 +32,6 @@ type
     procedure CmdHeadEdit(Sender: TObject);
     procedure CmdDetailCollect(Sender: TObject);
     procedure CmdDetailNew(Sender: TObject);
-    procedure CmdDetailOpen(Sender: TObject);
     procedure CmdDetailDel(Sender: TObject);
     procedure CmdReload(Sender: TObject);
     procedure DetailSelectionChangedHandler;
@@ -112,31 +111,6 @@ begin
     end;
 end;
 
-procedure TEntityComplexPresenter.CmdDetailOpen(Sender: TObject);
-
-  function GetItemViewURI: string;
-  begin
-    if App.Entities.EntityViewExists(EntityName, 'DetailURI') then
-      Result := App.Entities[EntityName].GetView('DetailURI', WorkItem).
-            Load([WorkItem.State['DETAIL_ID']])['URI']
-    else
-      Result := format(VIEW_DETAIL_ITEM, [EntityName]);
-  end;
-
-var
-  actionName: string;
-begin
-  if VarIsEmpty(WorkItem.State['DETAIL_ID']) then Exit;
-
-  actionName := GetItemViewURI;//format(VIEW_DETAIL_ITEM, [ViewInfo.EntityName]);
-  with WorkItem.Activities[actionName] do
-  begin
-    Params['ID'] := WorkItem.State['DETAIL_ID'];
-    Params['DOC_ID'] := WorkItem.State['HID'];
-    Execute(WorkItem);
-  end;
-end;
-
 function TEntityComplexPresenter.GetEVHead: IEntityView;
 begin
   Result := GetEView(EntityName, ENT_VIEW_HEAD_DEFAULT);
@@ -205,7 +179,7 @@ begin
 
   if ViewInfo.OptionExists('CanOpen') or ViewInfo.OptionExists('CanDetailsEdit') then
     View.CommandBar.
-      AddCommand(COMMAND_DETAIL_OPEN, 'Открыть запись', 'Ctrl+Enter', CmdDetailOpen);
+      AddCommand(COMMAND_DETAIL_OPEN, 'Открыть запись', 'Ctrl+Enter', '', false);
 
   if ViewInfo.OptionExists('CanDelete') or ViewInfo.OptionExists('CanDetailsEdit') then
     View.CommandBar.

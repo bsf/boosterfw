@@ -4,7 +4,7 @@ interface
 uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
   cxClasses,
   SysUtils, Variants, ShellIntf, CustomContentPresenter,
-  EntityCatalogIntf, EntityCatalogConst, db, controls, UIStr;
+  EntityCatalogIntf, EntityCatalogConst, db, controls, UIStr, strUtils;
 
 const
   COMMAND_SELECTOR = '{0D2B32E3-7CE0-4775-A2D3-3A91ED2AFEFB}';//'commands.view.selector';
@@ -25,9 +25,12 @@ type
   end;
 
   TEntityTreeListPresenter = class(TEntityContentPresenter)
-  const
-    ENT_VIEW_LIST = 'List';
   private
+    FCanEdit: boolean;
+    FCanOpen: boolean;
+    FCanAdd: boolean;
+    FCanDelete: boolean;
+
     FIsReady: boolean;
     FSelectorInitialized: boolean;
     function UseSelector: boolean;
@@ -36,15 +39,14 @@ type
     procedure UpdateInfoText;
     procedure CmdReload(Sender: TObject);
 
-    procedure CmdNew(Sender: TObject);
-    procedure CmdOpen(Sender: TObject);
     procedure CmdDelete(Sender: TObject);
     procedure CmdSelector(Sender: TObject);
 
     procedure EViewListChangedHandler(ADataSet: TDataSet);
+    procedure SelectionChangedHandler;
     function View: IEntityTreeListView;
   protected
-    function EntityViewName: string; override;
+    procedure OnUpdateCommandStatus; override;
     function OnGetWorkItemState(const AName: string; var Done: boolean): Variant; override;
     //
     function GetEVList: IEntityView;
@@ -98,8 +100,12 @@ end;
 
 function TEntityTreeListPresenter.OnGetWorkItemState(const AName: string;
   var Done: boolean): Variant;
+const
+  const_EV_FIELD_PREFIX = 'EV.';
+
 var
   ds: TDataSet;
+  fieldName: string;
 begin
   Done := true;
   if SameText(AName, 'ITEM_ID') or SameText(AName, 'ID') then
@@ -110,11 +116,16 @@ begin
     Result := View.Selection.AsString(',')
   else if SameText(AName, 'LIST_ID_ARRAY') then
     Result := View.Selection.AsArray
-  else if FIsReady then
+  else if FIsReady and AnsiStartsText(const_EV_FIELD_PREFIX, AName) then
   begin
+    Done := false;
+    fieldName := StringReplace(AName, const_EV_FIELD_PREFIX, '', [rfIgnoreCase]);
     ds := App.Entities[EntityName].GetView(EntityViewName, WorkItem).DataSet;
-    if ds.FindField(AName) <> nil then
-      Result := ds[AName];
+    if ds.FindField(fieldName) <> nil then
+    begin
+      Done := true;
+      Result := ds[fieldName];
+    end;
   end
   else
   begin
@@ -146,6 +157,23 @@ begin
 end;
 
 
+procedure TEntityTreeListPresenter.OnUpdateCommandStatus;
+begin
+  WorkItem.Commands[COMMAND_NEW].Status := csDisabled;
+  WorkItem.Commands[COMMAND_OPEN].Status := csDisabled;
+  WorkItem.Commands[COMMAND_DELETE].Status := csDisabled;
+
+  if (FCanAdd or FCanEdit) then
+    WorkItem.Commands[COMMAND_NEW].Status := csEnabled;
+
+  if (View.Selection.Count > 0) and (FCanOpen or FCanEdit) then
+    WorkItem.Commands[COMMAND_OPEN].Status := csEnabled;
+
+  if (View.Selection.Count > 0) and (FCanDelete or FCanEdit) then
+    WorkItem.Commands[COMMAND_DELETE].Status := csEnabled;
+
+end;
+
 procedure TEntityTreeListPresenter.OnViewReady;
 begin
   FreeOnViewClose := true;
@@ -167,13 +195,18 @@ begin
   if UseSelector then
     View.CommandBar.AddCommand(COMMAND_SELECTOR, GetLocaleString(@COMMAND_SELECTOR_CAPTION), '', CmdSelector);
 
-  if ViewInfo.OptionExists('CanAdd') or ViewInfo.OptionExists('CanEdit') then
-    View.CommandBar.AddCommand(COMMAND_NEW, GetLocaleString(@COMMAND_NEW_CAPTION), COMMAND_NEW_SHORTCUT, CmdNew);
+  FCanEdit := ViewInfo.OptionExists('CanEdit');
+  FCanAdd := ViewInfo.OptionExists('CanAdd');
+  FCanOpen := ViewInfo.OptionExists('CanOpen');
+  FCanDelete := ViewInfo.OptionExists('CanDelete');
 
-  if ViewInfo.OptionExists('CanOpen') or ViewInfo.OptionExists('CanEdit') then
-    View.CommandBar.AddCommand(COMMAND_OPEN, GetLocaleString(@COMMAND_OPEN_CAPTION), COMMAND_OPEN_SHORTCUT, CmdOpen);
+  if FCanAdd or FCanEdit then
+    View.CommandBar.AddCommand(COMMAND_NEW, GetLocaleString(@COMMAND_NEW_CAPTION), COMMAND_NEW_SHORTCUT, '', false);
 
-  if ViewInfo.OptionExists('CanDelete') or ViewInfo.OptionExists('CanEdit') then
+  if FCanOpen or FCanEdit then
+    View.CommandBar.AddCommand(COMMAND_OPEN, GetLocaleString(@COMMAND_OPEN_CAPTION), COMMAND_OPEN_SHORTCUT, '', false);
+
+  if FCanDelete or FCanEdit then
     View.CommandBar.AddCommand(COMMAND_DELETE, GetLocaleString(@COMMAND_DELETE_CAPTION), COMMAND_DELETE_SHORTCUT, CmdDelete);
 
   GetEVList.SynchronizeOnEntityChange(GetEVList.EntityName, ENT_VIEW_NEW_DEFAULT);
@@ -186,9 +219,16 @@ begin
 
   FIsReady := true;
 
+  View.Selection.SetSelectionChangedHandler(SelectionChangedHandler);
 
+  SelectionChangedHandler;
 end;
 
+
+procedure TEntityTreeListPresenter.SelectionChangedHandler;
+begin
+  UpdateCommandStatus;
+end;
 
 function TEntityTreeListPresenter.GetEVList: IEntityView;
 begin
@@ -201,13 +241,6 @@ begin
   Result := GetEView(EntityName, EntityViewName);
 end;
 
-function TEntityTreeListPresenter.EntityViewName: string;
-begin
-  Result := inherited EntityViewName;
-  if Result = '' then
-    Result := ENT_VIEW_LIST;
-end;
-
 procedure TEntityTreeListPresenter.EViewListChangedHandler(
   ADataSet: TDataSet);
 begin
@@ -218,29 +251,6 @@ begin
     raise;
   end;
 end;
-
-procedure TEntityTreeListPresenter.CmdNew(Sender: TObject);
-begin
-  with WorkItem.Activities[ACTION_ENTITY_NEW] do
-  begin
-    Params[TEntityNewActionParams.EntityName] := EntityName;
-    Execute(WorkItem);
-  end;
-end;
-
-procedure TEntityTreeListPresenter.CmdOpen(Sender: TObject);
-begin
-  if VarIsEmpty(WorkItem.State['ITEM_ID']) then Exit;
-
-  with WorkItem.Activities[ACTION_ENTITY_ITEM] do
-  begin
-    Params[TEntityItemActionParams.ID] := WorkItem.State['ITEM_ID'];
-    Params[TEntityItemActionParams.EntityName] := EntityName;
-    Execute(WorkItem);
-  end;
-end;
-
-
 
 procedure TEntityTreeListPresenter.CmdSelector(Sender: TObject);
 const

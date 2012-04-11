@@ -7,8 +7,6 @@ uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
 
 const
   ENT_VIEW_NEW = 'New';
-  VIEW_ITEM = 'views.%s.Item';
-  VIEW_COLLECT = 'views.%s.Collect';
 
 type
   IEntityNewView = interface(IContentView)
@@ -60,12 +58,7 @@ begin
     nextAction := WorkItem.Activities[nextActionID];
 
   if nextAction <> nil then
-  begin
-    if nextActionID = ACTION_ENTITY_ITEM then
-       nextAction.Params[TEntityItemActionParams.EntityName] := EntityName;
-
     nextAction.Params.Assign(WorkItem);
-  end;
 
   CloseView;
 
@@ -77,8 +70,6 @@ end;
 procedure TEntityNewPresenter.OnViewReady;
 var
   fieldAux: TField;
-  NextOption: string;
-  NextAction: string;
 begin
   ViewTitle := ViewInfo.Title;
 
@@ -112,22 +103,7 @@ begin
 
 
   if ViewInfo.OptionExists('Next') then
-  begin
-    nextOption := ViewInfo.OptionValue('Next');
-
-    if (nextOption = '') or (SameText(nextOption, 'Item'))then
-      NextAction := ACTION_ENTITY_ITEM
-
-      //NextAction := format(VIEW_ITEM, [EntityName])
-
-    else if SameText(nextOption, 'Collect') then
-      NextAction := format(VIEW_COLLECT, [EntityName])
-
-    else
-      NextAction := NextOption;
-
-    WorkItem.State['NEXT_ACTION'] := NextAction;
-  end;
+    WorkItem.State['NEXT_ACTION'] :=ViewInfo.OptionValue('Next');
 
   if WorkItem.State['NEXT_ACTION'] <> '' then
     WorkItem.Commands[COMMAND_SAVE].Caption := GetLocaleString(@COMMAND_NEXT_CAPTION);

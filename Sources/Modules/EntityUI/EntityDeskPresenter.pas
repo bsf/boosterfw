@@ -25,8 +25,6 @@ type
     function View: IEntityDeskView;
     procedure CmdClose(Sender: TObject);
     procedure CmdReload(Sender: TObject);
-    procedure CmdNew(Sender: TObject);
-    procedure CmdOpen(Sender: TObject);
     procedure CmdDelete(Sender: TObject);
     procedure CmdStateChange(Sender: TObject);
     function GetEVList: IEntityView;
@@ -109,11 +107,11 @@ begin
 
   if ViewInfo.OptionExists('CanAdd') or ViewInfo.OptionExists('CanEdit') then
     View.CommandBar.AddCommand(COMMAND_NEW, GetLocaleString(@COMMAND_NEW_CAPTION),
-      COMMAND_NEW_SHORTCUT, CmdNew);
+      COMMAND_NEW_SHORTCUT, '', false);
 
   if ViewInfo.OptionExists('CanOpen') or ViewInfo.OptionExists('CanEdit') then
     View.CommandBar.AddCommand(COMMAND_OPEN, GetLocaleString(@COMMAND_OPEN_CAPTION),
-      COMMAND_OPEN_SHORTCUT, CmdOpen);
+      COMMAND_OPEN_SHORTCUT, '', false);
 
   if ViewInfo.OptionExists('CanDelete') or ViewInfo.OptionExists('CanEdit') then
     View.CommandBar.AddCommand(COMMAND_DELETE, GetLocaleString(@COMMAND_DELETE_CAPTION),
@@ -165,32 +163,6 @@ begin
     end;
   end;
 
-
-end;
-
-procedure TEntityDeskPresenter.CmdNew(Sender: TObject);
-begin
-  with WorkItem.Activities[ACTION_ENTITY_NEW] do
-  begin
-    Params[TEntityNewActionParams.EntityName] := EntityName;
-    Execute(WorkItem);
-  end;
-end;
-
-procedure TEntityDeskPresenter.CmdOpen(Sender: TObject);
-var
-  cmd: ICommand;
-begin
-  if VarIsEmpty(WorkItem.State['ITEM_ID']) then Exit;
-
-  with WorkItem.Activities[ACTION_ENTITY_ITEM] do
-  begin
-    Sender.GetInterface(ICommand, cmd);
-    //Params[TEntityItemActionParams.ID] := WorkItem.State['ITEM_ID'];
-    Params[TEntityItemActionParams.BindingParams] := cmd.Data[TEntityItemActionParams.BindingParams];
-    Params[TEntityItemActionParams.EntityName] := EntityName;
-    Execute(WorkItem);
-  end;
 
 end;
 

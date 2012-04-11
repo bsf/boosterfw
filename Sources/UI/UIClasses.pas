@@ -4,27 +4,6 @@ interface
 uses classes, db, CoreClasses, sysutils, controls, ShellIntf,
   Contnrs, forms, variants;
 
-  {
-resourcestring
-  COMMAND_CLOSE_CAPTION = 'Close';
-  COMMAND_SAVE_CAPTION = 'Save';
-  COMMAND_NEXT_CAPTION = 'Next';
-  COMMAND_OK_CAPTION = 'OK';
-  COMMAND_CANCEL_CAPTION = 'Cancel';
-  COMMAND_RELOAD_CAPTION = 'Refresh';
-  COMMAND_OPEN_CAPTION = 'Open';
-  COMMAND_NEW_CAPTION = 'Add';
-  COMMAND_DELETE_CAPTION = 'Delete';
-  COMMAND_DETAIL_OPEN_CAPTION = 'Open record';
-  COMMAND_DETAIL_NEW_CAPTION = 'Add record';
-  COMMAND_DETAIL_DELETE_CAPTION = 'Del record';
-  COMMAND_STATE_CHANGE_CAPTION = 'Change state';
-  COMMAND_STATE_CHANGE_NEXT_CAPTION = 'Next state';
-  COMMAND_STATE_CHANGE_PREV_CAPTION = 'Prev state';
-  COMMAND_SELECTOR_CAPTION = 'Selector';
-  COMMAND_EXECUTE_CAPTION = 'Execute';
-   }
-
 const
   COMMAND_CLOSE = 'commands.view.close';
   //COMMAND_CLOSE_CAPTION = 'Закрыть';
@@ -219,6 +198,9 @@ type
     procedure AddCommand(const AName: string; AGroup: string = ''; ADefault: boolean = false); overload;
     procedure AddCommand(const AName, ACaption, AShortCut: string; AHandler: TNotifyEvent;
       AGroup: string = ''; ADefault: boolean = false); overload;
+    procedure AddCommand(const AName, ACaption, AShortCut: string;
+      AGroup: string; ADefault: boolean); overload;
+
   end;
 
 
@@ -242,12 +224,14 @@ type
   const
     Singleton = 'Singleton';
     InstanceIdentifiers = 'InstID';
+
+    EntityName = 'EntityName';
+    EntityViewName = 'EntityViewName';
   end;
 
   TViewActivityParams = record
   const
     InstanceID = 'InstanceID';
-    //PresenterID = 'PRESENTERID';
     Workspace = 'WORKSPACE';
     Title = 'TITLE';
   end;
