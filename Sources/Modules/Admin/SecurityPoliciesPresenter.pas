@@ -153,19 +153,21 @@ begin
   ViewTitle := VIEW_SECURITYPOLICIES_TITLE;
 
   View.CommandBar.AddCommand(COMMAND_CLOSE,
-    GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
+    GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT);
+  WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
 
   View.CommandBar.AddCommand(COMMAND_OPEN, GetLocaleString(@COMMAND_OPEN_CAPTION),
-    COMMAND_OPEN_SHORTCUT, CmdOpen);
+    COMMAND_OPEN_SHORTCUT);
+  Workitem.Commands[COMMAND_OPEN].SetHandler(CmdOpen);
 
-  View.CommandBar.AddCommand(COMMAND_POLICY_ACTIVATE, 'Включить политику',
-    '', CmdPolicyActivate);
+  View.CommandBar.AddCommand(COMMAND_POLICY_ACTIVATE, 'Включить политику');
+  WorkItem.Commands[COMMAND_POLICY_ACTIVATE].SetHandler(CmdPolicyActivate);
 
-  View.CommandBar.AddCommand(COMMAND_POLICY_DEACTIVATE, 'Отключить политику',
-    '', CmdPolicyDeactivate);
+  View.CommandBar.AddCommand(COMMAND_POLICY_DEACTIVATE, 'Отключить политику');
+  WorkItem.Commands[COMMAND_POLICY_DEACTIVATE].SetHandler(CmdPolicyDeactivate);
 
-  View.CommandBar.AddCommand(COMMAND_POLICY_RESET, 'Сбросить политику',
-    '', CmdPolicyReset);
+  View.CommandBar.AddCommand(COMMAND_POLICY_RESET, 'Сбросить политику');
+  WorkItem.Commands[COMMAND_POLICY_RESET].SetHandler(CmdPolicyReset);
 
   FillPoliciesList(App.Security.Policies);
   View.SetChangeSelectedPolicyHandler(ChangeSelectedPolicyHandler);

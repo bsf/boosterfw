@@ -153,15 +153,17 @@ begin
 
   View.CommandBar.
     AddCommand(COMMAND_CLOSE,
-      GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
+      GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT);
+  WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
 
   WorkItem.Commands[COMMAND_RELOAD].SetHandler(CmdReload);
   View.CommandBar.
     AddCommand(COMMAND_RELOAD,
-      GetLocaleString(@COMMAND_RELOAD_CAPTION), COMMAND_RELOAD_SHORTCUT, CmdReload);
+      GetLocaleString(@COMMAND_RELOAD_CAPTION), COMMAND_RELOAD_SHORTCUT);
 
   View.CommandBar.AddCommand(COMMAND_SELECTOR,
-    GetLocaleString(@COMMAND_SELECTOR_CAPTION), '', CmdSelector);
+    GetLocaleString(@COMMAND_SELECTOR_CAPTION));
+  WorkItem.Commands[COMMAND_SELECTOR].SetHandler(CmdSelector);
 
   View.CommandBar.
     AddCommand(COMMAND_NEW,
@@ -173,16 +175,17 @@ begin
 
   View.CommandBar.
     AddCommand(COMMAND_DELETE,
-      GetLocaleString(@COMMAND_DELETE_CAPTION), COMMAND_DELETE_SHORTCUT, CmdDelete);
+      GetLocaleString(@COMMAND_DELETE_CAPTION), COMMAND_DELETE_SHORTCUT);
+  WorkItem.Commands[COMMAND_DELETE].SetHandler(CmdDelete);
 
-  WorkItem.Commands[COMMAND_STATE_CHANGE_NEXT].Caption := GetLocaleString(@COMMAND_STATE_CHANGE_NEXT_CAPTION);
   WorkItem.Commands[COMMAND_STATE_CHANGE_NEXT].SetHandler(CmdStateChange);
   View.CommandBar.AddCommand(COMMAND_STATE_CHANGE_NEXT,
+    GetLocaleString(@COMMAND_STATE_CHANGE_NEXT_CAPTION), '',
     GetLocaleString(@COMMAND_STATE_CHANGE_CAPTION), true);
 
-  WorkItem.Commands[COMMAND_STATE_CHANGE_PREV].Caption := GetLocaleString(@COMMAND_STATE_CHANGE_PREV_CAPTION);
   WorkItem.Commands[COMMAND_STATE_CHANGE_PREV].SetHandler(CmdStateChange);
-  View.CommandBar.AddCommand(COMMAND_STATE_CHANGE_PREV, GetLocaleString(@COMMAND_STATE_CHANGE_CAPTION));
+  View.CommandBar.AddCommand(COMMAND_STATE_CHANGE_PREV,
+    GetLocaleString(@COMMAND_STATE_CHANGE_PREV_CAPTION), '', GetLocaleString(@COMMAND_STATE_CHANGE_CAPTION));
 
   GetEVJrn.SynchronizeOnEntityChange(GetEVJrn.EntityName, ENT_VIEW_NEW_DEFAULT);
   GetEVJrn.SynchronizeOnEntityChange(GetEVJrn.EntityName, ENT_VIEW_ITEM_DEFAULT);

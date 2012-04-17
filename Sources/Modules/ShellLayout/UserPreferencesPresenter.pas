@@ -163,10 +163,12 @@ begin
   ViewTitle := GetLocaleString(@VIEW_USER_PREFERENCES_TITLE);
 
   View.CommandBar.AddCommand(COMMAND_CLOSE,
-    GetLocaleString(@COMMAND_CLOSE_CAPTION),  COMMAND_CLOSE_SHORTCUT, CmdClose);
+    GetLocaleString(@COMMAND_CLOSE_CAPTION),  COMMAND_CLOSE_SHORTCUT, '', false);
+  WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
 
   View.CommandBar.AddCommand(COMMAND_RESET_VALUE,
-    GetLocaleString(@COMMAND_RESET_CAPTION), '', CmdResetValue);
+    GetLocaleString(@COMMAND_RESET_CAPTION), '', '', false);
+  WorkItem.Commands[COMMAND_RESET_VALUE].SetHandler(CmdResetValue);
 
   View.BindAppPreferences(FAppPreferencesData);
   View.BindDBPreferences(FDBPreferencesData);

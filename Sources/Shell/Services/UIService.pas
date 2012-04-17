@@ -40,6 +40,8 @@ type
     //
     procedure SetStyle(const AName: string; AValue: TObject);
     function GetStyle(const AName: string): TObject;
+    //
+    function ShellLayoutKind: TShellLayoutKind;
   public
     constructor Create(AOwner: TComponent; AWorkItem: TWorkItem); reintroduce;
     destructor Destroy; override;
@@ -166,6 +168,22 @@ procedure TUIService.SetStyle(const AName: string; AValue: TObject);
 begin
   FStyles.AddOrSetValue(UpperCase(AName), AValue);
 end;
+
+function TUIService.ShellLayoutKind: TShellLayoutKind;
+var
+  shellLayout: integer;
+begin
+  shellLayout := StrToIntDef((FWorkItem.Services[IConfigurationService] as IConfigurationService).
+    Settings['ShellLayout'], 0);
+  case shellLayout of
+    0: Result := slTabbed;
+    1: Result := slDesk;
+    2: Result := slFullDesk;
+    else
+      Result := slTabbed;
+  end;
+end;
+
 
 procedure TUIService.StartWait;
 begin

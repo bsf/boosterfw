@@ -57,10 +57,12 @@ begin
   WorkItem.State['ModalResult'] := mrCancel;
 
   View.CommandBar.AddCommand(COMMAND_CANCEL,
-    GetLocaleString(@COMMAND_CANCEL_CAPTION), 'Esc', cmdCancel);
+    GetLocaleString(@COMMAND_CANCEL_CAPTION), 'Esc');
+  WorkItem.Commands[COMMAND_CANCEL].SetHandler(cmdCancel);
 
   View.CommandBar.AddCommand(COMMAND_OK,
-    GetLocaleString(@COMMAND_OK_CAPTION), 'Enter', cmdOK);
+    GetLocaleString(@COMMAND_OK_CAPTION), 'Enter');
+  WorkItem.Commands[COMMAND_OK].SetHandler(cmdOK);
 
   fInfo := GetEVList.DataSet.FindField('INFO');
   if fInfo <> nil then fInfo.Visible := false;

@@ -207,7 +207,8 @@ begin
   ViewTitle := GetLocaleString(@VIEW_SETTINGS_CAPTION);
 
   View.CommandBar.AddCommand(COMMAND_CLOSE,
-    GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
+    GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT);
+  WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
 
   View.BindAppSettingsData(FCommonAppSettingsData,
     FAliasAppSettingsData, FHostAppSettingsData);

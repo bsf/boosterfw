@@ -10,7 +10,7 @@ uses
   cxVGrid, cxDBVGrid, cxCustomData, cxFilter, cxData, cxDataStorage,
   cxDBData, cxGridLevel, cxClasses, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
-  UIClasses, cxPC;
+  UIClasses, cxPC, cxPCdxBarPopupMenu;
 
 type
   TfrEntityDeskView = class(TfrCustomContentView, IEntityDeskView)

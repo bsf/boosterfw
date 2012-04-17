@@ -99,11 +99,13 @@ begin
 
   View.CommandBar.
     AddCommand(COMMAND_CLOSE,
-      GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
+      GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT);
+  WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
 
   View.CommandBar.
     AddCommand(COMMAND_RELOAD,
-      GetLocaleString(@COMMAND_RELOAD_CAPTION), COMMAND_RELOAD_SHORTCUT, CmdReload);
+      GetLocaleString(@COMMAND_RELOAD_CAPTION), COMMAND_RELOAD_SHORTCUT);
+   WorkItem.Commands[COMMAND_RELOAD].SetHandler(CmdReload);
 
   if ViewInfo.OptionExists('CanAdd') or ViewInfo.OptionExists('CanEdit') then
     View.CommandBar.AddCommand(COMMAND_NEW, GetLocaleString(@COMMAND_NEW_CAPTION),
@@ -114,17 +116,22 @@ begin
       COMMAND_OPEN_SHORTCUT, '', false);
 
   if ViewInfo.OptionExists('CanDelete') or ViewInfo.OptionExists('CanEdit') then
+  begin
     View.CommandBar.AddCommand(COMMAND_DELETE, GetLocaleString(@COMMAND_DELETE_CAPTION),
-      COMMAND_DELETE_SHORTCUT, CmdDelete);
+      COMMAND_DELETE_SHORTCUT);
+    WorkItem.Commands[COMMAND_DELETE].SetHandler(CmdDelete);
+  end;
 
 
   View.CommandBar.AddCommand(COMMAND_STATE_CHANGE_NEXT,
-     GetLocaleString(@COMMAND_STATE_CHANGE_NEXT_CAPTION), '', CmdStateChange,
+     GetLocaleString(@COMMAND_STATE_CHANGE_NEXT_CAPTION), '',
       GetLocaleString(@COMMAND_STATE_CHANGE_CAPTION), true);
+  WorkItem.Commands[COMMAND_STATE_CHANGE_NEXT].SetHandler(CmdStateChange);
 
   View.CommandBar.AddCommand(COMMAND_STATE_CHANGE_PREV,
-     GetLocaleString(@COMMAND_STATE_CHANGE_PREV_CAPTION), '', CmdStateChange,
+     GetLocaleString(@COMMAND_STATE_CHANGE_PREV_CAPTION), '',
      GetLocaleString(@COMMAND_STATE_CHANGE_CAPTION));
+  WorkItem.Commands[COMMAND_STATE_CHANGE_PREV].SetHandler(CmdStateChange);
 
   GetEVParams.Load;
 

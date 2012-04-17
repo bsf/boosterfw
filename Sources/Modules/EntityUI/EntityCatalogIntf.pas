@@ -4,9 +4,6 @@ interface
 uses UIClasses, db, Classes, ShellIntf, CoreClasses, variants,
   CustomContentPresenter, CustomDialogPresenter;
 
-
-
-
 type
 
   TEntityContentPresenter = class(TCustomContentPresenter)

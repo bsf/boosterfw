@@ -83,22 +83,27 @@ begin
 
   View.CommandBar.
     AddCommand(COMMAND_CLOSE,
-      GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
+      GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT);
+  WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
 
   View.CommandBar.
     AddCommand(COMMAND_RELOAD,
-      GetLocaleString(@COMMAND_RELOAD_CAPTION), COMMAND_RELOAD_SHORTCUT, CmdReload);
+      GetLocaleString(@COMMAND_RELOAD_CAPTION), COMMAND_RELOAD_SHORTCUT);
+  WorkItem.Commands[COMMAND_RELOAD].SetHandler(CmdReload);
 
   WorkItem.Commands[COMMAND_RELOAD].Status := csDisabled; //TODO - AV при обновлении!
 
   View.CommandBar.
-    AddCommand('cmd.rotate', 'Развернуть', '', CmdRotate);
+    AddCommand('cmd.rotate', 'Развернуть');
+  WorkItem.Commands['cmd.rotate'].SetHandler(CmdRotate);
 
   View.CommandBar.
-    AddCommand('cmd.zoom', 'Маштабировать', '', CmdZoom);
+    AddCommand('cmd.zoom', 'Маштабировать');
+  WorkItem.Commands['cmd.zoom'].SetHandler(CmdZoom);
 
   View.CommandBar.
-    AddCommand('cmd.opennode', 'Открыть узел', '', CmdOpenNode);
+    AddCommand('cmd.opennode', 'Открыть узел');
+  WorkItem.Commands['cmd.opennode'].SetHandler(CmdOpenNode);
 
   View.LinkData(GetEVChart.DataSet);
 

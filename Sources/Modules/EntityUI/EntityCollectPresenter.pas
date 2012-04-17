@@ -98,38 +98,43 @@ begin
 
   View.CommandBar.
     AddCommand(COMMAND_CLOSE,
-      GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
+      GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT);
+  WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
 
   View.CommandBar.
     AddCommand(COMMAND_RELOAD,
-      GetLocaleString(@COMMAND_RELOAD_CAPTION), COMMAND_RELOAD_SHORTCUT, CmdReload);
+      GetLocaleString(@COMMAND_RELOAD_CAPTION), COMMAND_RELOAD_SHORTCUT);
+  WorkItem.Commands[COMMAND_RELOAD].SetHandler(CmdReload);
 
   if ViewInfo.OptionExists('BulkModeOnly') then
   begin
-    View.CommandBar.AddCommand(COMMAND_ADD_BULK, 'Добавить', 'Enter', CmdAddBulk);
+    View.CommandBar.AddCommand(COMMAND_ADD_BULK, 'Добавить', 'Enter');
+    WorkItem.Commands[COMMAND_ADD_BULK].SetHandler(CmdAddBulk);
     View.SetCommandAddDef(COMMAND_ADD_BULK);
   end
   else if ViewInfo.OptionExists('BulkMode') then
   begin
-    View.CommandBar.AddCommand(COMMAND_ADD_BULK, 'Добавить', 'Enter', CmdAddBulk, 'Добавить', true);
-    View.CommandBar.AddCommand(COMMAND_ADD_ITEM, 'Добавить запись', 'Ins', 'Добавить', false);
+    View.CommandBar.AddCommand(COMMAND_ADD_BULK, 'Добавить', 'Enter', 'Добавить', true);
+    WorkItem.Commands[COMMAND_ADD_BULK].SetHandler(CmdAddBulk);
+    View.CommandBar.AddCommand(COMMAND_ADD_ITEM, 'Добавить запись', 'Ins', 'Добавить');
     View.SetCommandAddDef(COMMAND_ADD_BULK);
   end
   else
   begin
-    View.CommandBar.AddCommand(COMMAND_ADD_ITEM, 'Добавить', 'Enter', '', false);
+    View.CommandBar.AddCommand(COMMAND_ADD_ITEM, 'Добавить', 'Enter');
     View.SetCommandAddDef(COMMAND_ADD_ITEM);
   end;
 
   View.SelectionList.CanMultiSelect := ViewInfo.OptionExists('BulkMode') or ViewInfo.OptionExists('BulkModeOnly');
 
-//  if ViewInfo.OptionExists('CanOpenItem')  then
-    View.CommandBar.AddCommand(COMMAND_OPEN, GetLocaleString(@COMMAND_OPEN_CAPTION),
-      COMMAND_OPEN_SHORTCUT, '', false);
 
-  //if ViewInfo.OptionExists('CanDelete') or ViewInfo.OptionExists('CanEdit') then
+  View.CommandBar.AddCommand(COMMAND_OPEN, GetLocaleString(@COMMAND_OPEN_CAPTION),
+    COMMAND_OPEN_SHORTCUT);
+
+
   View.CommandBar.AddCommand(COMMAND_DELETE, GetLocaleString(@COMMAND_DELETE_CAPTION),
-    COMMAND_DELETE_SHORTCUT, CmdDelete);
+    COMMAND_DELETE_SHORTCUT);
+  WorkItem.Commands[COMMAND_DELETE].SetHandler(CmdDelete);
 
   GetEVItems.SynchronizeOnEntityChange(GetEVItems.EntityName, ENT_VIEW_NEW_DEFAULT);
   GetEVItems.SynchronizeOnEntityChange(GetEVItems.EntityName, ENT_VIEW_ITEM_DEFAULT);

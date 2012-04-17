@@ -31,7 +31,8 @@ requires
   rtl,
   dxorgcD15,
   dxdborD15,
-  cxSchedulerD15;
+  cxSchedulerD15,
+  cxPageControldxBarPopupMenuD15;
 
 contains
   bfwEntityUIModuleInit in '..\..\Sources\Modules\EntityUI\bfwEntityUIModuleInit.pas',
@@ -60,6 +61,8 @@ contains
   EntitySelectorPresenter in '..\..\Sources\Modules\EntityUI\EntitySelectorPresenter.pas',
   EntitySelectorView in '..\..\Sources\Modules\EntityUI\EntitySelectorView.pas' {frEntitySelectorView},
   EntityTreeListView in '..\..\Sources\Modules\EntityUI\EntityTreeListView.pas' {frEntityTreeListView},
-  EntityTreeListPresenter in '..\..\Sources\Modules\EntityUI\EntityTreeListPresenter.pas';
+  EntityTreeListPresenter in '..\..\Sources\Modules\EntityUI\EntityTreeListPresenter.pas',
+  EntityDeskMenuView in '..\..\Sources\Modules\EntityUI\EntityDeskMenuView.pas' {frEntityDeskMenuView},
+  EntityDeskMenuPresenter in '..\..\Sources\Modules\EntityUI\EntityDeskMenuPresenter.pas';
 
 end.

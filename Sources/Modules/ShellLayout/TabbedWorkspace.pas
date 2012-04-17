@@ -4,7 +4,7 @@ interface
 uses classes, controls, CoreClasses, Workspace, cxPC, Contnrs, messages,
   sysutils, Graphics,  windows, forms, menus,
   cxGroupBox, cxLookAndFeels, cxGraphics, cxControls, cxLookAndFeelPainters,
-  cxEdit, cxButtons, ShellIntf, ConfigServiceIntf, ShellLayoutStr;
+  cxEdit, cxButtons, ShellIntf, ConfigServiceIntf, ShellLayoutStr, UIServiceIntf;
 
 const
   SETTING_HIDE_TABS = 'ViewStyle.Shell.HideTabs';
@@ -164,7 +164,6 @@ begin
   Screen.OnActiveControlChange := ActiveControlChangeHandler;
   FScaleM := 96;
   FScaleD := 96;
- // FPageCtrl.ScaleBy(120, 100);
 
   FToolWinMenu := TPopupMenu.Create(Self);
   FToolWinMenu.OnPopup := ToolWinMenuOnPopup;
@@ -192,7 +191,7 @@ begin
   if StrToBoolDef(App.Settings[SETTING_TABS_BOTTOM], false) then ToolWinCmdTabsBottom(nil);
   if StrToBoolDef(App.Settings[SETTING_HIDE_TABS], false) then ToolWinCmdHideTabs(nil);
 
-
+  FPageCtrl.HideTabs := App.UI.ShellLayoutKind <> slTabbed;
 end;
 
 destructor TTabbedWorkspace.Destroy;
@@ -587,12 +586,15 @@ begin
    // Visible := false;
   end;
 
-  btn := AddToolButton(TABWS_CROSS_IMAGE_RES, nil);
-  btn.OnClick := ButtonCloseOnClick;
+  if App.UI.ShellLayoutKind = slTabbed then
+  begin
+    btn := AddToolButton(TABWS_CROSS_IMAGE_RES, nil);
+    btn.OnClick := ButtonCloseOnClick;
 
-  btn := AddToolButton(TABWS_WIN_IMAGE_RES, btn);
-  btn.Kind := cxbkDropDown;
-  btn.DropDownMenu := (Owner as TTabbedWorkspace).ToolWinMenu;
+    btn := AddToolButton(TABWS_WIN_IMAGE_RES, btn);
+    btn.Kind := cxbkDropDown;
+    btn.DropDownMenu := (Owner as TTabbedWorkspace).ToolWinMenu;
+  end;
 
   FInfo.Title := FInitTitle;
 end;

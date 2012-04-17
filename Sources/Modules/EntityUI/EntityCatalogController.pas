@@ -14,7 +14,8 @@ uses classes, CoreClasses,  ShellIntf, Variants, db, Contnrs,
   EntityOrgChartPresenter, EntityOrgChartView,
   EntityPickListPresenter, EntityPickListView,
   EntitySelectorPresenter, EntitySelectorView,
-  EntityDeskPresenter, EntityDeskView;
+  EntityDeskPresenter, EntityDeskView,
+  EntityDeskMenuPresenter, EntityDeskMenuView;
 
 
 type
@@ -110,6 +111,7 @@ begin
     RegisterHandler('IEntityJournalView', TViewActivityHandler.Create(TEntityJournalPresenter, TfrEntityJournalView));
     RegisterHandler('IEntitySelectorView', TViewActivityHandler.Create(TEntitySelectorPresenter, TfrEntitySelectorView));
     RegisterHandler('IEntityDeskView', TViewActivityHandler.Create(TEntityDeskPresenter, TfrEntityDeskView));
+    RegisterHandler('IEntityDeskMenuView', TViewActivityHandler.Create(TEntityDeskMenuPresenter, TfrEntityDeskMenuView));
     RegisterHandler('IEntityOrgChartView', TViewActivityHandler.Create(TEntityOrgChartPresenter, TfrEntityOrgChartView));
   end;
 

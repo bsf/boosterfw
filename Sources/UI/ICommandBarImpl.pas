@@ -29,11 +29,8 @@ type
     procedure DoExecuteDefaultCommand(Sender: TObject);
 
   protected
-    procedure AddCommand(const AName: string; AGroup: string = ''; ADefault: boolean = false); overload;
-    procedure AddCommand(const AName, ACaption, AShortCut: string; AHandler: TNotifyEvent;
-      AGroup: string = ''; ADefault: boolean = false); overload;
-    procedure AddCommand(const AName, ACaption, AShortCut: string;
-      AGroup: string; ADefault: boolean); overload;
+    procedure AddCommand(const AName, ACaption: string; const AShortCut: string = '';
+      const AGroup: string = ''; ADefault: boolean = false);
   public
     constructor Create(AOwner: TForm; WorkItem: TWorkItem;
       ABar: TcxGroupBox; AButtonAlignment: TButtonAlignment = alLeft); reintroduce;
@@ -43,10 +40,8 @@ implementation
 
 { TICommandBarImpl }
 
-
-
-procedure TICommandBarImpl.AddCommand(const AName: string;
-  AGroup: string; ADefault: boolean);
+procedure TICommandBarImpl.AddCommand(const AName, ACaption: string; const AShortCut: string;
+  const AGroup: string; ADefault: boolean);
 var
   btn: TcxButton;
   mi: TMenuItem;
@@ -54,6 +49,12 @@ var
 begin
   commandAction := TAction.Create(FBar);
   commandAction.ActionList := FActionList;
+
+  with FWorkItem.Commands[AName] do
+  begin
+    Caption := ACaption;
+    ShortCut := AShortCut;
+  end;
 
   FWorkItem.Commands[AName].AddInvoker(commandAction);
   if AGroup <> '' then
@@ -74,27 +75,8 @@ begin
   else
     CreateButton(commandAction.Caption).Action := commandAction;
 
-end;
 
-
-procedure TICommandBarImpl.AddCommand(const AName, ACaption,
-  AShortCut: string; AHandler: TNotifyEvent; AGroup: string;
-  ADefault: boolean);
-begin
-  FWorkItem.Commands[AName].Init(ACaption, AShortCut, AHandler);
-  AddCommand(AName, AGroup, ADefault);
-end;
-
-procedure TICommandBarImpl.AddCommand(const AName, ACaption, AShortCut: string;
-  AGroup: string; ADefault: boolean);
-begin
-  with FWorkItem.Commands[AName] do
-  begin
-    Caption := ACaption;
-    ShortCut := AShortCut;
-  end;
-
-  AddCommand(AName, AGroup, ADefault);
+//  AddCommand(AName, AGroup, ADefault);
 end;
 
 constructor TICommandBarImpl.Create(AOwner: TForm; WorkItem: TWorkItem;

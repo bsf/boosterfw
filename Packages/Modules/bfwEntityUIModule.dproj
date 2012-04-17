@@ -58,6 +58,7 @@
 			<DCCReference Include="dxorgcD15.dcp"/>
 			<DCCReference Include="dxdborD15.dcp"/>
 			<DCCReference Include="cxSchedulerD15.dcp"/>
+			<DCCReference Include="cxPageControldxBarPopupMenuD15.dcp"/>
 			<DCCReference Include="..\..\Sources\Modules\EntityUI\bfwEntityUIModuleInit.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityCatalogConst.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityCatalogController.pas"/>
@@ -107,6 +108,10 @@
 				<Form>frEntityTreeListView</Form>
 			</DCCReference>
 			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityTreeListPresenter.pas"/>
+			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityDeskMenuView.pas">
+				<Form>frEntityDeskMenuView</Form>
+			</DCCReference>
+			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityDeskMenuPresenter.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

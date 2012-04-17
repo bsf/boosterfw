@@ -20,10 +20,28 @@ uses
   cxExportPivotGridLink, cxCheckComboBox, cxDBCheckComboBox, cxCheckListBox,
   cxDBCheckListBox, IBUpdateSQL, DBXDataSnap, DBXCommon, DSConnect, SqlExpr,
   DSHTTPLayer, cxColorComboBox, IdBaseComponent, IdComponent, IdTCPConnection,
-  IdTCPClient, IdHTTP, cxTL, cxTLdxBarBuiltInMenu, cxTLData, cxDBTL;
+  IdTCPClient, IdHTTP, cxTL, cxTLdxBarBuiltInMenu, cxTLData, cxDBTL,
+  ButtonGroup, dxBreadcrumbEdit, dxDBBreadcrumbEdit;
 
 type
   TForm2 = class(TForm)
+    CategoryPanelGroup1: TCategoryPanelGroup;
+    CategoryPanel1: TCategoryPanel;
+    CategoryPanel2: TCategoryPanel;
+    CategoryPanel3: TCategoryPanel;
+    ButtonGroup1: TButtonGroup;
+    dxNavBar1: TdxNavBar;
+    dxNavBar1Group1: TdxNavBarGroup;
+    dxNavBar1Group2: TdxNavBarGroup;
+    dxNavBar1Item1: TdxNavBarItem;
+    dxNavBar1Item2: TdxNavBarItem;
+    dxNavBar1Group1Control: TdxNavBarGroupControl;
+    ButtonGroup2: TButtonGroup;
+    DataSource1: TDataSource;
+    IBDatabase1: TIBDatabase;
+    IBQuery1: TIBQuery;
+    cxDBTreeList1: TcxDBTreeList;
+    IBTransaction1: TIBTransaction;
   private
     { Private declarations }
   public

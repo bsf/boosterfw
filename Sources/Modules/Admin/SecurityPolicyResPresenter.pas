@@ -166,10 +166,11 @@ begin
   ViewTitle := FPolicy.Name;
 
   View.CommandBar.AddCommand(COMMAND_CLOSE,
-    GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
+    GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT);
+  WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
 
-  View.CommandBar.AddCommand(COMMAND_PERMEFFECTIVE, 'Действующие разрешения',
-    '', CmdPermEffective);
+  View.CommandBar.AddCommand(COMMAND_PERMEFFECTIVE, 'Действующие разрешения');
+  WorkItem.Commands[COMMAND_PERMEFFECTIVE].SetHandler(CmdPermEffective);
 
   WorkItem.Commands[COMMAND_SET_PERM_UNDEFINED].SetHandler(CmdSetPermState);
   WorkItem.Commands[COMMAND_SET_PERM_ALLOW].SetHandler(CmdSetPermState);

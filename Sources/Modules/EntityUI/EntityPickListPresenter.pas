@@ -107,14 +107,16 @@ begin
   View.SetCanParentSelect(ViewInfo.OptionExists('CanParentSelect'));
 
   WorkItem.Commands[COMMAND_CANCEL].SetHandler(CmdCancel);
-  WorkItem.Commands[COMMAND_CANCEL].Caption := GetLocaleString(@COMMAND_CANCEL_CAPTION);
-  WorkItem.Commands[COMMAND_CANCEL].ShortCut := 'Esc';
-  View.CommandBar.AddCommand(COMMAND_CANCEL);
+//  WorkItem.Commands[COMMAND_CANCEL].Caption := GetLocaleString(@COMMAND_CANCEL_CAPTION);
+  //WorkItem.Commands[COMMAND_CANCEL].ShortCut := 'Esc';
+  View.CommandBar.AddCommand(COMMAND_CANCEL,
+    GetLocaleString(@COMMAND_CANCEL_CAPTION), 'Esc', '', false);
 
   WorkItem.Commands[COMMAND_OK].SetHandler(CmdOK);
-  WorkItem.Commands[COMMAND_OK].Caption := GetLocaleString(@COMMAND_OK_CAPTION);
-  WorkItem.Commands[COMMAND_OK].ShortCut := 'Enter';
-  View.CommandBar.AddCommand(COMMAND_OK);
+ // WorkItem.Commands[COMMAND_OK].Caption := GetLocaleString(@COMMAND_OK_CAPTION);
+  //WorkItem.Commands[COMMAND_OK].ShortCut := 'Enter';
+  View.CommandBar.AddCommand(COMMAND_OK,
+    GetLocaleString(@COMMAND_OK_CAPTION), 'Enter', '', false);
 
   WorkItem.Commands[COMMAND_DATA_RELOAD].SetHandler(CmdDataReload);
   WorkItem.Commands[COMMAND_FILTER_CHANGED].SetHandler(CmdFilterChanged);

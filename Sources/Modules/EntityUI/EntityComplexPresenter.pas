@@ -154,36 +154,51 @@ begin
 //----------------- CommandBar
   View.CommandBar.
     AddCommand(COMMAND_CLOSE,
-      GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
+      GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT);
+  WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
 
   if ViewInfo.OptionExists('CanHeadEdit') then
+  begin
     View.CommandBar.
-      AddCommand(COMMAND_HEAD_OPEN, 'Изменить заголовок', 'Ctrl+H', CmdHeadEdit);
+      AddCommand(COMMAND_HEAD_OPEN, 'Изменить заголовок', 'Ctrl+H');
+    WorkItem.Commands[COMMAND_HEAD_OPEN].SetHandler(CmdHeadEdit);
+  end;
 
   if ViewInfo.OptionExists('CanAdd') or ViewInfo.OptionExists('CanDetailsEdit') then
   begin
     if ViewInfo.OptionExists('UseCollectOnly') then
+    begin
       View.CommandBar.
-        AddCommand(COMMAND_DETAIL_COLLECT, 'Добавить записи', 'Ins', CmdDetailCollect)
+        AddCommand(COMMAND_DETAIL_COLLECT, 'Добавить записи', 'Ins');
+      WorkItem.Commands[COMMAND_DETAIL_COLLECT].SetHandler(CmdDetailCollect);
+    end
     else if ViewInfo.OptionExists('UseCollect') then
     begin
       View.CommandBar.
-        AddCommand(COMMAND_DETAIL_COLLECT, 'Подбор', 'Ins', CmdDetailCollect, 'Добавить', true);
+        AddCommand(COMMAND_DETAIL_COLLECT, 'Подбор', 'Ins', 'Добавить', true);
+      WorkItem.Commands[COMMAND_DETAIL_COLLECT].SetHandler(CmdDetailCollect);
       View.CommandBar.
-        AddCommand(COMMAND_DETAIL_NEW, 'Добавить запись', 'Ctrl+Ins', CmdDetailNew, 'Добавить');
+        AddCommand(COMMAND_DETAIL_NEW, 'Добавить запись', 'Ctrl+Ins', 'Добавить');
+      WorkItem.Commands[COMMAND_DETAIL_NEW].SetHandler(CmdDetailNew);
     end
     else
+    begin
       View.CommandBar.
-        AddCommand(COMMAND_DETAIL_NEW, 'Добавить запись', 'Ins', CmdDetailNew);
+        AddCommand(COMMAND_DETAIL_NEW, 'Добавить запись', 'Ins');
+      WorkItem.Commands[COMMAND_DETAIL_NEW].SetHandler(CmdDetailNew);
+    end;
   end;
 
   if ViewInfo.OptionExists('CanOpen') or ViewInfo.OptionExists('CanDetailsEdit') then
     View.CommandBar.
-      AddCommand(COMMAND_DETAIL_OPEN, 'Открыть запись', 'Ctrl+Enter', '', false);
+      AddCommand(COMMAND_DETAIL_OPEN, 'Открыть запись', 'Ctrl+Enter');
 
   if ViewInfo.OptionExists('CanDelete') or ViewInfo.OptionExists('CanDetailsEdit') then
+  begin
     View.CommandBar.
-      AddCommand(COMMAND_DETAIL_DELETE, 'Удалить запись', 'Ctrl+Del', CmdDetailDel);
+      AddCommand(COMMAND_DETAIL_DELETE, 'Удалить запись', 'Ctrl+Del');
+    WorkItem.Commands[COMMAND_DETAIL_DELETE].SetHandler(CmdDetailDel);
+  end;
 
 //-----------------------------------------------------------------
 

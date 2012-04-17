@@ -187,13 +187,18 @@ begin
     ViewTitle := VarToStr(GetEVList.DataSet.FindField('VIEW_TITLE').Value);}
 
   View.CommandBar.
-    AddCommand(COMMAND_CLOSE, GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
+    AddCommand(COMMAND_CLOSE, GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT);
+  WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
 
   View.CommandBar.
-    AddCommand(COMMAND_RELOAD, GetLocaleString(@COMMAND_RELOAD_CAPTION), COMMAND_RELOAD_SHORTCUT, CmdReload);
+    AddCommand(COMMAND_RELOAD, GetLocaleString(@COMMAND_RELOAD_CAPTION), COMMAND_RELOAD_SHORTCUT);
+  WorkItem.Commands[COMMAND_RELOAD].SetHandler(CmdReload);
 
   if UseSelector then
-    View.CommandBar.AddCommand(COMMAND_SELECTOR, GetLocaleString(@COMMAND_SELECTOR_CAPTION), '', CmdSelector);
+  begin
+    View.CommandBar.AddCommand(COMMAND_SELECTOR, GetLocaleString(@COMMAND_SELECTOR_CAPTION));
+    Workitem.Commands[COMMAND_SELECTOR].SetHandler(CmdSelector);
+  end;
 
   FCanEdit := ViewInfo.OptionExists('CanEdit');
   FCanAdd := ViewInfo.OptionExists('CanAdd');
@@ -201,13 +206,16 @@ begin
   FCanDelete := ViewInfo.OptionExists('CanDelete');
 
   if FCanAdd or FCanEdit then
-    View.CommandBar.AddCommand(COMMAND_NEW, GetLocaleString(@COMMAND_NEW_CAPTION), COMMAND_NEW_SHORTCUT, '', false);
+    View.CommandBar.AddCommand(COMMAND_NEW, GetLocaleString(@COMMAND_NEW_CAPTION), COMMAND_NEW_SHORTCUT);
 
   if FCanOpen or FCanEdit then
-    View.CommandBar.AddCommand(COMMAND_OPEN, GetLocaleString(@COMMAND_OPEN_CAPTION), COMMAND_OPEN_SHORTCUT, '', false);
+    View.CommandBar.AddCommand(COMMAND_OPEN, GetLocaleString(@COMMAND_OPEN_CAPTION), COMMAND_OPEN_SHORTCUT);
 
   if FCanDelete or FCanEdit then
-    View.CommandBar.AddCommand(COMMAND_DELETE, GetLocaleString(@COMMAND_DELETE_CAPTION), COMMAND_DELETE_SHORTCUT, CmdDelete);
+  begin
+    View.CommandBar.AddCommand(COMMAND_DELETE, GetLocaleString(@COMMAND_DELETE_CAPTION), COMMAND_DELETE_SHORTCUT);
+    Workitem.Commands[COMMAND_DELETE].SetHandler(CmdDelete);
+  end;
 
   GetEVList.SynchronizeOnEntityChange(GetEVList.EntityName, ENT_VIEW_NEW_DEFAULT);
   GetEVList.SynchronizeOnEntityChange(GetEVList.EntityName, ENT_VIEW_ITEM_DEFAULT);

@@ -68,8 +68,11 @@ begin
   ViewTitle := GetLocaleString(@VIEW_NOTIFYSENDER_TITLE);
   FreeOnViewClose := true;
 
-  View.CommandBar.AddCommand(COMMAND_CANCEL, 'Отмена', 'Esc', CmdCancel);
-  View.CommandBar.AddCommand(COMMAND_SEND, 'Отослать', 'Enter', CmdSend);
+  View.CommandBar.AddCommand(COMMAND_CANCEL, 'Отмена', 'Esc', '', false);
+  WorkItem.Commands[COMMAND_CANCEL].SetHandler(CmdCancel);
+
+  View.CommandBar.AddCommand(COMMAND_SEND, 'Отослать', 'Enter', '', false);
+  WorkItem.Commands[COMMAND_SEND].SetHandler(CmdSend);
 
   dsUsers := App.Entities[ENT_USER].GetView(ENT_USER_VIEW_LIST, WorkItem).Load;
   while not dsUsers.Eof do

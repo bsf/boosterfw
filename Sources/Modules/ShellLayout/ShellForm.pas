@@ -34,6 +34,8 @@ const
   COMMAND_RELOAD_CONFIGURATION = '{E94B5DA4-980A-428B-98A4-9DEC73E63980}';
   COMMAND_SHOWVIEWINFO = '{5BB48548-EF9C-4778-B1B5-A41D5FA89285}';
 
+  START_ACTIVITY_SETTING = 'StartActivity';
+
 type
   TfrMain = class(TCustomShellForm)
     BarStatus: TdxStatusBar;
@@ -232,6 +234,17 @@ begin
 
   FUICatalog := TUICatalog.Create(Self, FWorkItem);
 
+  if (FWorkItem.Services[IUIService] as IUIService).ShellLayoutKind in [slDesk, slFullDesk] then
+  begin
+    NavBar.Visible := false;
+    SplitterLeft.Visible := false;
+    BarStatus.Visible := false;
+  end;
+
+  if (FWorkItem.Services[IUIService] as IUIService).ShellLayoutKind = slFullDesk then
+  begin
+    Self.BorderStyle := bsNone;
+  end;
 end;
 
 procedure TfrMain.StatusUpdateHandler(EventData: Variant);
@@ -261,6 +274,8 @@ begin
 end;
 
 procedure TfrMain.AppStartedHandler(EventData: Variant);
+var
+  startActivity: string;
 begin
   FWorkItem.EventTopics[ET_LOAD_CONFIGURATION].Fire;
 
@@ -278,6 +293,9 @@ begin
   FWorkItem.EventTopics[ET_WAITBOX_UPDATE].AddSubscription(Self, WaitProgressUpdateHandler);
   FWorkItem.EventTopics[ET_WAITBOX_STOP].AddSubscription(Self, WaitProgressStopHandler);
 
+ startActivity := App.Settings[START_ACTIVITY_SETTING];
+  if startActivity <> '' then
+    FWorkItem.Activities[startActivity].Execute(FWorkItem);
 end;
 
 procedure TfrMain.AppStopedHandler(EventData: Variant);

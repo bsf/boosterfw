@@ -2,7 +2,6 @@ inherited frEntityDeskView: TfrEntityDeskView
   Left = 613
   Top = 171
   Caption = 'frEntityDeskView'
-  ExplicitWidth = 320
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
@@ -28,7 +27,6 @@ inherited frEntityDeskView: TfrEntityDeskView
       TabOrder = 1
       OnEditValueChanged = grParamsEditValueChanged
       DataController.DataSource = ParamsDataSource
-      ExplicitWidth = 769
       Version = 1
     end
     object cxSplitter1: TcxSplitter
@@ -39,7 +37,6 @@ inherited frEntityDeskView: TfrEntityDeskView
       HotZoneClassName = 'TcxXPTaskBarStyle'
       AlignSplitter = salTop
       Control = grParams
-      ExplicitWidth = 8
     end
     object tcStates: TcxTabControl
       Left = 2
@@ -47,25 +44,22 @@ inherited frEntityDeskView: TfrEntityDeskView
       Width = 761
       Height = 310
       Align = alClient
+      TabOrder = 3
+      Properties.Style = 8
       LookAndFeel.Kind = lfOffice11
       LookAndFeel.NativeStyle = False
-      Style = 8
-      TabOrder = 3
-      ExplicitWidth = 769
-      ExplicitHeight = 318
       ClientRectBottom = 310
       ClientRectRight = 761
       ClientRectTop = 0
       object grList: TcxGrid
         Left = 0
         Top = 0
-        Width = 769
-        Height = 318
+        Width = 761
+        Height = 310
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
         object grListView: TcxGridDBTableView
-          NavigatorButtons.ConfirmDelete = False
           FilterBox.Position = fpTop
           OnCellDblClick = grListViewCellDblClick
           DataController.DataSource = ListDataSource

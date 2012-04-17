@@ -5,9 +5,6 @@ uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
   SysUtils, Variants, ShellIntf, CustomContentPresenter, db,
   EntityCatalogIntf, EntityCatalogConst, UIStr;
 
-const
-  ENT_VIEW_NEW = 'New';
-
 type
   IEntityNewView = interface(IContentView)
   ['{AE156F18-E05A-49CC-85C2-5A8258111B5E}']
@@ -83,10 +80,12 @@ begin
     ViewTitle := VarToStr(fieldAux.Value);
 
   View.CommandBar.AddCommand(COMMAND_SAVE,
-    GetLocaleString(@COMMAND_SAVE_CAPTION), COMMAND_SAVE_SHORTCUT, CmdSave);
+    GetLocaleString(@COMMAND_SAVE_CAPTION), COMMAND_SAVE_SHORTCUT);
+  WorkItem.Commands[COMMAND_SAVE].SetHandler(CmdSave);
 
   View.CommandBar.AddCommand(COMMAND_CANCEL,
-    GetLocaleString(@COMMAND_CANCEL_CAPTION), COMMAND_CANCEL_SHORTCUT, CmdCancel);
+    GetLocaleString(@COMMAND_CANCEL_CAPTION), COMMAND_CANCEL_SHORTCUT);
+  WorkItem.Commands[COMMAND_CANCEL].SetHandler(CmdCancel);
 
   View.SetData(GetEVItem.DataSet);
 

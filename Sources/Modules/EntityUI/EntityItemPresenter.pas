@@ -18,7 +18,6 @@ type
     procedure CmdCancel(Sender: TObject);
     procedure CmdSave(Sender: TObject);
     function View: IEntityItemView;
-    procedure ReloadCallerWorkItem;
   protected
     function OnGetWorkItemState(const AName: string; var Done: boolean): Variant; override;
     function GetEVItem: IEntityView; virtual;
@@ -39,26 +38,22 @@ procedure TEntityItemPresenter.CmdSave(Sender: TObject);
 var
   nextActionID: string;
   nextAction: IActivity;
-  callerID: string;
   callerWI: TWorkItem;
 begin
 
   GetEVItem.Save;
 
+  callerWI := WorkItem.Root.WorkItems.Find(CallerURI);
+  if callerWI = nil then
+    callerWI := WorkItem.Parent;
+
   if ViewInfo.OptionExists('ReloadCaller') then
-    ReloadCallerWorkItem;
+    callerWI.Commands[COMMAND_RELOAD].Execute;
 
   nextAction := nil;
   nextActionID := WorkItem.State['NEXT_ACTION'];
   if nextActionID <> '' then
     nextAction := WorkItem.Activities[nextActionID];
-
-  callerWI := nil;
-  callerID := WorkItem.State['CALLER_ID'];
-  if callerID <> '' then
-    callerWI := FindWorkItem(callerID, WorkItem.Root);
-  if not Assigned(callerWI) then
-    callerWI := WorkItem.Parent;
 
   if Assigned(nextAction) then
     nextAction.Params.Assign(WorkItem);
@@ -75,7 +70,6 @@ var
 begin
   ViewTitle := ViewInfo.Title;
 
-
   fieldAux := GetEVItem.DataSet.FindField('UI_TITLE');
   if not Assigned(fieldAux) then
     fieldAux := GetEVItem.DataSet.FindField('VIEW_TITLE');
@@ -88,14 +82,19 @@ begin
   if not GetEVItem.Info.ReadOnly then
   begin
     View.CommandBar.AddCommand(COMMAND_SAVE,
-      GetLocaleString(@COMMAND_SAVE_CAPTION), COMMAND_SAVE_SHORTCUT, CmdSave);
+      GetLocaleString(@COMMAND_SAVE_CAPTION), COMMAND_SAVE_SHORTCUT);
+    WorkItem.Commands[COMMAND_SAVE].SetHandler(CmdSave);
 
     View.CommandBar.AddCommand(COMMAND_CANCEL,
-      GetLocaleString(@COMMAND_CANCEL_CAPTION), COMMAND_CANCEL_SHORTCUT, CmdCancel);
+      GetLocaleString(@COMMAND_CANCEL_CAPTION), COMMAND_CANCEL_SHORTCUT);
+    WorkItem.Commands[COMMAND_CANCEL].SetHandler(CmdCancel);
   end
   else
+  begin
     View.CommandBar.AddCommand(COMMAND_CLOSE,
-      GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
+      GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT);
+    WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
+  end;
 
   View.SetItemDataSet(GetEVItem.DataSet);
 
@@ -151,15 +150,6 @@ end;
 function TEntityItemPresenter.View: IEntityItemView;
 begin
   Result := GetView as IEntityItemView;
-end;
-
-procedure TEntityItemPresenter.ReloadCallerWorkItem;
-var
-  CallerWI: TWorkItem;
-begin
-  CallerWI := WorkItem.Root.WorkItems.Find(CallerURI);
-  if CallerWI <> nil then
-    CallerWI.Commands[COMMAND_RELOAD].Execute;
 end;
 
 end.

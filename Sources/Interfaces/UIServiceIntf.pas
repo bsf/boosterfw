@@ -33,6 +33,7 @@ type
     procedure StopWait;
   end;
 
+  TShellLayoutKind = (slTabbed, slDesk, slFullDesk);
 
   IUIService = interface
   ['{20005BF6-C242-4C36-8967-EBB976354DDE}']
@@ -55,6 +56,8 @@ type
     procedure SetStyle(const AName: string; AValue: TObject);
     function GetStyle(const AName: string): TObject;
     property Styles[const AName: string]: TObject read GetStyle write SetStyle;
+    //
+    function ShellLayoutKind: TShellLayoutKind;
   end;
 
 implementation

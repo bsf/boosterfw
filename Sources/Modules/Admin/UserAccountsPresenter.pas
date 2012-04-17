@@ -146,7 +146,8 @@ begin
   FAccounts := App.Security.Accounts;
 
   View.CommandBar.AddCommand(COMMAND_CLOSE,
-    GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT, CmdClose);
+    GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT);
+  WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
 
   WorkItem.Commands[COMMAND_USERROLE_ADD].SetHandler(CmdUserRolesChange);
   WorkItem.Commands[COMMAND_USERROLE_REMOVE].SetHandler(CmdUserRolesChange);
