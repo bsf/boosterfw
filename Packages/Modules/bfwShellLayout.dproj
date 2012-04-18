@@ -93,7 +93,6 @@
 			<DCCReference Include="..\..\Sources\Modules\ShellLayout\SplashForm.pas">
 				<Form>frShellSplash</Form>
 			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\ShellLayout\DeckWorkspace.pas"/>
 			<RcCompile Include="..\..\Sources\Modules\ShellLayout\Shell.rc">
 				<Form>Shell.res</Form>
 			</RcCompile>

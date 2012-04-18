@@ -116,7 +116,6 @@ begin
   if WorkItem.State['NEXT_ACTION'] <> '' then
     WorkItem.Commands[COMMAND_SAVE].Caption := GetLocaleString(@COMMAND_NEXT_CAPTION); //'Далее >>';
 
-
 end;
 
 function TEntityItemPresenter.GetEVItem: IEntityView;

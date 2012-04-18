@@ -127,12 +127,11 @@ procedure TEntityCatalogController.TEntityItemDefaultHandler.Execute(
   Sender: TWorkItem; Activity: IActivity);
 
 const
-  URI_FIELD = 'URI';
-//  ITEM_URI_VIEW = 'ItemURI';
-//  ViewUriDef = 'views.%s.Item';
+ // URI_FIELD = 'URI';
 
   OPTION_DEFAULT_URI = 'DefaultURI';
   OPTION_EVIEW_URI = 'EViewURI';
+  OPTION_EVIEW_URI_FIELD = 'EViewURIField';
 
 var
   viewURI: string;
@@ -142,11 +141,13 @@ var
   targetActivity: IActivity;
   evUriName: string;
   ViewUriDef: string;
+  evUriFieldName: string;
 
 begin
 
   ViewUriDef := Activity.OptionValue(OPTION_DEFAULT_URI);
   evUriName := Activity.OptionValue(OPTION_EVIEW_URI);
+  evUriFieldName :=  Activity.OptionValue(OPTION_EVIEW_URI_FIELD);
 
   entityName := Activity.OptionValue(TViewActivityOptions.EntityName);
   if entityName = '-' then
@@ -170,7 +171,7 @@ begin
     ParamsBinding(Activity, evItemURI.Params);
 
     dsItemURI := App.Entities[entityName].GetView(evUriName, Sender).Load(true, '-');
-    viewURI := VarToStr(dsItemURI[URI_FIELD]);
+    viewURI := VarToStr(dsItemURI[evUriFieldName]);
   end
   else
     viewURI := format(ViewUriDef, [entityName]);
@@ -241,33 +242,7 @@ var
   targetActivity: IActivity;
   actionURI: IActivity;
   ViewUriDef: string;
- {
-var
-  actionURI: IActivity;
-  actionName: string;
-  entityName: string;
-begin
-  entityName := Activity.Params[TEntityNewActionParams.EntityName];
 
-  if App.Entities.EntityViewExists(entityName, 'NewURI') then
-  begin
-    actionURI := Sender.Activities[format(FMT_VIEW_NEW_URI, [entityName])];
-    actionURI.Execute(Sender);
-    if actionURI.Outs[TViewActivityOuts.ModalResult] = mrOk then
-      actionName := actionURI.Outs['URI']
-    else
-      actionName := '';
-  end
-  else
-    actionName := format(FMT_VIEW_NEW, [entityName]);
-
-  if actionName <> '' then
-    with Sender.Activities[actionName] do
-    begin
-      Params.Assign(Sender);
-      Execute(Sender);
-    end;
-}
 begin
 
   ViewUriDef := Activity.OptionValue(OPTION_DEFAULT_URI);

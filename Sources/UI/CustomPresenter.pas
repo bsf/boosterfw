@@ -198,7 +198,7 @@ begin
   end;
 
   WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
-  WorkItem.Commands[COMMAND_CLOSE].Caption := GetLocaleString(@COMMAND_CLOSE_CAPTION);
+ // WorkItem.Commands[COMMAND_CLOSE].Caption := GetLocaleString(@COMMAND_CLOSE_CAPTION);
   WorkItem.Commands[COMMAND_CLOSE].ShortCut := COMMAND_CLOSE_SHORTCUT;
 
   GetView.SetShowHandler(ViewShowHandler);

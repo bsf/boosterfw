@@ -59,7 +59,6 @@ type
     FVetoObject: Exception;
     FDataValues: array of variant;
     FDataNames: TStringList;
-    procedure Init(const ACaption, AShortCut: string; AHandler: TNotifyEvent);
     function GetStatus: TCommandStatus;
     procedure SetStatus(AStatus: TCommandStatus);
     function GetCaption: string;
@@ -288,14 +287,6 @@ begin
     for I := 0 to FInvokers.Count - 1 do
       TCommandInvoker(FInvokers[I]).SetInvokerShortCuts(FShortCuts);
   end;
-end;
-
-procedure TCommand.Init(const ACaption, AShortCut: string;
-  AHandler: TNotifyEvent);
-begin
-  SetCaption(ACaption);
-  SetShortCut(AShortCut);
-  SetHandler(AHandler);
 end;
 
 { TCommands }

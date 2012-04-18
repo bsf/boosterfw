@@ -648,7 +648,7 @@ begin
     WordWrap := false;
     WantReturns := false;
     ScrollBars := ssVertical;
-    VisibleLineCount := 4;
+    VisibleLineCount := 0;
   end;
 end;
 

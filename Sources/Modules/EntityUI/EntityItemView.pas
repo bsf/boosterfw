@@ -13,7 +13,6 @@ type
   TfrEntityItemView = class(TfrCustomContentView, IEntityItemView)
     ItemDataSource: TDataSource;
     grMain: TcxDBVerticalGrid;
-  private
   protected
     procedure SetItemDataSet(ADataSet: TDataSet);
   public

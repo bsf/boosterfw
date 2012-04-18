@@ -240,7 +240,6 @@ type
     procedure RegisterCondition(ACondition: TCommandConditionMethod);
     procedure RemoveCondition(ACondition: TCommandConditionMethod);
 
-    procedure Init(const ACaption, AShortCut: string; AHandler: TNotifyEvent);
     property Caption: string read GetCaption write SetCaption;
     property ShortCut: string read GetShortCut write SetShortCut;
     property Status: TCommandStatus read GetStatus write SetStatus;
