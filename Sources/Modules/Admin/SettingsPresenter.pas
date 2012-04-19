@@ -15,7 +15,6 @@ type
   ISettingsView = interface(IContentView)
   ['{1A6A98E7-8662-4D57-AE0A-6F8899424057}']
     procedure BindAppSettingsData(ACommonData, AAliasData, AHostData: TDataSet);
-    procedure BindDBSettings(AData: TDataSet);
   end;
 
   TSettingsPresenter = class(TCustomContentPresenter)
@@ -23,7 +22,6 @@ type
     FCommonAppSettingsData: TdxMemData;
     FAliasAppSettingsData: TdxMemData;
     FHostAppSettingsData: TdxMemData;
-    FDBSettingsData: TDataSet;
     function View: ISettingsView;
     procedure InitAppSettingsData;
     procedure AppSettingsChangedHandler(AField: TField );
@@ -180,7 +178,6 @@ end;
 procedure TSettingsPresenter.OnInit(Sender: IActivity);
 begin
   InitAppSettingsData;
-  FDBSettingsData := App.Entities.Settings.GetCommonSettings(WorkItem);
 end;
 
 procedure TSettingsPresenter.OnViewClose;
@@ -199,7 +196,6 @@ begin
   PostEditData(FCommonAppSettingsData);
   PostEditData(FAliasAppSettingsData);
   PostEditData(FHostAppSettingsData);
-  PostEditData(FDBSettingsData);
 end;
 
 procedure TSettingsPresenter.OnViewReady;
@@ -213,7 +209,6 @@ begin
   View.BindAppSettingsData(FCommonAppSettingsData,
     FAliasAppSettingsData, FHostAppSettingsData);
 
-  View.BindDBSettings(FDBSettingsData);    
 end;
 
 function TSettingsPresenter.View: ISettingsView;

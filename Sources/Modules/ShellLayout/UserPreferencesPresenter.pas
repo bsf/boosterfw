@@ -14,14 +14,12 @@ type
   IUserPreferencesView = interface(IContentView)
   ['{DC531533-08E8-4F57-9295-E17D3A5B8997}']
     procedure BindAppPreferences(AData: TDataSet);
-    procedure BindDBPreferences(AData: TDataSet);
     function GetSelectedAppSetting: string;
   end;
 
   TUserPreferencesPresenter = class(TCustomContentPresenter)
   private
     FAppPreferencesData: TdxMemData;
-    FDBPreferencesData: TDataSet;
     procedure CmdResetValue(Sender: TObject);
     function View: IUserPreferencesView;
     procedure InitAppPreferencesData;
@@ -135,7 +133,6 @@ procedure TUserPreferencesPresenter.OnInit(Activity: IActivity);
 begin
   FreeOnViewClose := true;
   InitAppPreferencesData;
-  FDBPreferencesData := App.Entities.Settings.GetUserPreferences(WorkItem);
 end;
 
 procedure TUserPreferencesPresenter.OnViewClose;
@@ -147,15 +144,6 @@ begin
       FAppPreferencesData.Cancel;
       raise;
     end;
-
-  if FDBPreferencesData.State in [dsEdit] then
-    try
-      FDBPreferencesData.Post;
-    except
-      FDBPreferencesData.Cancel;
-      raise;
-    end;
-
 end;
 
 procedure TUserPreferencesPresenter.OnViewReady;
@@ -163,15 +151,14 @@ begin
   ViewTitle := GetLocaleString(@VIEW_USER_PREFERENCES_TITLE);
 
   View.CommandBar.AddCommand(COMMAND_CLOSE,
-    GetLocaleString(@COMMAND_CLOSE_CAPTION),  COMMAND_CLOSE_SHORTCUT, '', false);
+    GetLocaleString(@COMMAND_CLOSE_CAPTION),  COMMAND_CLOSE_SHORTCUT);
   WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
 
   View.CommandBar.AddCommand(COMMAND_RESET_VALUE,
-    GetLocaleString(@COMMAND_RESET_CAPTION), '', '', false);
+    GetLocaleString(@COMMAND_RESET_CAPTION));
   WorkItem.Commands[COMMAND_RESET_VALUE].SetHandler(CmdResetValue);
 
   View.BindAppPreferences(FAppPreferencesData);
-  View.BindDBPreferences(FDBPreferencesData);
 end;
 
 function TUserPreferencesPresenter.View: IUserPreferencesView;

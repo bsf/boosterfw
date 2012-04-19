@@ -7,13 +7,13 @@ uses
   Dialogs, CustomContentView, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxContainer, cxEdit, ActnList, cxGroupBox,
   SettingsPresenter, cxPC, db, cxStyles, cxInplaceContainer, cxVGrid,
-  cxDBVGrid, StdCtrls, cxRadioGroup;
+  cxDBVGrid, StdCtrls, cxRadioGroup, cxPCdxBarPopupMenu;
 
 type
   TfrSettingsView = class(TfrCustomContentView, ISettingsView)
-    pcMain: TcxPageControl;
-    cxTabSheet1: TcxTabSheet;
-    cxTabSheet2: TcxTabSheet;
+    dsCommonAppSettings: TDataSource;
+    dsAliasAppSettings: TDataSource;
+    dsHostAppSettings: TDataSource;
     cxGroupBox1: TcxGroupBox;
     chCommonAppSettings: TcxRadioButton;
     chAliasAppSettings: TcxRadioButton;
@@ -22,14 +22,9 @@ type
     tsCommonAppSettings: TcxTabSheet;
     grCommonAppSettings: TcxDBVerticalGrid;
     tsAliasAppSettings: TcxTabSheet;
-    tsHostAppSettings: TcxTabSheet;
-    dsCommonAppSettings: TDataSource;
-    dsAliasAppSettings: TDataSource;
-    dsHostAppSettings: TDataSource;
-    dsDBSettings: TDataSource;
     cxDBVerticalGrid1: TcxDBVerticalGrid;
+    tsHostAppSettings: TcxTabSheet;
     cxDBVerticalGrid2: TcxDBVerticalGrid;
-    cxDBVerticalGrid3: TcxDBVerticalGrid;
     procedure chAppSettingsKindClick(Sender: TObject);
     procedure grCommonAppSettingsDrawValue(Sender: TObject;
       ACanvas: TcxCanvas; APainter: TcxvgPainter;
@@ -37,7 +32,6 @@ type
   private
   protected
     procedure BindAppSettingsData(ACommonData, AAliasData, AHostData: TDataSet);
-    procedure BindDBSettings(AData: TDataSet);
     procedure OnInitialize; override;
   end;
 
@@ -58,11 +52,6 @@ begin
   LinkDataSet(dsHostAppSettings, AHostData);
 end;
 
-procedure TfrSettingsView.BindDBSettings(AData: TDataSet);
-begin
-  LinkDataSet(dsDBSettings, AData);
-end;
-
 procedure TfrSettingsView.chAppSettingsKindClick(Sender: TObject);
 begin
   pcAppSettings.ActivePageIndex := TcxRadioButton(Sender).Tag;
@@ -70,7 +59,6 @@ end;
 
 procedure TfrSettingsView.OnInitialize;
 begin
-  pcMain.ActivePageIndex := 0;
   pcAppSettings.HideTabs := true;
   pcAppSettings.ActivePageIndex := 0;
   chCommonAppSettings.Checked := true;

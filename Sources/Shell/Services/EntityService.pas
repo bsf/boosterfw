@@ -261,24 +261,6 @@ type
   end;
 
 
-  TEntityStorageSettings = class(TComponent, IEntityStorageSettings)
-  private
-    FWorkItem: TWorkItem;
-    function GetUserID: string;
-    procedure SettingsDataChangedHandler(AField: TField);
-    procedure LoadSettingValue(AField: TField; APreferences: boolean);
-    procedure SaveSettingValue(AField: TField; APreferences: boolean);
-    procedure CheckSettingValue(AField: TField; APreferences: boolean);
-    function GetSettingsData(AWorkItem: TWorkItem; APreferences: boolean): TDataSet;
-  protected
-    function GetUserPreferences(AWorkItem: TWorkItem): TDataSet;
-    function GetCommonSettings(AWorkitem: TWorkItem): TDataSet;
-
-    function GetValue(const AName: string): Variant;
-  public
-    constructor Create(AOwner: TComponent; AWorkItem: TWorkItem); reintroduce;
-  end;
-
 
   TEntityService = class(TComponent, IEntityService)
   private
@@ -286,7 +268,6 @@ type
     FDAL: TCustomDAL;
     FConnection: TConnectionBroker;
     FEntities: TComponentList;
-    FSettings: TEntityStorageSettings;
     FSchemeInfoDictionary: TDictionary<string, TEntitySchemeInfo>;
     FEntityList: TStringList;
     FMetadataDS: TEntityDataSet;
@@ -298,8 +279,6 @@ type
     function EntityViewExists(const AEntityName, AEntityViewName: string): boolean;
     function GetEntity(const AEntityName: string): IEntity;
     function GetSchemeInfo(const ASchemeName: string): IEntitySchemeInfo;
-
-    function GetSettings: IEntityStorageSettings;
 
     procedure Connect(const AConnectionEngine, AConnectionParams: string);
     procedure Disconnect;
@@ -480,7 +459,6 @@ begin
   inherited Create(AOwner);
   FWorkItem := AWorkItem;
   FEntities := TComponentList.Create(True);
-  FSettings := TEntityStorageSettings.Create(Self, FWorkItem);
   FSchemeInfoDictionary := TDictionary<string, TEntitySchemeInfo>.Create;
   FConnection := TConnectionBroker.Create(Self);
 
@@ -597,11 +575,6 @@ begin
   if doLoadInfo then item.LoadInfo;
 
   Result := item as IEntitySchemeInfo;
-end;
-
-function TEntityService.GetSettings: IEntityStorageSettings;
-begin
-  Result := FSettings as IEntityStorageSettings;
 end;
 
 { TEntity }
@@ -1530,251 +1503,6 @@ begin
 
 end;
 
-{ TEntityStorageSettings }
-
-procedure TEntityStorageSettings.CheckSettingValue(AField: TField;
-  APreferences: boolean);
-var
-  dsCheck: TDataSet;
-  userID: string;
-  checkVal: integer;
-
-begin
-  if APreferences then
-    userID := GetUserID
-  else
-    userID := '';
-
-  dsCheck := (FWorkItem.Services[IEntityService] as IEntityService).
-    Entity[ENT_SETTING].GetView(ENT_SETTING_VIEW_CHECK, FWorkItem).
-      Load([AField.Origin, userID]);
-
-  if APreferences then
-    checkVal := dsCheck['USER_EXISTS']
-  else
-    checkVal := dsCheck['COMMON_EXISTS'];
-
-  AField.Tag := checkVal;
-end;
-
-constructor TEntityStorageSettings.Create(AOwner: TComponent;
-  AWorkItem: TWorkItem);
-begin
-  inherited Create(AOwner);
-  FWorkItem := AWorkItem;
-end;
-
-function TEntityStorageSettings.GetCommonSettings(
-  AWorkitem: TWorkItem): TDataSet;
-begin
-  Result := GetSettingsData(AWorkItem, false);
-end;
-
-function TEntityStorageSettings.GetSettingsData(AWorkItem: TWorkItem;
-  APreferences: boolean): TDataSet;
-
-const
-  const_CommonSettings = '{11E1AF84-2F78-4D35-8B4C-2B5DA3C889F9}';
-  const_PreferenceSettings = '{39AF0081-983A-43D2-BA1E-7C560CCB0F71}';
-
-
-type
-  TDBSettingType = (stNone, stInteger, stString, stNumber, stDate);
-
-  function NormalizeComponentName(const AName: string): string;
-  const
-    Alpha = ['A'..'Z', 'a'..'z', '_'];
-    AlphaNumeric = Alpha + ['0'..'9'];
-  var
-    I: Integer;
-  begin
-    Result := AName;
-    for I := 1 to Length(Result) do
-      if not CharInSet(Result[I], AlphaNumeric) then
-        Result[I] := '_';
-  end;
-
-var
-  svc: IEntityService;
-  evMeta: IEntityView;
-  dsMeta: TDataSet;
-  instanceID: string;
-  field: TField;
-  I: integer;
-  editorOptions: string;
-  editorOptionsList: TStringList;
-begin
-  if APreferences then
-    instanceID := const_CommonSettings
-  else
-    instanceID := const_PreferenceSettings;
-
-
-  Result := AWorkItem.Items[instanceID, TClientDataSet] as TClientDataSet;
-  if Assigned(Result) then Exit;
-
-  Result := TClientDataSet.Create(AWorkItem);
-  if APreferences then Result.Tag := 1;
-
-  svc := FWorkItem.Services[IEntityService] as IEntityService;
-  evMeta := svc.Entity[ENT_SETTING].GetView(ENT_SETTING_VIEW_META, FWorkItem);
-  dsMeta := evMeta.Load(true, '-');
-  dsMeta.First;
-  while not dsMeta.Eof do
-  begin
-    if APreferences and (dsMeta['IS_PREFERENCE'] = 0) then
-    begin
-      dsMeta.Next;
-      Continue;
-    end;
-
-    case TDBSettingType(dsMeta['TYP']) of
-      stInteger: field := TIntegerField.Create(Result);
-      stString: field := TStringField.Create(Result);
-      stNumber: field := TFloatField.Create(Result);
-      stDate: field := TDateTimeField.Create(Result);
-    else
-      field := TStringField.Create(Self);
-    end;
-
-    if field is TStringField then
-    begin
-      TStringField(field).DisplayWidth := 255;
-      TStringField(field).Size := 255;
-    end;
-
-    field.DisplayLabel := dsMeta['TITLE'];
-    field.Origin := dsMeta['NAME'];
-    field.FieldName := NormalizeComponentName(dsMeta['NAME']);
-    field.DataSet := Result;
-    field.Alignment := taLeftJustify;
-
-    if VarToStr(dsMeta['EDITOR']) <> '' then
-    begin
-      SetFieldAttribute(field, FIELD_ATTR_EDITOR, VarToStr(dsMeta['EDITOR']));
-
-      editorOptions := VarToStr(dsMeta['EDITOR_OPTIONS']);
-      if editorOptions <> '' then
-      begin
-        editorOptionsList := TStringList.Create;
-        try
-          ExtractStrings([';'], [], PChar(editorOptions), editorOptionsList);
-          editorOptions := '';
-          for I := 0 to editorOptionsList.Count - 1 do
-            editorOptions := editorOptions + FIELD_ATTR_EDITOR + '.' + editorOptionsList[I] + ';';
-        finally
-          editorOptionsList.Free;
-        end;
-        SetFieldAttributeText(field, editorOptions);
-      end;
-    end;
-
-    SetFieldAttribute(field, FIELD_ATTR_BAND, VarToStr(dsMeta['BAND']));
-    dsMeta.Next;
-  end;
-
-
-  if Result.FieldCount > 0 then
-  begin
-    (Result as TClientDataSet).CreateDataSet;
-    Result.Insert;
-    Result.Post;
-    Result.Edit;
-    for I := 0 to Result.FieldCount - 1 do
-    begin
-      LoadSettingValue(Result.Fields[I], APreferences);
-      CheckSettingValue(Result.Fields[I], APreferences);
-      Result.Fields[I].OnChange := SettingsDataChangedHandler;
-    end;
-    Result.Post;
-  end;
-
-end;
-
-function TEntityStorageSettings.GetUserID: string;
-begin
-  Result :=
-    (FWorkItem.Services[IConfigurationService] as IConfigurationService).Settings.UserID;
-end;
-
-function TEntityStorageSettings.GetUserPreferences(
-  AWorkItem: TWorkItem): TDataSet;
-begin
-  Result := GetSettingsData(AWorkItem, true);
-end;
-
-function TEntityStorageSettings.GetValue(const AName: string): Variant;
-begin
-
-
-end;
-
-procedure TEntityStorageSettings.LoadSettingValue(AField: TField;
-  APreferences: boolean);
-var
-  dsGet: TDataSet;
-  userID: string;
-begin
-  if APreferences then
-    userID := GetUserID
-  else
-    userID := '';
-
-  dsGet := (FWorkItem.Services[IEntityService] as IEntityService).
-    Entity[ENT_SETTING].GetView(ENT_SETTING_VIEW_GET, FWorkItem).
-      Load([AField.Origin, userID]);
-
-  if AField is TIntegerField then
-    AField.Value := dsGet['VALI']
-  else if AField is TStringField then
-    AField.Value := dsGet['VALS']
-  else if AField is TFloatField then
-    AField.Value := dsGet['VALN']
-  else if AField is TDateTimeField then
-    AField.Value := dsGet['VALD'];
-end;
-
-procedure TEntityStorageSettings.SaveSettingValue(AField: TField;
-  APreferences: boolean);
-var
-  userID: string;
-  valI: Variant;
-  valS: variant;
-  valN: variant;
-  valD: variant;
-begin
-  if APreferences then
-    userID := GetUserID
-  else
-    userID := '';
-
-  if AField is TIntegerField then
-    valI := AField.Value
-  else if AField is TStringField then
-    valS := AField.Value
-  else if AField is TFloatField then
-    valN := AField.Value
-  else if AField is TDateTimeField then
-    valD := AField.Value;
-
-  (FWorkItem.Services[IEntityService] as IEntityService).
-    Entity[ENT_SETTING].GetOper(ENT_SETTING_OPER_SET, FWorkItem).
-      Execute([AField.Origin, userID, valI, valS, valN, valD]);
-
-end;
-
-procedure TEntityStorageSettings.SettingsDataChangedHandler(
-  AField: TField);
-var
-  preferences: boolean;
-begin
-  preferences := (AField.DataSet.Tag = 1);
-  SaveSettingValue(AField, preferences);
-  AField.OnChange := nil;
-  LoadSettingValue(AField, preferences);
-  CheckSettingValue(AField, preferences);
-  AField.OnChange := SettingsDataChangedHandler;
-end;
 
 { TEntityMasterLink }
 

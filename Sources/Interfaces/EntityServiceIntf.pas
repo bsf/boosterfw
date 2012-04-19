@@ -158,25 +158,14 @@ type
     property CommandText: string read GetCommandText write SetCommandText;
   end;
 
-  IEntityStorageSettings = interface
-  ['{7D1022F0-4C52-4947-945B-A70C32EA4C26}']
-    function GetUserPreferences(AWorkItem: TWorkItem): TDataSet;
-    function GetCommonSettings(AWorkitem: TWorkItem): TDataSet;
-
-    function GetValue(const AName: string): Variant;
-    property Value[const AName: string]: Variant read GetValue; default;
-  end;
-
   IEntityService = interface
   ['{E644CC6B-5ED0-4F55-9C20-9E2267381A0F}']
     function GetDataSetProxy(AOwner: TComponent): IDataSetProxy;
-    function GetSettings: IEntityStorageSettings;
     function GetSchemeInfo(const ASchemeName: string): IEntitySchemeInfo;
     function EntityExists(const AEntityName: string): boolean;
     function EntityViewExists(const AEntityName, AEntityViewName: string): boolean;
     function GetEntity(const AEntityName: string): IEntity;
     property Entity[const AEntityName: string]: IEntity read GetEntity; default;
-    property Settings: IEntityStorageSettings read GetSettings;
 
     procedure Connect(const AConnectionEngine, AConnectionParams: string);
     procedure Disconnect;
