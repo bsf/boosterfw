@@ -33,7 +33,7 @@ type
     procedure InitPickListEditor(ARow: TcxDBEditorRow; ADataSet: TDataSet);
     procedure InitLookupEditor(ARow: TcxDBEditorRow; ADataSet: TDataSet);
     procedure InitComboBoxEditor(ARow: TcxDBEditorRow; ADataSet: TDataSet);
-    procedure InitCheckBoxEditor(ARow: TcxDBEditorRow);
+    procedure InitCheckBoxEditor(ARow: TcxDBEditorRow; AField: TField);
     procedure InitImageEditor(ARow: TcxDBEditorRow);
     procedure InitColorEditor(ARow: TcxDBEditorRow);
     procedure InitMemoEditor(ARow: TcxDBEditorRow);
@@ -496,7 +496,7 @@ begin
        InitComboBoxEditor(AEditorRow, AField.DataSet)
 
     else if SameText(editorTyp, FIELD_ATTR_EDITOR_CHECKBOX) then
-       InitCheckBoxEditor(AEditorRow)
+       InitCheckBoxEditor(AEditorRow, AField)
 
     else if SameText(editorTyp, FIELD_ATTR_EDITOR_IMAGE) then
        InitImageEditor(AEditorRow)
@@ -506,8 +506,16 @@ begin
 
     else if SameText(editorTyp, FIELD_ATTR_EDITOR_MEMO) then
        InitMemoEditor(AEditorRow)
+    else if SameText(editorTyp, FIELD_ATTR_EDITOR_DATETIME) then
+    begin
+      AEditorRow.Properties.EditPropertiesClass := TcxDateEditProperties;
+      with AEditorRow.Properties.EditProperties as TcxDateEditProperties do
+      begin
+        Kind := ckDateTime;
+        ImmediatePost := true;
+      end;
 
-
+    end
     else if AField is TDateTimeField then
     begin
       AEditorRow.Properties.EditPropertiesClass := TcxDateEditProperties;
@@ -524,7 +532,7 @@ begin
        InitLookupEditor(AEditorRow, AField.DataSet)
 
     else if SameText(editorTyp, FIELD_ATTR_EDITOR_CHECKBOX) then
-       InitCheckBoxEditor(AEditorRow)
+       InitCheckBoxEditor(AEditorRow, AField)
 
     else if SameText(editorTyp, FIELD_ATTR_EDITOR_MEMO) then
         InitMemoEditor(AEditorRow);
@@ -698,17 +706,21 @@ begin
 
 end;
 
-procedure TcxVGridViewHelper.InitCheckBoxEditor(ARow: TcxDBEditorRow);
+procedure TcxVGridViewHelper.InitCheckBoxEditor(ARow: TcxDBEditorRow; AField: TField);
+var
+  allowGrayedAttr: boolean;
 begin
+  allowGrayedAttr := CheckFieldAttribute(AField, FIELD_ATTR_EDITOR_CHECKBOX_ALLOWGRAYED);
+
   ARow.Properties.EditPropertiesClass := TcxCheckBoxProperties;
   with TcxCheckBoxProperties(ARow.Properties.EditProperties) do
   begin
     DisplayChecked := 'Да';
     DisplayUnchecked := 'Нет';
-    AllowGrayed := false;
+    AllowGrayed := allowGrayedAttr;
     ValueChecked := 1;
     ValueUnchecked := 0;
-    ValueGrayed := 0;
+    ValueGrayed := -1;
     ImmediatePost := true;
     Alignment := taLeftJustify;
     UseAlignmentWhenInplace := true;

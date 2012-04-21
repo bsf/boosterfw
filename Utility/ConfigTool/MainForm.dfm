@@ -64,8 +64,6 @@ object Form2: TForm2
           item
           end>
         TabOrder = 0
-        ExplicitLeft = -2
-        ExplicitTop = -5
       end
     end
     object CategoryPanel1: TCategoryPanel
@@ -165,6 +163,19 @@ object Form2: TForm2
     DataController.DataSource = DataSource1
     RootValue = -1
     TabOrder = 2
+  end
+  object cxDBDateEdit1: TcxDBDateEdit
+    Left = 352
+    Top = 472
+    TabOrder = 3
+    Width = 209
+  end
+  object cxDBCheckBox1: TcxDBCheckBox
+    Left = 408
+    Top = 560
+    Caption = 'cxDBCheckBox1'
+    TabOrder = 4
+    Width = 121
   end
   object DataSource1: TDataSource
     DataSet = IBQuery1

@@ -955,10 +955,10 @@ begin
   if (not GetDataSet.Active) or VarIsEmpty(APrimaryKeyValues) then Exit;
 
   if FPrimaryKeys.Count = 0 then
-    raise Exception.CreateFmt('Primary key for view %s not setting', [GetAttrName]);
+    raise Exception.CreateFmt('Primary key for %s.%s not setting', [GetEntityName, GetAttrName]);
 
   if FPrimaryKeys.Count <> GetPrimayKevValueCount then
-    raise Exception.CreateFmt('Bad count primary key values for view %s ', [GetAttrName]);
+    raise Exception.CreateFmt('Bad count primary key values for %s.%s ', [GetEntityName, GetAttrName]);
 
   cloneDS := TClientDataSet.Create(nil);
   try

@@ -21,7 +21,7 @@ uses
   cxDBCheckListBox, IBUpdateSQL, DBXDataSnap, DBXCommon, DSConnect, SqlExpr,
   DSHTTPLayer, cxColorComboBox, IdBaseComponent, IdComponent, IdTCPConnection,
   IdTCPClient, IdHTTP, cxTL, cxTLdxBarBuiltInMenu, cxTLData, cxDBTL,
-  ButtonGroup, dxBreadcrumbEdit, dxDBBreadcrumbEdit;
+  ButtonGroup, dxBreadcrumbEdit, dxDBBreadcrumbEdit, cxCalendar, cxCheckBox;
 
 type
   TForm2 = class(TForm)
@@ -42,6 +42,8 @@ type
     IBQuery1: TIBQuery;
     cxDBTreeList1: TcxDBTreeList;
     IBTransaction1: TIBTransaction;
+    cxDBDateEdit1: TcxDBDateEdit;
+    cxDBCheckBox1: TcxDBCheckBox;
   private
     { Private declarations }
   public

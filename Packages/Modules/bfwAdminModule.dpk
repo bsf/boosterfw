@@ -29,7 +29,8 @@ requires
   bfwCore,
   bfwInterfaces,
   bfwUI,
-  dxmdsD15;
+  dxmdsD15,
+  cxPageControldxBarPopupMenuD15;
 
 contains
   AdminConst in '..\..\Sources\Modules\Admin\AdminConst.pas',
