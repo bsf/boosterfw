@@ -269,52 +269,6 @@ begin
   GetFieldAttr(ADest).AddStrings(GetFieldAttr(ASource));
 end;
 
-{
-function GetFieldAttribute(AField: TField; const AttributeName: string): string;
-var
-  _list: TStringList;
-begin
-
-  _list := TStringList.Create;
-  try
-
-    ExtractStrings([';'], [], PAnsiChar(AField.AttributeSet), _list);
-    Result := _list.Values[AttributeName];
-  finally
-    _list.Free;
-  end;
-end;
-
-procedure GetFieldAttributeList(AField: TField; AList: TStrings);
-var
-  _list: TStringList;
-begin
-  _list := TStringList.Create;
-  try
-    ExtractStrings([';'], [], PChar(AField.AttributeSet), _list);
-    AList.AddStrings(_list);
-  finally
-    _list.Free;
-  end;
-
-end;
-
-procedure SetFieldAttribute(AField: TField; const AttributeName, AValue: string);
-var
-  newAttrList: TStringList;
-begin
-  newAttrList := TStringList.Create;
-  try
-    newAttrList.Delimiter := ';';
-    GetFieldAttributeList(AField, newAttrList);
-    newAttrList.Values[AttributeName] := AValue;
-    AField.AttributeSet := newAttrList.DelimitedText;
-  finally
-    newAttrList.Free;
-  end;
-end;
-}
-
 
 { TDataSetAttributes }
 

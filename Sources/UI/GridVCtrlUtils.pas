@@ -546,6 +546,10 @@ var
   eviewName: string;
   fieldName: string;
   field: TField;
+  fieldIDName: string;
+  fieldID: TField;
+//
+  rowID: TcxDBEditorRow;
 begin
   entityName := GetDataSetAttribute(ADataSet, DATASET_ATTR_ENTITY);
   eviewName := GetDataSetAttribute(ADataSet, DATASET_ATTR_ENTITY_VIEW);
@@ -566,8 +570,6 @@ begin
 
   SetFieldAttribute(field, FIELD_ATTR_EDITOR_COMMAND, commandName);
 
-
-
 //-------------------------
   ARow.Properties.EditPropertiesClass := TcxButtonEditProperties;
   with TcxButtonEditProperties(ARow.Properties.EditProperties) do
@@ -575,6 +577,28 @@ begin
     LookupItems.Text := ARow.Properties.DataBinding.FieldName;
     OnButtonClick := PickListEditorButtonClick;
     OnEditValueChanged := PickListEditorValueChanged;
+  end;
+
+//Hide ID Field
+  fieldIDName := GetFieldAttribute(field, FIELD_ATTR_FIELDID);
+  if fieldIDName = '' then
+  begin
+    if AnsiEndsText('_NAME', fieldName) then
+    begin
+      fieldIDName := LeftStr(fieldName, length(fieldName) - length('_NAME'));
+      fieldIDName := fieldIDName + '_ID';
+    end
+    else
+      fieldIDName := fieldName + '_ID';
+  end;
+
+  fieldID := ADataSet.FindField(fieldIDName);
+  if Assigned(fieldID) then
+  begin
+    fieldID.Visible := false;
+    rowID := FindEditorRowByFieldName(ARow.VerticalGrid as TcxDBVerticalGrid, fieldIDName);
+    if Assigned(rowID) then
+      rowID.Visible := false;
   end;
 end;
 
