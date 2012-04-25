@@ -39,6 +39,7 @@ type
     lbPages: TcxLabel;
     btPageFirst: TcxButton;
     btPageLast: TcxButton;
+    miExportRTF: TMenuItem;
     procedure miZoomClick(Sender: TObject);
     procedure miZoomModeClick(Sender: TObject);
     procedure frxPreviewPageChanged(Sender: TfrxPreview; PageNo: Integer);
@@ -116,9 +117,12 @@ begin
   btPrint.Caption := GetLocaleString(@COMMAND_PRINT_DEF_CAPTION);
   miPrintDef.Caption := GetLocaleString(@COMMAND_PRINT_DEF_CAPTION);
   miPrint.Caption := GetLocaleString(@COMMAND_PRINT_CAPTION);
+
+  btExport.Caption := GetLocaleString(@COMMAND_EXPORT_DEF_CAPTION);
   miExportExcel.Caption := GetLocaleString(@COMMAND_EXPORT_EXCEL_CAPTION);
   miExportPDF.Caption := GetLocaleString(@COMMAND_EXPORT_PDF_CAPTION);
   miExportHTML.Caption := GetLocaleString(@COMMAND_EXPORT_HTML_CAPTION);
+  miExportRTF.Caption := GetLocaleString(@COMMAND_EXPORT_RTF_CAPTION);
   miExportCSV.Caption := GetLocaleString(@COMMAND_EXPORT_CSV_CAPTION);
 
   WorkItem.Commands[COMMAND_CLOSE].AddInvoker(btClose, 'OnClick');
@@ -127,10 +131,11 @@ begin
   WorkItem.Commands[COMMAND_PRINT_DEF].AddInvoker(miPrintDef, 'OnClick');
   WorkItem.Commands[COMMAND_PRINT].AddInvoker(miPrint, 'OnClick');
 
-  WorkItem.Commands[COMMAND_EXPORT_EXCEL].AddInvoker(btExport, 'OnClick');
+  WorkItem.Commands[COMMAND_EXPORT_DEF].AddInvoker(btExport, 'OnClick');
   WorkItem.Commands[COMMAND_EXPORT_EXCEL].AddInvoker(miExportExcel, 'OnClick');
   WorkItem.Commands[COMMAND_EXPORT_PDF].AddInvoker(miExportPDF, 'OnClick');
   WorkItem.Commands[COMMAND_EXPORT_HTML].AddInvoker(miExportHTML, 'OnClick');
+  WorkItem.Commands[COMMAND_EXPORT_RTF].AddInvoker(miExportRTF, 'OnClick');
   WorkItem.Commands[COMMAND_EXPORT_CSV].AddInvoker(miExportCSV, 'OnClick');
 
   WorkItem.Commands[COMMAND_PAGE_PRIOR].AddInvoker(btPagePrior, 'OnClick');

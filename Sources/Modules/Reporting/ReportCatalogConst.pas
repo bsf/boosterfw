@@ -10,9 +10,11 @@ resourcestring
   COMMAND_PRINT_CAPTION = 'Print...';
   COMMAND_ZOOM_CAPTION = 'Zoom';
 
+  COMMAND_EXPORT_DEF_CAPTION = 'Export';
   COMMAND_EXPORT_EXCEL_CAPTION = 'Document Excel';
   COMMAND_EXPORT_PDF_CAPTION = 'Document Pdf';
   COMMAND_EXPORT_HTML_CAPTION = 'Document HTML';
+  COMMAND_EXPORT_RTF_CAPTION = 'Document RTF';
   COMMAND_EXPORT_CSV_CAPTION = 'CSV File';
 
   strZoomPageWidth = 'Page Width';
@@ -84,7 +86,9 @@ begin
   SetLocaleString(@COMMAND_PRINT_CAPTION, 'Печать...');
   SetLocaleString(@COMMAND_ZOOM_CAPTION, 'Маштаб');
 
+  SetLocaleString(@COMMAND_EXPORT_DEF_CAPTION, 'Экспорт');
   SetLocaleString(@COMMAND_EXPORT_EXCEL_CAPTION, 'Документ Excel');
+  SetLocaleString(@COMMAND_EXPORT_RTF_CAPTION, 'Документ RTF');
   SetLocaleString(@COMMAND_EXPORT_PDF_CAPTION, 'Документ Pdf');
   SetLocaleString(@COMMAND_EXPORT_HTML_CAPTION, 'Документ HTML');
   SetLocaleString(@COMMAND_EXPORT_CSV_CAPTION, 'CSV файл');

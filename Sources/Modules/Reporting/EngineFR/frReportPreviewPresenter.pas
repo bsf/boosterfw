@@ -3,7 +3,7 @@ unit frReportPreviewPresenter;
 interface
 uses windows, sysutils, CustomPresenter, CoreClasses, frxClass, classes,
   controls, UIClasses, frxPreview, ShellIntf,
-  frxExportCSV, frxExportHTML, frxExportPDF, frxExportXML, frxExportODF,
+  frxExportCSV, frxExportHTML, frxExportPDF, frxExportXML, frxExportRTF,
   dialogs, shellapi;
 
 const
@@ -15,11 +15,12 @@ const
   COMMAND_ZOOM = 'commands.zoom';
   COMMAND_ZOOMMODE = 'commans.zoommode';
 
+  COMMAND_EXPORT_DEF = 'commands.export.def';
   COMMAND_EXPORT_EXCEL = 'commands.export.excel';
   COMMAND_EXPORT_CSV = 'commands.export.csv';
   COMMAND_EXPORT_HTML = 'commands.export.html';
   COMMAND_EXPORT_PDF = 'commands.export.pdf';
-  COMMAND_EXPORT_ODS = 'commands.export.ods';
+  COMMAND_EXPORT_RTF = 'commands.export.rtf';
 
   COMMAND_PAGE_FIRST = 'commands.page.first';
   COMMAND_PAGE_PRIOR = 'commands.page.prior';
@@ -41,18 +42,19 @@ type
     FfrxHTMLExport: TfrxHTMLExport;
     FfrxXMLExport: TfrxXMLExport;
     FfrxCSVExport: TfrxCSVExport;
-    FfrxODSExport: TfrxODSExport;
-
+    FfrxRTFExport: TfrxRTFExport;
+    FExportDefFlag: string;
     function View: IfrReportPreviewView;
     procedure CmdPrintDef(Sender: TObject);
     procedure CmdPrint(Sender: TObject);
     procedure CmdZoom(Sender: TObject);
     procedure CmdZoomMode(Sender: TObject);
+
     procedure CmdExportCSV(Sender: TObject);
     procedure CmdExportHTML(Sender: TObject);
     procedure CmdExportPDF(Sender: TObject);
     procedure CmdExportExcel(Sender: TObject);
-    procedure CmdExportODS(Sender: TObject);
+    procedure CmdExportRTF(Sender: TObject);
     procedure CmdPageNavigate(Sender: TObject);
 
     procedure frxReportClickObject(Sender: TfrxView; Button: TMouseButton;
@@ -64,7 +66,7 @@ type
   end;
 
 implementation
-
+uses frReportFactory;
 
 { TfrReportPreviewPresenter }
 
@@ -88,17 +90,26 @@ begin
   View.GetPreviewObject.Export(FfrxHTMLExport);
 end;
 
-procedure TfrReportPreviewPresenter.CmdExportODS(Sender: TObject);
+procedure TfrReportPreviewPresenter.CmdExportRTF(Sender: TObject);
 begin
-  if not Assigned(FfrxODSExport) then
+  if not Assigned(FfrxRTFExport) then
   begin
-    FfrxODSExport := TfrxODSExport.Create(Self);
-    FfrxODSExport.Wysiwyg := false;
-    FfrxODSExport.Background := false;
-    FfrxODSExport.ExportPageBreaks := false;
-    FfrxODSExport.OpenAfterExport := true;
+    FfrxRTFExport := TfrxRTFExport.Create(Self);
+    FfrxRTFExport.OpenAfterExport := false;
   end;
-  View.GetPreviewObject.Export(FfrxODSExport);
+  FfrxRTFExport.ShowDialog := false;
+
+  FSaveDialog.Filter := 'Τΰιλ rtf (*.rtf)|*.rtf';
+  FSaveDialog.DefaultExt := '.rtf';
+  FSaveDialog.FileName := View.GetPreviewObject.Report.ReportOptions.Name;
+
+  if FSaveDialog.Execute then
+  begin
+    FfrxRTFExport.FileName := FSaveDialog.FileName;
+    View.GetPreviewObject.Export(FfrxRTFExport);
+    if FileExists(FSaveDialog.FileName) then
+      ShellExecute(HInstance, nil, PWideChar(FSaveDialog.FileName), nil, nil, SW_SHOWNORMAL);
+  end;
 
 end;
 
@@ -222,12 +233,11 @@ begin
 
   TStream(integer(Sender.Params['DATA'])).Position := 0;
   FReport.PreviewPages.LoadFromStream(TStream(integer(Sender.Params['DATA'])));
-//  (Sender.Data as TfrReportPreviewActivityData).ReportStream.Position := 0;
-//  FReport.PreviewPages.LoadFromStream((Sender.Data as TfrReportPreviewActivityData).ReportStream);
 
   FSaveDialog := TSaveDialog.Create(Self);
   FSaveDialog.Options := FSaveDialog.Options + [ofOverwritePrompt];
 
+  FExportDefFlag := Sender.Params[TfrPreviewActivityParams.ExportDef];
   FInitViewTitle := ViewTitle;
 end;
 
@@ -251,11 +261,16 @@ begin
   WorkItem.Commands[COMMAND_ZOOM].SetHandler(CmdZoom);
   WorkItem.Commands[COMMAND_ZOOMMODE].SetHandler(CmdZoomMode);
 
+  if SameText(FExportDefFlag, 'RTF') then
+    WorkItem.Commands[COMMAND_EXPORT_DEF].SetHandler(CmdExportRTF)
+  else
+    WorkItem.Commands[COMMAND_EXPORT_DEF].SetHandler(CmdExportExcel);
+
   WorkItem.Commands[COMMAND_EXPORT_CSV].SetHandler(CmdExportCSV);
   WorkItem.Commands[COMMAND_EXPORT_HTML].SetHandler(CmdExportHTML);
   WorkItem.Commands[COMMAND_EXPORT_PDF].SetHandler(CmdExportPDF);
   WorkItem.Commands[COMMAND_EXPORT_EXCEL].SetHandler(CmdExportExcel);
-  WorkItem.Commands[COMMAND_EXPORT_ODS].SetHandler(CmdExportODS);
+  WorkItem.Commands[COMMAND_EXPORT_RTF].SetHandler(CmdExportRTF);
 
   WorkItem.Commands[COMMAND_PAGE_FIRST].SetHandler(CmdPageNavigate);
   WorkItem.Commands[COMMAND_PAGE_PRIOR].SetHandler(CmdPageNavigate);
