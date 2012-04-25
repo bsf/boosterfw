@@ -425,7 +425,7 @@ begin
   FToolWinMenu.Items.Clear;
 
   for I := 0 to PageControl.TabCount - 1 do
-    AddItem(PageControl.Tabs[I].Caption,ToolWinCmdActivateTab, I).Default := PageControl.ActivePageIndex = I;
+    AddItem(PageControl.Pages[I].Caption,ToolWinCmdActivateTab, I).Default := PageControl.ActivePageIndex = I;
 
   AddItem('-', nil, -1);
   AddItem(GetLocaleString(@strToolWinCmdHideTabs), ToolWinCmdHideTabs, -1);

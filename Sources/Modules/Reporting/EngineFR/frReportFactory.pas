@@ -12,6 +12,11 @@ const
   VIEW_FASTREPORT_PREVIEW = 'views.reports.fastreport.preview';
 
 type
+  TfrPreviewActivityParams = record
+    const
+      DATA = 'DATA';
+      ExportDef = 'ExportDefFilter';
+  end;
 
   TFastReportLauncher = class(TComponent, IReportLauncher)
   private
@@ -226,9 +231,11 @@ begin
     FReport.PreviewPages.SaveToStream(stream);
     with FWorkItem.Activities[VIEW_FR_PREVIEW] do
     begin
-      Params[TViewActivityParams.PresenterID] := CreateClassID;
+      Params[TViewActivityParams.InstanceID] := CreateClassID;
       Params[TViewActivityParams.Title] := ATitle;
       Params['DATA'] := integer(stream);
+      Params[TfrPreviewActivityParams.ExportDef] :=
+        VarToStr(FReport.Variables[TfrPreviewActivityParams.ExportDef]);
       Execute(FCallerWI);
     end;
   finally

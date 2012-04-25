@@ -53,7 +53,7 @@ inherited frfrReportPreviewView: TfrfrReportPreviewView
         Top = 9
         Width = 75
         Height = 25
-        Caption = 'Excel'
+        Caption = #1069#1082#1089#1087#1086#1088#1090
         DropDownMenu = ppmExport
         Kind = cxbkDropDownButton
         LookAndFeel.Kind = lfOffice11
@@ -218,6 +218,9 @@ inherited frfrReportPreviewView: TfrfrReportPreviewView
     end
     object miExportHTML: TMenuItem
       Caption = #1044#1086#1082#1091#1084#1077#1085#1090' HTML'
+    end
+    object miExportRTF: TMenuItem
+      Caption = #1044#1086#1082#1091#1084#1077#1085#1090' RTF'
     end
     object miExportCSV: TMenuItem
       Caption = 'CSV '#1092#1072#1081#1083
