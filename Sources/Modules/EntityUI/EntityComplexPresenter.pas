@@ -241,7 +241,7 @@ end;
 
 procedure TEntityComplexPresenter.CmdReload(Sender: TObject);
 begin
-//  GetEVHead.Reload;
+  //GetEVHead.Load;
   GetEVDetails.Load;
 end;
 

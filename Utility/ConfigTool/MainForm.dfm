@@ -13,169 +13,116 @@ object Form2: TForm2
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
-  object CategoryPanelGroup1: TCategoryPanelGroup
+  object GridPanel1: TGridPanel
     Left = 0
     Top = 0
+    Width = 297
     Height = 660
-    VertScrollBar.Smooth = True
-    VertScrollBar.Style = ssFlat
-    VertScrollBar.Tracking = True
-    ChevronAlignment = taRightJustify
-    HeaderFont.Charset = DEFAULT_CHARSET
-    HeaderFont.Color = clWindowText
-    HeaderFont.Height = -11
-    HeaderFont.Name = 'Tahoma'
-    HeaderFont.Style = []
+    Align = alLeft
+    Caption = 'GridPanel1'
+    ColumnCollection = <
+      item
+        Value = 100.000000000000000000
+      end>
+    ControlCollection = <
+      item
+        Column = 0
+        Control = cxButton1
+        Row = 0
+      end
+      item
+        Column = 0
+        Control = cxButton2
+        Row = 1
+      end
+      item
+        Column = 0
+        Control = cxButton3
+        Row = 2
+      end>
+    RowCollection = <
+      item
+        Value = 9.988777075419982000
+      end
+      item
+        Value = 9.976202947710620000
+      end
+      item
+        Value = 9.987033426881162000
+      end
+      item
+        Value = 10.001974652924070000
+      end
+      item
+        Value = 10.009902392686720000
+      end
+      item
+        Value = 10.012382398054110000
+      end
+      item
+        Value = 10.011088592403550000
+      end
+      item
+        Value = 10.007722846020730000
+      end
+      item
+        Value = 10.003903135748910000
+      end
+      item
+        Value = 10.001012532150170000
+      end>
     TabOrder = 0
-    object CategoryPanel3: TCategoryPanel
-      Top = 400
-      Caption = 'CategoryPanel3'
+    object cxButton1: TcxButton
+      Left = 1
+      Top = 1
+      Width = 295
+      Height = 65
+      Margins.Top = 5
+      Align = alClient
+      Caption = 'cxButton1'
+      LookAndFeel.Kind = lfFlat
+      LookAndFeel.NativeStyle = False
+      SpeedButtonOptions.Flat = True
+      SpeedButtonOptions.Transparent = True
       TabOrder = 0
+      ExplicitTop = -7
     end
-    object CategoryPanel2: TCategoryPanel
-      Top = 200
-      Caption = 'CategoryPanel2'
+    object cxButton2: TcxButton
+      Left = 1
+      Top = 66
+      Width = 295
+      Height = 65
+      Margins.Top = 5
+      Align = alClient
+      Caption = 'cxButton1'
+      LookAndFeel.Kind = lfFlat
+      LookAndFeel.NativeStyle = False
+      SpeedButtonOptions.Flat = True
+      SpeedButtonOptions.Transparent = True
       TabOrder = 1
-      object ButtonGroup1: TButtonGroup
-        Left = 0
-        Top = 0
-        Width = 196
-        Height = 174
-        Align = alClient
-        ButtonOptions = [gboFullSize, gboShowCaptions]
-        Items = <
-          item
-          end
-          item
-          end
-          item
-          end
-          item
-            Caption = 'kiytiotiyt'
-          end
-          item
-          end
-          item
-          end
-          item
-          end
-          item
-          end
-          item
-          end>
-        TabOrder = 0
-      end
+      ExplicitLeft = 56
+      ExplicitTop = 16
+      ExplicitWidth = 75
+      ExplicitHeight = 25
     end
-    object CategoryPanel1: TCategoryPanel
-      Top = 0
-      Caption = 'CategoryPanel1'
+    object cxButton3: TcxButton
+      Left = 1
+      Top = 131
+      Width = 295
+      Height = 65
+      Margins.Top = 5
+      Align = alClient
+      Caption = 'cxButton1'
+      LookAndFeel.Kind = lfFlat
+      LookAndFeel.NativeStyle = False
+      SpeedButtonOptions.Flat = True
+      SpeedButtonOptions.Transparent = True
       TabOrder = 2
+      ExplicitLeft = 56
+      ExplicitTop = 16
+      ExplicitWidth = 75
+      ExplicitHeight = 25
     end
-  end
-  object dxNavBar1: TdxNavBar
-    Left = 728
-    Top = 0
-    Width = 255
-    Height = 660
-    Align = alRight
-    ActiveGroupIndex = 0
-    TabOrder = 1
-    View = 16
-    OptionsView.ExplorerBar.ShowSpecialGroup = True
-    object dxNavBar1Group1: TdxNavBarGroup
-      Caption = 'dxNavBar1Group1'
-      SelectedLinkIndex = -1
-      TopVisibleLinkIndex = 0
-      UseRestSpace = True
-      OptionsGroupControl.ShowControl = True
-      OptionsGroupControl.UseControl = True
-      Links = <
-        item
-          Item = dxNavBar1Item1
-        end
-        item
-          Item = dxNavBar1Item1
-        end
-        item
-          Item = dxNavBar1Item2
-        end>
-    end
-    object dxNavBar1Group2: TdxNavBarGroup
-      Caption = 'dxNavBar1Group2'
-      SelectedLinkIndex = -1
-      TopVisibleLinkIndex = 0
-      Links = <
-        item
-          Item = dxNavBar1Item1
-        end
-        item
-          Item = dxNavBar1Item2
-        end>
-    end
-    object dxNavBar1Item1: TdxNavBarItem
-      Caption = 'dxNavBar1Item1'
-    end
-    object dxNavBar1Item2: TdxNavBarItem
-      Caption = 'dxNavBar1Item2'
-    end
-    object dxNavBar1Group1Control: TdxNavBarGroupControl
-      Left = 0
-      Top = 19
-      Width = 255
-      Height = 562
-      Caption = 'dxNavBar1Group1Control'
-      TabOrder = 4
-      GroupIndex = 0
-      OriginalHeight = 41
-      object ButtonGroup2: TButtonGroup
-        Left = 0
-        Top = 0
-        Width = 255
-        Height = 562
-        Align = alClient
-        ButtonOptions = [gboAllowReorder, gboFullSize, gboGroupStyle, gboShowCaptions]
-        Items = <
-          item
-          end
-          item
-          end
-          item
-          end
-          item
-            Caption = 'kiytiotiyt'
-          end
-          item
-          end
-          item
-          end
-          item
-          end>
-        TabOrder = 0
-      end
-    end
-  end
-  object cxDBTreeList1: TcxDBTreeList
-    Left = 240
-    Top = 8
-    Width = 457
-    Height = 405
-    Bands = <>
-    DataController.DataSource = DataSource1
-    RootValue = -1
-    TabOrder = 2
-  end
-  object cxDBDateEdit1: TcxDBDateEdit
-    Left = 352
-    Top = 472
-    TabOrder = 3
-    Width = 209
-  end
-  object cxDBCheckBox1: TcxDBCheckBox
-    Left = 408
-    Top = 560
-    Caption = 'cxDBCheckBox1'
-    TabOrder = 4
-    Width = 121
   end
   object DataSource1: TDataSource
     DataSet = IBQuery1

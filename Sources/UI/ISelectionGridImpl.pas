@@ -124,38 +124,38 @@ end;
 
 function TISelectionGridImpl.GetItem(AIndex: integer): Variant;
 var
-  DataController: TcxGridDBDataController;
   KeyFields: TList;
   I: integer;
   valIndex: integer;
 begin
   Result := Unassigned;
 
-  DataController := nil;
+  if (FGridView is TcxGridDBTableView) or (FGridView is TcxGridDBBandedTableView) then
+  begin
+    KeyFields := TList.Create;
+    try
+      TcxGridDBDataController(FGridView.DataController).GetKeyDBFields(KeyFields);
+      for I := 0 to KeyFields.Count - 1 do
+      begin
+        valIndex := TcxGridDBDataController(FGridView.DataController).
+          GetItemByFieldName(TField(KeyFields[I]).FieldName).Index;
+        if I = 0 then
+          Result := FGridView.Controller.SelectedRecords[AIndex].Values[valIndex]
+        else
+          Result := VarToStr(Result) + '.' +
+            VarToStr(FGridView.Controller.SelectedRecords[AIndex].Values[valIndex]);
+      end;
 
-  if FGridView is TcxGridDBTableView then
-    DataController := TcxGridDBTableView(FGridView).DataController
-  else if FGridView is TcxGridDBBandedTableView then
-    DataController := TcxGridDBBandedTableView(FGridView).DataController;
-
-  if DataController = nil then Exit;
-
-  KeyFields := TList.Create;
-  try
-    DataController.GetKeyDBFields(KeyFields);
-    for I := 0 to KeyFields.Count - 1 do
-    begin
-      valIndex := DataController.GetItemByFieldName(TField(KeyFields[I]).FieldName).Index;
-      if I = 0 then
-        Result := FGridView.Controller.SelectedRecords[AIndex].Values[valIndex]
-      else
-        Result := VarToStr(Result) + '.' +
-          VarToStr(FGridView.Controller.SelectedRecords[AIndex].Values[valIndex]);
+    finally
+      KeyFields.Free;
     end;
-
-  finally
-    KeyFields.Free;
+  end
+  else
+  begin
+    if FGridView.ColumnCount > 0 then
+      Result := FGridView.Controller.SelectedRecords[AIndex].Values[0];
   end;
+
 end;
 
 
