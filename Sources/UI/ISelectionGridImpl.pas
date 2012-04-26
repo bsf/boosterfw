@@ -123,38 +123,13 @@ begin
 end;
 
 function TISelectionGridImpl.GetItem(AIndex: integer): Variant;
-var
-  KeyFields: TList;
-  I: integer;
-  valIndex: integer;
 begin
   Result := Unassigned;
 
   if (FGridView is TcxGridDBTableView) or (FGridView is TcxGridDBBandedTableView) then
-  begin
-    KeyFields := TList.Create;
-    try
-      TcxGridDBDataController(FGridView.DataController).GetKeyDBFields(KeyFields);
-      for I := 0 to KeyFields.Count - 1 do
-      begin
-        valIndex := TcxGridDBDataController(FGridView.DataController).
-          GetItemByFieldName(TField(KeyFields[I]).FieldName).Index;
-        if I = 0 then
-          Result := FGridView.Controller.SelectedRecords[AIndex].Values[valIndex]
-        else
-          Result := VarToStr(Result) + '.' +
-            VarToStr(FGridView.Controller.SelectedRecords[AIndex].Values[valIndex]);
-      end;
-
-    finally
-      KeyFields.Free;
-    end;
-  end
-  else
-  begin
-    if FGridView.ColumnCount > 0 then
-      Result := FGridView.Controller.SelectedRecords[AIndex].Values[0];
-  end;
+    Result := TcxGridDBDataController(FGridView.DataController).GetKeyFieldsValues
+  else if FGridView.ColumnCount > 0 then
+    Result := FGridView.Controller.SelectedRecords[AIndex].Values[0];
 
 end;
 
