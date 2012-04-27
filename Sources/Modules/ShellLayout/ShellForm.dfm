@@ -130,7 +130,6 @@ object frMain: TfrMain
     TabOrder = 3
     Transparent = True
     ExplicitLeft = 512
-    ExplicitWidth = 481
     Height = 535
     Width = 686
     object pcMain: TcxPageControl
@@ -185,7 +184,6 @@ object frMain: TfrMain
       TabOrder = 2
       ExplicitLeft = 2
       ExplicitTop = 416
-      ExplicitWidth = 682
       Height = 117
       Width = 686
       object grNotify: TcxGrid
