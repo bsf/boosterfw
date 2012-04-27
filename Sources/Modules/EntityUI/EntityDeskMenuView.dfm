@@ -1,19 +1,18 @@
 inherited frEntityDeskMenuView: TfrEntityDeskMenuView
   Caption = 'frEntityDeskMenuView'
-  ExplicitWidth = 676
-  ExplicitHeight = 543
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
     object flPanel: TFlowPanel
-      Left = 2
-      Top = 2
-      Width = 666
-      Height = 511
+      Left = 0
+      Top = 0
+      Width = 670
+      Height = 515
       Align = alClient
       BevelOuter = bvNone
       ParentColor = True
       TabOrder = 0
+      ExplicitWidth = 415
     end
   end
 end

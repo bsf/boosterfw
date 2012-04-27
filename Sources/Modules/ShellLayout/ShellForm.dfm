@@ -115,44 +115,58 @@ object frMain: TfrMain
     HotZoneClassName = 'TcxXPTaskBarStyle'
     Control = NavBar
   end
-  object Panel1: TPanel
+  object PanelContent: TcxGroupBox
     Left = 307
     Top = 0
-    Width = 686
-    Height = 535
     Align = alClient
-    BevelOuter = bvNone
-    Caption = 'pnMain'
+    PanelStyle.Active = True
+    Style.BorderStyle = ebsNone
+    Style.Edges = [bLeft, bTop, bRight, bBottom]
+    Style.LookAndFeel.Kind = lfOffice11
+    Style.TransparentBorder = False
+    StyleDisabled.LookAndFeel.Kind = lfOffice11
+    StyleFocused.LookAndFeel.Kind = lfOffice11
+    StyleHot.LookAndFeel.Kind = lfOffice11
     TabOrder = 3
-    object SplitterNotifyPanel: TcxSplitter
-      Left = 0
-      Top = 403
-      Width = 686
-      Height = 4
-      AlignSplitter = salBottom
-      AutoSnap = True
-      Control = cxGroupBox1
-    end
+    Transparent = True
+    ExplicitLeft = 512
+    ExplicitWidth = 481
+    Height = 535
+    Width = 686
     object pcMain: TcxPageControl
       Left = 0
       Top = 0
       Width = 686
-      Height = 403
+      Height = 413
       Align = alClient
-      Color = clBtnFace
       Focusable = False
-      ParentColor = False
-      TabOrder = 1
+      TabOrder = 0
+      Properties.Options = [pcoAlwaysShowGoDialogButton, pcoGradientClientArea, pcoNoArrows, pcoRedrawOnResize]
       Properties.Style = 9
       LookAndFeel.Kind = lfOffice11
-      LookAndFeel.NativeStyle = False
-      ClientRectBottom = 403
+      ExplicitLeft = 2
+      ExplicitTop = 56
+      ExplicitWidth = 477
+      ExplicitHeight = 355
+      ClientRectBottom = 413
       ClientRectRight = 686
       ClientRectTop = 0
     end
-    object cxGroupBox1: TcxGroupBox
+    object SplitterNotifyPanel: TcxSplitter
       Left = 0
-      Top = 407
+      Top = 413
+      Width = 686
+      Height = 5
+      AlignSplitter = salBottom
+      AutoSnap = True
+      Control = pnNotify
+      ExplicitLeft = 2
+      ExplicitTop = 411
+      ExplicitWidth = 682
+    end
+    object pnNotify: TcxGroupBox
+      Left = 0
+      Top = 418
       Align = alBottom
       Caption = #1059#1074#1077#1076#1086#1084#1083#1077#1085#1080#1103
       PanelStyle.OfficeBackgroundKind = pobkGradient
@@ -169,13 +183,16 @@ object frMain: TfrMain
       StyleFocused.LookAndFeel.Kind = lfOffice11
       StyleHot.LookAndFeel.Kind = lfOffice11
       TabOrder = 2
-      Height = 128
+      ExplicitLeft = 2
+      ExplicitTop = 416
+      ExplicitWidth = 682
+      Height = 117
       Width = 686
       object grNotify: TcxGrid
         Left = 2
         Top = 18
         Width = 682
-        Height = 108
+        Height = 97
         Align = alClient
         BevelInner = bvNone
         BevelOuter = bvNone
@@ -189,6 +206,7 @@ object frMain: TfrMain
         TabOrder = 0
         TabStop = False
         LookAndFeel.Kind = lfOffice11
+        ExplicitWidth = 678
         object grNotifyListView: TcxGridTableView
           OnCellDblClick = grNotifyListViewCellDblClick
           DataController.Summary.DefaultGroupSummaryItems = <>

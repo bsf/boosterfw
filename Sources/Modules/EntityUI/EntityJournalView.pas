@@ -10,7 +10,7 @@ uses
   cxGridLevel, cxClasses, cxGridCustomView, cxGridCustomTableView,
   cxGridTableView, cxGridBandedTableView, cxGridDBBandedTableView, cxGrid,
   cxPC, coreClasses, EntityCatalogIntf, EntityCatalogConst, UIClasses,
-  cxGridDBTableView, EntityJournalPresenter;
+  cxGridDBTableView, EntityJournalPresenter, cxPCdxBarPopupMenu;
 
 type
   TfrEntityJournalView = class(TfrCustomContentView, IEntityJournalView)

@@ -46,21 +46,21 @@ type
     SplitterLeft: TcxSplitter;
     cxStyleRepositoryShellForm: TcxStyleRepository;
     cxStyleInfoBk: TcxStyle;
-    Panel1: TPanel;
-    SplitterNotifyPanel: TcxSplitter;
-    pcMain: TcxPageControl;
-    cxGroupBox1: TcxGroupBox;
-    grNotify: TcxGrid;
-    grNotifyListView: TcxGridTableView;
-    grNotifyListViewText: TcxGridColumn;
-    grNotifyLevel1: TcxGridLevel;
-    grNotifyListViewTime: TcxGridColumn;
     cxStyleNotifyCellTime: TcxStyle;
     cxStyleNotifyCellText: TcxStyle;
+    ilNavBarSmall: TImageList;
+    PanelContent: TcxGroupBox;
+    pcMain: TcxPageControl;
+    SplitterNotifyPanel: TcxSplitter;
+    pnNotify: TcxGroupBox;
+    grNotify: TcxGrid;
+    grNotifyListView: TcxGridTableView;
+    grNotifyListViewHeader: TcxGridColumn;
+    grNotifyListViewText: TcxGridColumn;
     grNotifyListViewID: TcxGridColumn;
     grNotifyListViewSENDER: TcxGridColumn;
-    grNotifyListViewHeader: TcxGridColumn;
-    ilNavBarSmall: TImageList;
+    grNotifyListViewTime: TcxGridColumn;
+    grNotifyLevel1: TcxGridLevel;
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormShortCut(var Msg: TWMKey; var Handled: Boolean);
     procedure FormKeyUp(Sender: TObject; var Key: Word;
@@ -85,6 +85,10 @@ type
 
     FViewStyleController: TViewStyleController;
     FNavBarControlManager: TdxNavBarControlManager;
+
+    FLookAndFeelListener: TcxLookAndFeel;
+    procedure LookAndFeelChangedHandler(Sender: TcxLookAndFeel;
+      AChangedValues: TcxLookAndFeelValues);
 
     procedure SplashShow;
     procedure SplashHide;
@@ -136,6 +140,7 @@ type
       end;
   public
     constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
     procedure Initialize(AWorkItem: TWorkItem); override;
     property WorkItem: TWorkItem read FWorkItem write FWorkItem;
   end;
@@ -191,13 +196,17 @@ begin
 end;
 
 
+destructor TfrMain.Destroy;
+begin
+  FLookAndFeelListener.Free;
+//  FLookAndFeelListener.OnChanged := nil; //AV on close app!!!
+  inherited;
+end;
+
 procedure TfrMain.Initialize(AWorkItem: TWorkItem);
 begin
   SplashShow;
 
-  Self.Color := dxOffice11ToolbarsColor1;
-  Panel1.Color := Self.Color;
-  pcMain.Color := Self.Color;
   FWorkItem := AWorkItem;
 
   FScale := (FWorkItem.Services[IUIService] as IUIService).Scale;
@@ -239,11 +248,36 @@ begin
     NavBar.Visible := false;
     SplitterLeft.Visible := false;
     BarStatus.Visible := false;
-  end;
-
-  if (FWorkItem.Services[IUIService] as IUIService).ShellLayoutKind = slFullDesk then
+  end
+  else if (FWorkItem.Services[IUIService] as IUIService).ShellLayoutKind = slFullDesk then
   begin
     Self.BorderStyle := bsNone;
+  end;
+
+  //Init Shell Style
+  Self.Color := dxOffice11ToolbarsColor1;
+  pcMain.Color := dxOffice11ToolbarsColor1;
+  pcMain.Properties.Style := 9;//tsSlanted;
+
+  FLookAndFeelListener := TcxLookAndFeel.Create(Self);
+  FLookAndFeelListener.OnChanged := LookAndFeelChangedHandler;
+
+end;
+
+procedure TfrMain.LookAndFeelChangedHandler(Sender: TcxLookAndFeel;
+  AChangedValues: TcxLookAndFeelValues);
+begin
+
+  if Sender.SkinName <> '' then
+  begin
+    BarStatus.PaintStyle := stpsUseLookAndFeel;
+    pcMain.Properties.Style := 0;//tsDefault;
+  end
+  else
+  begin
+    Self.Color :=  dxOffice11ToolbarsColor1;
+    pcMain.Color := dxOffice11ToolbarsColor1;
+    pcMain.Properties.Style := 9;//tsSlanted;
   end;
 end;
 

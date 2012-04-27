@@ -45,7 +45,6 @@ inherited frEntityDeskView: TfrEntityDeskView
       Height = 310
       Align = alClient
       TabOrder = 3
-      Properties.Style = 8
       LookAndFeel.Kind = lfOffice11
       LookAndFeel.NativeStyle = False
       ClientRectBottom = 310
