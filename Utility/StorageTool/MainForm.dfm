@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Form1'
-  ClientHeight = 605
+  ClientHeight = 461
   ClientWidth = 934
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,7 +17,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 193
-    Height = 605
+    Height = 461
     Align = alLeft
     ActiveGroupIndex = 0
     TabOrder = 0
@@ -49,87 +49,120 @@ object Form1: TForm1
     end
   end
   object cxGrid1: TcxGrid
-    Left = 349
+    Left = 193
     Top = 0
-    Width = 545
-    Height = 385
+    Width = 741
+    Height = 461
+    Align = alClient
     TabOrder = 1
-    object cxGrid1DBTableView1: TcxGridDBTableView
-      NavigatorButtons.ConfirmDelete = False
+    LookAndFeel.Kind = lfOffice11
+    ExplicitWidth = 672
+    object cxGrid1DBBandedTableView1: TcxGridDBBandedTableView
       DataController.DataSource = DataSource1
       DataController.Summary.DefaultGroupSummaryItems = <>
       DataController.Summary.FooterSummaryItems = <>
       DataController.Summary.SummaryGroups = <>
-      DateTimeHandling.Grouping = dtgByMonth
-      object cxGrid1DBTableView1PARENT: TcxGridDBColumn
+      OptionsData.Editing = False
+      OptionsSelection.InvertSelect = False
+      OptionsView.FocusRect = False
+      OptionsView.ScrollBars = ssNone
+      OptionsView.ColumnAutoWidth = True
+      OptionsView.GridLines = glNone
+      OptionsView.GroupByBox = False
+      OptionsView.Header = False
+      OptionsView.RowSeparatorColor = clGradientActiveCaption
+      OptionsView.RowSeparatorWidth = 3
+      OptionsView.BandHeaders = False
+      Bands = <
+        item
+        end>
+      object cxGrid1DBBandedTableView1PARENT: TcxGridDBBandedColumn
         DataBinding.FieldName = 'PARENT'
+        Options.Focusing = False
+        SortIndex = 0
+        SortOrder = soAscending
+        Position.BandIndex = 0
+        Position.ColIndex = 0
+        Position.RowIndex = 1
       end
-      object cxGrid1DBTableView1ID: TcxGridDBColumn
+      object cxGrid1DBBandedTableView1ID: TcxGridDBBandedColumn
         DataBinding.FieldName = 'ID'
+        Options.Focusing = False
+        Position.BandIndex = 0
+        Position.ColIndex = 1
+        Position.RowIndex = 1
       end
-      object cxGrid1DBTableView1NAME: TcxGridDBColumn
+      object cxGrid1DBBandedTableView1NAME: TcxGridDBBandedColumn
         DataBinding.FieldName = 'NAME'
+        Options.Focusing = False
+        Styles.Content = cxStyle17
+        Position.BandIndex = 0
+        Position.ColIndex = 0
+        Position.RowIndex = 0
       end
-      object cxGrid1DBTableView1PARENT_ID: TcxGridDBColumn
+      object cxGrid1DBBandedTableView1PARENT_ID: TcxGridDBBandedColumn
         DataBinding.FieldName = 'PARENT_ID'
+        Visible = False
+        Position.BandIndex = 0
+        Position.ColIndex = 1
+        Position.RowIndex = 0
+      end
+    end
+    object cxGrid1DBCardView1: TcxGridDBCardView
+      OnCellClick = cxGrid1DBCardView1CellClick
+      DataController.DataSource = DataSource1
+      DataController.KeyFieldNames = 'ID'
+      DataController.Summary.DefaultGroupSummaryItems = <>
+      DataController.Summary.FooterSummaryItems = <>
+      DataController.Summary.SummaryGroups = <>
+      OptionsData.Deleting = False
+      OptionsData.Editing = False
+      OptionsData.Inserting = False
+      OptionsSelection.InvertSelect = False
+      OptionsSelection.CardBorderSelection = False
+      OptionsView.CaptionSeparator = #0
+      OptionsView.CardAutoWidth = True
+      OptionsView.CardIndent = 5
+      OptionsView.CardWidth = 210
+      OptionsView.CellAutoHeight = True
+      OptionsView.EmptyRows = False
+      OptionsView.LayerSeparatorWidth = 5
+      object cxGrid1DBCardView1PARENT: TcxGridDBCardViewRow
+        DataBinding.FieldName = 'PARENT'
+        Visible = False
+        Options.ShowCaption = False
+        Position.BeginsLayer = True
+      end
+      object cxGrid1DBCardView1ID: TcxGridDBCardViewRow
+        DataBinding.FieldName = 'ID'
+        Options.ShowCaption = False
+        Position.BeginsLayer = True
+      end
+      object cxGrid1DBCardView1NAME: TcxGridDBCardViewRow
+        DataBinding.FieldName = 'NAME'
+        Options.ShowCaption = False
+        Position.BeginsLayer = True
+        Styles.Content = cxStyle18
+        Styles.Caption = cxStyle18
+      end
+      object cxGrid1DBCardView1PARENT_ID: TcxGridDBCardViewRow
+        DataBinding.FieldName = 'PARENT_ID'
+        Options.ShowCaption = False
+        Position.BeginsLayer = True
       end
     end
     object cxGrid1Level1: TcxGridLevel
-      GridView = cxGrid1DBTableView1
+      Caption = 'ytrye6'
+      GridView = cxGrid1DBCardView1
     end
   end
-  object cxDBTreeList1: TcxDBTreeList
-    Left = 384
-    Top = 391
-    Width = 497
-    Height = 206
-    Bands = <
-      item
-      end>
-    DataController.DataSource = DataSource1
-    DataController.ParentField = 'PARENT_ID'
-    DataController.KeyField = 'ID'
-    OptionsView.ColumnAutoWidth = True
-    OptionsView.GridLines = tlglHorz
-    OptionsView.Indicator = True
-    RootValue = -1
+  object Edit1: TEdit
+    Left = 816
+    Top = 168
+    Width = 121
+    Height = 21
     TabOrder = 2
-    object cxDBTreeList1PARENT: TcxDBTreeListColumn
-      DataBinding.FieldName = 'PARENT'
-      Width = 122
-      Position.ColIndex = 2
-      Position.RowIndex = 0
-      Position.BandIndex = 0
-      Summary.FooterSummaryItems = <>
-      Summary.GroupFooterSummaryItems = <>
-    end
-    object cxDBTreeList1ID: TcxDBTreeListColumn
-      DataBinding.FieldName = 'ID'
-      Width = 44
-      Position.ColIndex = 1
-      Position.RowIndex = 0
-      Position.BandIndex = 0
-      Summary.FooterSummaryItems = <>
-      Summary.GroupFooterSummaryItems = <>
-    end
-    object cxDBTreeList1NAME: TcxDBTreeListColumn
-      DataBinding.FieldName = 'NAME'
-      Width = 224
-      Position.ColIndex = 0
-      Position.RowIndex = 0
-      Position.BandIndex = 0
-      Summary.FooterSummaryItems = <>
-      Summary.GroupFooterSummaryItems = <>
-    end
-    object cxDBTreeList1PARENT_ID: TcxDBTreeListColumn
-      DataBinding.FieldName = 'PARENT_ID'
-      Width = 76
-      Position.ColIndex = 3
-      Position.RowIndex = 0
-      Position.BandIndex = 0
-      Summary.FooterSummaryItems = <>
-      Summary.GroupFooterSummaryItems = <>
-    end
+    Text = 'Edit1'
   end
   object DataSource1: TDataSource
     DataSet = IBQuery1
@@ -298,6 +331,24 @@ object Form1: TForm1
       TextColor = clWhite
     end
     object cxStyle16: TcxStyle
+    end
+    object cxStyle17: TcxStyle
+      AssignedValues = [svFont]
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+    end
+    object cxStyle18: TcxStyle
+      AssignedValues = [svFont]
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+    end
+    object cxStyle19: TcxStyle
     end
     object cxGridTableViewStyleSheet1: TcxGridTableViewStyleSheet
       BuiltIn = True

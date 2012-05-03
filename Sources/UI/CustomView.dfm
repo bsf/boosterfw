@@ -19,6 +19,7 @@ object frCustomView: TfrCustomView
     Top = 0
     Align = alClient
     PanelStyle.Active = True
+    PanelStyle.OfficeBackgroundKind = pobkStyleColor
     Style.BorderStyle = ebsNone
     Style.Edges = [bLeft, bTop, bRight, bBottom]
     Style.LookAndFeel.Kind = lfOffice11
@@ -31,6 +32,7 @@ object frCustomView: TfrCustomView
     StyleHot.LookAndFeel.Kind = lfOffice11
     StyleHot.LookAndFeel.NativeStyle = True
     TabOrder = 0
+    Transparent = True
     Height = 515
     Width = 670
   end

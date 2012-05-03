@@ -13,7 +13,9 @@ uses
   cxDropDownEdit, cxLookupEdit, cxDBLookupEdit, cxDBLookupComboBox,
   IBCustomDataSet, IBQuery, cxInplaceContainer, cxVGrid, DBCtrls,
   cxDBExtLookupComboBox, cxDBEdit, cxTL, cxTLdxBarBuiltInMenu, cxDBTL, cxTLData,
-  frxRich, cxMemo, cxRichEdit, cxMRUEdit;
+  frxRich, cxMemo, cxRichEdit, cxMRUEdit, cxGridCardView, cxGridDBCardView,
+  cxGridCustomLayoutView, cxGridBandedTableView, cxGridDBBandedTableView,
+  StdCtrls;
 
 type
   TForm1 = class(TForm)
@@ -30,7 +32,6 @@ type
     IBDatabase1: TIBDatabase;
     IBQuery1: TIBQuery;
     IBTransaction1: TIBTransaction;
-    cxGrid1DBTableView1: TcxGridDBTableView;
     cxGrid1Level1: TcxGridLevel;
     cxGrid1: TcxGrid;
     cxStyleRepository1: TcxStyleRepository;
@@ -53,16 +54,24 @@ type
     cxStyle15: TcxStyle;
     cxStyle16: TcxStyle;
     Query1: TQuery;
-    cxGrid1DBTableView1PARENT: TcxGridDBColumn;
-    cxGrid1DBTableView1ID: TcxGridDBColumn;
-    cxGrid1DBTableView1NAME: TcxGridDBColumn;
-    cxGrid1DBTableView1PARENT_ID: TcxGridDBColumn;
-    cxDBTreeList1: TcxDBTreeList;
-    cxDBTreeList1PARENT: TcxDBTreeListColumn;
-    cxDBTreeList1ID: TcxDBTreeListColumn;
-    cxDBTreeList1NAME: TcxDBTreeListColumn;
-    cxDBTreeList1PARENT_ID: TcxDBTreeListColumn;
+    cxGrid1DBBandedTableView1: TcxGridDBBandedTableView;
+    cxGrid1DBBandedTableView1PARENT: TcxGridDBBandedColumn;
+    cxGrid1DBBandedTableView1ID: TcxGridDBBandedColumn;
+    cxGrid1DBBandedTableView1NAME: TcxGridDBBandedColumn;
+    cxGrid1DBBandedTableView1PARENT_ID: TcxGridDBBandedColumn;
+    cxStyle17: TcxStyle;
+    Edit1: TEdit;
+    cxGrid1DBCardView1: TcxGridDBCardView;
+    cxGrid1DBCardView1PARENT: TcxGridDBCardViewRow;
+    cxGrid1DBCardView1ID: TcxGridDBCardViewRow;
+    cxGrid1DBCardView1NAME: TcxGridDBCardViewRow;
+    cxGrid1DBCardView1PARENT_ID: TcxGridDBCardViewRow;
+    cxStyle18: TcxStyle;
+    cxStyle19: TcxStyle;
     procedure cxDBComboBox1PropertiesInitPopup(Sender: TObject);
+    procedure cxGrid1DBCardView1CellClick(Sender: TcxCustomGridTableView;
+      ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton;
+      AShift: TShiftState; var AHandled: Boolean);
   private
     { Private declarations }
   public
@@ -79,6 +88,13 @@ implementation
 procedure TForm1.cxDBComboBox1PropertiesInitPopup(Sender: TObject);
 begin
 //                   TStringDynArray
+end;
+
+procedure TForm1.cxGrid1DBCardView1CellClick(Sender: TcxCustomGridTableView;
+  ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton;
+  AShift: TShiftState; var AHandled: Boolean);
+begin
+  ShowMessage('ok');
 end;
 
 end.
