@@ -189,7 +189,7 @@ begin
   if App.Settings['Application.Title'] <> '' then
     Application.Title := App.Settings['Application.Title'];
 
-  if (App.Settings.Aliases.Count > 1) and (App.Settings.CurrentAlias <> '') then
+  if App.Settings.CurrentAlias <> '' then
     Application.Title := Application.Title + ' <' +
       App.Settings.CurrentAlias  + '>';
 

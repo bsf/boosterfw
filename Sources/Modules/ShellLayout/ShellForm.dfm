@@ -129,7 +129,6 @@ object frMain: TfrMain
     StyleHot.LookAndFeel.Kind = lfOffice11
     TabOrder = 3
     Transparent = True
-    ExplicitLeft = 512
     Height = 535
     Width = 686
     object pcMain: TcxPageControl
@@ -143,10 +142,6 @@ object frMain: TfrMain
       Properties.Options = [pcoAlwaysShowGoDialogButton, pcoGradientClientArea, pcoNoArrows, pcoRedrawOnResize]
       Properties.Style = 9
       LookAndFeel.Kind = lfOffice11
-      ExplicitLeft = 2
-      ExplicitTop = 56
-      ExplicitWidth = 477
-      ExplicitHeight = 355
       ClientRectBottom = 413
       ClientRectRight = 686
       ClientRectTop = 0
@@ -159,9 +154,6 @@ object frMain: TfrMain
       AlignSplitter = salBottom
       AutoSnap = True
       Control = pnNotify
-      ExplicitLeft = 2
-      ExplicitTop = 411
-      ExplicitWidth = 682
     end
     object pnNotify: TcxGroupBox
       Left = 0
@@ -182,8 +174,6 @@ object frMain: TfrMain
       StyleFocused.LookAndFeel.Kind = lfOffice11
       StyleHot.LookAndFeel.Kind = lfOffice11
       TabOrder = 2
-      ExplicitLeft = 2
-      ExplicitTop = 416
       Height = 117
       Width = 686
       object grNotify: TcxGrid
@@ -204,7 +194,6 @@ object frMain: TfrMain
         TabOrder = 0
         TabStop = False
         LookAndFeel.Kind = lfOffice11
-        ExplicitWidth = 678
         object grNotifyListView: TcxGridTableView
           OnCellDblClick = grNotifyListViewCellDblClick
           DataController.Summary.DefaultGroupSummaryItems = <>

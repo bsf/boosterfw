@@ -56,7 +56,6 @@ object Form1: TForm1
     Align = alClient
     TabOrder = 1
     LookAndFeel.Kind = lfOffice11
-    ExplicitWidth = 672
     object cxGrid1DBBandedTableView1: TcxGridDBBandedTableView
       DataController.DataSource = DataSource1
       DataController.Summary.DefaultGroupSummaryItems = <>
@@ -115,6 +114,7 @@ object Form1: TForm1
       DataController.Summary.DefaultGroupSummaryItems = <>
       DataController.Summary.FooterSummaryItems = <>
       DataController.Summary.SummaryGroups = <>
+      OptionsCustomize.RowMoving = True
       OptionsData.Deleting = False
       OptionsData.Editing = False
       OptionsData.Inserting = False
@@ -141,7 +141,7 @@ object Form1: TForm1
       object cxGrid1DBCardView1NAME: TcxGridDBCardViewRow
         DataBinding.FieldName = 'NAME'
         Options.ShowCaption = False
-        Position.BeginsLayer = True
+        Position.BeginsLayer = False
         Styles.Content = cxStyle18
         Styles.Caption = cxStyle18
       end
