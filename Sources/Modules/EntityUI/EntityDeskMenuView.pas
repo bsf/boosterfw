@@ -7,14 +7,26 @@ uses
   Dialogs, CustomView, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxContainer, cxEdit, ActnList, cxGroupBox,
   EntityDeskMenuPresenter, db, ExtCtrls, cxButtons, Menus, StdCtrls,
-  ShellIntf;
+  ShellIntf, cxStyles, cxCustomData, cxFilter, cxData, cxDataStorage, cxDBData,
+  cxGridCustomTableView, cxGridCardView, cxGridDBCardView, cxGridCustomView,
+  cxGridCustomLayoutView, cxClasses, cxGridLevel, cxGrid, cxLabel;
 
 type
   TfrEntityDeskMenuView = class(TfrCustomView, IEntityDeskMenuView)
-    flPanel: TFlowPanel;
+    grMenuLevel1: TcxGridLevel;
+    grMenu: TcxGrid;
+    grMenuView: TcxGridDBCardView;
+    dsItems: TDataSource;
+    grMenuViewRowTitle: TcxGridDBCardViewRow;
+    grMenuViewRowURI: TcxGridDBCardViewRow;
+    cxStyleRepository1: TcxStyleRepository;
+    cxStyle1: TcxStyle;
+    procedure grMenuViewCellClick(Sender: TcxCustomGridTableView;
+      ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton;
+      AShift: TShiftState; var AHandled: Boolean);
   private
   protected
-    procedure AddItem(const ACaption, ACommand: string);
+    procedure LinkItems(ADataSet: TDataSet);
 
   end;
 
@@ -26,28 +38,17 @@ implementation
 
 { TfrEntityDeskMenuView }
 
-procedure TfrEntityDeskMenuView.AddItem(const ACaption, ACommand: string);
-var
-  btn: TcxButton;
+procedure TfrEntityDeskMenuView.grMenuViewCellClick(
+  Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo;
+  AButton: TMouseButton; AShift: TShiftState; var AHandled: Boolean);
 begin
-  btn := TcxButton.Create(Self);
-  with btn do
-  begin
-    Caption := ACaption;
-    Font.Size := 11;
-    Width := 125;
-    Height := 125;
-    SpeedButtonOptions.CanBeFocused := false;
-    SpeedButtonOptions.Transparent := true;
-//    SpeedButtonOptions.Flat := true;
-    LookAndFeel.Kind := lfFlat;
-    LookAndFeel.NativeStyle := false;
-    AlignWithMargins := true;
-    Parent := flPanel;
-    WordWrap := true;
-  end;
-  btn.ScaleBy(App.UI.Scale, 100);
-  WorkItem.Commands[ACommand].AddInvoker(btn, 'OnClick');
+  WorkItem.Commands[ACellViewInfo.GridRecord.Values[grMenuViewRowURI.Index]].Execute;
+
+end;
+
+procedure TfrEntityDeskMenuView.LinkItems(ADataSet: TDataSet);
+begin
+  dsItems.DataSet := ADataSet;
 end;
 
 end.

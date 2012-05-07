@@ -9,7 +9,7 @@ uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
 type
   IEntityDeskMenuView = interface(IContentView)
   ['{1DBB5B01-51A0-4BB0-85D2-D6724AEDC6F4}']
-    procedure AddItem(const ACaption, ACommand: string);
+    procedure LinkItems(ADataSet: TDataSet);
   end;
 
   TEntityDeskMenuPresenter = class(TEntityContentPresenter)
@@ -63,10 +63,11 @@ begin
   while not ds.Eof  do
   begin
     WorkItem.Commands[ds['URI']].SetHandler(CmdItemHandler);
-    View.AddItem(ds['TITLE'], ds['URI']);
     ds.Next;
   end;
 
+
+  View.LinkItems(GetEVItems.DataSet);
 end;
 
 function TEntityDeskMenuPresenter.View: IEntityDeskMenuView;
