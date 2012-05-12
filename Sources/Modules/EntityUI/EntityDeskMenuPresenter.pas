@@ -14,7 +14,6 @@ type
 
   TEntityDeskMenuPresenter = class(TEntityContentPresenter)
   private
-    FEntityViewReady: boolean;
     function View: IEntityDeskMenuView;
     procedure CmdItemHandler(Sender: TObject);
   protected

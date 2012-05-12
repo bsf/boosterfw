@@ -6,18 +6,17 @@ inherited frEntityDeskMenuView: TfrEntityDeskMenuView
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
     object grMenu: TcxGrid
-      AlignWithMargins = True
-      Left = 3
-      Top = 3
-      Width = 664
-      Height = 509
+      Left = 0
+      Top = 0
+      Width = 670
+      Height = 515
       Align = alClient
       BorderStyle = cxcbsNone
       TabOrder = 0
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 480
-      ExplicitHeight = 515
+      ExplicitLeft = 3
+      ExplicitTop = 3
+      ExplicitWidth = 664
+      ExplicitHeight = 509
       object grMenuView: TcxGridDBCardView
         OnCellClick = grMenuViewCellClick
         DataController.DataSource = dsItems

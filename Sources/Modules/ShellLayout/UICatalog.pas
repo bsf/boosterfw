@@ -3,7 +3,7 @@ unit UICatalog;
 interface
 uses classes, coreClasses, db, EntityServiceIntf, UIServiceIntf, variants,
   cxStyles, graphics, windows, generics.collections, sysutils, ShellIntf,
-  UIClasses, StrUtils;
+  UIClasses, StrUtils, forms, Contnrs;
 
 type
   TUICatalog = class(TComponent)
@@ -23,18 +23,44 @@ type
     constructor Create(AOwner: TComponent; AWorkItem: TWorkItem); reintroduce;
 
   type
+
+    TCommandCondition = class(TObject)
+    private
+      FParams: TStringList;
+      FCommandName: string;
+      FEntityName: string;
+      FViewName: string;
+      FParamsStr: string;
+      FRunOnce: boolean;
+      FSetUnavailable: boolean;
+    public
+      constructor Create(const ACommandName, ACondition, AParamsStr: string);
+      destructor Destroy; override;
+      property CommandName: string read FCommandName;
+      property EntityName: string read FEntityName;
+      property ViewName: string read FViewName;
+      property ParamsStr: string read FParamsStr;
+      property Params: TStringList read FParams;
+      property RunOnce: boolean read FRunOnce;
+      property SetUnavailable: boolean read FSetUnavailable;
+    end;
+
     TViewCommandExtension = class(TViewExtension, IExtensionCommand)
     const
       CMDPROXY_DATA_HANDLER = 'PROXY_HANDLER';
-      CMDPROXY_DATA_HANDLER_KIND = 'PROXY_HANDLER_KIND';
       CMDPROXY_DATA_PARAMS = 'PROXY_PARAMS';
+      CMDPROXY_OPTION_PREF = 'PROXY_OPTION.';
 
     private
+      FConditions: TObjectList;
+
       procedure CommandProxyHandler(Sender: TObject);
     protected
       procedure CommandExtend;
       procedure CommandUpdate;
     public
+      constructor Create(AOwner: TComponent); override;
+      destructor Destroy; override;
       class function CheckView(AView: IView): boolean; override;
     end;
 
@@ -262,6 +288,36 @@ end;
 
 
 procedure TUICatalog.TViewCommandExtension.CommandExtend;
+
+  procedure CommandSetOptions(ACommand: ICommand; const AOptions: string);
+  var
+    I: integer;
+    strList: TStringList;
+    optionValue: string;
+    optionName: string;
+  begin
+     strList := TStringList.Create;
+     try
+        ExtractStrings([',',';'], [], PWideChar(AOptions), strList);
+        for I := 0 to strList.Count - 1 do
+        begin
+          optionValue := strList.ValueFromIndex[I];
+          if optionValue = '' then
+            optionValue := '1';
+
+          optionName := strList.Names[I];
+          if optionName = '' then
+            optionName := strList[I];
+
+          optionName := CMDPROXY_OPTION_PREF + optionName;
+          ACommand.Data[optionName] := optionValue;
+        end;
+     finally
+       strList.Free;
+     end;
+  end;
+
+
 var
   list: TDataSet;
   cmd: ICommand;
@@ -293,35 +349,191 @@ begin
       (GetView as ICustomView).CommandBar.
         AddCommand(cmd.Name, VarToStr(list['CAPTION']), '', VarToStr(list['GRP']), list['DEF'] = 1);
 
+    CommandSetOptions(cmd, VarToStr(list['OPTIONS']));
+
+    if (VarToStr(list['CONDITION']) <> '') or (VarToStr(list['CONDITION_PARAMS']) <> '') then
+      FConditions.Add(TCommandCondition.Create(cmd.Name,
+        VarToStr(list['CONDITION']), VarToStr(list['CONDITION_PARAMS'])));
+
     list.Next;
   end;
 
 end;
 
 procedure TUICatalog.TViewCommandExtension.CommandProxyHandler(Sender: TObject);
+const
+  OPTION_CLOSE_VIEW_BEFORE = CMDPROXY_OPTION_PREF + 'CloseViewBefore';
+  OPTION_CLOSE_VIEW_AFTER = CMDPROXY_OPTION_PREF + 'CloseViewAfter';
+
 var
-  intf: ICommand;
+  cmd: ICommand;
   activity: IActivity;
   cmdHandler: string;
   cmdParams: string;
+  callerWI: TWorkItem;
 
 begin
-  Sender.GetInterface(ICommand, intf);
+  Sender.GetInterface(ICommand, cmd);
 
-  cmdHandler := intf.Data[CMDPROXY_DATA_HANDLER];
-  cmdParams := intf.Data[CMDPROXY_DATA_PARAMS];
+  cmdHandler := cmd.Data[CMDPROXY_DATA_HANDLER];
+  cmdParams := cmd.Data[CMDPROXY_DATA_PARAMS];
 
   activity := WorkItem.Activities[cmdHandler];
   activity.Params.Assign(WorkItem, cmdParams);
-  activity.Execute(WorkItem);
+
+  callerWI := WorkItem;
+
+  if VarToStr(cmd.Data[OPTION_CLOSE_VIEW_BEFORE]) = '1' then
+  begin
+    if WorkItem.ID <> WorkItem.Context then
+    begin
+      callerWI := WorkItem.Root.WorkItems.Find(WorkItem.Context);
+      if callerWI = nil then
+        callerWI := WorkItem.Parent;
+    end
+    else
+      callerWI := WorkItem.Parent;
+
+    WorkItem.Commands[COMMAND_CLOSE].Execute;
+  end;
+
+  activity.Execute(callerWI);
+
+  if VarToStr(cmd.Data[OPTION_CLOSE_VIEW_AFTER]) = '1' then
+    WorkItem.Commands[COMMAND_CLOSE].Execute;
 
 end;
 
 procedure TUICatalog.TViewCommandExtension.CommandUpdate;
+
+  function ConditionBySQL(ACondition: TCommandCondition): TCommandStatus;
+  begin
+    Result := csEnabled;
+    if App.Entities[ACondition.EntityName].GetView(ACondition.ViewName, WorkItem).
+      Load(true, ACondition.ParamsStr).Fields[0].AsInteger = 0 then
+      Result := csDisabled;
+  end;
+
+  function ConditionByParams(ACondition: TCommandCondition): TCommandStatus;
+  var
+    I: integer;
+  begin
+    Result := csEnabled;
+
+    for I := 0 to ACondition.Params.Count - 1 do
+    begin
+
+      if SameText(ACondition.Params.ValueFromIndex[I], 'NotEmpty') then
+      begin
+        if VarIsEmpty(WorkItem.State[ACondition.Params.Names[I]]) or
+           VarIsNull(WorkItem.State[ACondition.Params.Names[I]]) then
+          Result := csDisabled;
+      end
+      else
+      begin
+        if VarToStr(WorkItem.State[ACondition.Params.Names[I]]) <>
+             ACondition.Params.ValueFromIndex[I] then
+          Result := csDisabled;
+      end;
+
+      if Result = csDisabled then Exit;
+    end;
+
+  end;
+
+var
+  I: integer;
+  condition: TCommandCondition;
+  commandStatus: TCommandStatus;
 begin
+  for I := FConditions.Count - 1 downto 0 do
+  begin
+    condition := TCommandCondition(FConditions[I]);
+
+    if condition.EntityName <> '' then
+      commandStatus := ConditionBySQL(condition)
+    else
+      commandStatus := ConditionByParams(condition);
+
+    if (commandStatus = csDisabled) and condition.SetUnavailable then
+      commandStatus := csUnavailable;
+
+    WorkItem.Commands[condition.CommandName].Status := commandStatus;
+
+    if condition.RunOnce then
+      FConditions.Delete(I);
+  end;
+end;
+
+
+constructor TUICatalog.TViewCommandExtension.Create(AOwner: TComponent);
+begin
+  inherited;
+  FConditions := TObjectList.Create;
+end;
+
+destructor TUICatalog.TViewCommandExtension.Destroy;
+begin
+  FConditions.Free;
+  inherited;
+end;
+
+{ TUICatalog.TCommandCondition }
+
+constructor TUICatalog.TCommandCondition.Create(const ACommandName, ACondition, AParamsStr: string);
+
+  function DecodeValue(const AValue: string): string;
+  var
+    val: string;
+  begin
+    if StartsText('[', AValue) and EndsText(']', AValue) then
+    begin
+      val := AValue;
+      Delete(val, 1, 1);
+      Delete(val, Length(val), 1);
+      Result := val;
+    end
+    else
+      Result := AValue;
+  end;
+
+var
+  strList: TStringList;
+  I: integer;
+
+begin
+  FParams := TStringList.Create;
+
+  FCommandName := ACommandName;
+  FParamsStr := AParamsStr;
+
+  strList := TStringList.Create;
+  try
+    ExtractStrings([';'], [], PWideChar(ACondition), strList);
+    FEntityName := strList.Values['Entity'];
+    FViewName := strList.Values['EView'];
+    FRunOnce := strList.IndexOf('RunOnce') <> -1;
+    FSetUnavailable  := strList.IndexOf('SetUnavailable') <> -1;
+
+    if FEntityName = '' then
+    begin
+      strList.Clear;
+      ExtractStrings([';'], [], PWideChar(AParamsStr), strList);
+      for I := 0 to strList.Count - 1 do
+        FParams.Values[strList.Names[I]] := DecodeValue(strList.ValueFromIndex[I]);
+    end;
+
+  finally
+    strList.Free;
+  end;
 
 end;
 
+destructor TUICatalog.TCommandCondition.Destroy;
+begin
+  FParams.Free;
+  inherited;
+end;
 
 initialization
   ColorDictionaryInit;

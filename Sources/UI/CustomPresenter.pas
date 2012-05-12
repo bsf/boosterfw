@@ -213,7 +213,7 @@ begin
   for I := 0 to extensions.Count - 1 do
     (extensions[I] as IExtensionCommand).CommandExtend;
 
-
+  UpdateCommandStatus;
 end;
 
 function TCustomPresenter.InstantiateView(const AViewURI: string;
