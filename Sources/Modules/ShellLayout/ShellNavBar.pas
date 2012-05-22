@@ -392,10 +392,12 @@ var
   I: integer;
 begin
   dxCategoryNavBar := TdxNavBar(ACategory.Control.FindComponent('NavBar'));
-  for I := 0 to dxCategoryNavBar.OptionsStyle.DefaultStyles.DefaultStyleCount - 1 do
+
+  for I := dxCategoryNavBar.OptionsStyle.DefaultStyles.DefaultStyleCount - 1 downto 0 do // downto!!! because HotTrack Style double setting size
     dxCategoryNavBar.OptionsStyle.DefaultStyles.DefaultStyles[I].Font.Size :=
        MulDiv(
         dxCategoryNavBar.OptionsStyle.DefaultStyles.DefaultStyles[I].Font.Size, M, D);
+
 end;
 
 
