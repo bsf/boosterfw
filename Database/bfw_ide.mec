@@ -1,0 +1,61 @@
+[General]
+ExtractType=2
+FileName=
+ExtractAll=0
+[Options]
+GenerateCreateDB=0
+GenerateConnectDB=1
+IncludePassword=0
+SetGenerators=0
+IncludeDescriptions=1
+DescAsUpdate=0
+UseComment=0
+ExtractComputedFieldsSeparately=0
+CommitAfter=500
+MaxFileSize=0
+ExtractBlobs=0
+ExtractPrivileges=0
+OnlySelectedPrivileges=0
+ExcludeIBEObjects=0
+ExcludeTMPObjects=0
+UseReinsert=0
+TrimTrailings=0
+DontUseSetTerm=0
+UseSEQUENCE=0
+AlwaysQuoteIdents=0
+DecodeDomains=0
+UseCreateOrAlter=1
+[Domains]
+Count=0
+[Tables]
+Count=0
+[Views]
+Count=0
+[Procedures]
+Count=4
+Procedure_0=BFW_IDE_EV_UI_ITEM
+Procedure_1=BFW_IDE_EV_UI_ITEM_U
+Procedure_2=BFW_IDE_EV_UI_NEW
+Procedure_3=BFW_IDE_EV_UI_NEW_U
+[Triggers]
+Count=0
+[Generators]
+Count=0
+[Exceptions]
+Count=0
+[UDFs]
+Count=0
+[Roles]
+Count=0
+[DataTables]
+Count=5
+DataTable_0=BFW_ENT
+DataTableWhere_0=where entityname starting with 'BFW_IDE'
+DataTable_1=BFW_ENT_FIELDS
+DataTableWhere_1=where entityname starting with 'BFW_IDE'
+DataTable_2=BFW_ENT_VIEWS
+DataTableWhere_2=where entityname starting with 'BFW_IDE'
+DataTable_3=BFW_UI
+DataTableWhere_3=where entityname starting with 'BFW_IDE'
+DataTable_4=BFW_UI_CMD
+DataTableWhere_4=where uri containing 'BFW_IDE'
