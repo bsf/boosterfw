@@ -4,7 +4,7 @@ FileName=
 ExtractAll=0
 [Options]
 GenerateCreateDB=0
-GenerateConnectDB=1
+GenerateConnectDB=0
 IncludePassword=0
 SetGenerators=0
 IncludeDescriptions=1
@@ -73,7 +73,7 @@ Count=0
 [Roles]
 Count=0
 [DataTables]
-Count=5
+Count=6
 DataTable_0=BFW_ENT
 DataTableWhere_0=where entityname starting with 'BFW_SEC_'
 DataTable_1=BFW_ENT_VIEWS
@@ -84,3 +84,5 @@ DataTable_3=BFW_SEC_POLICIES
 DataTableWhere_3=where polid = 'BUILT-IN'
 DataTable_4=BFW_SEC_PERMISSIONS
 DataTableWhere_4=where polid = 'BUILT-IN'
+DataTable_5=BFW_SEC_ACL
+DataTableWhere_5=where permid = 'builtin.unrestricted' and userid = 'SYSDBA'
