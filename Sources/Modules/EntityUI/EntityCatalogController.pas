@@ -42,6 +42,13 @@ type
         procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
       end;
 
+      TEntityActivityHandler = class(TActivityHandler)
+      const
+        CLS_ENTITY_ACTIVITY = 'IEntityActivity';
+      public
+        procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
+      end;
+
   end;
 
 implementation
@@ -96,6 +103,8 @@ begin
   with WorkItem.Activities do
   begin
     RegisterHandler(TEntityOperExecHandler.CLS_ENTITY_OPER_EXEC, TEntityOperExecHandler.Create);
+    //
+    RegisterHandler(TEntityActivityHandler.CLS_ENTITY_ACTIVITY, TEntityActivityHandler.Create);
     //
     RegisterHandler('IEntityNewDef', TEntityNewDefaultHandler.Create);
     RegisterHandler('IEntityItemDef', TEntityItemDefaultHandler.Create);
@@ -280,6 +289,50 @@ begin
   ParamsBinding(Activity, targetActivity);
   targetActivity.Execute(Sender);
 
+
+end;
+
+{ TEntityCatalogController.TEntityActivityHandler }
+
+procedure TEntityCatalogController.TEntityActivityHandler.Execute(
+  Sender: TWorkItem; Activity: IActivity);
+//const
+ // URI_FIELD = 'URI';
+
+
+var
+  viewURI: string;
+  dsURI: TDataSet;
+  entityName: string;
+  eviewName: string;
+  evURI: IEntityView;
+  targetActivity: IActivity;
+
+
+begin
+
+
+  entityName := Activity.OptionValue(TViewActivityOptions.EntityName);
+  if entityName = '' then Exit;
+  eviewName := Activity.OptionValue(TViewActivityOptions.EntityViewName);
+  if eviewName = '' then Exit;
+
+  viewURI := '';
+
+  evURI := App.Entities[entityName].GetView(eviewName, Sender);
+  ParamsBinding(Activity, evURI.Params);
+
+
+  dsURI := evURI.Load(true, '-');
+  viewURI := VarToStr(dsURI['URI']);
+
+  if (viewURI = '') or SameText(viewURI, Activity.URI) then Exit;
+
+  targetActivity := Sender.Activities[viewURI];
+  ParamsBinding(Activity, targetActivity);
+//  if dsItemURI <> nil then
+  //  ParamsBinding(dsItemURI, targetActivity);
+  targetActivity.Execute(Sender);
 
 end;
 

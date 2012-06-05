@@ -2,31 +2,39 @@ inherited frNotifySenderView: TfrNotifySenderView
   Caption = 'frNotifySenderView'
   ClientHeight = 330
   ClientWidth = 476
+  ExplicitWidth = 482
+  ExplicitHeight = 358
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
+    ExplicitWidth = 476
+    ExplicitHeight = 330
     Height = 330
     Width = 476
     inherited pnButtons: TcxGroupBox
-      Top = 291
-      Width = 472
+      Top = 293
+      ExplicitTop = 293
+      ExplicitWidth = 476
+      Width = 476
     end
     object cxGroupBox1: TcxGroupBox
-      Left = 2
-      Top = 2
+      Left = 0
+      Top = 0
       Align = alTop
       Caption = #1050#1086#1084#1091
+      PanelStyle.OfficeBackgroundKind = pobkStyleColor
       Style.LookAndFeel.Kind = lfOffice11
       StyleDisabled.LookAndFeel.Kind = lfOffice11
       StyleFocused.LookAndFeel.Kind = lfOffice11
       StyleHot.LookAndFeel.Kind = lfOffice11
       TabOrder = 1
+      ExplicitTop = -6
       Height = 185
-      Width = 472
+      Width = 476
       object lbUsers: TcxCheckListBox
         Left = 2
         Top = 18
-        Width = 468
+        Width = 472
         Height = 165
         Align = alClient
         Columns = 3
@@ -46,17 +54,18 @@ inherited frNotifySenderView: TfrNotifySenderView
       end
     end
     object cxGroupBox2: TcxGroupBox
-      Left = 2
-      Top = 187
+      Left = 0
+      Top = 185
       Align = alClient
       Caption = #1058#1077#1082#1089#1090' '#1091#1074#1077#1076#1086#1084#1083#1077#1085#1080#1103
+      PanelStyle.OfficeBackgroundKind = pobkStyleColor
       Style.LookAndFeel.Kind = lfOffice11
       StyleDisabled.LookAndFeel.Kind = lfOffice11
       StyleFocused.LookAndFeel.Kind = lfOffice11
       StyleHot.LookAndFeel.Kind = lfOffice11
       TabOrder = 2
-      Height = 104
-      Width = 472
+      Height = 108
+      Width = 476
       object mmText: TcxMemo
         Left = 2
         Top = 18
@@ -66,8 +75,8 @@ inherited frNotifySenderView: TfrNotifySenderView
         StyleFocused.LookAndFeel.Kind = lfOffice11
         StyleHot.LookAndFeel.Kind = lfOffice11
         TabOrder = 0
-        Height = 84
-        Width = 468
+        Height = 88
+        Width = 472
       end
     end
   end

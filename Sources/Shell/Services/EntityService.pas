@@ -15,12 +15,6 @@ const
   ENT_METADATA_VIEW_LINKS = 'ViewLinks';
   ENT_METADATA_VIEW_LINKEDFIELDS = 'ViewLinkedFields';
 
-  ENT_SETTING = 'BFW_INF_SETTING';
-  ENT_SETTING_VIEW_META = 'META';
-  ENT_SETTING_VIEW_GET = 'GET';
-  ENT_SETTING_OPER_SET = 'SET';
-  ENT_SETTING_VIEW_CHECK = 'CHECK';
-
   ET_ENTITY_VIEW_RELOAD_LINKS_PK = 'entity://view_reload_links_pk_%s_%s';
   ET_ENTITY_VIEW_RELOAD_LINKS_LF = 'entity://view_reload_links_lf_%s_%s_%s';
 
