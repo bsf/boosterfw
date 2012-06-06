@@ -308,7 +308,9 @@ var
   evURI: IEntityView;
   targetActivity: IActivity;
 
-
+  I: integer;
+  prmName: string;
+  field: TField;
 begin
 
 
@@ -326,12 +328,36 @@ begin
   dsURI := evURI.Load(true, '-');
   viewURI := VarToStr(dsURI['URI']);
 
+  //FieldValue -> Outs bind
+  for i := 0 to Activity.Outs.Count - 1 do
+  begin
+    prmName := Activity.Outs.ValueName(I);
+    field := dsURI.FindField(prmName);
+    if field <> nil then
+      Activity.Outs[prmName] := field.Value;
+  end;
+
   if (viewURI = '') or SameText(viewURI, Activity.URI) then Exit;
 
   targetActivity := Sender.Activities[viewURI];
-  ParamsBinding(Activity, targetActivity);
-//  if dsItemURI <> nil then
-  //  ParamsBinding(dsItemURI, targetActivity);
+
+  //Params -> Params bind
+  for i := 0 to Activity.Params.Count - 1 do
+  begin
+    prmName := Activity.Params.ValueName(I);
+    if targetActivity.Params.IndexOf(prmName) <> -1 then
+      targetActivity.Params[prmName] := Activity.Params[prmName];
+  end;
+
+
+  //Outs -> Params bind
+  for i := 0 to Activity.Outs.Count - 1 do
+  begin
+    prmName := Activity.Outs.ValueName(I);
+    if targetActivity.Params.IndexOf(prmName) <> -1 then
+      targetActivity.Params[prmName] := Activity.Outs[prmName];
+  end;
+
   targetActivity.Execute(Sender);
 
 end;
