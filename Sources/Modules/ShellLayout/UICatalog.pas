@@ -230,8 +230,6 @@ var
   list: TDataSet;
   svc: IEntityService;
   strList: TStringList;
-  entityName: string;
-  entityViewName: string;
 begin
   strList := TStringList.Create;
   try
@@ -247,15 +245,12 @@ begin
         MenuIndex := list['MENUIDX'];
         UsePermission := list['USEPERM'] = 1;
 
-        entityName := VarToStr(list['ENTITYNAME']);
-        entityViewName := VarToStr(list['VIEWNAME']);
-
         strList.Clear;
         ExtractStrings([';'], [], PWideChar(VarToStr(list['OPTIONS'])), strList);
         Options.Clear;
         Options.AddStrings(strList);
-        Options.Add(TViewActivityOptions.EntityName + '=' + entityName);
-        Options.Add(TViewActivityOptions.EntityViewName + '=' + entityViewName);
+        Options.Add(TViewActivityOptions.EntityName + '=' + VarToStr(list['ENTITYNAME']));
+        Options.Add(TViewActivityOptions.EntityViewName + '=' + VarToStr(list['VIEWNAME']));
 
         strList.Clear;
         ExtractStrings([',',';'], [], PWideChar(VarToStr(list['PARAMS'])), strList);

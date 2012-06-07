@@ -139,7 +139,7 @@ object frMain: TfrMain
       Align = alClient
       Focusable = False
       TabOrder = 0
-      Properties.Options = [pcoAlwaysShowGoDialogButton, pcoGradientClientArea, pcoNoArrows, pcoRedrawOnResize]
+      Properties.Options = [pcoAlwaysShowGoDialogButton, pcoGradientClientArea, pcoRedrawOnResize]
       Properties.Style = 9
       LookAndFeel.Kind = lfOffice11
       ClientRectBottom = 413

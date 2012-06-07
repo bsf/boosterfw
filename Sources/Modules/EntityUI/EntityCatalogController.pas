@@ -53,6 +53,7 @@ type
 
 implementation
 
+
 procedure ParamsBinding(Source: IActivity; Target: TParams); overload;
 var
   I: integer;
@@ -94,6 +95,19 @@ begin
     prmName := Source.Params.ValueName(I);
     if Target.Params.IndexOf(prmName) <> -1 then
       Target.Params[prmName] := Source.Params[prmName];
+  end;
+end;
+
+procedure ActivityDataBinding(Source: IActivityData; Target: IActivityData);
+var
+  I: integer;
+  prmName: string;
+begin
+  for i := 0 to Source.Count - 1 do
+  begin
+    prmName := Source.ValueName(I);
+    if Target.IndexOf(prmName) <> -1 then
+      Target[prmName] := Source[prmName];
   end;
 end;
 
@@ -271,12 +285,16 @@ begin
 
   viewURI := '';
 
+  actionURI := nil;
   if App.Entities.EntityViewExists(entityName, 'NewURI') then
   begin
     actionURI := Sender.Activities[format(FMT_VIEW_NEW_URI, [entityName])];
+    ParamsBinding(Activity, actionURI);
     actionURI.Execute(Sender);
     if actionURI.Outs[TViewActivityOuts.ModalResult] = mrOk then
+    begin
       viewURI := actionURI.Outs['URI']
+    end
     else
       viewURI := '';
   end
@@ -287,6 +305,9 @@ begin
 
   targetActivity := Sender.Activities[viewURI];
   ParamsBinding(Activity, targetActivity);
+  if actionURI <> nil then
+    ActivityDataBinding(actionURI.Outs, targetActivity.Params);
+
   targetActivity.Execute(Sender);
 
 
@@ -342,21 +363,10 @@ begin
   targetActivity := Sender.Activities[viewURI];
 
   //Params -> Params bind
-  for i := 0 to Activity.Params.Count - 1 do
-  begin
-    prmName := Activity.Params.ValueName(I);
-    if targetActivity.Params.IndexOf(prmName) <> -1 then
-      targetActivity.Params[prmName] := Activity.Params[prmName];
-  end;
-
-
+  ActivityDataBinding(Activity.Params, targetActivity.Params);
   //Outs -> Params bind
-  for i := 0 to Activity.Outs.Count - 1 do
-  begin
-    prmName := Activity.Outs.ValueName(I);
-    if targetActivity.Params.IndexOf(prmName) <> -1 then
-      targetActivity.Params[prmName] := Activity.Outs[prmName];
-  end;
+  ActivityDataBinding(Activity.Outs, targetActivity.Params);
+
 
   targetActivity.Execute(Sender);
 
