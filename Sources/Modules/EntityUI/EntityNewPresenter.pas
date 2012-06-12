@@ -67,14 +67,21 @@ end;
 procedure TEntityNewPresenter.OnViewReady;
 var
   fieldAux: TField;
+  dsItem: TDataSet;
 begin
   ViewTitle := ViewInfo.Title;
 
-  fieldAux := GetEVItem.DataSet.FindField('UI_TITLE');
+  dsItem := GetEVItem.DataSet;
+
+  View.SetData(dsItem); //перед инсерт иначе cancel срабатывает
+
+  GetEVItem.DoModify;
+  
+  fieldAux := dsItem.FindField('UI_TITLE');
   if not Assigned(fieldAux) then
-    fieldAux := GetEVItem.DataSet.FindField('VIEW_TITLE');
+    fieldAux := dsItem.FindField('VIEW_TITLE');
   if not Assigned(fieldAux) then
-    fieldAux := GetEVItem.DataSet.FindField('NAME');
+    fieldAux := dsItem.FindField('NAME');
 
   if Assigned(fieldAux) and (VarToStr(fieldAux.Value) <> '') then
     ViewTitle := VarToStr(fieldAux.Value);
@@ -87,18 +94,19 @@ begin
     GetLocaleString(@COMMAND_CANCEL_CAPTION), COMMAND_CANCEL_SHORTCUT);
   WorkItem.Commands[COMMAND_CANCEL].SetHandler(CmdCancel);
 
-  View.SetData(GetEVItem.DataSet);
+
+
 
   // FocusField
   if VarToStr(WorkItem.State['FOCUS_FIELD']) = '' then
   begin
-    fieldAux := GetEVItem.DataSet.FindField('FOCUS_FIELD');
+    fieldAux := dsItem.FindField('FOCUS_FIELD');
     if Assigned(fieldAux) then
       WorkItem.State['FOCUS_FIELD'] := VarToStr(fieldAux.Value)
     else
       WorkItem.State['FOCUS_FIELD'] := ViewInfo.OptionValue('Focus');
   end;
-  View.FocusDataSetControl(GetEVItem.DataSet, VarToStr(WorkItem.State['FOCUS_FIELD']));
+  View.FocusDataSetControl(dsItem, VarToStr(WorkItem.State['FOCUS_FIELD']));
 
 
   if ViewInfo.OptionExists('Next') then
@@ -107,32 +115,14 @@ begin
   if WorkItem.State['NEXT_ACTION'] <> '' then
     WorkItem.Commands[COMMAND_SAVE].Caption := GetLocaleString(@COMMAND_NEXT_CAPTION);
 
-  if GetEVItem.DataSet.IsEmpty then
-  begin
-    GetEVItem.DataSet.Insert;
-   // GetEVItem.DataSet.Post; ReqFields!!!
-  end;
 end;
 
 function TEntityNewPresenter.GetEVItem: IEntityView;
-var
-  mField: TField;
 begin
   Result := (WorkItem.Services[IEntityService] as IEntityService).
     Entity[EntityName].GetView(EntityViewName, WorkItem);
 
   Result.Load(false);
-
-  if Result.IsLoaded and (not Result.IsModified) then
-  begin
-    mField := Result.DataSet.FindField('MODIFIED');
-    if Assigned(mField) then
-    begin
-      Result.DataSet.Edit;
-      mField.Value := 1;
-      Result.DataSet.Post;
-    end;
-  end;
 
   FEntityViewReady := true;
 end;

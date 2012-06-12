@@ -13,6 +13,7 @@ type
   TfrEntityNewView = class(TfrCustomContentView, IEntityNewView)
     ItemDataSource: TDataSource;
     grMain: TcxDBVerticalGrid;
+    procedure grMainKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
   protected
     procedure SetData(ADataSet: TDataSet);
@@ -25,6 +26,14 @@ implementation
 {$R *.dfm}
 
 { TfrCustomEntityItemView }
+
+procedure TfrEntityNewView.grMainKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then Key := 0; //Blocked cancel inserted record
+  inherited;
+
+end;
 
 procedure TfrEntityNewView.SetData(ADataSet: TDataSet);
 begin

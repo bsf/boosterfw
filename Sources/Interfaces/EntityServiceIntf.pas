@@ -115,6 +115,7 @@ type
     property ImmediateSave: boolean read GetImmediateSave write SetImmediateSave;
     procedure UndoLastChange;
     procedure CancelUpdates;
+    procedure DoModify;
     function IsModified: boolean;
     function IsLoaded: boolean;
     function Info: IEntityViewInfo;

@@ -140,7 +140,7 @@ type
     procedure Save;
     procedure UndoLastChange;
     procedure CancelUpdates;
-
+    procedure DoModify;
     procedure SynchronizeOnEntityChange(const AEntityName, AViewName: string;
       const AFieldName: string = '');
 
@@ -834,6 +834,39 @@ begin
   FPrimaryKeys.Free;
   FLinkedFields.Free;  
   inherited;
+end;
+
+procedure TEntityView.DoModify;
+var
+  fieldAux: TField;
+  _immediateSave: boolean;
+begin
+  _immediateSave := GetImmediateSave;
+  try
+
+    SetImmediateSave(false);
+
+    if GetDataSet.IsEmpty then
+    begin
+      GetDataSet.Insert;
+     // GetDataSet.Post; // ReqFields!!!
+    end
+    else
+    begin
+      fieldAux := GetDataSet.FindField('UI_MODIFIED');
+      if fieldAux = nil then
+        fieldAux := GetDataSet.FindField('MODIFIED'); //obsolete
+      if Assigned(fieldAux) then
+      begin
+        GetDataSet.Edit;
+        fieldAux.Value := 1;
+        GetDataSet.Post;
+      end;
+    end;
+
+  finally
+    SetImmediateSave(_immediateSave);
+  end;
 end;
 
 procedure TEntityView.DoSynchronizeOnEntityChange(EventData: Variant);
