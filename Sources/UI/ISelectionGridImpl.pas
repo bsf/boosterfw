@@ -126,7 +126,6 @@ function TISelectionGridImpl.GetItem(AIndex: integer): Variant;
 var
   KeyFields: TList;
   I: integer;
-  valIndex: integer;
 begin
   Result := Unassigned;
 

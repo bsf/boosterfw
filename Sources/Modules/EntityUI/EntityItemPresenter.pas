@@ -10,6 +10,7 @@ type
   IEntityItemView = interface(IContentView)
   ['{1DBB5B01-51A0-4BB0-85D2-D6724AEDC6F4}']
     procedure SetItemDataSet(ADataSet: TDataSet);
+    procedure CancelEdit;
   end;
 
   TEntityItemPresenter = class(TEntityContentPresenter)
@@ -31,6 +32,7 @@ implementation
 
 procedure TEntityItemPresenter.CmdCancel(Sender: TObject);
 begin
+  View.CancelEdit; //ticket https://github.com/bsf/boosterfw/issues/2
   CloseView;
 end;
 

@@ -42,13 +42,13 @@ object Form2: TForm2
       end>
     RowCollection = <
       item
-        Value = 9.988777075419981000
+        Value = 9.988777075419978000
       end
       item
-        Value = 9.976202947710618000
+        Value = 9.976202947710616000
       end
       item
-        Value = 9.987033426881160000
+        Value = 9.987033426881158000
       end
       item
         Value = 10.001974652924070000
@@ -72,7 +72,8 @@ object Form2: TForm2
         Value = 10.001012532150170000
       end>
     TabOrder = 0
-    ExplicitHeight = 660
+    ExplicitLeft = -24
+    ExplicitTop = -8
     object cxButton1: TcxButton
       Left = 1
       Top = 1
@@ -86,7 +87,6 @@ object Form2: TForm2
       SpeedButtonOptions.Flat = True
       SpeedButtonOptions.Transparent = True
       TabOrder = 0
-      ExplicitHeight = 65
     end
     object cxButton2: TcxButton
       Left = 1
@@ -101,8 +101,6 @@ object Form2: TForm2
       SpeedButtonOptions.Flat = True
       SpeedButtonOptions.Transparent = True
       TabOrder = 1
-      ExplicitTop = 66
-      ExplicitHeight = 65
     end
     object cxButton3: TcxButton
       Left = 1
@@ -117,8 +115,6 @@ object Form2: TForm2
       SpeedButtonOptions.Flat = True
       SpeedButtonOptions.Transparent = True
       TabOrder = 2
-      ExplicitTop = 131
-      ExplicitHeight = 65
     end
   end
   object cxGroupBox1: TcxGroupBox
@@ -129,9 +125,6 @@ object Form2: TForm2
     PanelStyle.Active = True
     Style.Shadow = False
     TabOrder = 1
-    ExplicitLeft = 312
-    ExplicitTop = 8
-    ExplicitHeight = 832
     Height = 634
     Width = 263
     object cxGrid1: TcxGrid
@@ -147,7 +140,6 @@ object Form2: TForm2
       TabOrder = 0
       LookAndFeel.Kind = lfFlat
       LookAndFeel.NativeStyle = True
-      ExplicitTop = 36
       object cxGrid1DBTableView1: TcxGridDBTableView
         DataController.DataSource = DataSource1
         DataController.Summary.DefaultGroupSummaryItems = <>
@@ -245,16 +237,39 @@ object Form2: TForm2
       LookAndFeel.NativeStyle = False
       SpeedButtonOptions.Flat = True
       TabOrder = 2
-      ExplicitTop = 2
     end
   end
   object cxButton6: TcxButton
-    Left = 664
-    Top = 120
+    Left = 608
+    Top = 60
     Width = 75
     Height = 25
     Caption = 'cxButton6'
     TabOrder = 2
+  end
+  object cxDBVerticalGrid1: TcxDBVerticalGrid
+    Left = 592
+    Top = 168
+    Width = 329
+    Height = 345
+    OptionsView.RowHeaderWidth = 147
+    TabOrder = 3
+    Version = 1
+    object cxDBVerticalGrid1DBEditorRow1: TcxDBEditorRow
+      Properties.EditPropertiesClassName = 'TcxPopupEditProperties'
+      Properties.EditProperties.ImmediateDropDownWhenActivated = False
+      ID = 0
+      ParentID = -1
+      Index = 0
+      Version = 1
+    end
+    object cxDBVerticalGrid1DBEditorRow2: TcxDBEditorRow
+      Properties.EditPropertiesClassName = 'TcxCheckBoxProperties'
+      ID = 1
+      ParentID = -1
+      Index = 1
+      Version = 1
+    end
   end
   object DataSource1: TDataSource
     DataSet = ClientDataSet1
@@ -262,8 +277,7 @@ object Form2: TForm2
     Top = 16
   end
   object IBDatabase1: TIBDatabase
-    Connected = True
-    DatabaseName = 'server:b52'
+    DatabaseName = '192.168.0.5:b52'
     Params.Strings = (
       'user_name=sysdba'
       'password=211834'
@@ -271,37 +285,35 @@ object Form2: TForm2
     LoginPrompt = False
     DefaultTransaction = IBTransaction1
     SQLDialect = 1
-    Left = 256
-    Top = 48
+    Left = 224
+    Top = 40
   end
   object IBQuery1: TIBQuery
     Database = IBDatabase1
     Transaction = IBTransaction1
     SQL.Strings = (
       'select * from spr_podr where name containing '#39#1057#39)
-    Left = 232
-    Top = 88
+    Left = 128
+    Top = 72
   end
   object IBTransaction1: TIBTransaction
-    Active = True
     DefaultDatabase = IBDatabase1
-    Left = 224
-    Top = 200
+    Left = 176
+    Top = 192
   end
   object ClientDataSet1: TClientDataSet
-    Active = True
     Aggregates = <>
     CommandText = 'select * from spr_podr where name containing '#39#1057#39
     Params = <>
     ProviderName = 'DataSetProvider1'
-    Left = 208
-    Top = 256
+    Left = 152
+    Top = 248
   end
   object DataSetProvider1: TDataSetProvider
     DataSet = IBQuery1
     Options = [poAllowCommandText, poUseQuoteChar]
-    Left = 248
-    Top = 152
+    Left = 208
+    Top = 136
   end
   object cxStyleRepository1: TcxStyleRepository
     PixelsPerInch = 96
@@ -313,5 +325,11 @@ object Form2: TForm2
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
     end
+  end
+  object cxPropertiesStore1: TcxPropertiesStore
+    Components = <>
+    StorageName = 'cxPropertiesStore1'
+    Left = 488
+    Top = 320
   end
 end

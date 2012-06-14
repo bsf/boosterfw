@@ -7,10 +7,10 @@ inherited frEntityItemView: TfrEntityItemView
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
     object grMain: TcxDBVerticalGrid [0]
-      Left = 2
-      Top = 42
-      Width = 761
-      Height = 471
+      Left = 0
+      Top = 40
+      Width = 765
+      Height = 475
       Align = alClient
       LayoutStyle = lsMultiRecordView
       LookAndFeel.Kind = lfOffice11

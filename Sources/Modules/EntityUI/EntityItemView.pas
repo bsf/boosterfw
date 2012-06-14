@@ -15,6 +15,7 @@ type
     grMain: TcxDBVerticalGrid;
   protected
     procedure SetItemDataSet(ADataSet: TDataSet);
+    procedure CancelEdit;
   public
     { Public declarations }
   end;
@@ -24,6 +25,12 @@ implementation
 {$R *.dfm}
 
 { TfrCustomEntityItemView }
+
+procedure TfrEntityItemView.CancelEdit;
+begin
+  grMain.DataController.DataSource := nil;
+  grMain.DataController.DataSource := ItemDataSource;
+end;
 
 procedure TfrEntityItemView.SetItemDataSet(ADataSet: TDataSet);
 begin

@@ -209,8 +209,7 @@ object Form1: TForm1
     end
   end
   object IBDatabase1: TIBDatabase
-    Connected = True
-    DatabaseName = '192.168.0.253:b52'
+    DatabaseName = '192.168.0.5:b52'
     Params.Strings = (
       'user_name=sysdba'
       'password=211834'
@@ -224,7 +223,6 @@ object Form1: TForm1
   object IBQuery1: TIBQuery
     Database = IBDatabase1
     Transaction = IBTransaction1
-    Active = True
     SQL.Strings = (
       'select p.name parent, i.id, i.name, i.parent_id '
       'from hrs_dept i'
@@ -234,7 +232,6 @@ object Form1: TForm1
     Top = 296
   end
   object IBTransaction1: TIBTransaction
-    Active = True
     Left = 160
     Top = 248
   end

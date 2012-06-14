@@ -37,6 +37,7 @@ type
     procedure InitImageEditor(ARow: TcxDBEditorRow);
     procedure InitColorEditor(ARow: TcxDBEditorRow);
     procedure InitMemoEditor(ARow: TcxDBEditorRow);
+
     procedure ImageRow_OnAssignPicture(Sender: TObject; const Picture: TPicture);
 
     procedure TuneGridForDataSet(AGrid: TcxDBVerticalGrid;
@@ -1129,8 +1130,6 @@ begin
       end
       else
       begin
-
-
         field.Value := activity.Outs[TPickListActivityOuts.NAME];
         if Assigned(fieldID) then
           fieldID.Value := activity.Outs[TPickListActivityOuts.ID];

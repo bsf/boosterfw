@@ -9,6 +9,7 @@ type
   IEntityNewView = interface(IContentView)
   ['{AE156F18-E05A-49CC-85C2-5A8258111B5E}']
     procedure SetData(ADataSet: TDataSet);
+    procedure CancelEdit;
   end;
 
   TEntityNewPresenter = class(TEntityContentPresenter)
@@ -30,6 +31,7 @@ implementation
 
 procedure TEntityNewPresenter.CmdCancel(Sender: TObject);
 begin
+  View.CancelEdit; //ticket https://github.com/bsf/boosterfw/issues/2
   CloseView;
 end;
 

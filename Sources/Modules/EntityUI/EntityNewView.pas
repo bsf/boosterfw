@@ -16,6 +16,7 @@ type
     procedure grMainKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
   protected
+    procedure CancelEdit;
     procedure SetData(ADataSet: TDataSet);
   public
     { Public declarations }
@@ -26,6 +27,12 @@ implementation
 {$R *.dfm}
 
 { TfrCustomEntityItemView }
+
+procedure TfrEntityNewView.CancelEdit;
+begin
+  grMain.DataController.DataSource := nil;
+  grMain.DataController.DataSource := ItemDataSource;
+end;
 
 procedure TfrEntityNewView.grMainKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
