@@ -11,14 +11,16 @@ const
   COMMAND_USERLIST_FILL = '{5BCF16D9-2A4C-4F9E-ABA4-72F02F205AD4}';
   COMMAND_USERLIST_CLEAR = '{059C1B8D-DECC-4F75-9A11-8BA474640CBC}';
   COMMAND_PERMEFFECTIVE = '{8C839B4C-E6D3-4713-98FB-6FF44AA044A8}';
+  COMMAND_CHILD_FILL = '{D5989BB4-697E-4452-A149-67BDA52770CD}';
 
 type
 
 
   ISecurityPolicyResView = interface(IContentView)
   ['{053D18E3-27C6-4FA2-B070-7DBEC803B28C}']
-    procedure AddTopRes(AID: variant; const AName, ADescription: string);
-    procedure AddChildRes(AID, APARENTID: variant; const AName, ADescription: string);
+    procedure AddTopRes(AID: variant; const AName, ADescription: string; AHasChildren: boolean);
+    procedure AddChildRes(AID, APARENTID: variant; const AName, ADescription: string;
+      AHasChildren: boolean);
     procedure ClearUserList;
     function GetResSelection: variant;
     procedure AddPermission(const AName: string);
@@ -37,6 +39,7 @@ type
     procedure FillUserList(AResID: variant);
     procedure FillPermissionList;
     procedure FillTopResList;
+    procedure CmdChildFill(Sender: TObject);
     procedure CmdSetPermState(Sender: TObject);
     procedure CmdUserListFill(Sender: TObject);
     procedure CmdUserListClear(Sender: TObject);
@@ -48,6 +51,28 @@ type
 implementation
 
 { TSecurityPolicyResPresenter }
+
+procedure TSecurityPolicyResPresenter.CmdChildFill(Sender: TObject);
+var
+  parentID: variant;
+  intf: ICommand;
+  I: integer;
+  list: IInterfaceList;
+  res: ISecurityResNode;
+  hasChildren: boolean;
+begin
+  Sender.GetInterface(ICommand, intf);
+
+  parentID := intf.Data['NODE_ID'];
+
+  list := FResProvider.GetChildRes(parentID);
+  for I := 0 to list.Count - 1 do
+  begin
+    res := list[I] as ISecurityResNode;
+    hasChildren := FResProvider.GetChildRes(res.ID).Count <> 0;
+    View.AddChildRes(res.ID, parentID, res.name, res.description, hasChildren);
+  end;
+end;
 
 procedure TSecurityPolicyResPresenter.CmdPermEffective(Sender: TObject);
 begin
@@ -105,33 +130,18 @@ begin
 end;
 
 procedure TSecurityPolicyResPresenter.FillTopResList;
-
-  procedure AddChild(AParentID: variant);
-  var
-    I: integer;
-    list: IInterfaceList;
-    res: ISecurityResNode;
-  begin
-    list := FResProvider.GetChildRes(AParentID);
-    for I := 0 to list.Count - 1 do
-    begin
-      res := list[I] as ISecurityResNode;
-      View.AddChildRes(res.ID, AParentID, res.name, res.description);
-      AddChild(res.ID);
-    end;
-  end;
-
 var
   I: integer;
   list: IInterfaceList;
   res: ISecurityResNode;
+  hasChildren: boolean;
 begin
   list := FResProvider.GetTopRes;
   for I := 0 to list.Count - 1 do
   begin
     res := list[I] as ISecurityResNode;
-    View.AddTopRes(res.ID, res.name, res.description);
-    AddChild(res.ID);
+    hasChildren := FResProvider.GetChildRes(res.ID).Count <> 0;
+    View.AddTopRes(res.ID, res.name, res.description, hasChildren);
   end;
 end;
 
@@ -177,6 +187,7 @@ begin
   WorkItem.Commands[COMMAND_SET_PERM_DENY].SetHandler(CmdSetPermState);
   WorkItem.Commands[COMMAND_USERLIST_FILL].SetHandler(CmdUserListFill);
   WorkItem.Commands[COMMAND_USERLIST_CLEAR].SetHandler(CmdUserListClear);
+  WorkItem.Commands[COMMAND_CHILD_FILL].SetHandler(CmdChildFill);
 
   FillTopResList;
   FillPermissionList;

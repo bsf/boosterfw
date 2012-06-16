@@ -19,10 +19,6 @@ type
   TActivitySecurityResProvider = class(TComponent, ISecurityResProvider)
   const
     SECURITY_RES_PROVIDER_ID = 'security.resprovider.app.activities';
-    SECURITY_PROVIDER_ACTIVITIES = 'Security.Policy.App.Activities';
-    SECURITY_CLASS_ACTIVITY = SECURITY_PROVIDER_ACTIVITIES;
-    SECURITY_CLASS_ACTIVITY_ITEM = '{A84F4D00-F3FA-4FFB-8B71-D14CF6795E52}';
-  //  SECURITY_PERMISSION_ACTIVITY_EXECUTE = 'app.activity.execute';
   private
     FWorkItem: TWorkItem;
   protected

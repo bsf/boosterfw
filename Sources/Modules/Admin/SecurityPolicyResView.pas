@@ -36,12 +36,16 @@ type
     procedure trResSelectionChanged(Sender: TObject);
     procedure grUsersViewEditChanged(Sender: TcxCustomGridTableView;
       AItem: TcxCustomGridTableItem);
+    procedure trResExpanding(Sender: TcxCustomTreeList; ANode: TcxTreeListNode;
+      var Allow: Boolean);
   private
     FLastPermIndex: integer;
     FPrevResSelection: variant;
   protected
-    procedure AddTopRes(AID: variant; const AName, ADescription: string);
-    procedure AddChildRes(AID, APARENTID: variant; const AName, ADescription: string);
+    procedure AddTopRes(AID: variant; const AName, ADescription: string;
+      AHasChildren: boolean);
+    procedure AddChildRes(AID, APARENTID: variant; const AName, ADescription: string;
+      AHasChildren: boolean);
     procedure ClearUserList;
     function GetResSelection: variant;
     procedure AddUser(AUserID: variant; const AUserName: string; AIsRole: boolean;
@@ -71,9 +75,13 @@ begin
 end;
 
 procedure TfrSecurityPolicyResView.AddTopRes(AID: variant; const AName,
-  ADescription: string);
+  ADescription: string; AHasChildren: boolean);
+var
+  node: TcxTreeListNode;
 begin
-  trRes.Add.AssignValues([AID, AName, ADescription]);
+  node := trRes.Add;
+  node.HasChildren := AHasChildren;
+  node.AssignValues([AID, AName, ADescription]);
 end;
 
 procedure TfrSecurityPolicyResView.AddUser(AUserID: variant;
@@ -125,11 +133,21 @@ begin
     Result := Unassigned;
 end;
 
+procedure TfrSecurityPolicyResView.trResExpanding(Sender: TcxCustomTreeList;
+  ANode: TcxTreeListNode; var Allow: Boolean);
+begin
+  if ANode.Count = 0 then
+  begin
+    WorkItem.Commands[COMMAND_CHILD_FILL].Data['NODE_ID'] := ANode.Values[0];
+    WorkItem.Commands[COMMAND_CHILD_FILL].Execute;
+  end;
+end;
+
 procedure TfrSecurityPolicyResView.trResSelectionChanged(Sender: TObject);
 begin
   if FPrevResSelection <> GetResSelection then
   begin
-    FPrevResSelection := GetResSelection;  
+    FPrevResSelection := GetResSelection;
     WorkItem.Commands[COMMAND_USERLIST_FILL].Execute;
   end;
 end;
@@ -165,13 +183,17 @@ begin
 end;
 
 procedure TfrSecurityPolicyResView.AddChildRes(AID, APARENTID: variant;
-  const AName, ADescription: string);
+  const AName, ADescription: string; AHasChildren: boolean);
 var
-  node: TcxTreeListNode;
+  parentNode, node: TcxTreeListNode;
 begin
-  node := trRes.FindNodeByText(AParentID, grResID, nil, false, true, true, tlfmExact, nil, false);
-  if Assigned(node) then
-    node.AddChild.AssignValues([AID, AName, ADescription, APARENTID]);
+  parentNode := trRes.FindNodeByText(AParentID, grResID, nil, false, true, true, tlfmExact, nil, false);
+  if Assigned(parentNode) then
+  begin
+    node := parentNode.AddChild;
+    node.HasChildren := AHasChildren;
+    node.AssignValues([AID, AName, ADescription, APARENTID]);
+  end;
 end;
 
 end.

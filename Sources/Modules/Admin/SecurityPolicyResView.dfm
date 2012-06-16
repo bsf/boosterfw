@@ -14,14 +14,14 @@ inherited frSecurityPolicyResView: TfrSecurityPolicyResView
     Height = 626
     Width = 1031
     inherited pnButtons: TcxGroupBox
-      ExplicitWidth = 1027
-      Width = 1027
+      ExplicitWidth = 1031
+      Width = 1031
     end
     object trRes: TcxTreeList
-      Left = 2
-      Top = 42
+      Left = 0
+      Top = 40
       Width = 485
-      Height = 582
+      Height = 586
       Align = alLeft
       Bands = <
         item
@@ -34,6 +34,7 @@ inherited frSecurityPolicyResView: TfrSecurityPolicyResView
       OptionsSelection.HideFocusRect = False
       OptionsView.ColumnAutoWidth = True
       TabOrder = 1
+      OnExpanding = trResExpanding
       OnSelectionChanged = trResSelectionChanged
       object grResID: TcxTreeListColumn
         Visible = False
@@ -74,15 +75,15 @@ inherited frSecurityPolicyResView: TfrSecurityPolicyResView
       end
     end
     object cxSplitter1: TcxSplitter
-      Left = 487
-      Top = 42
+      Left = 485
+      Top = 40
       Width = 8
-      Height = 582
+      Height = 586
       Control = trRes
     end
     object TcxGroupBox
-      Left = 495
-      Top = 42
+      Left = 493
+      Top = 40
       Align = alClient
       PanelStyle.Active = True
       Style.BorderStyle = ebsNone
@@ -91,8 +92,8 @@ inherited frSecurityPolicyResView: TfrSecurityPolicyResView
       StyleFocused.LookAndFeel.Kind = lfOffice11
       StyleHot.LookAndFeel.Kind = lfOffice11
       TabOrder = 3
-      Height = 582
-      Width = 534
+      Height = 586
+      Width = 538
       object cxGroupBox2: TcxGroupBox
         Left = 2
         Top = 2
@@ -105,7 +106,7 @@ inherited frSecurityPolicyResView: TfrSecurityPolicyResView
         StyleHot.LookAndFeel.Kind = lfOffice11
         TabOrder = 0
         Height = 39
-        Width = 530
+        Width = 534
         object btUsersShowAll: TcxButton
           Left = 7
           Top = 6
@@ -147,13 +148,12 @@ inherited frSecurityPolicyResView: TfrSecurityPolicyResView
       object grUsers: TcxGrid
         Left = 2
         Top = 41
-        Width = 530
-        Height = 539
+        Width = 534
+        Height = 543
         Align = alClient
         TabOrder = 1
         LookAndFeel.Kind = lfOffice11
         object grUsersView: TcxGridTableView
-          NavigatorButtons.ConfirmDelete = False
           FilterBox.Visible = fvNever
           OnEditChanged = grUsersViewEditChanged
           DataController.Options = [dcoAssignGroupingValues, dcoAssignMasterDetailKeys, dcoSaveExpanding, dcoImmediatePost]

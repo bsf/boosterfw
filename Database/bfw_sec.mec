@@ -41,20 +41,20 @@ Count=0
 Count=16
 Procedure_0=BFW_SEC_EV_PERM_EFFECTIVE
 Procedure_1=BFW_SEC_EV_PERM_EFFECTIVE_
-Procedure_2=BFW_SEC_EV_PERM_LIST
-Procedure_3=BFW_SEC_EV_PERM_STATE_GET
-Procedure_4=BFW_SEC_EV_PERM_STATE_SET
-Procedure_5=BFW_SEC_EV_POLICY_LIST
-Procedure_6=BFW_SEC_EV_POLICY_RESET
-Procedure_7=BFW_SEC_EV_POLICY_STATE_GET
-Procedure_8=BFW_SEC_EV_POLICY_STATE_SET
-Procedure_9=BFW_SEC_SP_PERM_CHECK
-Procedure_10=BFW_SEC_SP_PERM_DEMAND
-Procedure_11=BFW_SEC_SP_PERM_DEMAND2
-Procedure_12=BFW_SEC_SP_PERM_DEMAND_USERS
-Procedure_13=BFW_SEC_SP_STRING_LEN
-Procedure_14=BFW_SEC_SP_STRING_REPLACE
-Procedure_15=BFW_SEC_SP_STRING_SUB
+Procedure_2=BFW_SEC_EV_PERM_EFFECTIVE__
+Procedure_3=BFW_SEC_EV_PERM_LIST
+Procedure_4=BFW_SEC_EV_PERM_STATE_GET
+Procedure_5=BFW_SEC_EV_PERM_STATE_SET
+Procedure_6=BFW_SEC_EV_POLICY_LIST
+Procedure_7=BFW_SEC_EV_POLICY_RESET
+Procedure_8=BFW_SEC_EV_POLICY_STATE_GET
+Procedure_9=BFW_SEC_EV_POLICY_STATE_SET
+Procedure_10=BFW_SEC_SP_PERM_CHECK
+Procedure_11=BFW_SEC_SP_PERM_CHECK_
+Procedure_12=BFW_SEC_SP_PERM_CHECK__
+Procedure_13=BFW_SEC_SP_PERM_DEMAND
+Procedure_14=BFW_SEC_SP_PERM_DEMAND2
+Procedure_15=BFW_SEC_SP_PERM_DEMAND_USERS
 [Triggers]
 Count=6
 Trigger_0=BFW_SEC_PERMISSIONS_BD
@@ -81,8 +81,8 @@ DataTableWhere_1=where entityname starting with 'BFW_SEC_'
 DataTable_2=BFW_SEC_USERS
 DataTableWhere_2=where userid = 'SYSDBA'
 DataTable_3=BFW_SEC_POLICIES
-DataTableWhere_3=where polid = 'BUILT-IN'
+DataTableWhere_3=where polid in ('ADMIN', 'APP.ACTIVITIES')
 DataTable_4=BFW_SEC_PERMISSIONS
-DataTableWhere_4=where polid = 'BUILT-IN'
+DataTableWhere_4=where permid in ('builtin.unrestricted', 'app.activity.execute')
 DataTable_5=BFW_SEC_ACL
 DataTableWhere_5=where permid = 'builtin.unrestricted' and userid = 'SYSDBA'
