@@ -534,8 +534,33 @@ procedure TcxGridViewHelper.LoadPreference(AGridView: TcxCustomGridView);
         TcxSummaryKind(
         AStorage.ReadInteger(_section + '_Summary', 'FooterKind', Ord(AView.Columns[I].Summary.FooterKind)));
     end;
-
   end;
+
+  procedure LoadTableView(AView: TcxGridTableView; AStorage: TMemInifile);
+  var
+    I: integer;
+    _section: string;
+    colIdx: integer;
+  begin
+    _section := 'COMMON';
+    AView.OptionsView.Footer :=
+      AStorage.ReadBool(_section, 'Footer', AView.OptionsView.Footer);
+
+    for I := 0 to AView.ColumnCount - 1 do
+    begin
+      _section := 'COLUMN_' + IntToStr(I);
+      AView.Columns[I].Visible :=
+        AStorage.ReadBool(_section, 'Visible', AView.Columns[I].Visible);
+      AView.Columns[I].Width :=
+        AStorage.ReadInteger(_section, 'Width', AView.Columns[I].Width);
+
+        //Summary
+      AView.Columns[I].Summary.FooterKind :=
+        TcxSummaryKind(
+        AStorage.ReadInteger(_section + '_Summary', 'FooterKind', Ord(AView.Columns[I].Summary.FooterKind)));
+    end;
+  end;
+
 var
   _storage: TMemInifile;
   _strings: TStringList;
@@ -567,7 +592,8 @@ begin
           LoadDBBandedTableView(TcxGridDBBandedTableView(AGridView), _storage)
         else if AGridView is TcxGridDBTableView then
           LoadDBTableView(TcxGridDBTableView(AGridView), _storage)
-          //gridView.RestoreFromStream(AData, false, false, [], gridView.Name)
+        else if AGridView is TcxGridTableView then
+          LoadTableView(TcxGridTableView(AGridView), _storage)
         else
           AGridView.RestoreFromStream(data, false, false, [], AGridView.Name);
       finally
@@ -618,10 +644,6 @@ begin
     if Owner.Components[I] is TcxGrid then
       for Y := 0 to TcxGrid(Owner.Components[I]).ViewCount - 1 do
         SavePreference(TcxGrid(Owner.Components[I]).Views[Y]);
-        {ACategories.Add(Format(cnstGridPreferenceCategoryFmt,
-          [Owner.Components[I].Name,
-            TcxGrid(Owner.Components[I]).Views[Y].Name]));}
-
 end;
 
 procedure TcxGridViewHelper.SavePreference(AGridView: TcxCustomGridView);
@@ -672,8 +694,28 @@ procedure TcxGridViewHelper.SavePreference(AGridView: TcxCustomGridView);
       //footer
       AStorage.WriteInteger(_section + '_Summary', 'FooterKind', Ord(AView.Columns[I].Summary.FooterKind) );
     end
+  end;
+
+  procedure SaveTableView(AView: TcxGridTableView; AStorage: TMemInifile);
+  var
+    I: integer;
+    _section: string;
+  begin
+    _section := 'COMMON';
+    AStorage.WriteBool(_section, 'Footer', AView.OptionsView.Footer);
+
+    for I := 0 to AView.ColumnCount - 1 do
+    begin
+      _section := 'COLUMN_' +  IntToStr(I);
+      AStorage.WriteBool(_section, 'Visible', AView.Columns[I].Visible);
+      AStorage.WriteInteger(_section, 'Width', AView.Columns[I].Width);
+      //footer
+      AStorage.WriteInteger(_section + '_Summary', 'FooterKind', Ord(AView.Columns[I].Summary.FooterKind) );
+    end
 
   end;
+
+
 var
   _storage: TMemInifile;
   _strings: TStringList;
@@ -686,6 +728,8 @@ begin
       SaveDBBandedTableView(TcxGridDBBandedTableView(AGridView), _storage)
     else if AGridView is TcxGridDBTableView then
       SaveDBTableView(TcxGridDBTableView(AGridView), _storage)
+    else if AGridView is TcxGridTableView then
+      SaveTableView(TcxGridTableView(AGridView), _storage)
     else
       AGridView.StoreToStream(data, [], AGridView.Name);
 
@@ -834,8 +878,17 @@ begin
 end;
 
 procedure TcxGridViewHelper.ViewInitialize;
+var
+  I: integer;
+  _gridViews: TComponentList;
 begin
+  _gridViews := GetGridViewList;
+  for I := 0 to _gridViews.Count - 1 do
+    if _gridViews[I] is TcxGridTableView then
+      LoadPreference(TcxCustomGridView(_gridViews[I]));
+
   LinkGridPopupMenus(GetForm);
+
 end;
 
 procedure TcxGridViewHelper.ViewShow;

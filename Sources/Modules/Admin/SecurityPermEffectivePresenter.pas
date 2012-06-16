@@ -35,8 +35,13 @@ begin
 
   policy := App.Security.FindPolicy(WorkItem.State['POLID']);
   if policy.ResProviderID <> '' then
-    ViewTitle := App.Security.GetResProvider(policy.ResProviderID).
-      GetRes(WorkItem.State['RESID']).Name + ' [действующие разрешени€]'
+  begin
+    if VarToStr(WorkItem.State['RESID']) <> '' then
+      ViewTitle := App.Security.GetResProvider(policy.ResProviderID).
+        GetRes(WorkItem.State['RESID']).Name + ' [действующие разрешени€]'
+    else
+      ViewTitle := policy.Name + ' [действующие разрешени€ - все элементы]';
+  end
   else
     ViewTitle := policy.Name + ' [действующие разрешени€]';
 
@@ -46,13 +51,13 @@ begin
    resPolID := VarToStr(ds['INHERITBY_POLID']);
    resID := VarToStr(ds['INHERITBY_RESID']);
    resName := '';
-   if resID <> '' then
-   begin
-     resPolicy := App.Security.FindPolicy(resPolID);
-     if resPolicy.ResProviderID <> '' then
+   resPolicy := App.Security.FindPolicy(resPolID);
+   if resPolicy.ResProviderID <> '' then
+     if resID <> '' then
        resName := App.Security.GetResProvider(resPolicy.ResProviderID).
-         GetRes(resID).Name;
-   end
+         GetRes(resID).Name
+     else
+       resName := '¬се элементы'
    else
      resName := '';
 

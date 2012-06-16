@@ -13,6 +13,8 @@ const
   COMMAND_PERMEFFECTIVE = '{8C839B4C-E6D3-4713-98FB-6FF44AA044A8}';
   COMMAND_CHILD_FILL = '{D5989BB4-697E-4452-A149-67BDA52770CD}';
 
+  COMMAND_ACCESS_TO_ALL = '{03242CAE-C61B-416F-8EA5-CE9BF44EEEDD}';
+
 type
 
 
@@ -44,6 +46,7 @@ type
     procedure CmdUserListFill(Sender: TObject);
     procedure CmdUserListClear(Sender: TObject);
     procedure CmdPermEffective(Sender: TObject);
+    procedure CmdAccessToAll(Sender: TObject);
   protected
     procedure OnViewReady; override;
   end;
@@ -51,6 +54,15 @@ type
 implementation
 
 { TSecurityPolicyResPresenter }
+
+procedure TSecurityPolicyResPresenter.CmdAccessToAll(Sender: TObject);
+var
+  activity: IActivity;
+begin
+  activity := WorkItem.Activities[VIEW_SECURITYPOLICY];
+  activity.Params[TSecurityPolicyActivityParams.PolID] := FPolicy.ID;
+  activity.Execute(WorkItem);
+end;
 
 procedure TSecurityPolicyResPresenter.CmdChildFill(Sender: TObject);
 var
@@ -181,6 +193,9 @@ begin
 
   View.CommandBar.AddCommand(COMMAND_PERMEFFECTIVE, 'Действующие разрешения');
   WorkItem.Commands[COMMAND_PERMEFFECTIVE].SetHandler(CmdPermEffective);
+
+  View.CommandBar.AddCommand(COMMAND_ACCESS_TO_ALL, 'Доступ ко всем элементам');
+  WorkItem.Commands[COMMAND_ACCESS_TO_ALL].SetHandler(CmdAccessToAll);
 
   WorkItem.Commands[COMMAND_SET_PERM_UNDEFINED].SetHandler(CmdSetPermState);
   WorkItem.Commands[COMMAND_SET_PERM_ALLOW].SetHandler(CmdSetPermState);
