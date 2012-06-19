@@ -22,7 +22,7 @@ uses
   DSHTTPLayer, cxColorComboBox, IdBaseComponent, IdComponent, IdTCPConnection,
   IdTCPClient, IdHTTP, cxTL, cxTLdxBarBuiltInMenu, cxTLData, cxDBTL,
   ButtonGroup, dxBreadcrumbEdit, dxDBBreadcrumbEdit, cxCalendar, cxCheckBox,
-  cxGridBandedTableView, cxGridDBBandedTableView, cxPropertiesStore;
+  cxGridBandedTableView, cxGridDBBandedTableView, cxPropertiesStore, cxCalc;
 
 type
   TForm2 = class(TForm)

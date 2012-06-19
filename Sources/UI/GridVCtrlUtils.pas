@@ -5,7 +5,7 @@ uses cxVGrid, cxDBVGrid, Contnrs, controls, CustomView, classes, sysutils, db,
   EntityServiceIntf, cxButtonEdit, cxEdit, CoreClasses, StrUtils, Variants,
   cxInplaceContainer, cxDBLookupComboBox, cxDropDownEdit, menus, cxCheckBox, forms,
   UIClasses, cxCalendar, typinfo, cxImage, graphics, inifiles, ShellIntf,
-  cxColorComboBox, cxMemo, stdctrls, cxStyles;
+  cxColorComboBox, cxMemo, stdctrls, cxStyles, cxCalc;
 
 const
   EDITOR_DATA_ENTITY = 'EntityName';
@@ -37,6 +37,7 @@ type
     procedure InitImageEditor(ARow: TcxDBEditorRow);
     procedure InitColorEditor(ARow: TcxDBEditorRow);
     procedure InitMemoEditor(ARow: TcxDBEditorRow);
+    procedure InitCalcEditor(ARow: TcxDBEditorRow; AField: TField);
 
     procedure ImageRow_OnAssignPicture(Sender: TObject; const Picture: TPicture);
 
@@ -507,6 +508,9 @@ begin
 
     else if SameText(editorTyp, FIELD_ATTR_EDITOR_MEMO) then
        InitMemoEditor(AEditorRow)
+    else if SameText(editorTyp, FIELD_ATTR_EDITOR_CALC) then
+       InitCalcEditor(AEditorRow, AField)
+
     else if SameText(editorTyp, FIELD_ATTR_EDITOR_DATETIME) then
     begin
       AEditorRow.Properties.EditPropertiesClass := TcxDateEditProperties;
@@ -705,6 +709,16 @@ begin
       fieldDel.Value := 0;
   end;
 
+end;
+
+procedure TcxVGridViewHelper.InitCalcEditor(ARow: TcxDBEditorRow; AField: TField);
+begin
+  ARow.Properties.EditPropertiesClass := TcxCalcEditProperties;
+  with TcxCalcEditProperties(ARow.Properties.EditProperties) do
+  begin
+    ImmediateDropDownWhenKeyPressed :=
+      CheckFieldAttribute(AField, FIELD_ATTR_EDITOR_CALC_AUTOPOPUP);
+  end;
 end;
 
 procedure TcxVGridViewHelper.InitCheckBoxEditor(ARow: TcxDBEditorRow; AField: TField);

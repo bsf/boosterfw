@@ -42,13 +42,13 @@ object Form2: TForm2
       end>
     RowCollection = <
       item
-        Value = 9.988777075419978000
+        Value = 9.988777075419977000
       end
       item
-        Value = 9.976202947710616000
+        Value = 9.976202947710615000
       end
       item
-        Value = 9.987033426881158000
+        Value = 9.987033426881156000
       end
       item
         Value = 10.001974652924070000
@@ -72,8 +72,6 @@ object Form2: TForm2
         Value = 10.001012532150170000
       end>
     TabOrder = 0
-    ExplicitLeft = -24
-    ExplicitTop = -8
     object cxButton1: TcxButton
       Left = 1
       Top = 1
@@ -264,7 +262,8 @@ object Form2: TForm2
       Version = 1
     end
     object cxDBVerticalGrid1DBEditorRow2: TcxDBEditorRow
-      Properties.EditPropertiesClassName = 'TcxCheckBoxProperties'
+      Properties.EditPropertiesClassName = 'TcxCalcEditProperties'
+      Properties.EditProperties.ImmediateDropDownWhenKeyPressed = True
       ID = 1
       ParentID = -1
       Index = 1
