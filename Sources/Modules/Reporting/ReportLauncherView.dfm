@@ -10,14 +10,14 @@ inherited frReportLauncherView: TfrReportLauncherView
     ExplicitWidth = 888
     Width = 888
     inherited pnButtons: TcxGroupBox
-      ExplicitWidth = 884
-      Width = 884
+      ExplicitWidth = 888
+      Width = 888
     end
     object grParams: TcxDBVerticalGrid
-      Left = 2
-      Top = 42
-      Width = 884
-      Height = 471
+      Left = 0
+      Top = 40
+      Width = 888
+      Height = 475
       Align = alClient
       LayoutStyle = lsMultiRecordView
       LookAndFeel.Kind = lfOffice11

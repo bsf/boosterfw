@@ -508,6 +508,7 @@ begin
 
     else if SameText(editorTyp, FIELD_ATTR_EDITOR_MEMO) then
        InitMemoEditor(AEditorRow)
+
     else if SameText(editorTyp, FIELD_ATTR_EDITOR_CALC) then
        InitCalcEditor(AEditorRow, AField)
 
@@ -716,6 +717,7 @@ begin
   ARow.Properties.EditPropertiesClass := TcxCalcEditProperties;
   with TcxCalcEditProperties(ARow.Properties.EditProperties) do
   begin
+    ImmediatePost := true;
     ImmediateDropDownWhenKeyPressed :=
       CheckFieldAttribute(AField, FIELD_ATTR_EDITOR_CALC_AUTOPOPUP);
   end;

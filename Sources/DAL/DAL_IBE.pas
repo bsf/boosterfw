@@ -13,6 +13,9 @@ type
     procedure PSSetParams(AParams: TParams); override;
     //Fix - при отрицательном коде ошибки ClientDataSet не нормально обрабатывает exception
     function PSGetUpdateException(E: Exception; Prev: EUpdateError): EUpdateError; override;
+    //Binding Self params for insert/update/delete by UpdateObject
+    function PSExecuteStatement(const ASQL: WideString; AParams: TParams;
+      ResultSet: Pointer = nil): Integer; override;
   end;
 
   TDataSetProviderClass = class of TDataSetProvider;
@@ -176,6 +179,23 @@ end;
 
 { TIBQueryFix }
 
+function TIBQueryFix.PSExecuteStatement(const ASQL: WideString;
+  AParams: TParams; ResultSet: Pointer): Integer;
+var
+  I: integer;
+  prm: TParam;
+begin
+  for I := 0 to AParams.Count - 1 do
+  begin
+    if not AParams[I].IsNull then Continue;
+    prm := Params.FindParam(AParams[I].Name);
+    if prm <> nil then
+      AParams[I].Value := prm.Value;
+  end;
+
+  Result := inherited;
+end;
+
 function TIBQueryFix.PSGetUpdateException(E: Exception;
   Prev: EUpdateError): EUpdateError;
 var
@@ -213,6 +233,7 @@ end;
      if Params[I].DataType = ftShortInt then
           Params[I].DataType := ftSmallInt;
 end;
+
 
 { TPlainSQLProvider }
 
@@ -293,7 +314,7 @@ begin
   FQuery.Transaction.DefaultDatabase := FDatabase;
   Self.DataSet := FQuery;
 
-  FUpdateSql := TIBUpdateSql.Create(Self);
+  FUpdateSql := TIBUpdateSQL.Create(Self);
   FQuery.UpdateObject := FUpdateSql;
 
   FQueryRefresh := TIBQueryFix.Create(Self);

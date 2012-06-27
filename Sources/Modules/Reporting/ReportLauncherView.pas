@@ -9,7 +9,7 @@ uses
   cxStyles, cxInplaceContainer, cxVGrid, cxDBVGrid, DB, dxmdaset, StdCtrls,
   cxButtons, cxLabel, cxDBLookupComboBox, cxCheckBox, ReportLauncherPresenter,
   CustomContentView, cxButtonEdit, cxDropDownEdit, cxCheckComboBox, cxDBCheckComboBox, cxCheckListBox,
-  cxDBCheckListBox;
+  cxDBCheckListBox, cxClasses;
 
 
 type
