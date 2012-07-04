@@ -1,7 +1,5 @@
-inherited frEntityComplexView: TfrEntityComplexView
-  Left = 801
-  Top = 309
-  Caption = 'frEntityComplexView'
+inherited frEntityItemExtView: TfrEntityItemExtView
+  Caption = 'frEntityItemExtView'
   ExplicitHeight = 543
   PixelsPerInch = 96
   TextHeight = 13
@@ -26,6 +24,7 @@ inherited frEntityComplexView: TfrEntityComplexView
       OptionsData.Inserting = False
       TabOrder = 1
       DataController.DataSource = HeadDataSource
+      ExplicitTop = 42
       Version = 1
     end
     object cxSplitter1: TcxSplitter
@@ -44,12 +43,8 @@ inherited frEntityComplexView: TfrEntityComplexView
       Align = alClient
       TabOrder = 3
       LookAndFeel.Kind = lfOffice11
-      ExplicitLeft = 3
-      ExplicitTop = 247
       object grDetailsView: TcxGridDBTableView
         FilterBox.Position = fpTop
-        OnCellDblClick = grDetailsViewCellDblClick
-        DataController.DataSource = DetailsDataSource
         DataController.Options = [dcoAssignGroupingValues, dcoAssignMasterDetailKeys, dcoSaveExpanding, dcoImmediatePost]
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
@@ -67,16 +62,8 @@ inherited frEntityComplexView: TfrEntityComplexView
       end
     end
   end
-  inherited ActionList: TActionList
-    Left = 54
-    Top = 78
-  end
   object HeadDataSource: TDataSource
-    Left = 48
-    Top = 136
-  end
-  object DetailsDataSource: TDataSource
-    Left = 164
-    Top = 152
+    Left = 144
+    Top = 120
   end
 end

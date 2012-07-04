@@ -56,6 +56,9 @@ type
     cxDBVerticalGrid1: TcxDBVerticalGrid;
     cxDBVerticalGrid1DBEditorRow1: TcxDBEditorRow;
     cxDBVerticalGrid1DBEditorRow2: TcxDBEditorRow;
+    cxGroupBox2: TcxGroupBox;
+    cxButton7: TcxButton;
+    cxButton8: TcxButton;
     procedure cxGrid1DBBandedTableView1CellClick(Sender: TcxCustomGridTableView;
       ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton;
       AShift: TShiftState; var AHandled: Boolean);

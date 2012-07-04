@@ -4,26 +4,22 @@ interface
 uses classes, cxGroupBox, cxButtons, ActnList, sysutils, CoreClasses, ShellIntf,
   UIClasses, Menus, types, windows, Graphics, forms, controls, CommonUtils;
 
-const
-  const_TopMargin: integer = 8;
-  const_CaptionMargin = 22;
-  const_ButtonMargin = 4;
-  const_ButtonMinWidth = 75;
-  const_ButtonHeight = 25;
-
 type
   TButtonAlignment = (alLeft, alRight);
 
   TICommandBarImpl = class(TComponent, ICommandBar)
+  const
+    TOP_BOTTOM_MARGIN = 5;
+    BUTTON_MIN_WITH = 75;
+    BUTTON_MARGIN = 4;
+    BUTTON_CAPTION_MARGIN = 22;
+
   private
     FActionList: TActionList;
     FWorkItem: TWorkItem;
     FBar: TcxGroupBox;
     FButtonAlignment: TButtonAlignment;
     function FindOrCreateGroupButton(ACaption: string): TcxButton;
-    function GetNextButtonPosition: integer;
-    function GetTopMargin: integer;
-    function GetButtonMargin: integer;
     function GetButtonWidth(const ACaption: string): integer;
     function CreateButton(const ACaption: string): TcxButton;
     procedure DoExecuteDefaultCommand(Sender: TObject);
@@ -75,8 +71,6 @@ begin
   else
     CreateButton(commandAction.Caption).Action := commandAction;
 
-
-//  AddCommand(AName, AGroup, ADefault);
 end;
 
 constructor TICommandBarImpl.Create(AOwner: TForm; WorkItem: TWorkItem;
@@ -90,10 +84,7 @@ begin
 end;
 
 function TICommandBarImpl.CreateButton(const ACaption: string): TcxButton;
-var
-  nextPosition: integer;
 begin
-  nextPosition := GetNextButtonPosition;
   Result := TcxButton.Create(Owner);
 
   with Result do
@@ -102,16 +93,22 @@ begin
     Caption := ACaption;
 
     Width := GetButtonWidth(ACaption);
-    Height :=  const_ButtonHeight;
 
-    Top := GetTopMargin;
+    Margins.Top := TOP_BOTTOM_MARGIN;
+    Margins.Bottom := TOP_BOTTOM_MARGIN;
+    AlignWithMargins := true;
     if FButtonAlignment = alLeft then
-      Left := nextPosition
+    begin
+      Align := TAlign.alLeft;
+      Margins.Left := BUTTON_MARGIN;
+      Margins.Right := 0;
+    end
     else
-      Left := nextPosition - MulDiv(Width, App.UI.Scale, 100);
-
-    if FButtonAlignment = alRight then
-      Anchors := [akRight, akBottom];
+    begin
+      Align := TAlign.alRight;
+      Margins.Right := BUTTON_MARGIN;
+      Margins.Left := 0;
+    end;
 
     LookAndFeel.Kind := FBar.LookAndFeel.Kind;
     SpeedButtonOptions.CanBeFocused := false;
@@ -173,52 +170,12 @@ begin
   end;
 end;
 
-function TICommandBarImpl.GetButtonMargin: integer;
-begin
-  Result := MulDiv(const_ButtonMargin, App.UI.Scale, 100);
-end;
-
 function TICommandBarImpl.GetButtonWidth(const ACaption: string): integer;
 begin
   Result := GetTextWidth(FBar.Font, ACaption);
-  Result := Result + const_CaptionMargin;
-  if Result < const_ButtonMinWidth then
-    Result := const_ButtonMinWidth;
-end;
-
-function TICommandBarImpl.GetNextButtonPosition: integer;
-var
-  I: integer;
-begin
-  if FButtonAlignment = alLeft then
-  begin
-    Result := 0;
-
-    for I := 0 to FBar.ControlCount - 1 do
-      if (FBar.Controls[I] is TcxButton) and
-         ((FBar.Controls[I].Width + FBar.Controls[I].Left) > Result) then
-        Result := FBar.Controls[I].Width + FBar.Controls[I].Left;
-
-    Result := Result + GetButtonMargin;
-  end
-  else
-  begin
-    Result := MaxInt;
-
-    for I := 0 to FBar.ControlCount - 1 do
-      if (FBar.Controls[I] is TcxButton) and
-         ((FBar.Controls[I].Width + FBar.Controls[I].Left) < Result) then
-        Result := FBar.Controls[I].Left;
-
-    if Result = MaxInt then  Result := FBar.Width;
-
-    Result := Result - GetButtonMargin;
-  end
-end;
-
-function TICommandBarImpl.GetTopMargin: integer;
-begin
-  Result := MulDiv(const_TopMargin, App.UI.Scale, 100);
+  Result := Result + BUTTON_CAPTION_MARGIN;
+  if Result < BUTTON_MIN_WITH then
+    Result := BUTTON_MIN_WITH;
 end;
 
 end.

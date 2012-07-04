@@ -63,6 +63,8 @@ contains
   EntityTreeListView in '..\..\Sources\Modules\EntityUI\EntityTreeListView.pas' {frEntityTreeListView},
   EntityTreeListPresenter in '..\..\Sources\Modules\EntityUI\EntityTreeListPresenter.pas',
   EntityDeskMenuView in '..\..\Sources\Modules\EntityUI\EntityDeskMenuView.pas' {frEntityDeskMenuView},
-  EntityDeskMenuPresenter in '..\..\Sources\Modules\EntityUI\EntityDeskMenuPresenter.pas';
+  EntityDeskMenuPresenter in '..\..\Sources\Modules\EntityUI\EntityDeskMenuPresenter.pas',
+  EntityItemExtView in '..\..\Sources\Modules\EntityUI\EntityItemExtView.pas' {frEntityItemExtView},
+  EntityItemExtPresenter in '..\..\Sources\Modules\EntityUI\EntityItemExtPresenter.pas';
 
 end.

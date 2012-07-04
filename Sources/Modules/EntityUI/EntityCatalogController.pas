@@ -9,6 +9,7 @@ uses classes, CoreClasses,  ShellIntf, Variants, db, Contnrs,
   EntityTreeListPresenter, EntityTreeListView,
   EntityNewPresenter, EntityNewView,
   EntityItemPresenter, EntityItemView,
+  EntityItemExtPresenter, EntityItemExtView,
   EntityComplexPresenter, EntityComplexView,
   EntityCollectPresenter, EntityCollectView,
   EntityOrgChartPresenter, EntityOrgChartView,
@@ -126,6 +127,7 @@ begin
     RegisterHandler('IEntityListView', TViewActivityHandler.Create(TEntityListPresenter, TfrEntityListView));
     RegisterHandler('IEntityNewView', TViewActivityHandler.Create(TEntityNewPresenter, TfrEntityNewView));
     RegisterHandler('IEntityItemView', TViewActivityHandler.Create(TEntityItemPresenter, TfrEntityItemView));
+    RegisterHandler('IEntityItemExtView', TViewActivityHandler.Create(TEntityItemExtPresenter, TfrEntityItemExtView));
     RegisterHandler('IEntityComplexView', TViewActivityHandler.Create(TEntityComplexPresenter, TfrEntityComplexView));
     RegisterHandler('IEntityCollectView', TViewActivityHandler.Create(TEntityCollectPresenter, TfrEntityCollectView));
     RegisterHandler('IEntityListView', TViewActivityHandler.Create(TEntityListPresenter, TfrEntityListView));

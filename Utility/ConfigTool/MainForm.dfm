@@ -238,8 +238,8 @@ object Form2: TForm2
     end
   end
   object cxButton6: TcxButton
-    Left = 608
-    Top = 60
+    Left = 688
+    Top = 532
     Width = 75
     Height = 25
     Caption = 'cxButton6'
@@ -268,6 +268,48 @@ object Form2: TForm2
       ParentID = -1
       Index = 1
       Version = 1
+    end
+  end
+  object cxGroupBox2: TcxGroupBox
+    Left = 592
+    Top = 8
+    Alignment = alRightTop
+    Caption = 'cxGroupBox2'
+    PanelStyle.Active = True
+    Style.BorderStyle = ebsFlat
+    Style.Edges = [bLeft, bTop, bRight, bBottom]
+    TabOrder = 4
+    Height = 56
+    Width = 383
+    object cxButton7: TcxButton
+      AlignWithMargins = True
+      Left = 83
+      Top = 5
+      Width = 75
+      Height = 46
+      Margins.Right = 0
+      Align = alLeft
+      Caption = 'cxButton6'
+      TabOrder = 0
+      ExplicitLeft = 3
+      ExplicitTop = -4
+      ExplicitHeight = 52
+    end
+    object cxButton8: TcxButton
+      AlignWithMargins = True
+      Left = 5
+      Top = 12
+      Width = 75
+      Height = 32
+      Margins.Top = 10
+      Margins.Right = 0
+      Margins.Bottom = 10
+      Align = alLeft
+      Caption = 'cxButton6'
+      TabOrder = 1
+      ExplicitLeft = 3
+      ExplicitTop = -4
+      ExplicitHeight = 52
     end
   end
   object DataSource1: TDataSource
