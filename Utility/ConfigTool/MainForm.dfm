@@ -2,8 +2,8 @@ object Form2: TForm2
   Left = 0
   Top = 0
   Caption = 'Form2'
-  ClientHeight = 634
-  ClientWidth = 983
+  ClientHeight = 504
+  ClientWidth = 920
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,126 +11,27 @@ object Form2: TForm2
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object GridPanel1: TGridPanel
-    Left = 0
-    Top = 0
-    Width = 297
-    Height = 634
-    Align = alLeft
-    Caption = 'GridPanel1'
-    ColumnCollection = <
-      item
-        Value = 100.000000000000000000
-      end>
-    ControlCollection = <
-      item
-        Column = 0
-        Control = cxButton1
-        Row = 0
-      end
-      item
-        Column = 0
-        Control = cxButton2
-        Row = 1
-      end
-      item
-        Column = 0
-        Control = cxButton3
-        Row = 2
-      end>
-    RowCollection = <
-      item
-        Value = 9.988777075419977000
-      end
-      item
-        Value = 9.976202947710615000
-      end
-      item
-        Value = 9.987033426881156000
-      end
-      item
-        Value = 10.001974652924070000
-      end
-      item
-        Value = 10.009902392686720000
-      end
-      item
-        Value = 10.012382398054110000
-      end
-      item
-        Value = 10.011088592403550000
-      end
-      item
-        Value = 10.007722846020730000
-      end
-      item
-        Value = 10.003903135748910000
-      end
-      item
-        Value = 10.001012532150170000
-      end>
-    TabOrder = 0
-    object cxButton1: TcxButton
-      Left = 1
-      Top = 1
-      Width = 295
-      Height = 63
-      Margins.Top = 5
-      Align = alClient
-      Caption = 'cxButton1'
-      LookAndFeel.Kind = lfFlat
-      LookAndFeel.NativeStyle = False
-      SpeedButtonOptions.Flat = True
-      SpeedButtonOptions.Transparent = True
-      TabOrder = 0
-    end
-    object cxButton2: TcxButton
-      Left = 1
-      Top = 64
-      Width = 295
-      Height = 63
-      Margins.Top = 5
-      Align = alClient
-      Caption = 'cxButton1'
-      LookAndFeel.Kind = lfFlat
-      LookAndFeel.NativeStyle = False
-      SpeedButtonOptions.Flat = True
-      SpeedButtonOptions.Transparent = True
-      TabOrder = 1
-    end
-    object cxButton3: TcxButton
-      Left = 1
-      Top = 127
-      Width = 295
-      Height = 63
-      Margins.Top = 5
-      Align = alClient
-      Caption = 'cxButton1'
-      LookAndFeel.Kind = lfFlat
-      LookAndFeel.NativeStyle = False
-      SpeedButtonOptions.Flat = True
-      SpeedButtonOptions.Transparent = True
-      TabOrder = 2
-    end
-  end
   object cxGroupBox1: TcxGroupBox
-    Left = 297
-    Top = 0
+    Left = 0
+    Top = 46
     Align = alLeft
     Caption = 'cxGroupBox1'
     PanelStyle.Active = True
     Style.Shadow = False
-    TabOrder = 1
-    Height = 634
-    Width = 263
+    TabOrder = 0
+    ExplicitTop = 40
+    ExplicitHeight = 393
+    Height = 458
+    Width = 289
     object cxGrid1: TcxGrid
       AlignWithMargins = True
       Left = 5
       Top = 60
-      Width = 253
-      Height = 514
+      Width = 279
+      Height = 338
       Align = alClient
       BevelInner = bvNone
       BevelOuter = bvNone
@@ -138,6 +39,8 @@ object Form2: TForm2
       TabOrder = 0
       LookAndFeel.Kind = lfFlat
       LookAndFeel.NativeStyle = True
+      ExplicitWidth = 253
+      ExplicitHeight = 404
       object cxGrid1DBTableView1: TcxGridDBTableView
         DataController.DataSource = DataSource1
         DataController.Summary.DefaultGroupSummaryItems = <>
@@ -215,7 +118,7 @@ object Form2: TForm2
     object cxButton4: TcxButton
       Left = 2
       Top = 2
-      Width = 259
+      Width = 285
       Height = 55
       Align = alTop
       Caption = 'cxButton4'
@@ -223,11 +126,12 @@ object Form2: TForm2
       LookAndFeel.NativeStyle = False
       SpeedButtonOptions.Flat = True
       TabOrder = 1
+      ExplicitWidth = 259
     end
     object cxButton5: TcxButton
       Left = 2
-      Top = 577
-      Width = 259
+      Top = 401
+      Width = 285
       Height = 55
       Align = alBottom
       Caption = 'cxButton4'
@@ -235,23 +139,26 @@ object Form2: TForm2
       LookAndFeel.NativeStyle = False
       SpeedButtonOptions.Flat = True
       TabOrder = 2
+      ExplicitTop = 467
+      ExplicitWidth = 259
     end
   end
   object cxButton6: TcxButton
-    Left = 688
-    Top = 532
+    Left = 448
+    Top = 46
     Width = 75
     Height = 25
     Caption = 'cxButton6'
-    TabOrder = 2
+    TabOrder = 1
+    OnClick = cxButton6Click
   end
   object cxDBVerticalGrid1: TcxDBVerticalGrid
-    Left = 592
-    Top = 168
-    Width = 329
-    Height = 345
-    OptionsView.RowHeaderWidth = 147
-    TabOrder = 3
+    Left = 312
+    Top = 344
+    Width = 289
+    Height = 81
+    OptionsView.RowHeaderWidth = 141
+    TabOrder = 2
     Version = 1
     object cxDBVerticalGrid1DBEditorRow1: TcxDBEditorRow
       Properties.EditPropertiesClassName = 'TcxPopupEditProperties'
@@ -270,47 +177,50 @@ object Form2: TForm2
       Version = 1
     end
   end
-  object cxGroupBox2: TcxGroupBox
-    Left = 592
-    Top = 8
-    Alignment = alRightTop
-    Caption = 'cxGroupBox2'
-    PanelStyle.Active = True
-    Style.BorderStyle = ebsFlat
-    Style.Edges = [bLeft, bTop, bRight, bBottom]
+  object cxButton7: TcxButton
+    Left = 352
+    Top = 46
+    Width = 75
+    Height = 25
+    Caption = 'add'
+    TabOrder = 3
+    OnClick = cxButton7Click
+  end
+  object cxButton1: TcxButton
+    Left = 544
+    Top = 46
+    Width = 75
+    Height = 25
+    Caption = 'cxButton6'
     TabOrder = 4
-    Height = 56
-    Width = 383
-    object cxButton7: TcxButton
-      AlignWithMargins = True
-      Left = 83
-      Top = 5
-      Width = 75
-      Height = 46
-      Margins.Right = 0
-      Align = alLeft
-      Caption = 'cxButton6'
-      TabOrder = 0
-      ExplicitLeft = 3
-      ExplicitTop = -4
-      ExplicitHeight = 52
-    end
-    object cxButton8: TcxButton
-      AlignWithMargins = True
-      Left = 5
-      Top = 12
-      Width = 75
-      Height = 32
-      Margins.Top = 10
-      Margins.Right = 0
-      Margins.Bottom = 10
-      Align = alLeft
-      Caption = 'cxButton6'
-      TabOrder = 1
-      ExplicitLeft = 3
-      ExplicitTop = -4
-      ExplicitHeight = 52
-    end
+    OnClick = cxButton1Click
+  end
+  object pnButtons: TcxGroupBox
+    AlignWithMargins = True
+    Left = 3
+    Top = 3
+    Align = alTop
+    PanelStyle.Active = True
+    PanelStyle.OfficeBackgroundKind = pobkGradient
+    Style.BorderStyle = ebsNone
+    Style.LookAndFeel.Kind = lfOffice11
+    StyleDisabled.LookAndFeel.Kind = lfOffice11
+    StyleFocused.LookAndFeel.Kind = lfOffice11
+    StyleHot.LookAndFeel.Kind = lfOffice11
+    TabOrder = 5
+    ExplicitLeft = 0
+    ExplicitTop = 0
+    ExplicitWidth = 765
+    Height = 40
+    Width = 914
+  end
+  object cxGroupBox2: TcxGroupBox
+    Left = 464
+    Top = 112
+    Caption = 'cxGroupBox2'
+    TabOrder = 6
+    Height = 161
+    Width = 417
   end
   object DataSource1: TDataSource
     DataSet = ClientDataSet1
@@ -370,7 +280,7 @@ object Form2: TForm2
   object cxPropertiesStore1: TcxPropertiesStore
     Components = <>
     StorageName = 'cxPropertiesStore1'
-    Left = 488
-    Top = 320
+    Left = 368
+    Top = 104
   end
 end

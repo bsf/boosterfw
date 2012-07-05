@@ -53,6 +53,7 @@ begin
   end;
 
   FWorkItem.Commands[AName].AddInvoker(commandAction);
+
   if AGroup <> '' then
   begin
     btn := FindOrCreateGroupButton(AGroup);
@@ -84,11 +85,20 @@ begin
 end;
 
 function TICommandBarImpl.CreateButton(const ACaption: string): TcxButton;
+var
+  leftPosition: integer;
 begin
   Result := TcxButton.Create(Owner);
 
+  leftPosition := 0;
+  if FBar.ControlCount <> 0 then
+    leftPosition := FBar.Controls[FBar.ControlCount - 1].Left +
+      FBar.Controls[FBar.ControlCount - 1].Width;
+
   with Result do
   begin
+    Left := leftPosition; //important !!! must be set for fixed position order
+
     Parent := FBar;
     Caption := ACaption;
 

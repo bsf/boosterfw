@@ -8,7 +8,8 @@ uses
   cxStyles, cxCustomData, cxFilter, cxData, cxDataStorage, cxEdit, DB, cxDBData,
   IBConnectionBroker, IBSQL, cxGridCustomTableView, cxGridTableView,
   cxGridDBTableView, Provider, DBClient, cxGridLevel, cxClasses,
-  cxGridCustomView, cxGrid, Grids, DBGrids, IBDatabase, IBCustomDataSet, IBQuery,
+  cxGridCustomView, cxGrid, Grids, DBGrids, IBDatabase, IBCustomDataSet,
+  IBQuery,
   DSAzure, cxContainer, cxTextEdit, cxMaskEdit, cxDropDownEdit, cxMRUEdit,
   cxLookupEdit, cxDBLookupEdit, cxDBLookupComboBox, ExtCtrls, dxNavBar,
   cxGroupBox, dxNavBarCollns, dxNavBarBase, frxClass, frxPreview, frxBarcode,
@@ -22,7 +23,8 @@ uses
   DSHTTPLayer, cxColorComboBox, IdBaseComponent, IdComponent, IdTCPConnection,
   IdTCPClient, IdHTTP, cxTL, cxTLdxBarBuiltInMenu, cxTLData, cxDBTL,
   ButtonGroup, dxBreadcrumbEdit, dxDBBreadcrumbEdit, cxCalendar, cxCheckBox,
-  cxGridBandedTableView, cxGridDBBandedTableView, cxPropertiesStore, cxCalc;
+  cxGridBandedTableView, cxGridDBBandedTableView, cxPropertiesStore, cxCalc,
+  ICommandBarImpl, coreClasses, UIClasses;
 
 type
   TForm2 = class(TForm)
@@ -30,10 +32,6 @@ type
     IBDatabase1: TIBDatabase;
     IBQuery1: TIBQuery;
     IBTransaction1: TIBTransaction;
-    GridPanel1: TGridPanel;
-    cxButton1: TcxButton;
-    cxButton2: TcxButton;
-    cxButton3: TcxButton;
     ClientDataSet1: TClientDataSet;
     DataSetProvider1: TDataSetProvider;
     cxStyleRepository1: TcxStyleRepository;
@@ -56,14 +54,21 @@ type
     cxDBVerticalGrid1: TcxDBVerticalGrid;
     cxDBVerticalGrid1DBEditorRow1: TcxDBEditorRow;
     cxDBVerticalGrid1DBEditorRow2: TcxDBEditorRow;
-    cxGroupBox2: TcxGroupBox;
     cxButton7: TcxButton;
-    cxButton8: TcxButton;
+    cxButton1: TcxButton;
+    pnButtons: TcxGroupBox;
+    cxGroupBox2: TcxGroupBox;
     procedure cxGrid1DBBandedTableView1CellClick(Sender: TcxCustomGridTableView;
       ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton;
       AShift: TShiftState; var AHandled: Boolean);
+    procedure cxButton6Click(Sender: TObject);
+    procedure cxButton7Click(Sender: TObject);
+    procedure cxButton1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
-    { Private declarations }
+    bttest: TcxButton;
+    barImpl: TICommandBarImpl;
+    WorkItem: TWorkItem;
   public
     { Public declarations }
   end;
@@ -75,11 +80,63 @@ implementation
 
 {$R *.dfm}
 
-procedure TForm2.cxGrid1DBBandedTableView1CellClick(
-  Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo;
+procedure TForm2.cxButton1Click(Sender: TObject);
+begin
+  WorkItem.Commands['cmd2'].Status := csEnabled;
+end;
+
+procedure TForm2.cxButton6Click(Sender: TObject);
+begin
+  // bttest.Visible := not bttest.Visible;
+  pnButtons.Parent := cxGroupBox2;
+  WorkItem.Commands['cmd2'].Status := csUnavailable;
+  pnButtons.Visible := true;
+end;
+
+procedure TForm2.cxButton7Click(Sender: TObject);
+  function AddButton(ACaption: string): TcxButton;
+  var
+    left: integer;
+  begin
+    Result := TcxButton.Create(Self);
+    Result.Caption := ACaption;
+    left := 0;
+    if pnButtons.ControlCount <> 0 then
+    begin
+     left := pnButtons.Controls[pnButtons.ControlCount - 1].Left +
+        pnButtons.Controls[pnButtons.ControlCount - 1].Width;
+    end;
+    Result.Left := left;
+    Result.Parent := pnButtons;
+    Result.Align := TAlign.alLeft;
+    Result.AlignWithMargins := true;
+    Result.LookAndFeel.Kind := pnButtons.LookAndFeel.Kind;
+  end;
+
+begin
+
+  AddButton('1');
+  bttest := AddButton('2');
+  bttest.Visible := false;
+  AddButton('3');
+  pnButtons.Visible := true;
+  bttest.Visible := true;
+  { (barImpl as ICommandBar).AddCommand('cmd1', '1');
+    (barImpl as ICommandBar).AddCommand('cmd2', '2');
+    (barImpl as ICommandBar).AddCommand('cmd3', '3'); }
+end;
+
+procedure TForm2.cxGrid1DBBandedTableView1CellClick
+  (Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo;
   AButton: TMouseButton; AShift: TShiftState; var AHandled: Boolean);
 begin
   ShowMessage('test');
+end;
+
+procedure TForm2.FormCreate(Sender: TObject);
+begin
+  WorkItem := TWorkItem.Create(nil, nil, '', nil);
+  barImpl := TICommandBarImpl.Create(Self, WorkItem, pnButtons);
 end;
 
 end.
