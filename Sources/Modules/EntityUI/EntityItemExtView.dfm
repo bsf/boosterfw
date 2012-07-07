@@ -1,6 +1,5 @@
 inherited frEntityItemExtView: TfrEntityItemExtView
   Caption = 'frEntityItemExtView'
-  ExplicitHeight = 543
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
@@ -24,7 +23,6 @@ inherited frEntityItemExtView: TfrEntityItemExtView
       OptionsData.Inserting = False
       TabOrder = 1
       DataController.DataSource = HeadDataSource
-      ExplicitTop = 42
       Version = 1
     end
     object cxSplitter1: TcxSplitter
@@ -43,27 +41,29 @@ inherited frEntityItemExtView: TfrEntityItemExtView
       Align = alClient
       TabOrder = 3
       LookAndFeel.Kind = lfOffice11
-      object grDetailsView: TcxGridDBTableView
-        FilterBox.Position = fpTop
-        DataController.Options = [dcoAssignGroupingValues, dcoAssignMasterDetailKeys, dcoSaveExpanding, dcoImmediatePost]
-        DataController.Summary.DefaultGroupSummaryItems = <>
-        DataController.Summary.FooterSummaryItems = <>
-        DataController.Summary.SummaryGroups = <>
-        OptionsCustomize.ColumnsQuickCustomization = True
-        OptionsData.Deleting = False
-        OptionsData.Inserting = False
-        OptionsView.GroupByBox = False
-        OptionsView.Indicator = True
-      end
-      object grDetailsLevel1: TcxGridLevel
-        Caption = 'Table'
-        GridView = grDetailsView
-        Options.DetailTabsPosition = dtpTop
-      end
+      RootLevelOptions.DetailTabsPosition = dtpTop
+      OnActiveTabChanged = grDetailsActiveTabChanged
     end
   end
   object HeadDataSource: TDataSource
     Left = 144
     Top = 120
+  end
+  object cxGridViewRepository: TcxGridViewRepository
+    Left = 64
+    Top = 288
+    object cxGridViewRepositoryDBTableView: TcxGridDBTableView
+      FilterBox.Position = fpTop
+      OnCellDblClick = cxGridViewRepositoryDBTableViewCellDblClick
+      DataController.Options = [dcoAssignGroupingValues, dcoAssignMasterDetailKeys, dcoSaveExpanding, dcoImmediatePost]
+      DataController.Summary.DefaultGroupSummaryItems = <>
+      DataController.Summary.FooterSummaryItems = <>
+      DataController.Summary.SummaryGroups = <>
+      OptionsCustomize.ColumnsQuickCustomization = True
+      OptionsData.Deleting = False
+      OptionsData.Inserting = False
+      OptionsView.GroupByBox = False
+      OptionsView.Indicator = True
+    end
   end
 end

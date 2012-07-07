@@ -49,6 +49,7 @@ begin
   with FWorkItem.Commands[AName] do
   begin
     Caption := ACaption;
+    Group := AGroup;
     ShortCut := AShortCut;
   end;
 

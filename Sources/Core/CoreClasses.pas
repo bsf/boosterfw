@@ -228,6 +228,8 @@ type
     procedure SetHandler(AHandler: TNotifyEvent);
     function GetCaption: string;
     procedure SetCaption(const AValue: string);
+    function GetGroup: string;
+    procedure SetGroup(const AValue: string);
     function GetShortCut: string;
     procedure SetShortCut(const AValue: string);
     function GetStatus: TCommandStatus;
@@ -241,6 +243,7 @@ type
     procedure RemoveCondition(ACondition: TCommandConditionMethod);
 
     property Caption: string read GetCaption write SetCaption;
+    property Group: string read GetGroup write SetGroup;
     property ShortCut: string read GetShortCut write SetShortCut;
     property Status: TCommandStatus read GetStatus write SetStatus;
     property Data[const AName: string]: Variant read GetData write SetData;

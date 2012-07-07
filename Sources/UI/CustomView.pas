@@ -154,6 +154,7 @@ type
       var Done: boolean); virtual;
     procedure DoInitialize; virtual;
     procedure OnInitialize; virtual;
+    procedure Initialize; virtual;
   public
     constructor Create(APresenterWI: TWorkItem; const AViewURI: string); override;
     destructor Destroy; override;
@@ -219,7 +220,7 @@ begin
     InitializeAddons;
 
   DoInitialize;
-
+  Initialize;
 end;
 
 destructor TfrCustomView.Destroy;
@@ -454,6 +455,11 @@ begin
     end;
   end;
   Result := FPreferenceValues;
+end;
+
+procedure TfrCustomView.Initialize;
+begin
+
 end;
 
 procedure TfrCustomView.InitializeAddons;

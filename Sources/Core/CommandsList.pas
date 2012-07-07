@@ -50,6 +50,7 @@ type
   TCommand = class(TManagedItem, ICommand)
   private
     FCaption: string;
+    FGroup: string;
     FShortCut: string;
     FShortCuts: TStringList;
     FInvokers: TComponentList;
@@ -63,6 +64,8 @@ type
     procedure SetStatus(AStatus: TCommandStatus);
     function GetCaption: string;
     procedure SetCaption(const AValue: string);
+    function GetGroup: string;
+    procedure SetGroup(const AValue: string);
     function GetShortCut: string;
     procedure SetShortCut(const AValue: string);
     function GetCommandName: string;
@@ -237,6 +240,11 @@ begin
     Result := FDataValues[Idx];
 end;
 
+function TCommand.GetGroup: string;
+begin
+  Result := FGroup;
+end;
+
 procedure TCommand.SetData(const AName: string; AValue: Variant);
 var
   Idx: integer;
@@ -250,6 +258,11 @@ begin
 
   FDataValues[Idx] := AValue;
 
+end;
+
+procedure TCommand.SetGroup(const AValue: string);
+begin
+  FGroup := AValue;
 end;
 
 function TCommand.GetCaption: string;

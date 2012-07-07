@@ -17,7 +17,6 @@ type
   protected
     function CommandBar: ICommandBar; override;
     procedure DoInitialize; override;
-  public
   end;
 
 

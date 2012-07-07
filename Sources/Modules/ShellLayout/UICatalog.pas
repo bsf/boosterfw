@@ -47,14 +47,15 @@ type
 
     TViewCommandExtension = class(TViewExtension, IExtensionCommand)
     const
-      CMDPROXY_DATA_HANDLER = 'PROXY_HANDLER';
-      CMDPROXY_DATA_PARAMS = 'PROXY_PARAMS';
-      CMDPROXY_OPTION_PREF = 'PROXY_OPTION.';
-
+      CMD_HANDLER = 'HANDLER';
+      CMD_PARAMS = 'PARAMS';
+      CMD_OPTION_HIDDEN = 'Hidden';
+      CMD_OPTION_CLOSE_VIEW_BEFORE = 'CloseViewBefore';
+      CMD_OPTION_CLOSE_VIEW_AFTER = 'CloseViewAfter';
     private
       FConditions: TObjectList;
-
-      procedure CommandProxyHandler(Sender: TObject);
+      function CommandExists(const AName: string): boolean;
+      procedure CommandHandler(Sender: TObject);
     protected
       procedure CommandExtend;
       procedure CommandUpdate;
@@ -282,6 +283,20 @@ begin
 end;
 
 
+function TUICatalog.TViewCommandExtension.CommandExists(
+  const AName: string): boolean;
+var
+  I: integer;
+begin
+  Result := false;
+  for I := 0 to WorkItem.Commands.Count - 1 do
+  begin
+    Result := SameText(WorkItem.Commands.GetItem(I).ID, AName);
+    if Result then Break;
+  end;
+
+end;
+
 procedure TUICatalog.TViewCommandExtension.CommandExtend;
 
   procedure CommandSetOptions(ACommand: ICommand; const AOptions: string);
@@ -304,7 +319,6 @@ procedure TUICatalog.TViewCommandExtension.CommandExtend;
           if optionName = '' then
             optionName := strList[I];
 
-          optionName := CMDPROXY_OPTION_PREF + optionName;
           ACommand.Data[optionName] := optionValue;
         end;
      finally
@@ -318,7 +332,6 @@ var
   cmd: ICommand;
   cmdID: string;
   cmdExists: boolean;
-  I: integer;
 begin
   if not Supports(GetView, ICustomView) then Exit;
 
@@ -327,24 +340,21 @@ begin
   begin
     cmdID := list['CMD'];
 
-    cmdExists := false;
-    for I := 0 to WorkItem.Commands.Count - 1 do
-    begin
-      cmdExists := SameText(WorkItem.Commands.GetItem(I).ID, cmdID);
-      if cmdExists then Break;
-    end;
+    cmdExists := CommandExists(cmdID);  //!!! must be before ->  cmd := WorkItem.Commands[cmdID];
 
     cmd := WorkItem.Commands[cmdID];
+    cmd.Caption := VarToStr(list['CAPTION']);
+    cmd.Group := VarToStr(list['GRP']);
 
-    cmd.Data[CMDPROXY_DATA_HANDLER] := VarToStr(list['HANDLER']);
-    cmd.Data[CMDPROXY_DATA_PARAMS] := VarToStr(list['PARAMS']);
-    cmd.SetHandler(CommandProxyHandler);
-
-    if not cmdExists then
-      (GetView as ICustomView).CommandBar.
-        AddCommand(cmd.Name, VarToStr(list['CAPTION']), '', VarToStr(list['GRP']), list['DEF'] = 1);
+    cmd.Data[CMD_HANDLER] := VarToStr(list['HANDLER']);
+    cmd.Data[CMD_PARAMS] := VarToStr(list['PARAMS']);
+    cmd.SetHandler(CommandHandler);
 
     CommandSetOptions(cmd, VarToStr(list['OPTIONS']));
+
+    if (not cmdExists) and (cmd.Data[CMD_OPTION_HIDDEN] <> '1')  then
+      (GetView as ICustomView).CommandBar.
+        AddCommand(cmd.Name, VarToStr(list['CAPTION']), '', VarToStr(list['GRP']), list['DEF'] = 1);
 
     if (VarToStr(list['CONDITION']) <> '') or (VarToStr(list['CONDITION_PARAMS']) <> '') then
       FConditions.Add(TCommandCondition.Create(cmd.Name,
@@ -355,10 +365,8 @@ begin
 
 end;
 
-procedure TUICatalog.TViewCommandExtension.CommandProxyHandler(Sender: TObject);
-const
-  OPTION_CLOSE_VIEW_BEFORE = CMDPROXY_OPTION_PREF + 'CloseViewBefore';
-  OPTION_CLOSE_VIEW_AFTER = CMDPROXY_OPTION_PREF + 'CloseViewAfter';
+procedure TUICatalog.TViewCommandExtension.CommandHandler(Sender: TObject);
+
 
 var
   cmd: ICommand;
@@ -366,19 +374,48 @@ var
   cmdHandler: string;
   cmdParams: string;
   callerWI: TWorkItem;
-
+  I: integer;
+  strList: TStringList;
 begin
   Sender.GetInterface(ICommand, cmd);
 
-  cmdHandler := cmd.Data[CMDPROXY_DATA_HANDLER];
-  cmdParams := cmd.Data[CMDPROXY_DATA_PARAMS];
+  cmdParams := cmd.Data[CMD_PARAMS];
+  cmdHandler := cmd.Data[CMD_HANDLER];
+
+  if Pos(';', cmdHandler) > 0 then
+  begin
+    strList := TStringList.Create;
+    try
+      ExtractStrings([';'], [], PWideChar(cmdHandler), strList);
+      cmdHandler := '';
+      for I := 0 to strList.Count - 1 do
+      begin
+        if CommandExists(strList[I]) and
+           (WorkItem.Commands[strList[I]].Status = csEnabled) then
+        begin
+          cmdHandler := strList[I];
+          Break;
+        end;
+      end
+     finally
+       strList.Free;
+     end;
+  end;
+
+  if cmdHandler = '' then Exit;
+
+  if CommandExists(cmdHandler) then
+  begin
+    WorkItem.Commands[cmdHandler].Execute;
+    Exit;
+  end;
 
   activity := WorkItem.Activities[cmdHandler];
   activity.Params.Assign(WorkItem, cmdParams);
 
   callerWI := WorkItem;
 
-  if VarToStr(cmd.Data[OPTION_CLOSE_VIEW_BEFORE]) = '1' then
+  if VarToStr(cmd.Data[CMD_OPTION_CLOSE_VIEW_BEFORE]) = '1' then
   begin
     if WorkItem.ID <> WorkItem.Context then
     begin
@@ -394,7 +431,7 @@ begin
 
   activity.Execute(callerWI);
 
-  if VarToStr(cmd.Data[OPTION_CLOSE_VIEW_AFTER]) = '1' then
+  if VarToStr(cmd.Data[CMD_OPTION_CLOSE_VIEW_AFTER]) = '1' then
     WorkItem.Commands[COMMAND_CLOSE].Execute;
 
 end;
