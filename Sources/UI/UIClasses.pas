@@ -58,6 +58,7 @@ const
   COMMAND_STATE_CHANGE_PREV = 'commands.view.statechange.prev';
  // COMMAND_STATE_CHANGE_PREV_CAPTION = 'Предыдущее состояние';
 
+  COMMAND_UPDATE_COMMAND_STATUS = '{0FF76DEB-19F3-45E4-8AA7-CE915687C335}';
 type
 
   IView = interface

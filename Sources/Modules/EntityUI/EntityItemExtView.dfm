@@ -55,6 +55,8 @@ inherited frEntityItemExtView: TfrEntityItemExtView
     object cxGridViewRepositoryDBTableView: TcxGridDBTableView
       FilterBox.Position = fpTop
       OnCellDblClick = cxGridViewRepositoryDBTableViewCellDblClick
+      OnFocusedRecordChanged = cxGridViewRepositoryDBTableViewFocusedRecordChanged
+      OnSelectionChanged = cxGridViewRepositoryDBTableViewSelectionChanged
       DataController.Options = [dcoAssignGroupingValues, dcoAssignMasterDetailKeys, dcoSaveExpanding, dcoImmediatePost]
       DataController.Summary.DefaultGroupSummaryItems = <>
       DataController.Summary.FooterSummaryItems = <>

@@ -67,6 +67,7 @@ type
 
   IEntityViewInfo = interface
   ['{19239A00-F141-4794-BF3E-2A0298C6981B}']
+    function Title: string;
     function Fields: TFields;
     function PrimaryKey: string;
     function ReadOnly: boolean;

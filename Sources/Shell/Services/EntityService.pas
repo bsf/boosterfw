@@ -174,6 +174,7 @@ type
     FPrimaryKey: string;
     FFields: TFields;
     FIsExec: boolean;
+    FTitle: string;
     FViewExists: boolean;
     FOptions: TStringList;
     FLinkInfoDictionary: TObjectList<TEntityViewLinkInfo>;
@@ -184,7 +185,7 @@ type
     function PrimaryKey: string;
     function ReadOnly: boolean;
     function IsExec: boolean;
-
+    function Title: string;
     function LinksCount: integer;
     function GetLinksInfo(AIndex: integer): TEntityViewLinkInfo;
     function LinkedFields: TStringList;
@@ -1745,7 +1746,7 @@ end;
 
 function TEntityViewInfo.GetOptions(const AName: string): string;
 begin
-
+  Result := FOptions.Values[AName];
 end;
 
 function TEntityViewInfo.IsExec: boolean;
@@ -1783,6 +1784,7 @@ begin
     FViewExists := true;
     FReadOnly := FMetaDS['ReadOnly'] = 1;
     FPrimaryKey := VarToStr(FMetaDS['PKEY']);
+    FTitle := VarToStr(FMetaDS['TITLE']);
     if FPrimaryKey = '' then
       FPrimaryKey := CONST_PRIMARYKEY_NAME_DEFAULT;
     FIsExec := FMetaDS['IS_EXEC'] = 1;
@@ -1842,6 +1844,11 @@ end;
 function TEntityViewInfo.ReadOnly: boolean;
 begin
   Result := FReadOnly;
+end;
+
+function TEntityViewInfo.Title: string;
+begin
+  Result := FTitle;
 end;
 
 function TEntityViewInfo.ViewExists: boolean;

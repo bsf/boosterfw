@@ -354,7 +354,7 @@ begin
 
     if (not cmdExists) and (cmd.Data[CMD_OPTION_HIDDEN] <> '1')  then
       (GetView as ICustomView).CommandBar.
-        AddCommand(cmd.Name, VarToStr(list['CAPTION']), '', VarToStr(list['GRP']), list['DEF'] = 1);
+        AddCommand(cmd.Name, cmd.Caption, '', cmd.Group, list['DEF'] = 1);
 
     if (VarToStr(list['CONDITION']) <> '') or (VarToStr(list['CONDITION_PARAMS']) <> '') then
       FConditions.Add(TCommandCondition.Create(cmd.Name,
@@ -367,72 +367,66 @@ end;
 
 procedure TUICatalog.TViewCommandExtension.CommandHandler(Sender: TObject);
 
+  function ExecuteHandler(ACommand: ICommand; const AHandler: string): boolean;
+  var
+    callerWI: TWorkItem;
+    activity: IActivity;
+  begin
+    Result := true;
+    if CommandExists(AHandler) then
+    begin
+      WorkItem.Commands[AHandler].Execute;
+      Exit;
+    end;
+
+    activity := WorkItem.Activities[AHandler];
+    activity.Params.Assign(WorkItem, ACommand.Data[CMD_PARAMS]);
+
+    callerWI := WorkItem;
+
+    if ACommand.Data[CMD_OPTION_CLOSE_VIEW_BEFORE] = '1' then
+    begin
+      if WorkItem.ID <> WorkItem.Context then
+      begin
+        callerWI := WorkItem.Root.WorkItems.Find(WorkItem.Context);
+        if callerWI = nil then
+          callerWI := WorkItem.Parent;
+      end
+      else
+        callerWI := WorkItem.Parent;
+
+      WorkItem.Commands[COMMAND_CLOSE].Execute;
+      Result := false;
+    end;
+
+    activity.Execute(callerWI);
+
+    if ACommand.Data[CMD_OPTION_CLOSE_VIEW_AFTER] = '1' then
+    begin
+      WorkItem.Commands[COMMAND_CLOSE].Execute;
+      Result := false;
+    end;
+  end;
 
 var
   cmd: ICommand;
-  activity: IActivity;
   cmdHandler: string;
-  cmdParams: string;
-  callerWI: TWorkItem;
   I: integer;
   strList: TStringList;
 begin
   Sender.GetInterface(ICommand, cmd);
 
-  cmdParams := cmd.Data[CMD_PARAMS];
   cmdHandler := cmd.Data[CMD_HANDLER];
 
-  if Pos(';', cmdHandler) > 0 then
-  begin
-    strList := TStringList.Create;
-    try
-      ExtractStrings([';'], [], PWideChar(cmdHandler), strList);
-      cmdHandler := '';
-      for I := 0 to strList.Count - 1 do
-      begin
-        if CommandExists(strList[I]) and
-           (WorkItem.Commands[strList[I]].Status = csEnabled) then
-        begin
-          cmdHandler := strList[I];
-          Break;
-        end;
-      end
-     finally
-       strList.Free;
-     end;
+  strList := TStringList.Create;
+  try
+    ExtractStrings([';'], [], PWideChar(cmdHandler), strList);
+    for I := 0 to strList.Count - 1 do
+      if not ExecuteHandler(cmd, strList[I]) then Break;
+  finally
+    strList.Free;
   end;
 
-  if cmdHandler = '' then Exit;
-
-  if CommandExists(cmdHandler) then
-  begin
-    WorkItem.Commands[cmdHandler].Execute;
-    Exit;
-  end;
-
-  activity := WorkItem.Activities[cmdHandler];
-  activity.Params.Assign(WorkItem, cmdParams);
-
-  callerWI := WorkItem;
-
-  if VarToStr(cmd.Data[CMD_OPTION_CLOSE_VIEW_BEFORE]) = '1' then
-  begin
-    if WorkItem.ID <> WorkItem.Context then
-    begin
-      callerWI := WorkItem.Root.WorkItems.Find(WorkItem.Context);
-      if callerWI = nil then
-        callerWI := WorkItem.Parent;
-    end
-    else
-      callerWI := WorkItem.Parent;
-
-    WorkItem.Commands[COMMAND_CLOSE].Execute;
-  end;
-
-  activity.Execute(callerWI);
-
-  if VarToStr(cmd.Data[CMD_OPTION_CLOSE_VIEW_AFTER]) = '1' then
-    WorkItem.Commands[COMMAND_CLOSE].Execute;
 
 end;
 

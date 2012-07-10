@@ -34,7 +34,7 @@ type
 
     procedure ViewValueChangedHandler(const AName: string);
     procedure SetCallerURI(const Value: string);
-
+    procedure CmdUpdateCommandStatus(Sender: TObject);
   protected
     class function GetWorkspaceDefault: string; virtual;
 
@@ -214,6 +214,7 @@ begin
     (extensions[I] as IExtensionCommand).CommandExtend;
 
   UpdateCommandStatus;
+  WorkItem.Commands[COMMAND_UPDATE_COMMAND_STATUS].SetHandler(CmdUpdateCommandStatus);
 end;
 
 function TCustomPresenter.InstantiateView(const AViewURI: string;
@@ -375,6 +376,11 @@ end;
 procedure TCustomPresenter.CmdClose(Sender: TObject);
 begin
   CloseView;
+end;
+
+procedure TCustomPresenter.CmdUpdateCommandStatus(Sender: TObject);
+begin
+  UpdateCommandStatus;
 end;
 
 procedure TCustomPresenter.Activate;

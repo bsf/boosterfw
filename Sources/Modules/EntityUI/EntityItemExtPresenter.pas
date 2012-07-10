@@ -6,8 +6,8 @@ uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
   EntityCatalogIntf, EntityCatalogConst, UIStr, strUtils;
 
 const
-  COMMAND_CHANGE_ACTIVE_DETAIL_DATA = '{20C7D329-597B-409C-B653-4CD9C087D468}';
-  COMMAND_DETAIL_DBLCLICK = 'cmd.Detail.DblClick';
+  COMMAND_DETAIL_DBLCLICK = 'commands.Detail.DblClick';
+  COMMAND_DETAIL_DELETE = 'commands.Detail.Delete';
 
 type
   IEntityItemExtView = interface(IContentView)
@@ -21,7 +21,7 @@ type
   private
     FIsReady: boolean;
     FHeadEntityViewReady: boolean;
-    procedure CmdChangeActiveDitailData(Sender: TObject);
+    procedure CmdDetailDelete(Sender: TObject);
     function View: IEntityItemExtView;
     function GetEVHead: IEntityView;
     function GetEVDetailEViews: IEntityView;
@@ -35,9 +35,25 @@ implementation
 
 { TEntityItemExtPresenter }
 
-procedure TEntityItemExtPresenter.CmdChangeActiveDitailData(Sender: TObject);
+procedure TEntityItemExtPresenter.CmdDetailDelete(Sender: TObject);
+var
+  cResult: boolean;
+  evDetail: IEntityView;
 begin
-  Self.UpdateCommandStatus;
+  cResult := App.UI.MessageBox.ConfirmYesNo('Удалить выделенные записи?');
+  if cResult then
+  begin
+    try
+      evDetail := GetEVDetail(View.GetActiveDetailData);
+      evDetail.DataSet.Delete;
+      evDetail.Save;
+    except
+      evDetail.CancelUpdates;
+      raise;
+    end;
+  end;
+
+
 end;
 
 function TEntityItemExtPresenter.GetEVDetail(const AName: string): IEntityView;
@@ -112,9 +128,48 @@ begin
 end;
 
 procedure TEntityItemExtPresenter.OnViewReady;
+
+  procedure GetDetailEViews(AList: TStringList);
+  var
+    ds: TDataSet;
+  begin
+    if ViewInfo.OptionExists('DetailEViews') then
+    begin
+       ExtractStrings([','], [], PWideChar(ViewInfo.OptionValue('DetailEViews')), AList);
+    end
+    else if App.Entities.EntityViewExists(EntityName, 'DetailEViews') then
+    begin
+      ds := GetEVDetailEViews.DataSet;
+      while not ds.Eof do
+      begin
+        AList.Add(ds.Fields[0].asString);
+        ds.Next;
+      end;
+    end;
+
+  end;
+
+  procedure DetailViewsInit;
+  var
+    entityView: IEntityView;
+    entityViews: TStringList;
+    I: integer;
+  begin
+    entityViews := TStringList.Create;
+    try
+      GetDetailEViews(entityViews);
+      for I := 0 to entityViews.Count - 1 do
+      begin
+        entityView := GetEVDetail(entityViews[I]);
+        View.LinkDetailData(entityView.ViewName, entityView.Info.Title, entityView.DataSet);
+      end;
+    finally
+      entityViews.Free;
+    end;
+  end;
+
 var
   fieldTitle: TField;
-  ds: TDataSet;
 begin
   ViewTitle := ViewInfo.Title;
 
@@ -131,19 +186,12 @@ begin
       GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT);
   WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
 
-  WorkItem.Commands[COMMAND_CHANGE_ACTIVE_DETAIL_DATA].SetHandler(CmdChangeActiveDitailData);
+
+  WorkItem.Commands[COMMAND_DETAIL_DELETE].SetHandler(CmdDetailDelete);
 
   View.LinkHeadData(GetEVHead.DataSet);
 
-  if App.Entities.EntityViewExists(EntityName, 'DetailEViews') then
-  begin
-    ds := GetEVDetailEViews.DataSet;
-    while not ds.Eof do
-    begin
-      View.LinkDetailData(ds['EVIEW'], VarToStr(ds['CAPTION']), GetEVDetail(ds['EVIEW']).DataSet);
-      ds.Next;
-    end;
-  end;
+  DetailViewsInit;
 
   FIsReady := true;
 end;

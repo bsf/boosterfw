@@ -9,7 +9,7 @@ uses
   cxCustomData, cxFilter, cxData, cxDataStorage, DB, cxDBData, cxGridLevel,
   cxClasses, cxGridCustomView, cxGridCustomTableView, cxGridTableView,
   cxGridDBTableView, cxGrid, cxSplitter, cxInplaceContainer, cxVGrid, cxDBVGrid,
-  EntityItemExtPresenter;
+  EntityItemExtPresenter, UIClasses;
 
 type
   TfrEntityItemExtView = class(TfrCustomContentView, IEntityItemExtView)
@@ -25,6 +25,12 @@ type
       Sender: TcxCustomGridTableView;
       ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton;
       AShift: TShiftState; var AHandled: Boolean);
+    procedure cxGridViewRepositoryDBTableViewFocusedRecordChanged(
+      Sender: TcxCustomGridTableView; APrevFocusedRecord,
+      AFocusedRecord: TcxCustomGridRecord;
+      ANewItemRecordFocusingChanged: Boolean);
+    procedure cxGridViewRepositoryDBTableViewSelectionChanged(
+      Sender: TcxCustomGridTableView);
   private
     FDetails: TStringList;
   protected
@@ -48,6 +54,19 @@ procedure TfrEntityItemExtView.cxGridViewRepositoryDBTableViewCellDblClick(
 begin
   WorkItem.Commands[COMMAND_DETAIL_DBLCLICK].Execute;
 
+end;
+
+procedure TfrEntityItemExtView.cxGridViewRepositoryDBTableViewFocusedRecordChanged(
+  Sender: TcxCustomGridTableView; APrevFocusedRecord,
+  AFocusedRecord: TcxCustomGridRecord; ANewItemRecordFocusingChanged: Boolean);
+begin
+  WorkItem.Commands[COMMAND_UPDATE_COMMAND_STATUS].Execute;
+end;
+
+procedure TfrEntityItemExtView.cxGridViewRepositoryDBTableViewSelectionChanged(
+  Sender: TcxCustomGridTableView);
+begin
+  WorkItem.Commands[COMMAND_UPDATE_COMMAND_STATUS].Execute;
 end;
 
 destructor TfrEntityItemExtView.Destroy;
@@ -112,7 +131,7 @@ end;
 procedure TfrEntityItemExtView.grDetailsActiveTabChanged(Sender: TcxCustomGrid;
   ALevel: TcxGridLevel);
 begin
-  WorkItem.Commands[COMMAND_CHANGE_ACTIVE_DETAIL_DATA].Execute;
+  WorkItem.Commands[COMMAND_UPDATE_COMMAND_STATUS].Execute;
 end;
 
 end.
