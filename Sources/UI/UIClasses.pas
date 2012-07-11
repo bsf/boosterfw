@@ -59,8 +59,8 @@ const
  // COMMAND_STATE_CHANGE_PREV_CAPTION = 'Предыдущее состояние';
 
 //UI EVENTS
-  COMMAND_DBLCLICK = 'commands.dblclick';
-  COMMAND_DETAIL_DBLCLICK = 'commands.Detail.DblClick';
+  ON_DBLCLICK = 'on.dblclick';
+  ON_DETAIL_DBLCLICK = 'on.Detail.DblClick';
 
   COMMAND_UPDATE_COMMAND_STATUS = '{0FF76DEB-19F3-45E4-8AA7-CE915687C335}';
 type

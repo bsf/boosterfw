@@ -27,7 +27,6 @@ type
     procedure SetInfoText(const AText: string);
     function Selection: ISelection;
     procedure SetListDataSet(ADataSet: TDataSet);
-    procedure Initialize; override;
   end;
 
 
@@ -36,12 +35,6 @@ implementation
 {$R *.dfm}
 
 { TfrCustomEntityListView }
-
-procedure TfrEntityListView.Initialize;
-begin
-  inherited;
-  WorkItem.Commands[COMMAND_DBLCLICK]; //hidden;
-end;
 
 function TfrEntityListView.Selection: ISelection;
 begin
@@ -59,7 +52,7 @@ procedure TfrEntityListView.grListViewCellDblClick(
   AShift: TShiftState; var AHandled: Boolean);
 begin
   WorkItem.Commands[COMMAND_OPEN].Execute;
-  WorkItem.Commands[COMMAND_DBLCLICK].Execute;
+  WorkItem.Commands[ON_DBLCLICK].Execute;
 end;
 
 procedure TfrEntityListView.SetInfoText(const AText: string);

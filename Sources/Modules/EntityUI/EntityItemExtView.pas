@@ -52,7 +52,7 @@ procedure TfrEntityItemExtView.cxGridViewRepositoryDBTableViewCellDblClick(
   Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo;
   AButton: TMouseButton; AShift: TShiftState; var AHandled: Boolean);
 begin
-  WorkItem.Commands[COMMAND_DETAIL_DBLCLICK].Execute;
+  WorkItem.Commands[ON_DETAIL_DBLCLICK].Execute;
 
 end;
 
@@ -125,7 +125,6 @@ procedure TfrEntityItemExtView.Initialize;
 begin
   inherited;
   FDetails := TStringList.Create;
-  WorkItem.Commands[COMMAND_DETAIL_DBLCLICK]; //hidden
 end;
 
 procedure TfrEntityItemExtView.grDetailsActiveTabChanged(Sender: TcxCustomGrid;

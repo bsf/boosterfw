@@ -56,6 +56,7 @@ type
       FConditions: TObjectList;
       function CommandExists(const AName: string): boolean;
       procedure CommandHandler(Sender: TObject);
+      procedure CommandHandlerFor(Sender: TObject);
     protected
       procedure CommandExtend;
       procedure CommandUpdate;
@@ -299,6 +300,24 @@ end;
 
 procedure TUICatalog.TViewCommandExtension.CommandExtend;
 
+  procedure SetHandlerFor(const ACommands, AHandler: string);
+  var
+    I: integer;
+    strList: TStringList;
+  begin
+     strList := TStringList.Create;
+     try
+        ExtractStrings([',',';'], [], PWideChar(ACommands), strList);
+        for I := 0 to strList.Count - 1 do
+        begin
+          WorkItem.Commands[strList[I]].Data[CMD_HANDLER] := AHandler;
+          WorkItem.Commands[strList[I]].SetHandler(CommandHandlerFor);
+        end;
+     finally
+       strList.Free;
+     end;
+  end;
+
   procedure CommandSetOptions(ACommand: ICommand; const AOptions: string);
   var
     I: integer;
@@ -360,6 +379,9 @@ begin
       FConditions.Add(TCommandCondition.Create(cmd.Name,
         VarToStr(list['CONDITION']), VarToStr(list['CONDITION_PARAMS'])));
 
+    if VarToStr(list['HANDLER_FOR']) <> '' then
+      SetHandlerFor(list['HANDLER_FOR'], cmd.Name);
+
     list.Next;
   end;
 
@@ -420,7 +442,7 @@ begin
 
   strList := TStringList.Create;
   try
-    ExtractStrings([';'], [], PWideChar(cmdHandler), strList);
+    ExtractStrings([';', ','], [], PWideChar(cmdHandler), strList);
     for I := 0 to strList.Count - 1 do
       if not ExecuteHandler(cmd, strList[I]) then Break;
   finally
@@ -428,6 +450,14 @@ begin
   end;
 
 
+end;
+
+procedure TUICatalog.TViewCommandExtension.CommandHandlerFor(Sender: TObject);
+var
+  cmd: ICommand;
+begin
+  Sender.GetInterface(ICommand, cmd);
+  WorkItem.Commands[cmd.Data[CMD_HANDLER]].Execute;
 end;
 
 procedure TUICatalog.TViewCommandExtension.CommandUpdate;
