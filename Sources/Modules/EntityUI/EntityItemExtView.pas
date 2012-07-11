@@ -125,7 +125,7 @@ procedure TfrEntityItemExtView.Initialize;
 begin
   inherited;
   FDetails := TStringList.Create;
-  WorkItem.Commands[COMMAND_DETAIL_DBLCLICK];
+  WorkItem.Commands[COMMAND_DETAIL_DBLCLICK]; //hidden
 end;
 
 procedure TfrEntityItemExtView.grDetailsActiveTabChanged(Sender: TcxCustomGrid;

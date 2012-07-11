@@ -6,7 +6,6 @@ uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
   EntityCatalogIntf, EntityCatalogConst, UIStr, strUtils;
 
 const
-  COMMAND_DETAIL_DBLCLICK = 'commands.Detail.DblClick';
   COMMAND_DETAIL_DELETE = 'commands.Detail.Delete';
 
 type
