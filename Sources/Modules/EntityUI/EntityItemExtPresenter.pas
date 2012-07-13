@@ -75,7 +75,7 @@ end;
 function TEntityItemExtPresenter.GetEVHead: IEntityView;
 begin
   Result := (WorkItem.Services[IEntityService] as IEntityService).
-    Entity[EntityName].GetView('Head', WorkItem);
+    Entity[EntityName].GetView(EntityViewName, WorkItem);
   Result.Load(false);
   FHeadEntityViewReady := true;
 end;
@@ -115,7 +115,7 @@ begin
 
   if FHeadEntityViewReady then
   begin
-    ds := App.Entities[EntityName].GetView('Head', WorkItem).DataSet;  //Result := GetEVItem.Values['ID']; 信视醒冗 !!!}
+    ds := App.Entities[EntityName].GetView(EntityViewName, WorkItem).DataSet;  //Result := GetEVItem.Values['ID']; 信视醒冗 !!!}
     if ds.FindField(AName) <> nil then
     begin
       Result := ds[AName];
@@ -144,7 +144,9 @@ procedure TEntityItemExtPresenter.OnViewReady;
         AList.Add(ds.Fields[0].asString);
         ds.Next;
       end;
-    end;
+    end
+    else if App.Entities.EntityViewExists(EntityName, 'Details') then
+      AList.Add('Details');
 
   end;
 
