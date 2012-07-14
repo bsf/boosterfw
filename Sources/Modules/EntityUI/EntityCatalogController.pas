@@ -319,6 +319,29 @@ end;
 
 procedure TEntityCatalogController.TEntityActivityHandler.Execute(
   Sender: TWorkItem; Activity: IActivity);
+
+  function GetDialogActivity: IActivity;
+  const
+    CLS_DIALOG = 'IEntityPickListView';
+  var
+    I: integer;
+  begin
+    Result := Sender.Activities[Activity.URI + '.Dialog'];
+    with Result do
+    begin
+      ActivityClass := CLS_DIALOG;
+      Title := Activity.Title;
+      Options.Clear;
+      Options.AddStrings(Activity.Options);
+
+      for I := 0 to Activity.Params.Count - 1 do
+        Params[Activity.Params.ValueName(I)] := Unassigned;
+
+      for I := 0 to Activity.Outs.Count - 1 do
+        Params[Activity.Outs.ValueName(I)] := Unassigned;
+    end;
+  end;
+
 //const
  // URI_FIELD = 'URI';
 
@@ -330,7 +353,7 @@ var
   eviewName: string;
   evURI: IEntityView;
   targetActivity: IActivity;
-
+  dialogActivity: IActivity;
   I: integer;
   prmName: string;
   field: TField;
@@ -344,20 +367,35 @@ begin
 
   viewURI := '';
 
-  evURI := App.Entities[entityName].GetView(eviewName, Sender);
-  ParamsBinding(Activity, evURI.Params);
-
-
-  dsURI := evURI.Load(true, '-');
-  viewURI := VarToStr(dsURI['URI']);
-
-  //FieldValue -> Outs bind
-  for i := 0 to Activity.Outs.Count - 1 do
+  if Activity.OptionExists('Dialog') then
   begin
-    prmName := Activity.Outs.ValueName(I);
-    field := dsURI.FindField(prmName);
-    if field <> nil then
-      Activity.Outs[prmName] := field.Value;
+    dialogActivity := GetDialogActivity;
+    ActivityDataBinding(Activity.Params, dialogActivity.Params);
+    dialogActivity.Execute(Sender);
+    if dialogActivity.Outs[TViewActivityOuts.ModalResult] = mrOk then
+    begin
+      viewURI := dialogActivity.Outs['URI'];
+      ActivityDataBinding(dialogActivity.Outs, Activity.Outs);
+    end
+    else
+      viewURI := '';
+  end
+  else
+  begin
+    evURI := App.Entities[entityName].GetView(eviewName, Sender);
+    ParamsBinding(Activity, evURI.Params);
+
+    dsURI := evURI.Load(true, '-');
+    viewURI := VarToStr(dsURI['URI']);
+
+    //FieldValue -> Outs bind
+    for i := 0 to Activity.Outs.Count - 1 do
+    begin
+      prmName := Activity.Outs.ValueName(I);
+      field := dsURI.FindField(prmName);
+      if field <> nil then
+        Activity.Outs[prmName] := field.Value;
+    end;
   end;
 
   if (viewURI = '') or SameText(viewURI, Activity.URI) then Exit;

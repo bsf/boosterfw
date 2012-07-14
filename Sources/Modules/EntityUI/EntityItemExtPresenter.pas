@@ -106,13 +106,6 @@ begin
     Exit;
   end;
 
-  if SameText(AName, 'ACTIVE_DETAIL') then
-  begin
-    Result := View.GetActiveDetailData;
-    Done := true;
-    Exit;
-  end;
-
   if FHeadEntityViewReady then
   begin
     ds := App.Entities[EntityName].GetView(EntityViewName, WorkItem).DataSet;  //Result := GetEVItem.Values['ID']; пейспяхъ !!!}
