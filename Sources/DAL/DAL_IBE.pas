@@ -80,14 +80,14 @@ type
     FViewName: string;
     FDatabase: TIBDatabase;
     FQuery: TIBQueryFix;
-    FQueryRefresh: TIBQueryFix;
-    FQueryInsertDef: TIBQueryFix;
+    FQueryDataRequest: TIBQueryFix;
+    FRequestReloadRecordSQL: string;
+    FRequestInsertDefSQL: string;
+    FRequestTitleSQL: string;
     FUpdateSql: TIBUpdateSql;
     FTransaction: TIBTransaction;
     FPrimaryKey: TStringList;
     procedure LoadMetadataCallback(AResultData: TIBXSQLDA);
-    function RequestReloadRecord(DSParams: OleVariant): OleVariant;
-    function RequestInsertDef(DSParams: OleVariant): OleVariant;
   protected
     function DataRequestHandler(Sender: TObject; Input : OleVariant) : OleVariant;
   public
@@ -317,11 +317,8 @@ begin
   FUpdateSql := TIBUpdateSQL.Create(Self);
   FQuery.UpdateObject := FUpdateSql;
 
-  FQueryRefresh := TIBQueryFix.Create(Self);
-  FQueryRefresh.Transaction := FTransaction;
-
-  FQueryInsertDef := TIBQueryFix.Create(Self);
-  FQueryInsertDef.Transaction := FTransaction;
+  FQueryDataRequest := TIBQueryFix.Create(Self);
+  FQueryDataRequest.Transaction := FTransaction;
 
   OnDataRequest := DataRequestHandler;
 
@@ -334,17 +331,55 @@ end;
 
 function TIBEntityViewProvider.DataRequestHandler(Sender: TObject;
   Input: OleVariant): OleVariant;
+
+  function GetData(const ASQL: string; AParams: OleVariant): OleVariant;
+  var
+    prmDS: TParams;
+  begin
+    Result := Unassigned;
+
+    FQueryDataRequest.SQL.Text := ASQL;
+
+    prmDS := TParams.Create;
+    try
+      UnpackParams(AParams, prmDS);
+      FQueryDataRequest.Params.AssignValues(prmDS);
+      try
+        DataSet := FQueryDataRequest;
+        FQueryDataRequest.Close;
+        FQueryDataRequest.Open;
+        Result := Data;
+      finally
+        DataSet := FQuery;
+        FQueryDataRequest.Close;
+      end;
+    finally
+      prmDS.Free;
+    end;
+  end;
+
 var
   requestKind: TEntityDataRequestKind;
 begin
+  Result := Unassigned;
+
   requestKind := Input[0];
+
   case requestKind of
     erkReloadRecord:
-      Result := RequestReloadRecord(Input[1]);
+      if FRequestReloadRecordSQL <> '' then
+        Result := GetData(FRequestReloadRecordSQL, Input[1]);
+
     erkInsertDefaults:
-      Result := RequestInsertDef(Input[1]);
-  else
-    Result := Unassigned;
+      if FRequestInsertDefSQL <> '' then
+        Result := GetData(FRequestInsertDefSQL, Input[1]);
+
+    erkTitle:
+      if FRequestTitleSQL <> '' then
+        Result := GetData(FRequestTitleSQL, Input[1]);
+
+    else
+      Result := Unassigned;
   end;
 
 end;
@@ -358,15 +393,18 @@ end;
 
 procedure TIBEntityViewProvider.LoadMetadataCallback(AResultData: TIBXSQLDA);
 begin
+  if Trim(AResultData.ByName('SQL_Select').AsString) = '' then
+    raise Exception.CreateFmt('SQL is empty for %s.%s', [FEntityName, FViewName]);
+
   FQuery.SQL.Text := AResultData.ByName('SQL_Select').AsString;
   FUpdateSql.InsertSQL.Text := AResultData.ByName('SQL_Insert').AsString;
   FUpdateSql.ModifySQL.Text := AResultData.ByName('SQL_Update').AsString;
   FUpdateSql.DeleteSQL.Text := AResultData.ByName('SQL_Delete').AsString;
-  FQueryRefresh.SQL.Text := AResultData.ByName('SQL_Refresh').AsString;
-  FQueryInsertDef.SQL.Text := AResultData.ByName('SQL_InsertDef').AsString;
 
-  if Trim(FQuery.SQL.Text) = '' then
-    raise Exception.CreateFmt('SQL is empty for %s.%s', [FEntityName, FViewName]);
+  FRequestReloadRecordSQL := AResultData.ByName('SQL_Refresh').AsString;
+  FRequestInsertDefSQL := AResultData.ByName('SQL_InsertDef').AsString;
+  FRequestTitleSQL := AResultData.ByName('SQL_TITLE').AsString;
+
 
 end;
 
@@ -375,63 +413,6 @@ begin
   IBExecuteSQL(FDatabase, METADATA_SQL, [FEntityName, FViewName],
     LoadMetadataCallback);
 end;
-
-function TIBEntityViewProvider.RequestInsertDef(
-  DSParams: OleVariant): OleVariant;
-var
-  prmDS: TParams;
-begin
-  Result := Unassigned;
-
-  if FQueryInsertDef.SQL.Text = '' then Exit;
-
-  prmDS := TParams.Create;
-  try
-    UnpackParams(DSParams, prmDS);
-
-    FQueryInsertDef.Params.AssignValues(prmDS);
-    try
-      DataSet := FQueryInsertDef;
-      FQueryInsertDef.Close;
-      FQueryInsertDef.Open;
-      Result := Data;
-    finally
-      DataSet := FQuery;
-      FQueryInsertDef.Close;
-    end;
-  finally
-    prmDS.Free;
-  end;
-
-end;
-
-function TIBEntityViewProvider.RequestReloadRecord(
-  DSParams: OleVariant): OleVariant;
-var
-  prmDS: TParams;
-begin
-  Result := Unassigned;
-
-  prmDS := TParams.Create;
-  try
-    UnpackParams(DSParams, prmDS);
-
-    FQueryRefresh.Params.AssignValues(prmDS);
-    try
-      DataSet := FQueryRefresh;
-      FQueryRefresh.Close;
-      FQueryRefresh.Open;
-      Result := Data;
-    finally
-      DataSet := FQuery;
-      FQueryRefresh.Close;
-    end;
-  finally
-    prmDS.Free;
-  end;
-
-end;
-
 
 { TDAL_IBX }
 

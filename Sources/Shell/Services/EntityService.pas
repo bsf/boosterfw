@@ -129,6 +129,7 @@ type
     //IEntityView
     function IEntityView.EntityName = GetEntityName;
     function ViewName: string;
+    function Title: string;
     function DataSet: TDataSet;
     function IsModified: boolean;
     function IsLoaded: boolean;
@@ -1118,6 +1119,34 @@ begin
   if eventTopic <> '' then
     GetWorkItem.Root.EventTopics[eventTopic].
       AddSubscription(Self, DoSynchronizeOnEntityChange);
+end;
+
+function TEntityView.Title: string;
+var
+  RequestDS: TClientDataSet;
+  RequestDSParams: OleVariant;
+  RequestData: OleVariant;
+begin
+  Result := '';
+
+  RequestDSParams := VarArrayCreate([0, 1], varVariant);
+  RequestDSParams[0] := Ord(erkTitle);
+  RequestDSParams[1] := PackageParams(GetDataSet.Params);
+
+  RequestData := GetDataSet.DataRequest(RequestDSParams);
+
+  if not VarIsEmpty(RequestData) then
+  begin
+    RequestDS := TClientDataSet.Create(nil);
+    try
+      RequestDS.Data := RequestData;
+      if not RequestDS.IsEmpty then
+        Result := RequestDS.Fields[0].AsString;
+    finally
+      RequestDS.Free;
+    end;
+  end;
+
 end;
 
 procedure TEntityView.UndoLastChange;

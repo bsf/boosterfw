@@ -157,14 +157,10 @@ end;
 procedure TEntityListPresenter.OnViewReady;
 begin
   FreeOnViewClose := true;
-  ViewTitle := ViewInfo.Title;
 
-  if ViewInfo.OptionExists('Title') then
-     ViewTitle :=
-       VarToStr(GetEView(EntityName, ViewInfo.OptionValue('Title')).DataSet.Fields[0].Value);
-
-{  if Assigned(GetEVList.DataSet.FindField('VIEW_TITLE')) then
-    ViewTitle := VarToStr(GetEVList.DataSet.FindField('VIEW_TITLE').Value);}
+  ViewTitle := GetEVList.Title;
+  if ViewTitle = '' then
+    ViewTitle := ViewInfo.Title;
 
   View.CommandBar.
     AddCommand(COMMAND_CLOSE, GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT);

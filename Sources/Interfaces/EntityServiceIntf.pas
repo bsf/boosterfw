@@ -106,6 +106,7 @@ type
   ['{202A5D1F-10B2-4372-A25F-436A0CB3DEFC}']
     function EntityName: string;
     function ViewName: string;
+    function Title: string;
     function Params: TParams;
     function DataSet: TDataSet;
     function Load(AParams: array of variant): TDataSet; overload;

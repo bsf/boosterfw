@@ -10,7 +10,8 @@ uses
   cxDataStorage, DB, cxDBData, cxGridLevel, cxClasses, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
   cxLabel, cxTextEdit, EntityCatalogIntf, EntityPickListPresenter, UIClasses,
-  cxPC, cxTL, cxTLdxBarBuiltInMenu, cxInplaceContainer, cxTLData, cxDBTL;
+  cxPC, cxTL, cxTLdxBarBuiltInMenu, cxInplaceContainer, cxTLData, cxDBTL,
+  cxPCdxBarPopupMenu;
 
 type
   TfrEntityPickListView = class(TfrCustomDialogView, IEntityPickListView)

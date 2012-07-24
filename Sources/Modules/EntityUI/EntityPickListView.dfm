@@ -7,8 +7,8 @@ inherited frEntityPickListView: TfrEntityPickListView
       TabOrder = 1
     end
     object pnFilter: TcxGroupBox
-      Left = 2
-      Top = 2
+      Left = 0
+      Top = 0
       Align = alTop
       PanelStyle.Active = True
       ParentBackground = False
@@ -22,10 +22,10 @@ inherited frEntityPickListView: TfrEntityPickListView
       StyleHot.LookAndFeel.Kind = lfOffice11
       TabOrder = 2
       DesignSize = (
-        666
+        670
         29)
       Height = 29
-      Width = 666
+      Width = 670
       object edFilter: TcxTextEdit
         Left = 50
         Top = 4
@@ -46,20 +46,20 @@ inherited frEntityPickListView: TfrEntityPickListView
       end
     end
     object pcListContainer: TcxPageControl
-      Left = 2
-      Top = 31
-      Width = 666
-      Height = 445
-      ActivePage = tsTreeList
+      Left = 0
+      Top = 29
+      Width = 670
+      Height = 446
       Align = alClient
-      HideTabs = True
-      ImageBorder = 1
-      LookAndFeel.Kind = lfOffice11
-      LookAndFeel.NativeStyle = False
       TabOrder = 0
       TabStop = False
-      ClientRectBottom = 445
-      ClientRectRight = 666
+      Properties.ActivePage = tsTreeList
+      Properties.HideTabs = True
+      Properties.ImageBorder = 1
+      LookAndFeel.Kind = lfOffice11
+      LookAndFeel.NativeStyle = False
+      ClientRectBottom = 446
+      ClientRectRight = 670
       ClientRectTop = 0
       object tsGridList: TcxTabSheet
         Caption = 'tsGridList'
@@ -67,13 +67,12 @@ inherited frEntityPickListView: TfrEntityPickListView
         object grList: TcxGrid
           Left = 0
           Top = 0
-          Width = 666
-          Height = 445
+          Width = 670
+          Height = 446
           Align = alClient
           TabOrder = 0
           LookAndFeel.Kind = lfOffice11
           object grListView: TcxGridDBTableView
-            NavigatorButtons.ConfirmDelete = False
             OnCellDblClick = grListViewCellDblClick
             DataController.DataSource = ListDataSource
             DataController.Summary.DefaultGroupSummaryItems = <>
@@ -99,8 +98,8 @@ inherited frEntityPickListView: TfrEntityPickListView
         object grTreeList: TcxDBTreeList
           Left = 0
           Top = 0
-          Width = 666
-          Height = 445
+          Width = 670
+          Height = 446
           Align = alClient
           Bands = <
             item

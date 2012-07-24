@@ -40,7 +40,7 @@ type
       const AEntityName, AViewName: string): string;
   end;
 
-  TEntityDataRequestKind = (erkReloadRecord, erkInsertDefaults);
+  TEntityDataRequestKind = (erkReloadRecord, erkInsertDefaults, erkTitle);
 
 procedure RegisterDALEngine(DALClass: TDALClass);
 function GetDALEngine(const AEngineName: string): TDALClass;
