@@ -325,21 +325,28 @@ procedure TEntityCatalogController.TEntityActivityHandler.Execute(
     CLS_DIALOG = 'IEntityPickListView';
   var
     I: integer;
+    dialogURI: string;
   begin
-    Result := Sender.Activities[Activity.URI + '.Dialog'];
-    with Result do
+    dialogURI := Activity.OptionValue('Dialog');
+    if dialogURI = '' then
     begin
-      ActivityClass := CLS_DIALOG;
-      Title := Activity.Title;
-      Options.Clear;
-      Options.AddStrings(Activity.Options);
+      Result := Sender.Activities[Activity.URI + '.Dialog'];
+      with Result do
+      begin
+        ActivityClass := CLS_DIALOG;
+        Title := Activity.Title;
+        Options.Clear;
+        Options.AddStrings(Activity.Options);
 
-      for I := 0 to Activity.Params.Count - 1 do
-        Params[Activity.Params.ValueName(I)] := Unassigned;
+        for I := 0 to Activity.Params.Count - 1 do
+          Params[Activity.Params.ValueName(I)] := Unassigned;
 
-      for I := 0 to Activity.Outs.Count - 1 do
-        Params[Activity.Outs.ValueName(I)] := Unassigned;
-    end;
+        for I := 0 to Activity.Outs.Count - 1 do
+          Params[Activity.Outs.ValueName(I)] := Unassigned;
+      end;
+    end
+    else
+      Result := Sender.Activities[dialogURI];
   end;
 
 //const

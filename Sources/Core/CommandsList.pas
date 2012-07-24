@@ -296,7 +296,7 @@ begin
   begin
     FShortCut := AValue;
     FShortCuts.Clear;
-    ExtractStrings([';'], [], PChar(AValue), FShortCuts);
+    ExtractStrings([';',','], [], PChar(AValue), FShortCuts);
     for I := 0 to FInvokers.Count - 1 do
       TCommandInvoker(FInvokers[I]).SetInvokerShortCuts(FShortCuts);
   end;

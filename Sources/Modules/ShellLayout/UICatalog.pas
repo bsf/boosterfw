@@ -364,7 +364,7 @@ begin
     cmd := WorkItem.Commands[cmdID];
     cmd.Caption := VarToStr(list['CAPTION']);
     cmd.Group := VarToStr(list['GRP']);
-
+    cmd.ShortCut := VarToStr(list['SHORTCUT']);
     cmd.Data[CMD_HANDLER] := VarToStr(list['HANDLER']);
     cmd.Data[CMD_PARAMS] := VarToStr(list['PARAMS']);
     cmd.SetHandler(CommandHandler);
@@ -373,7 +373,7 @@ begin
 
     if (not cmdExists) and (cmd.Data[CMD_OPTION_HIDDEN] <> '1')  then
       (GetView as ICustomView).CommandBar.
-        AddCommand(cmd.Name, cmd.Caption, '', cmd.Group, list['DEF'] = 1);
+        AddCommand(cmd.Name, cmd.Caption, cmd.ShortCut, cmd.Group, list['DEF'] = 1);
 
     if (VarToStr(list['CONDITION']) <> '') or (VarToStr(list['CONDITION_PARAMS']) <> '') then
       FConditions.Add(TCommandCondition.Create(cmd.Name,
