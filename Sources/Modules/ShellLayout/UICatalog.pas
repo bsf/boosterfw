@@ -364,7 +364,10 @@ begin
     cmd := WorkItem.Commands[cmdID];
     cmd.Caption := VarToStr(list['CAPTION']);
     cmd.Group := VarToStr(list['GRP']);
-    cmd.ShortCut := VarToStr(list['SHORTCUT']);
+
+    if VarToStr(list['SHORTCUT']) <> '' then
+      cmd.ShortCut := VarToStr(list['SHORTCUT']);
+
     cmd.Data[CMD_HANDLER] := VarToStr(list['HANDLER']);
     cmd.Data[CMD_PARAMS] := VarToStr(list['PARAMS']);
     cmd.SetHandler(CommandHandler);

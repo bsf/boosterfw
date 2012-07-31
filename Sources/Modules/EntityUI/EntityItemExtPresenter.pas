@@ -128,8 +128,9 @@ procedure TEntityItemExtPresenter.OnViewReady;
     if ViewInfo.OptionExists('DetailEViews') then
     begin
        ExtractStrings([','], [], PWideChar(ViewInfo.OptionValue('DetailEViews')), AList);
-    end
-    else if App.Entities.EntityViewExists(EntityName, 'DetailEViews') then
+    end;
+
+    if App.Entities.EntityViewExists(EntityName, 'DetailEViews') then
     begin
       ds := GetEVDetailEViews.DataSet;
       while not ds.Eof do
