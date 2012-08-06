@@ -5,16 +5,16 @@ inherited frEntityJournalView: TfrEntityJournalView
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
     object tcStates: TcxTabControl
-      Left = 2
-      Top = 42
-      Width = 761
-      Height = 471
+      Left = 0
+      Top = 40
+      Width = 765
+      Height = 475
       Align = alClient
       TabOrder = 1
       LookAndFeel.Kind = lfOffice11
       LookAndFeel.NativeStyle = False
-      ClientRectBottom = 471
-      ClientRectRight = 761
+      ClientRectBottom = 475
+      ClientRectRight = 765
       ClientRectTop = 0
       object pnInfo: TcxGroupBox
         Left = 0
@@ -43,13 +43,13 @@ inherited frEntityJournalView: TfrEntityJournalView
         TabOrder = 0
         Visible = False
         Height = 30
-        Width = 761
+        Width = 765
       end
       object grList: TcxGrid
         Left = 0
         Top = 30
-        Width = 761
-        Height = 441
+        Width = 765
+        Height = 445
         Align = alClient
         TabOrder = 1
         LookAndFeel.Kind = lfOffice11

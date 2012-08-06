@@ -156,6 +156,9 @@ procedure TEntityItemExtPresenter.OnViewReady;
       for I := 0 to entityViews.Count - 1 do
       begin
         entityView := GetEVDetail(entityViews[I]);
+        if not entityView.Info.ReadOnly then
+          entityView.ImmediateSave := true;
+
         View.LinkDetailData(entityView.ViewName, entityView.Info.Title, entityView.DataSet);
       end;
     finally

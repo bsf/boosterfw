@@ -111,6 +111,8 @@ begin
   view.Name := MakeValidViewName('grDetails' + AName);
   view.AssignSettings(cxGridViewRepositoryDBTableView); //grDetails.Views[0]);
   view.DataController.DataSource := dataSource;
+  view.DataController.Options :=
+    view.DataController.Options + [dcoImmediatePost];
   level.GridView := view;
   FDetails.Add(AName);
   LinkDataSet(dataSource, AData);

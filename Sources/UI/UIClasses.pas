@@ -200,9 +200,6 @@ type
 
   ICommandBar = interface
   ['{BF9EB98D-ABA0-4EE0-9776-28AB336431E4}']
- //   procedure AddCommand(const AName: string; AGroup: string; ADefault: boolean); overload;
-  //  procedure AddCommand(const AName, ACaption, AShortCut: string; AHandler: TNotifyEvent;
-    //  AGroup: string = ''; ADefault: boolean = false); overload;
     procedure AddCommand(const AName, ACaption: string; const AShortCut: string = '';
      const AGroup: string = ''; ADefault: boolean = false); overload;
 
