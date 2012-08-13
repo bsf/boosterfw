@@ -135,7 +135,7 @@ begin
     try
       TcxGridDBDataController(FGridView.DataController).GetKeyDBFields(KeyFields);
 
-      if KeyFields.Count > 0 then
+      if (KeyFields.Count > 0) and (FGridView.ColumnCount > 0) then
       begin
         if KeyFields.Count > 1 then
         begin

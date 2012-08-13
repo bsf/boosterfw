@@ -1,6 +1,7 @@
 inherited frEntityJournalView: TfrEntityJournalView
   Left = 629
   Caption = 'frEntityJournalView'
+  ExplicitHeight = 543
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
@@ -67,6 +68,7 @@ inherited frEntityJournalView: TfrEntityJournalView
           OptionsData.Deleting = False
           OptionsData.Inserting = False
           OptionsSelection.MultiSelect = True
+          OptionsSelection.UnselectFocusedRecordOnExit = False
           OptionsView.GroupByBox = False
           OptionsView.Indicator = True
         end
