@@ -287,7 +287,11 @@ begin
     Params[TReportLaunchParams.LaunchMode] :=
       Activity.Params[TReportActivityParams.LaunchMode];
 
-    for I := 0 to  Activity.Params.Count - 1 do
+    if Activity.CallMode in [acmBatchFirst, acmBatchNext] then
+      Params[TReportLaunchParams.LaunchMode] := lmHold;
+
+    for I := 0 to  Activity.Params.Count - 1
+    do
       Params[TReportLauncherPresenter.PARAM_INIT_PREFIX + Activity.Params.ValueName(I)] :=
         Activity.Params[Activity.Params.ValueName(I)];
 

@@ -49,6 +49,8 @@ type
     const
       CMD_HANDLER = 'HANDLER';
       CMD_PARAMS = 'PARAMS';
+      CMD_OPTION_FOREACH = 'ForEach';
+      CMD_OPTION_FOREACH_PARAM = 'ForEachParam';
       CMD_OPTION_HIDDEN = 'Hidden';
       CMD_OPTION_CLOSE_VIEW_BEFORE = 'CloseViewBefore';
       CMD_OPTION_CLOSE_VIEW_AFTER = 'CloseViewAfter';
@@ -345,6 +347,28 @@ procedure TUICatalog.TViewCommandExtension.CommandExtend;
      end;
   end;
 
+  function FindForEachParam(ACommand: ICommand; const AParamStr: string): string;
+  var
+    I: integer;
+    strList: TStringList;
+  begin
+     strList := TStringList.Create;
+     try
+        ExtractStrings([';'], [], PWideChar(AParamStr), strList);
+        for I := 0 to strList.Count - 1 do
+        begin
+          if SameText(strList.ValueFromIndex[I], 'ForEachValue') then
+          begin
+            Result := strList.Names[I];
+            break;
+          end;
+        end;
+     finally
+       strList.Free;
+     end;
+
+
+  end;
 
 var
   list: TDataSet;
@@ -374,6 +398,10 @@ begin
 
     CommandSetOptions(cmd, VarToStr(list['OPTIONS']));
 
+    if cmd.Data[CMD_OPTION_FOREACH] <> '' then
+      cmd.Data[CMD_OPTION_FOREACH_PARAM] := FindForEachParam(cmd, cmd.Data[CMD_PARAMS]);
+
+
     if (not cmdExists) and (cmd.Data[CMD_OPTION_HIDDEN] <> '1')  then
       (GetView as ICustomView).CommandBar.
         AddCommand(cmd.Name, cmd.Caption, cmd.ShortCut, cmd.Group, list['DEF'] = 1);
@@ -396,6 +424,12 @@ procedure TUICatalog.TViewCommandExtension.CommandHandler(Sender: TObject);
   var
     callerWI: TWorkItem;
     activity: IActivity;
+    forEachArray: Variant;
+    forEachCount: integer;
+    forEachParam: string;
+    I: integer;
+    batchCall: boolean;
+    workItemClosed: boolean;
   begin
     Result := true;
     if CommandExists(AHandler) then
@@ -405,10 +439,25 @@ procedure TUICatalog.TViewCommandExtension.CommandHandler(Sender: TObject);
     end;
 
     activity := WorkItem.Activities[AHandler];
+
     activity.Params.Assign(WorkItem, ACommand.Data[CMD_PARAMS]);
+
+    forEachArray := Unassigned;
+    forEachCount := 0;
+    forEachParam := '';
+
+    batchCall := ACommand.Data[CMD_OPTION_FOREACH] <> '';
+    if batchCall then
+    begin
+      forEachArray := WorkItem.State[ACommand.Data[CMD_OPTION_FOREACH]];
+      if not VarIsArray(forEachArray) then Exit;
+      forEachParam := ACommand.Data[CMD_OPTION_FOREACH_PARAM];
+      forEachCount := VarArrayHighBound(forEachArray, 1);
+    end;
 
     callerWI := WorkItem;
 
+    workItemClosed := false;
     if ACommand.Data[CMD_OPTION_CLOSE_VIEW_BEFORE] = '1' then
     begin
       if WorkItem.ID <> WorkItem.Context then
@@ -421,10 +470,32 @@ procedure TUICatalog.TViewCommandExtension.CommandHandler(Sender: TObject);
         callerWI := WorkItem.Parent;
 
       WorkItem.Commands[COMMAND_CLOSE].Execute;
+      workItemClosed := true;
       Result := false;
     end;
 
-    activity.Execute(callerWI);
+    if batchCall then
+    begin
+      for I := 0 to forEachCount do
+      begin
+        if forEachCount = 0 then
+          activity.CallMode := acmSingle
+        else if I = 0 then
+          activity.CallMode := acmBatchFirst
+        else if I = forEachCount then
+          activity.CallMode := acmBatchLast
+        else
+          activity.CallMode := acmBatchNext;
+
+        if not WorkItemClosed then
+          activity.Params.Assign(WorkItem, ACommand.Data[CMD_PARAMS]);
+
+        activity.Params[forEachParam] := forEachArray[I];
+        activity.Execute(callerWI);
+      end
+    end
+    else
+      activity.Execute(callerWI);
 
     if ACommand.Data[CMD_OPTION_CLOSE_VIEW_AFTER] = '1' then
     begin

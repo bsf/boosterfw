@@ -125,6 +125,8 @@ type
 {Activities}
   IActivity = interface;
 
+  TActivityCallMode = (acmSingle, acmBatchFirst, acmBatchNext, acmBatchLast);
+
   TActivityHandler = class(TObject)
   public
     procedure Execute(Sender: TWorkItem; Activity: IActivity); virtual; abstract;
@@ -188,6 +190,10 @@ type
 
     function Params: IActivityData;
     function Outs: IActivityData;
+
+    function GetCallMode: TActivityCallMode;
+    procedure SetCallMode(AValue: TActivityCallMode);
+    property CallMode: TActivityCallMode read GetCallMode write SetCallMode;
 
     procedure RegisterHandler(AHandler: TActivityHandler);
 

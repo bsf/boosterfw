@@ -39,6 +39,7 @@ type
     FOptions: TStringList;
     FParams: TActivityData;
     FOuts: TActivityData;
+    FCallMode: TActivityCallMode;
   protected
     //IActivity
     function URI: string;
@@ -71,6 +72,9 @@ type
 
     function Params: IActivityData;
     function Outs: IActivityData;
+
+    function GetCallMode: TActivityCallMode;
+    procedure SetCallMode(AValue: TActivityCallMode);
 
     procedure RegisterHandler(AHandler: TActivityHandler);
 
@@ -236,6 +240,7 @@ begin
 
   finally
     FParams.ResetValues;
+    FCallMode := acmSingle;
   end;
 end;
 
@@ -244,6 +249,11 @@ begin
   Result := FActivityClass;
   if Result = '' then
     Result := FURI;
+end;
+
+function TActivity.GetCallMode: TActivityCallMode;
+begin
+  Result := FCallMode;
 end;
 
 function TActivity.GetGroup: string;
@@ -314,6 +324,11 @@ end;
 procedure TActivity.SetActivityClass(const Value: string);
 begin
   FActivityClass := Value;
+end;
+
+procedure TActivity.SetCallMode(AValue: TActivityCallMode);
+begin
+  FCallMode := AValue;
 end;
 
 procedure TActivity.SetGroup(const Value: string);
