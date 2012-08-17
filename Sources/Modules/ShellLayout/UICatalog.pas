@@ -161,6 +161,15 @@ end;
 
 class procedure TUICatalog.LoadStyles(AWorkItem: TWorkItem);
 
+  procedure FontSizeSet(const AValue: string; AStyle: TcxStyle; AScale: integer);
+  var
+    size: integer;
+  begin
+    size := StrToIntDef(AValue, AStyle.Font.Size);
+    size := MulDiv(size, AScale, 100);
+    AStyle.Font.Size := size;
+  end;
+
   procedure ColorSet(const AValue: string; AStyle: TcxStyle);
   var
     color: integer;
@@ -211,7 +220,7 @@ begin
     while not ds.Eof do
     begin
       style := TcxStyle.Create(AWorkItem);
-      style.Font.Size := MulDiv(style.Font.Size, uiSvc.Scale, 100);
+      //style.Font.Size := MulDiv(style.Font.Size, uiSvc.Scale, 100);
       style.Font.Name := 'MS Sans Serif';
       strList.Clear;
       ExtractStrings([';'], [], PWideChar(VarToStr(ds['OPTIONS'])), strList);
@@ -219,6 +228,7 @@ begin
       ColorSet(strList.Values['Color'], style);
       FontStyleSet(strList.Values['Font.Style'], style);
       FontColorSet(strList.Values['Font.Color'], style);
+      FontSizeSet(strList.Values['Font.Size'], style, uiSvc.Scale);
       uiSvc.Styles[ds['ID']] := style;
       ds.Next;
     end

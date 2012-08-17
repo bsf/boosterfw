@@ -68,6 +68,7 @@ type
     cxGrid1DBCardView1PARENT_ID: TcxGridDBCardViewRow;
     cxStyle18: TcxStyle;
     cxStyle19: TcxStyle;
+    cxStyle20: TcxStyle;
     procedure cxDBComboBox1PropertiesInitPopup(Sender: TObject);
     procedure cxGrid1DBCardView1CellClick(Sender: TcxCustomGridTableView;
       ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton;

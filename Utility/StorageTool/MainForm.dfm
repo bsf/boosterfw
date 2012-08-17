@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Form1'
-  ClientHeight = 461
+  ClientHeight = 534
   ClientWidth = 934
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,12 +17,13 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 193
-    Height = 461
+    Height = 534
     Align = alLeft
     ActiveGroupIndex = 0
     TabOrder = 0
     View = 17
     ViewStyle.ColorSchemeName = 'Blue'
+    ExplicitHeight = 461
     object dxNavBar1Group1: TdxNavBarGroup
       Caption = 'dxNavBar1Group1'
       SelectedLinkIndex = -1
@@ -52,10 +53,11 @@ object Form1: TForm1
     Left = 193
     Top = 0
     Width = 741
-    Height = 461
+    Height = 534
     Align = alClient
     TabOrder = 1
     LookAndFeel.Kind = lfOffice11
+    ExplicitHeight = 461
     object cxGrid1DBBandedTableView1: TcxGridDBBandedTableView
       DataController.DataSource = DataSource1
       DataController.Summary.DefaultGroupSummaryItems = <>
@@ -127,6 +129,7 @@ object Form1: TForm1
       OptionsView.CellAutoHeight = True
       OptionsView.EmptyRows = False
       OptionsView.LayerSeparatorWidth = 5
+      Styles.Background = cxStyle20
       object cxGrid1DBCardView1PARENT: TcxGridDBCardViewRow
         DataBinding.FieldName = 'PARENT'
         Visible = False
@@ -346,6 +349,8 @@ object Form1: TForm1
       Font.Style = [fsBold]
     end
     object cxStyle19: TcxStyle
+    end
+    object cxStyle20: TcxStyle
     end
     object cxGridTableViewStyleSheet1: TcxGridTableViewStyleSheet
       BuiltIn = True
