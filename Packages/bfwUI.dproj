@@ -74,6 +74,7 @@
 			<DCCReference Include="cxTreeListdxBarPopupMenuD15.dcp"/>
 			<DCCReference Include="dxSkinsCoreD15.dcp"/>
 			<DCCReference Include="cxVerticalGridD15.dcp"/>
+			<DCCReference Include="vclie.dcp"/>
 			<DCCReference Include="..\Sources\UI\CommonUtils.pas"/>
 			<DCCReference Include="..\Sources\UI\UIClasses.pas"/>
 			<DCCReference Include="..\Sources\UI\CustomContentPresenter.pas"/>
@@ -99,6 +100,7 @@
 			</DCCReference>
 			<DCCReference Include="..\Sources\UI\UIStr.pas"/>
 			<DCCReference Include="..\Sources\UI\HelperTreeISelection.pas"/>
+			<DCCReference Include="..\Sources\UI\WBCtrl.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

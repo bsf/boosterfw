@@ -32,7 +32,8 @@ requires
   dxorgcD15,
   dxdborD15,
   cxSchedulerD15,
-  cxPageControldxBarPopupMenuD15;
+  cxPageControldxBarPopupMenuD15,
+  vclie;
 
 contains
   bfwEntityUIModuleInit in '..\..\Sources\Modules\EntityUI\bfwEntityUIModuleInit.pas',
@@ -65,6 +66,8 @@ contains
   EntityDeskMenuView in '..\..\Sources\Modules\EntityUI\EntityDeskMenuView.pas' {frEntityDeskMenuView},
   EntityDeskMenuPresenter in '..\..\Sources\Modules\EntityUI\EntityDeskMenuPresenter.pas',
   EntityItemExtView in '..\..\Sources\Modules\EntityUI\EntityItemExtView.pas' {frEntityItemExtView},
-  EntityItemExtPresenter in '..\..\Sources\Modules\EntityUI\EntityItemExtPresenter.pas';
+  EntityItemExtPresenter in '..\..\Sources\Modules\EntityUI\EntityItemExtPresenter.pas',
+  EntityWebView in '..\..\Sources\Modules\EntityUI\EntityWebView.pas' {frEntityWebView},
+  EntityWebPresenter in '..\..\Sources\Modules\EntityUI\EntityWebPresenter.pas';
 
 end.

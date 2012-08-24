@@ -47,7 +47,8 @@ requires
   cxTreeListD15,
   cxTreeListdxBarPopupMenuD15,
   dxSkinsCoreD15,
-  cxVerticalGridD15;
+  cxVerticalGridD15,
+  vclie;
 
 contains
   CommonUtils in '..\Sources\UI\CommonUtils.pas',
@@ -68,6 +69,7 @@ contains
   CustomDialogView in '..\Sources\UI\CustomDialogView.pas' {frCustomDialogView},
   CustomContentView in '..\Sources\UI\CustomContentView.pas' {frCustomContentView},
   UIStr in '..\Sources\UI\UIStr.pas',
-  HelperTreeISelection in '..\Sources\UI\HelperTreeISelection.pas';
+  HelperTreeISelection in '..\Sources\UI\HelperTreeISelection.pas',
+  WBCtrl in '..\Sources\UI\WBCtrl.pas';
 
 end.
