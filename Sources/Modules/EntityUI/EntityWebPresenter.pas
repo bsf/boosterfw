@@ -19,20 +19,14 @@ type
 
   TEntityWebPresenter = class(TEntityContentPresenter)
   private
-    procedure OnWebBrowserTitleChange(ASender: TObject; const Text: WideString);
+    FEntityViewReady: boolean;
     procedure OnWebBrowserDocumentComplete(ASender: TObject;
       const pDisp: IDispatch; var URL: OleVariant);
 
-    procedure ExecuteJS(const AName: string);
     function View: IEntityWebView;
-
-    procedure CmdGetState(Sender: TObject);
-    procedure CmdSetState(Sender: TObject);
-
+    function GetEV: IEntityView;
     procedure CmdReload(Sender: TObject);
-    procedure CmdTest(Sender: TObject);
 
-    function ScriptFunc_Hello(AParams: array of OleVariant): OleVariant;
   protected
     //function OnGetWorkItemState(const AName: string; var Done: boolean): Variant; override;
     procedure OnViewReady; override;
@@ -42,34 +36,19 @@ implementation
 
 { TEntityWebPresenter }
 
-procedure TEntityWebPresenter.CmdGetState(Sender: TObject);
-var
-  cmd: ICommand;
-  stateName: string;
-begin
-  Sender.GetInterface(ICommand, cmd);
-  stateName := cmd.Data['DATA'];
-  ExecuteJS('WI.getStateCallback("' + stateName + '", "' + VarToStr(WorkItem.State[stateName]) + '")');
-end;
-
 procedure TEntityWebPresenter.CmdReload(Sender: TObject);
 begin
   View.WebBrowser.Refresh;
 end;
 
-procedure TEntityWebPresenter.CmdSetState(Sender: TObject);
+function TEntityWebPresenter.GetEV: IEntityView;
 begin
+  Result := (WorkItem.Services[IEntityService] as IEntityService).
+    Entity[EntityName].GetView(EntityViewName, WorkItem);
 
-end;
+  Result.Load(false);
 
-procedure TEntityWebPresenter.CmdTest(Sender: TObject);
-begin
-  ExecuteJS('Test()');
-end;
-
-procedure TEntityWebPresenter.ExecuteJS(const AName: string);
-begin
-  (View.WebBrowser.Document as IHTMLDocument2).parentWindow.execScript(AName, 'JavaScript');
+  FEntityViewReady := true;
 end;
 
 procedure TEntityWebPresenter.OnViewReady;
@@ -96,14 +75,6 @@ begin
     AddCommand(COMMAND_RELOAD, GetLocaleString(@COMMAND_RELOAD_CAPTION), COMMAND_RELOAD_SHORTCUT);
   WorkItem.Commands[COMMAND_RELOAD].SetHandler(CmdReload);
 
-  View.CommandBar.AddCommand('cmd.Test', 'Test');
-  WorkItem.Commands['cmd.Test'].SetHandler(CmdTest);
-
-  WorkItem.Commands[COMMAND_STATE_GET].SetHandler(CmdGetState);
-  WorkItem.Commands[COMMAND_STATE_SET].SetHandler(CmdSetState);
-
-  View.WebBrowser.RegisterScriptFunc('Hello', ScriptFunc_Hello);
-  View.WebBrowser.OnTitleChange := OnWebBrowserTitleChange;
   View.WebBrowser.OnDocumentComplete := OnWebBrowserDocumentComplete;
   View.WebBrowser.Navigate(ExtractFilePath(ParamStr(0)) + 'html\' + Self.ViewInfo.OptionValue('html'));
 
@@ -115,36 +86,6 @@ begin
 
 end;
 
-procedure TEntityWebPresenter.OnWebBrowserTitleChange(ASender: TObject;
-  const Text: WideString);
-var
-  cmdName: string;
-  cmdData: string;
-begin
-  if Pos(WideString('##'), Text) = 1 then
-  begin
-    cmdName := Copy(Text, 3, MAXINT);
-    cmdData := '';
-
-    if Pos('#', cmdName) > 0 then
-    begin
-      cmdData := Copy(cmdName, Pos('#', cmdName) + 1, MAXINT);
-      cmdName := Copy(cmdName, 1, Pos('#', cmdName) - 1);
-    end;
-
-    WorkItem.Commands[cmdName].Data['DATA'] := cmdData;
-
-    WorkItem.Commands[cmdName].Execute;
-  end;
-
-
-end;
-
-function TEntityWebPresenter.ScriptFunc_Hello(
-  AParams: array of OleVariant): OleVariant;
-begin
-  App.UI.MessageBox.InfoMessage('Hello world!');
-end;
 
 function TEntityWebPresenter.View: IEntityWebView;
 begin

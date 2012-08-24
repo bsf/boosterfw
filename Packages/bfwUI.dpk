@@ -70,6 +70,7 @@ contains
   CustomContentView in '..\Sources\UI\CustomContentView.pas' {frCustomContentView},
   UIStr in '..\Sources\UI\UIStr.pas',
   HelperTreeISelection in '..\Sources\UI\HelperTreeISelection.pas',
-  WBCtrl in '..\Sources\UI\WBCtrl.pas';
+  WBCtrl in '..\Sources\UI\WBCtrl.pas',
+  WBHelper in '..\Sources\UI\WBHelper.pas';
 
 end.

@@ -64,7 +64,8 @@ begin
 
   entityView := Svc.Entity[entityName].GetView(viewName, AWorkItem);
 
-  if not entityView.IsLoaded then Exit;
+  if not entityView.IsLoaded then
+    entityView.Load(); //Exit;
 
   if entityView.DataSet.FindField(fieldName) <> nil then
   begin
