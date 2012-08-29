@@ -64,8 +64,8 @@ begin
 
   entityView := Svc.Entity[entityName].GetView(viewName, AWorkItem);
 
-  if not entityView.IsLoaded then
-    entityView.Load(); //Exit;
+  if not entityView.IsLoaded then Exit;
+   // entityView.Load(); //Exit;  !!! AV on destroy form
 
   if entityView.DataSet.FindField(fieldName) <> nil then
   begin

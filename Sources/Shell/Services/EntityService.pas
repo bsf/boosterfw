@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes, ConfigServiceIntf, EntityServiceIntf, Contnrs, ComObj,
-  DBClient, CoreClasses, db, Variants, DAL, generics.collections;
+  DBClient, CoreClasses, db, Variants, DAL, generics.collections,DBXJSON;
 
 const
   ENT_METADATA_ENTITIES = 'Entities';
@@ -144,6 +144,13 @@ type
     procedure DoModify;
     procedure SynchronizeOnEntityChange(const AEntityName, AViewName: string;
       const AFieldName: string = '');
+
+    //JSON
+    function EscapeString(const AValue: string): string;
+    function JSONLoad: string;
+    procedure JSONInsert(const Data: string);
+    procedure JSONUpdate(const Data: string);
+    procedure JSONDelete(const Data: string);
 
   public
     class function ProviderKind: TProviderNameBuilder.TProviderKind; override;
@@ -906,6 +913,87 @@ begin
   Result := GetDataSet.ChangeCount > 0;
 end;
 
+procedure TEntityView.JSONDelete(const Data: string);
+begin
+
+end;
+
+procedure TEntityView.JSONInsert(const Data: string);
+begin
+
+end;
+
+function TEntityView.JSONLoad: string;
+var
+  data: TJSONArray;
+  jRecord: TJSONObject;
+  jVal: TJSONValue;
+  ds: TDataSet;
+  I: integer;
+begin
+  data := TJSONArray.Create;
+  try
+    ds := Load(true);
+    ds.First;
+    while not ds.Eof do
+    begin
+      jRecord := TJSONObject.Create;
+      for I := 0 to ds.FieldCount - 1 do
+      begin
+        if ds.Fields[i] is TFloatField then
+          jVal := TJSONNumber.Create(ds.Fields[i].AsFloat)
+        else
+          jVal := TJSONString.Create(EscapeString(ds.fields[I].AsString));
+        jRecord.AddPair(ds.Fields[I].FieldName, jVal);
+      end;
+      data.AddElement(jRecord);
+      ds.Next;
+    end;
+    Result := data.ToString;
+  finally
+    data.Free;
+  end;
+end;
+
+procedure TEntityView.JSONUpdate(const Data: string);
+var
+  row: TJSONObject;
+  jPair: TJSONPair;
+  pkValues: Variant;
+  I: integer;
+  field: TField;
+begin
+  Load(false);
+
+  row := TJSONObject.ParseJSONValue(Data) as TJSONObject;
+  if not Assigned(row) then
+    raise Exception.Create('Wrong JSON object!');
+
+
+  pkValues := VarArrayCreate([0, FPrimaryKeys.Count], varVariant);
+  for I := 0 to FPrimaryKeys.Count - 1 do
+  begin
+    jPair := row.Get(FPrimaryKeys[I]);
+    if jPair = nil then
+      raise Exception.CreateFmt('Primary key field %s not found in JSON', [FPrimaryKeys[I]]);
+    pkValues[I] := jPair.JsonValue.Value;
+  end;
+
+  if GetDataSet.Locate(Info.PrimaryKey, pkValues, []) then
+  begin
+    GetDataSet.Edit;
+    for I := 0 to row.Size - 1 do
+    begin
+      field := GetDataSet.FindField(row.Get(i).JsonString.Value);
+      if assigned(field) and (not field.ReadOnly) then
+        field.Value := row.Get(i).JsonValue.Value;
+    end;
+
+    GetDataSet.Post;
+   // Save;
+  end;
+end;
+
 function TEntityView.Load(AParams: array of variant): TDataSet;
 var
   I: integer;
@@ -1104,6 +1192,77 @@ function TEntityView.SchemeInfoDef: IEntitySchemeInfo;
 begin
   Result := IEntityService(
     FWorkItem.Services[IEntityService]).GetSchemeInfo('');
+end;
+
+function TEntityView.EscapeString(const AValue: string): string;
+
+  procedure AddChars(const AChars: string; var Dest: string; var AIndex: Integer); inline;
+  begin
+    System.Insert(AChars, Dest, AIndex);
+    System.Delete(Dest, AIndex + 2, 1);
+    Inc(AIndex, 2);
+  end;
+
+  procedure AddUnicodeChars(const AChars: string; var Dest: string; var AIndex: Integer); inline;
+  begin
+    System.Insert(AChars, Dest, AIndex);
+    System.Delete(Dest, AIndex + 6, 1);
+    Inc(AIndex, 6);
+  end;
+
+var
+  i, ix: Integer;
+  AChar: Char;
+begin
+  Result := AValue;
+  ix := 1;
+  for i := 1 to System.Length(AValue) do
+  begin
+    AChar :=  AValue[i];
+    case AChar of
+      '/', '\', '"':
+      begin
+        System.Insert('\', Result, ix);
+        Inc(ix, 2);
+      end;
+      #8:  //backspace \b
+      begin
+        AddChars('\b', Result, ix);
+      end;
+      #9:
+      begin
+        AddChars('\t', Result, ix);
+      end;
+      #10:
+      begin
+        AddChars('\n', Result, ix);
+      end;
+      #12:
+      begin
+        AddChars('\f', Result, ix);
+      end;
+      #13:
+      begin
+        AddChars('\r', Result, ix);
+      end;
+      #0 .. #7, #11, #14 .. #31:
+      begin
+        AddUnicodeChars('\u' + IntToHex(Word(AChar), 4), Result, ix);
+      end
+      else
+      begin
+        if Word(AChar) > 127 then
+        begin
+          AddUnicodeChars('\u' + IntToHex(Word(AChar), 4), Result, ix);
+        end
+        else
+        begin
+          Inc(ix);
+        end;
+      end;
+    end;
+  end;
+
 end;
 
 procedure TEntityView.SynchronizeOnEntityChange(const AEntityName, AViewName,

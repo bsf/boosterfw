@@ -128,6 +128,11 @@ type
     procedure SynchronizeOnEntityChange(const AEntityName, AViewName: string;
       const AFieldName: string = '');
 
+    //JSON
+    function JSONLoad: string;
+    procedure JSONInsert(const Data: string);
+    procedure JSONUpdate(const Data: string);
+    procedure JSONDelete(const Data: string);
   end;
 
   IEntityOper = interface
