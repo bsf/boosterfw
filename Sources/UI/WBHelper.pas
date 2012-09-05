@@ -4,13 +4,10 @@ interface
 uses WBCtrl, classes, coreClasses, variants, EntityServiceIntf, sysutils;
 
 type
-  TScriptFunction = function (Params: array of OleVariant): OleVariant of object;
-
   TWorkItemProxy = class(TComponent, IScriptHelper)
   private
     FFunctions: TStringList;
     FWorkItem: TWorkItem;
-    procedure RegisterFunction(const AName: string; AFunc: TScriptFunction);
     procedure RegisterFunctions;
     //
     function Script_getState(Params: array of OleVariant): OleVariant;
@@ -25,8 +22,8 @@ type
     function Script_execData(Params: array of OleVariant): OleVariant;
   protected
     //IScriptHelper
-    function GetFunctionIndex(const AName: WideString): integer;
-    function InvokeFunction(const AFunctionIndex: integer; Params: array of OleVariant): OleVariant;
+    function CheckFunction(const AName: WideString): boolean;
+    function InvokeFunction(const AName: WideString; Params: array of OleVariant): OleVariant;
   public
     constructor Create(AOwner: TComponent; AWorkItem: TWorkItem); reintroduce;
     destructor Destroy; override;
@@ -35,11 +32,18 @@ type
 implementation
 
 type
+  TScriptFunction = function (Params: array of OleVariant): OleVariant of object;
+
   TScriptFuncObj = class
     Func: TScriptFunction;
   end;
 
 { TWorkItemProxy }
+
+function TWorkItemProxy.CheckFunction(const AName: WideString): boolean;
+begin
+  Result := FFunctions.IndexOf(AName) <> -1;
+end;
 
 constructor TWorkItemProxy.Create(AOwner: TComponent; AWorkItem: TWorkItem);
 begin
@@ -54,28 +58,23 @@ begin
   inherited;
 end;
 
-function TWorkItemProxy.GetFunctionIndex(const AName: WideString): integer;
-begin
-  Result := FFunctions.IndexOf(AName) + 1;
-end;
-
-function TWorkItemProxy.InvokeFunction(const AFunctionIndex: integer;
+function TWorkItemProxy.InvokeFunction(const AName: WideString;
   Params: array of OleVariant): OleVariant;
 begin
-  Result := TScriptFuncObj(FFunctions.Objects[AFunctionIndex - 1]).Func(Params);
-end;
-
-procedure TWorkItemProxy.RegisterFunction(const AName: string;
-  AFunc: TScriptFunction);
-var
-  item: TScriptFuncObj;
-begin
-  item := TScriptFuncObj.Create;
-  item.Func := AFunc;
-  FFunctions.AddObject(AName, item);
+  Result := TScriptFuncObj(FFunctions.Objects[FFunctions.IndexOf(AName)]).Func(Params);
 end;
 
 procedure TWorkItemProxy.RegisterFunctions;
+  procedure RegisterFunction(const AName: string;
+    AFunc: TScriptFunction);
+  var
+    item: TScriptFuncObj;
+  begin
+    item := TScriptFuncObj.Create;
+    item.Func := AFunc;
+    FFunctions.AddObject(AName, item);
+  end;
+
 begin
   RegisterFunction('getState', Script_getState);
   RegisterFunction('setState', Script_setState);

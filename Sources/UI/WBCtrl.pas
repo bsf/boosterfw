@@ -1,7 +1,7 @@
 unit WBCtrl;
 
 interface
-uses Windows, ActiveX, Classes, SHDocVw, Variants, sysutils, coreClasses;
+uses Windows, Messages, ActiveX, Classes, SHDocVw, Variants, sysutils, coreClasses;
 
 const
   DOCHOSTUIFLAG_DIALOG = 1;
@@ -21,12 +21,10 @@ const
 
 
 type
-  TScriptFunction = function (Params: array of OleVariant): OleVariant of object;
-
   IScriptHelper = interface
   ['{3E932722-DE2D-4242-825A-A6E3EB2B3C9E}']
-    function GetFunctionIndex(const AName: WideString): integer;
-    function InvokeFunction(const AFunctionIndex: integer; Params: array of OleVariant): OleVariant;
+    function CheckFunction(const AName: WideString): boolean;
+    function InvokeFunction(const AName: WideString; Params: array of OleVariant): OleVariant;
   end;
 
   TDocHostInfo = packed record
@@ -75,9 +73,9 @@ type
   TWebBrowserCtrl = class(TWebBrowser, IDocHostUIHandler, IDispatch)
   const
     DISPID_START = 1000;
-    MAX_HELPERS = 10;
   private
     FScriptHelpers: TInterfaceList;
+    FDispList: TStringList;
   protected
     // IDocHostUIHandler
     function ShowContextMenu(const dwID: DWORD; const ppt: PPOINT;
@@ -125,7 +123,6 @@ type
     destructor Destroy; override;
     function InvokeScript(ScriptName: WideString; ScriptParams: array of OleVariant): OleVariant;
     procedure RegisterScriptHelper(AHelper: IScriptHelper);
-    procedure UnregisterScriptHelper(AHelper: IScriptHelper);
   end;
 
 implementation
@@ -133,25 +130,19 @@ implementation
 const
   IID_IDISPATCH: TGUID = '{00020400-0000-0000-C000-000000000046}';
   IID_NULL: TGUID = '{00000000-0000-0000-0000-000000000000}';
-  ScriptFuncDispIdStart = 10001;
-
-type
-  TScriptFuncPtrObj = class
-    Func: TScriptFunction;
-    DispId: SYSINT;
-  end;
-
 
 { TEntityWebBrowser }
 constructor TWebBrowserCtrl.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FScriptHelpers := TInterfaceList.Create;
+  FDispList := TStringList.Create;
 end;
 
 destructor TWebBrowserCtrl.Destroy;
 begin
   FScriptHelpers.Free;
+  FDispList.Free;
   inherited;
 end;
 
@@ -195,16 +186,22 @@ begin
   begin
     Name := POleStrList(Names)^[i];
 
-    funcIdx := -1;
-    for helperIdx := 0 to FScriptHelpers.Count - 1 do
+    funcIdx := FDispList.IndexOf(Name);
+    if funcIdx = -1 then
     begin
-      funcIdx := (FScriptHelpers[helperIdx] as IScriptHelper).GetFunctionIndex(Name);
-      if funcIdx > 0 then Break;
+      for helperIdx := 0 to FScriptHelpers.Count - 1 do
+      begin
+        if (FScriptHelpers[helperIdx] as IScriptHelper).CheckFunction(Name) then
+        begin
+          funcIdx := FDispList.AddObject(Name, TObject(helperIdx));
+          Break;
+        end;
+      end;
     end;
 
-    if funcIdx > 0 then
+    if funcIdx >= 0 then
     begin
-      DispId := (funcIdx * MAX_HELPERS + helperIdx) * DISPID_START;
+      DispId := funcIdx + DISPID_START;
       PDispIdList(DispIDs)^[i] := DispId;
     end
     else
@@ -237,36 +234,34 @@ function TWebBrowserCtrl.Invoke(DispID: Integer; const IID: TGUID;
 var
   DispParams: ActiveX.DISPPARAMS absolute Params;
   args: array of OleVariant;
-  i, y: integer;
+  i: integer;
   RResult: OleVariant;
   helperIdx: integer;
   funcIdx: integer;
+  funcName: WideString;
 begin
-  if DispId > DISPID_START then
+  if DispId >= DISPID_START then
   begin
     Result := S_OK;
     RResult := Unassigned;
 
-    funcIdx := Round(DispId / DISPID_START / MAX_HELPERS);
-    helperIdx := Round((DispId / DISPID_START)) mod MAX_HELPERS;
+    funcIdx := DispId - DISPID_START;
+    funcName := FDispList[funcIdx];
+    helperIdx := integer(FDispList.Objects[funcIdx]);
 
     SetLength(args, DispParams.cArgs);
-    for i := 0 to DispParams.cArgs - 1 do
+    for i := 0 to DispParams.cArgs - 1 do //change order args
       args[DispParams.cArgs - i - 1] := OleVariant(DispParams.rgvarg^[i]);
 
-
-    {for i := DispParams.cArgs - 1 downto 0 do
-      args[i] := OleVariant(DispParams.rgvarg^[i]);}
-
     if Flags and DISPATCH_METHOD <> 0 then
-      RResult := (FScriptHelpers[helperIdx] as IScriptHelper).InvokeFunction(funcIdx, args);
+      RResult := (FScriptHelpers[helperIdx] as IScriptHelper).InvokeFunction(funcName, args);
 
     if Flags and DISPATCH_PROPERTYGET <> 0 then
     begin
       if VarResult <> NIL then
         if VarIsEmpty(RResult) then
           OleVariant(VarResult^) :=
-            (FScriptHelpers[helperIdx] as IScriptHelper).InvokeFunction(funcIdx, args)
+            (FScriptHelpers[helperIdx] as IScriptHelper).InvokeFunction(funcName, args)
         else
           OleVariant(VarResult^) := RResult
       else
@@ -344,9 +339,6 @@ end;
 
 procedure TWebBrowserCtrl.RegisterScriptHelper(AHelper: IScriptHelper);
 begin
-  if FScriptHelpers.Count > MAX_HELPERS then
-    raise Exception.Create('Error add helper');
-
   FScriptHelpers.Add(AHelper);
 end;
 
@@ -380,17 +372,16 @@ function TWebBrowserCtrl.TranslateAccelerator(const lpMsg: PMSG;
   const pguidCmdGroup: PGUID; const nCmdID: DWORD): HRESULT;
 begin
   Result := S_OK;
+  //Ctrl+C/Ctrl+V
+  if ((Word(GetKeyState(VK_CONTROL)) and $8000)<>0) and
+      ((lpMsg.wParam = Ord('C')) or (lpMsg.wParam = Ord('V'))) then
+     Result := S_FALSE;
 end;
 
 function TWebBrowserCtrl.TranslateUrl(const dwTranslate: DWORD;
   const pchURLIn: POLESTR; var ppchURLOut: POLESTR): HRESULT;
 begin
   Result := S_FALSE;
-end;
-
-procedure TWebBrowserCtrl.UnregisterScriptHelper(AHelper: IScriptHelper);
-begin
-  FScriptHelpers.Remove(AHelper);
 end;
 
 function TWebBrowserCtrl.UpdateUI: HRESULT;
