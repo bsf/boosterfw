@@ -371,11 +371,16 @@ end;
 function TWebBrowserCtrl.TranslateAccelerator(const lpMsg: PMSG;
   const pguidCmdGroup: PGUID; const nCmdID: DWORD): HRESULT;
 begin
-  Result := S_OK;
-  //Ctrl+C/Ctrl+V
   if ((Word(GetKeyState(VK_CONTROL)) and $8000)<>0) and
+      (lpMsg.wParam = Ord('O')) then //Open file block
+     Result := S_OK
+  else
+    Result := S_FALSE;
+
+  //Ctrl+C/Ctrl+V
+{  if ((Word(GetKeyState(VK_CONTROL)) and $8000)<>0) and
       ((lpMsg.wParam = Ord('C')) or (lpMsg.wParam = Ord('V'))) then
-     Result := S_FALSE;
+     Result := S_FALSE;}
 end;
 
 function TWebBrowserCtrl.TranslateUrl(const dwTranslate: DWORD;
