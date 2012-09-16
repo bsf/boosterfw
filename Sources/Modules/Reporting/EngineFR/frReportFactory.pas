@@ -168,12 +168,14 @@ begin
     FReport.ReportOptions.Name := ChangeFileExt(ExtractFileName(GetReportFileName), '');
 
     FReport.PrepareReport(false);
+    if ALaunchMode = lmPreview then
+      Preview(ATitle)
+    else if ALaunchMode = lmPrint then
+      FReport.Print;
 
     if ALaunchMode <> lmHold then
-    begin
-      Preview(ATitle);
       FReport.PreviewPages.Clear;
-    end;
+
 
   finally
     FProgressCallback := nil;

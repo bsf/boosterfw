@@ -91,6 +91,13 @@ begin
 
   if Done then Exit;
 
+  if SameText(AName, 'HID') then
+  begin
+    Result := WorkItem.State['ID'];
+    Done := true;
+    Exit;
+  end;
+
   if SameText(AName, 'ACTIVE_DETAIL') then
   begin
     Result := View.GetActiveDetailData;
