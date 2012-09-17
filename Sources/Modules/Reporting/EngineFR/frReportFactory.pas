@@ -169,9 +169,14 @@ begin
 
     FReport.PrepareReport(false);
     if ALaunchMode = lmPreview then
+    begin
       Preview(ATitle)
+    end
     else if ALaunchMode = lmPrint then
+    begin
+      FReport.PrintOptions.ShowDialog := false;
       FReport.Print;
+    end;
 
     if ALaunchMode <> lmHold then
       FReport.PreviewPages.Clear;

@@ -93,8 +93,9 @@ procedure TcxCustomViewValueEditorHelper.SetValueChangedHandler(
   AControl: TComponent; AHandler: TViewValueChangedHandler);
 begin
   FViewValueChangedHandler := AHandler;
-  TcxCustomeEditAccess(AControl).Properties.OnEditValueChanged :=
-    EditValueChangedHandler;
+  if not Assigned(TcxCustomeEditAccess(AControl).Properties.OnEditValueChanged) then
+    TcxCustomeEditAccess(AControl).Properties.OnEditValueChanged :=
+     EditValueChangedHandler;
 end;
 
 procedure TcxCustomViewValueEditorHelper.WriteValue(AControl: TComponent;
