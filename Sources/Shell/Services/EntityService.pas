@@ -1394,15 +1394,45 @@ begin
 end;
 
 function TEntityOper.Execute: TDataSet;
+
+  function FormatExcepMessage(AMessage: string): string;
+  var
+    strList: TStringList;
+  begin
+    strList := TStringList.Create;
+    try
+      strList.Text := AMessage;
+      if strList.Count >= 2 then
+        Result := strList[2];
+    finally
+      strList.Free;
+    end;
+  end;
+
+const
+  EXCEPTION_TEXT = 'exception';
+var
+  excepCheck: boolean;
+  excepMsg: string;
 begin
   Result := FDataSet;
 
   if FDataSet.Active then FDataSet.Close;
 
-  if Info.IsExec then
-    FDataSet.Execute
-  else
-    FDataSet.Open;
+  try
+    if Info.IsExec then
+      FDataSet.Execute
+    else
+      FDataSet.Open;
+  except
+    on E: Exception do
+    begin
+      if Pos(EXCEPTION_TEXT, E.Message) = 1 then
+        raise Exception.Create(FormatExcepMessage(E.Message))
+      else
+        raise;
+    end;
+  end;
 end;
 
 function TEntityOper.Info: IEntityViewInfo;

@@ -33,7 +33,7 @@ var
 begin
   Sender.GetInterface(ICommand, intf);
 
-  WorkItem.Activities[Intf.Name].Execute(WorkItem.Root);
+  WorkItem.Activities[Intf.Name].Execute(WorkItem);
 
 end;
 
