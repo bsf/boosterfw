@@ -159,6 +159,7 @@ begin
   if IsControlKeyDown then
   begin
     Design(FCallerWI);
+    FReport.PreviewPages.Clear;
     Exit;
   end;
 

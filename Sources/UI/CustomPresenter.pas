@@ -71,6 +71,8 @@ type
     property FreeOnViewClose: boolean read FFreeOnViewClose write FFreeOnViewClose;
     property ViewHidden: boolean read FViewHidden write FViewHidden;
 
+    function GetCaller: TWorkItem;
+    function GetVisibleCaller: TWorkItem;
     property CallerURI: string read FCallerURI write SetCallerURI;
     property ViewVisible: boolean read FViewVisible write FViewVisible;
     //
@@ -92,7 +94,8 @@ procedure TCustomPresenter.CloseView(ABackToCaller: boolean = true);
 var
   viewIntf: IView;
   ctrl: TControl;
-  contextWI: TWorkItem;
+  //contextWI: TWorkItem;
+  visibleCaller: TWorkItem;
 begin
   if not FViewVisible then Exit;
 
@@ -105,7 +108,10 @@ begin
 
   if ABackToCaller then
   begin
-    contextWI := FindWorkItem(FCallerURI, WorkItem.Root);
+    visibleCaller := GetVisibleCaller;
+    if Assigned(visibleCaller) then
+      visibleCaller.Activate;
+    {contextWI := FindWorkItem(FCallerURI, WorkItem.Root);
     if Assigned(contextWI) and (contextWI.Controller is TCustomPresenter)
        and (contextWI.Controller as TCustomPresenter).ViewVisible then
        contextWI.Activate
@@ -114,7 +120,7 @@ begin
       contextWI := FindWorkItem(WorkItem.Context, WorkItem.Root);
       if Assigned(contextWI) then
         contextWI.Activate;
-    end;
+    end;}
   end;
 end;
 
@@ -179,6 +185,9 @@ begin
 
   FViewURI := Activity.URI;
   FCallerURI := Sender.ID;
+
+  WorkItem.CallStack.Add(Sender.ID);
+  WorkItem.CallStack.AddStrings(Sender.CallStack);
 
   WorkItem.Context := Sender.Context;
   if (WorkItem.Context = '')  then WorkItem.Context := WorkItem.ID;
@@ -287,6 +296,11 @@ begin
   if not Result.IsLoaded then
     Result.Load;
 
+end;
+
+function TCustomPresenter.GetCaller: TWorkItem;
+begin
+  Result := WorkItem.Root.WorkItems.Find(FCallerURI);
 end;
 
 function TCustomPresenter.GetEView(const AEntityName,
@@ -493,6 +507,20 @@ end;
 function TCustomPresenter.GetViewURI: string;
 begin
   Result := FViewURI;
+end;
+
+function TCustomPresenter.GetVisibleCaller: TWorkItem;
+var
+  I: integer;
+begin
+  for I := 0 to Workitem.CallStack.Count - 1 do
+  begin
+    Result := WorkItem.Root.WorkItems.Find(WorkItem.CallStack[I]);
+    if Assigned(Result) and (Result.Controller is TCustomPresenter)
+       and (Result.Controller as TCustomPresenter).ViewVisible then
+      Exit;
+  end;
+  Result := nil;
 end;
 
 procedure TCustomPresenter.UpdateCommandStatus;

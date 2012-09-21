@@ -366,6 +366,7 @@ type
     FStateValues: array of variant;
     FStateNames: TStringList;
     FContext: string;
+    FCallStack: TStringList;
     procedure ChangeStatus(NewStatus: TWorkItemStatus);
     function GetRoot: TWorkItem;
     function GetServices: IServices;
@@ -377,7 +378,7 @@ type
     function GetItems: IItems;
     function GetState(const AName: string): Variant;
     procedure SetState(const AName: string; const Value: Variant);
-
+    function GetCallStack: TStringList;
   protected
 
     procedure Notification(AComponent: TComponent;
@@ -407,6 +408,7 @@ type
     property Parent: TWorkItem read FParent;
     //можно использовать как хочешь
     property Context: string read FContext write FContext;
+    property CallStack: TStringList read GetCallStack;
   end;
 
   TWorkItemClass = class of TWorkItem;
@@ -645,6 +647,13 @@ end;
 begin
   Result := Root.OnGetApplication;
 end;}
+
+function TWorkItem.GetCallStack: TStringList;
+begin
+  if not Assigned(FCallStack) then
+    FCallStack := TStringList.Create;
+  Result := FCallStack;
+end;
 
 function TWorkItem.GetCommands: ICommands;
 begin
