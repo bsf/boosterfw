@@ -169,15 +169,13 @@ begin
     FReport.ReportOptions.Name := ChangeFileExt(ExtractFileName(GetReportFileName), '');
 
     FReport.PrepareReport(false);
-    if ALaunchMode = lmPreview then
-    begin
-      Preview(ATitle)
-    end
-    else if ALaunchMode = lmPrint then
+    if ALaunchMode = lmPrint then
     begin
       FReport.PrintOptions.ShowDialog := false;
       FReport.Print;
-    end;
+    end
+    else
+      Preview(ATitle);
 
     if ALaunchMode <> lmHold then
       FReport.PreviewPages.Clear;
