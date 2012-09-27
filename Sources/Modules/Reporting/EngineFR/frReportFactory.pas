@@ -154,6 +154,8 @@ end;
 
 procedure TFastReportLauncher.Execute(Caller: TWorkItem; ALaunchMode: TReportLaunchMode;
    const ATitle: string; ProgressCallback: TReportProgressCallback);
+var
+  printerName: variant;
 begin
   FCallerWI := Caller;
   if IsControlKeyDown then
@@ -171,6 +173,10 @@ begin
     FReport.PrepareReport(false);
     if ALaunchMode = lmPrint then
     begin
+      if FParams.TryGetValue('PRINTER', printerName) then
+        FReport.PrintOptions.Printer := VarToStr(printerName)
+      else
+        FReport.PrintOptions.Printer := '';
       FReport.PrintOptions.ShowDialog := false;
       FReport.Print;
     end
