@@ -4,7 +4,7 @@ interface
 uses windows, classes, CoreClasses, ReportCatalogConst, EntityServiceIntf,
   SysUtils, db, ComObj, controls,
   frxClass, frxExportXML, frxExportXLS, frxExportCSV, frxDesgn,
-  frxChBox, frxCross, frxBarCode, frxDCtrl, variants,
+  frxChBox, frxCross, frxBarCode, frxDCtrl, variants, frxPrinter,
   frReportPreviewPresenter, frReportPreviewView, UIClasses, frDataSet,
   Generics.Collections;
 
@@ -40,6 +40,7 @@ type
       ProgressType: TfrxProgressType; Progress: Integer);
     function IsControlKeyDown: boolean;
     procedure Preview(const ATitle: string);
+    function GetDefaultPrinter: string;
   protected
     //IReportLauncher
     function Params: TDictionary<string, variant>;
@@ -174,9 +175,11 @@ begin
     if ALaunchMode = lmPrint then
     begin
       if FParams.TryGetValue('PRINTER', printerName) then
-        FReport.PrintOptions.Printer := VarToStr(printerName)
-      else
-        FReport.PrintOptions.Printer := '';
+        FReport.PrintOptions.Printer := VarToStr(printerName);
+
+      if frxPrinters.IndexOf(FReport.PrintOptions.Printer) = -1 then
+        FReport.PrintOptions.Printer := GetDefaultPrinter;
+
       FReport.PrintOptions.ShowDialog := false;
       FReport.Print;
     end
@@ -190,6 +193,14 @@ begin
   finally
     FProgressCallback := nil;
   end;
+end;
+
+function TFastReportLauncher.GetDefaultPrinter: string;
+var
+  prnName: array[0..255] of Char;
+begin
+  GetProfileString('windows', 'device', '', prnName,  255);
+  Result := Copy(prnName, 1, Pos(',', prnName) - 1);
 end;
 
 function TFastReportLauncher.GetReportFileName: string;
