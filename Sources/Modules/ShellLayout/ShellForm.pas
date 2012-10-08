@@ -195,10 +195,6 @@ begin
 
   App.Settings['Application.Title'] := Application.Title;
 
-{$IFNDEF FREEWARE}
-  Application.Title := Application.Title + GetLocaleString(@strNotRegistered);
-{$ENDIF}
-
 end;
 
 

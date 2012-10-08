@@ -20,8 +20,6 @@ resourcestring
   strToolWinCmdTabsBottom = 'Bottom tabs';
   strToolWinCmdCloseAll = 'Close all';
 
-  strNotRegistered = 'NOT REGISTERED';
-
 implementation
 
 end.

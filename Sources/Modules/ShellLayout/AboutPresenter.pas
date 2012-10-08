@@ -1,7 +1,7 @@
 unit AboutPresenter;
 
 interface
-uses coreClasses, CustomPresenter, UIClasses, ShellIntf,
+uses coreClasses, CustomPresenter, UIClasses,
   ShellLayoutStr, UIStr, LicenseServiceIntf, sysutils, classes;
 
 const
@@ -33,14 +33,16 @@ var
   licenseTypeName: string;
   contactInfo: TStringList;
   contactFileName: string;
+  licenseSvc: ILicenseService;
 begin
   ViewTitle := GetLocaleString(@VIEW_ABOUT_TITLE);
 
-  licenseTypeName := LicenseTypeStr[Ord(App.License.GetType)];
-  if App.License.GetStatus = lsExpired then
+  licenseSvc := WorkItem.Services[ILicenseService] as ILicenseService;
+  licenseTypeName := LicenseTypeStr[Ord(licenseSvc.GetType)];
+  if licenseSvc.GetStatus = lsExpired then
     licenseTypeName := licenseTypeName + ' (Expired)';
-  View.SetLicenseInfo(licenseTypeName, App.License.GetExpires, App.License.GetDescription);
-  View.SetClientID(App.License.GetClientID);
+  View.SetLicenseInfo(licenseTypeName, licenseSvc.GetExpires, licenseSvc.GetDescription);
+  View.SetClientID(licenseSvc.GetClientID);
 
   contactFileName := ExtractFilePath(ParamStr(0)) + CONTACT_FILE_NAME;
   if FileExists(contactFileName) then

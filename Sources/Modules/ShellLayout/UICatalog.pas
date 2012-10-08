@@ -3,7 +3,7 @@ unit UICatalog;
 interface
 uses classes, coreClasses, db, EntityServiceIntf, UIServiceIntf, variants,
   cxStyles, graphics, windows, generics.collections, sysutils, ShellIntf,
-  UIClasses, StrUtils, forms, Contnrs;
+  UIClasses, StrUtils, forms, Contnrs, LicenseServiceIntf;
 
 type
   TUICatalog = class(TComponent)
@@ -148,7 +148,12 @@ begin
 end;
 
 class procedure TUICatalog.Load(AWorkItem: TWorkItem);
+var
+  svc: ILicenseService;
 begin
+  svc := AWorkItem.Services[ILicenseService] as ILicenseService;
+  if svc.GetStatus <> lsRegistered then Exit;
+
   LoadUI(AWorkItem);
   LoadStyles(AWorkItem);
   RegisterViewExtension(TViewCommandExtension);

@@ -2,7 +2,7 @@ unit ReportingController;
 
 interface
 uses classes, CoreClasses,  sysutils, variants, Contnrs,
-  ShellIntf, SecurityIntf,
+  ShellIntf, SecurityIntf, LicenseServiceIntf,
   CommonUtils, ConfigServiceIntf, graphics, UIClasses,
   EntityServiceIntf, UIServiceIntf,
   ReportCatalogConst, ReportCatalogClasses,
@@ -168,7 +168,10 @@ procedure TReportingController.LoadCatalogItems;
 
 var
   I, Y: integer;
+  svc: ILicenseService;
 begin
+  svc := WorkItem.Services[ILicenseService] as ILicenseService;
+  if svc.GetStatus <> lsRegistered then Exit;
 
   for I := WorkItem.WorkItems.Count - 1 downto 0 do
     if Assigned(WorkItem.WorkItems[I].Controller) and

@@ -25,7 +25,6 @@ type
     //IApp
     function Version: string;
     function Logo: Graphics.TBitmap;
-    function License: ILicenseService;
     function Settings: ISettings;
     function UserProfile: IProfile;
     function HostProfile: IProfile;
@@ -184,12 +183,6 @@ function TApp.HostProfile: IProfile;
 begin
   Result := IConfigurationService(WorkItem.
     Services[IConfigurationService]).HostProfile;
-end;
-
-
-function TApp.License: ILicenseService;
-begin
-  Result := ILicenseService(WorkItem.Services[ILicenseService]);
 end;
 
 function TApp.Logo: Graphics.TBitmap;

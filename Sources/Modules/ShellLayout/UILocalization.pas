@@ -18,8 +18,6 @@ begin
   SetLocaleString(@MENU_GROUP_SERVICE, 'Сервис');
 
   //ShellLayout
-  SetLocaleString(@strNotRegistered, 'НЕ ЗАРЕГЕСТРИРОВАННАЯ КОПИЯ');
-
   SetLocaleString(@MAIN_MENU_CAPTION, 'Главное меню');
   SetLocaleString(@VIEW_USER_PREFERENCES_TITLE, 'Предпочтения');
   SetLocaleString(@COMMAND_CLOSE_APP_CAPTION, 'Выход');
