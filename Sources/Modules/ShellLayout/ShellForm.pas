@@ -18,6 +18,7 @@ uses
   cxLookAndFeels, cxLookAndFeelPainters, TabbedWorkspace, ShellAbout,
    UIClasses,
   UserPreferencesPresenter, UserPreferencesView,
+  AboutPresenter, AboutView,
   CommonUtils, dxGDIPlusClasses, cxGroupBox, cxStyles, cxCustomData,
   cxFilter, cxData, cxDataStorage, DB, cxDBData, cxGridLevel,
   cxGridCustomView, cxGridCustomTableView, cxGridTableView,
@@ -29,7 +30,6 @@ const
   STATUSBAR_INFO_PANEL = 0;
   STATUSBAR_PROGRESS_PANEL = 1;
 
-  COMMAND_SHOW_ABOUT = '{9421F2C7-F526-4858-975B-B01698C70530}';
   COMMAND_CLOSE_APP = '{1E3FCF4E-9E40-4D5B-ADE4-3F78428CA24B}';
   COMMAND_RELOAD_CONFIGURATION = '{E94B5DA4-980A-428B-98A4-9DEC73E63980}';
   COMMAND_SHOWVIEWINFO = '{5BB48548-EF9C-4778-B1B5-A41D5FA89285}';
@@ -192,6 +192,12 @@ begin
   if App.Settings.CurrentAlias <> '' then
     Application.Title := Application.Title + ' <' +
       App.Settings.CurrentAlias  + '>';
+
+  App.Settings['Application.Title'] := Application.Title;
+
+{$IFNDEF FREEWARE}
+  Application.Title := Application.Title + GetLocaleString(@strNotRegistered);
+{$ENDIF}
 
 end;
 
@@ -360,12 +366,15 @@ begin
   end;
   WorkItem.Activities.RegisterHandler(COMMAND_CLOSE_APP, TCloseAppHandler.Create(Self));
 
-  with WorkItem.Activities[COMMAND_SHOW_ABOUT] do
+  with WorkItem.Activities[VIEW_ABOUT] do
   begin
-    Title := GetLocaleString(@COMMAND_SHOW_ABOUT_CAPTION);
+    Title := GetLocaleString(@VIEW_ABOUT_TITLE);
     Group := GetLocaleString(@MENU_GROUP_FILE);
   end;
-  WorkItem.Activities.RegisterHandler(COMMAND_SHOW_ABOUT, TShowAboutHandler.Create);
+  WorkItem.Activities.RegisterHandler(VIEW_ABOUT,
+    TViewActivityHandler.Create(TAboutPresenter, TfrAboutView));
+
+  //WorkItem.Activities.RegisterHandler(COMMAND_SHOW_ABOUT, TShowAboutHandler.Create);
 
   with WorkItem.Activities[VIEW_USER_PREFERENCES] do
   begin

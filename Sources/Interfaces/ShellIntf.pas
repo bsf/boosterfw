@@ -3,7 +3,7 @@ unit ShellIntf;
 interface
 
 uses  windows, graphics, forms, jpeg, CoreClasses, ConfigServiceIntf, CustomApp,
-  EntityServiceIntf, SecurityIntf, UIServiceIntf;
+  EntityServiceIntf, SecurityIntf, UIServiceIntf, LicenseServiceIntf;
 
 const
   RES_ID_APP_LOGO = 'APP_LOGO';
@@ -27,6 +27,7 @@ type
   ['{D24C773A-376C-41BA-A955-6FFE5CE62ECE}']
     function Version: string;
     function Logo: Graphics.TBitmap;
+    function License: ILicenseService;
     function WorkItem: TWorkItem;
     function Settings: ISettings;
     function UserProfile: IProfile;

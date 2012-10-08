@@ -4,6 +4,8 @@ interface
 
 resourcestring
   VIEW_USER_PREFERENCES_TITLE = 'Preferences';
+  VIEW_ABOUT_TITLE = 'About...';
+
   COMMAND_CLOSE_APP_CAPTION = 'Exit';
   COMMAND_SHOW_ABOUT_CAPTION = 'About...';
 
@@ -17,6 +19,9 @@ resourcestring
   strToolWinCmdTabsTop = 'Top tabs';
   strToolWinCmdTabsBottom = 'Bottom tabs';
   strToolWinCmdCloseAll = 'Close all';
+
+  strNotRegistered = 'NOT REGISTERED';
+
 implementation
 
 end.

@@ -183,7 +183,7 @@ begin
       FReport.PrintOptions.ShowDialog := false;
       FReport.Print;
     end
-    else
+    else if ALaunchMode in [lmParamView, lmPreview] then
       Preview(ATitle);
 
     if ALaunchMode <> lmHold then

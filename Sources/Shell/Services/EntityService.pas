@@ -1395,7 +1395,7 @@ end;
 
 function TEntityOper.Execute: TDataSet;
 
-  function FormatExcepMessage(AMessage: string): string;
+  function FormatExceptMessage(AMessage: string): string;
   var
     strList: TStringList;
   begin
@@ -1411,9 +1411,6 @@ function TEntityOper.Execute: TDataSet;
 
 const
   EXCEPTION_TEXT = 'exception';
-var
-  excepCheck: boolean;
-  excepMsg: string;
 begin
   Result := FDataSet;
 
@@ -1428,7 +1425,7 @@ begin
     on E: Exception do
     begin
       if Pos(EXCEPTION_TEXT, E.Message) = 1 then
-        raise Exception.Create(FormatExcepMessage(E.Message))
+        raise Exception.Create(FormatExceptMessage(E.Message))
       else
         raise;
     end;

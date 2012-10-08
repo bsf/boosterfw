@@ -1,12 +1,12 @@
 ﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
-			<ProjectGuid>{B3BD2B20-5A08-4436-A6AA-E30F8C6EF693}</ProjectGuid>
-			<MainSource>bfwShell.dpk</MainSource>
+			<ProjectGuid>{78FD731C-0826-432C-9691-DCC32CDDF820}</ProjectGuid>
+			<MainSource>BoosterKeyGen.dpr</MainSource>
 			<ProjectVersion>12.3</ProjectVersion>
 			<Base>True</Base>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<Platform>Win32</Platform>
-			<AppType>Package</AppType>
+			<AppType>Console</AppType>
 			<FrameworkType>None</FrameworkType>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 		</PropertyGroup>
@@ -24,21 +24,17 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<DCC_OutputNeverBuildDcps>true</DCC_OutputNeverBuildDcps>
-			<DCC_DcuOutput>.\$(Config)\$(Platform)</DCC_DcuOutput>
-			<DCC_E>false</DCC_E>
-			<GenPackage>true</GenPackage>
-			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;$(DCC_UnitAlias)</DCC_UnitAlias>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
-			<DCC_S>false</DCC_S>
-			<GenDll>true</GenDll>
+			<DCC_DcuOutput>.\$(Config)\$(Platform)</DCC_DcuOutput>
+			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;$(DCC_UnitAlias)</DCC_UnitAlias>
+			<DCC_ExeOutput>..\..\Output\</DCC_ExeOutput>
+			<DCC_E>false</DCC_E>
 			<DCC_N>false</DCC_N>
+			<DCC_S>false</DCC_S>
 			<DCC_F>false</DCC_F>
 			<DCC_K>false</DCC_K>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
-			<DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
-			<DCC_SYMBOL_DEPRECATED>false</DCC_SYMBOL_DEPRECATED>
 			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
 			<DCC_Optimize>false</DCC_Optimize>
 			<DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
@@ -50,39 +46,10 @@
 			<DCC_DebugInformation>false</DCC_DebugInformation>
 		</PropertyGroup>
 		<ItemGroup>
-			<DelphiCompile Include="bfwShell.dpk">
+			<DelphiCompile Include="BoosterKeyGen.dpr">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
-			<DCCReference Include="rtl.dcp"/>
-			<DCCReference Include="bfwInterfaces.dcp"/>
-			<DCCReference Include="vclimg.dcp"/>
-			<DCCReference Include="bfwCore.dcp"/>
-			<DCCReference Include="dsnapcon.dcp"/>
-			<DCCReference Include="ibxpress.dcp"/>
-			<DCCReference Include="dbexpress.dcp"/>
-			<DCCReference Include="DbxCommonDriver.dcp"/>
-			<DCCReference Include="DataSnapProviderClient.dcp"/>
-			<DCCReference Include="DbxClientDriver.dcp"/>
-			<DCCReference Include="DataSnapIndy10ServerTransport.dcp"/>
-			<DCCReference Include="DataSnapClient.dcp"/>
-			<DCCReference Include="..\Sources\Shell\bfwApp.pas"/>
-			<DCCReference Include="..\Sources\Shell\ShellLogin.pas"/>
-			<DCCReference Include="..\Sources\Shell\ShellLoginForm.pas">
-				<Form>fmShellLogin</Form>
-			</DCCReference>
-			<DCCReference Include="..\Sources\Shell\Services\ConfigService.pas"/>
-			<DCCReference Include="..\Sources\Shell\Services\ConfigStorage.pas"/>
-			<DCCReference Include="..\Sources\Shell\Services\EntityService.pas"/>
-			<DCCReference Include="..\Sources\Shell\Services\SecurityService.pas"/>
-			<DCCReference Include="..\Sources\Shell\Services\UIService.pas"/>
-			<DCCReference Include="..\Sources\Shell\Services\SecurityController.pas"/>
-			<DCCReference Include="..\Sources\DAL\DAL.pas"/>
-			<DCCReference Include="..\Sources\DAL\DAL_IBE.pas"/>
-			<DCCReference Include="..\Sources\DAL\DAL_BDE.pas"/>
-			<DCCReference Include="..\Sources\DAL\DAL_DSE.pas"/>
-			<DCCReference Include="..\Sources\DAL\DAL_DSE_ClientProxy.pas"/>
-			<DCCReference Include="..\Sources\Shell\Services\LicenseService.pas"/>
-			<DCCReference Include="..\Sources\Shell\Services\LicenseUtils.pas"/>
+			<DCCReference Include="..\..\Sources\Shell\Services\LicenseUtils.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>
@@ -99,14 +66,11 @@
 		<Import Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')" Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj"/>
 		<ProjectExtensions>
 			<Borland.Personality>Delphi.Personality.12</Borland.Personality>
-			<Borland.ProjectType>Package</Borland.ProjectType>
+			<Borland.ProjectType/>
 			<BorlandProject>
 				<Delphi.Personality>
-					<Source>
-						<Source Name="MainSource">bfwShell.dpk</Source>
-					</Source>
 					<VersionInfo>
-						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">False</VersionInfo>
 						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
 						<VersionInfo Name="MajorVer">1</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
@@ -117,7 +81,7 @@
 						<VersionInfo Name="Special">False</VersionInfo>
 						<VersionInfo Name="Private">False</VersionInfo>
 						<VersionInfo Name="DLL">False</VersionInfo>
-						<VersionInfo Name="Locale">1058</VersionInfo>
+						<VersionInfo Name="Locale">1049</VersionInfo>
 						<VersionInfo Name="CodePage">1251</VersionInfo>
 					</VersionInfo>
 					<VersionInfoKeys>
@@ -132,6 +96,9 @@
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
 					</VersionInfoKeys>
+					<Source>
+						<Source Name="MainSource">BoosterKeyGen.dpr</Source>
+					</Source>
 				</Delphi.Personality>
 				<Platforms>
 					<Platform value="Win32">True</Platform>

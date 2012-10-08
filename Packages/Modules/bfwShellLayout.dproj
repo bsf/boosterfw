@@ -93,6 +93,10 @@
 			<DCCReference Include="..\..\Sources\Modules\ShellLayout\SplashForm.pas">
 				<Form>frShellSplash</Form>
 			</DCCReference>
+			<DCCReference Include="..\..\Sources\Modules\ShellLayout\AboutView.pas">
+				<Form>frAboutView</Form>
+			</DCCReference>
+			<DCCReference Include="..\..\Sources\Modules\ShellLayout\AboutPresenter.pas"/>
 			<RcCompile Include="..\..\Sources\Modules\ShellLayout\Shell.rc">
 				<Form>Shell.res</Form>
 			</RcCompile>

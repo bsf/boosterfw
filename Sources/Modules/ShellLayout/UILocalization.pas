@@ -18,9 +18,12 @@ begin
   SetLocaleString(@MENU_GROUP_SERVICE, 'Сервис');
 
   //ShellLayout
+  SetLocaleString(@strNotRegistered, 'НЕ ЗАРЕГЕСТРИРОВАННАЯ КОПИЯ');
+
   SetLocaleString(@MAIN_MENU_CAPTION, 'Главное меню');
   SetLocaleString(@VIEW_USER_PREFERENCES_TITLE, 'Предпочтения');
   SetLocaleString(@COMMAND_CLOSE_APP_CAPTION, 'Выход');
+  SetLocaleString(@VIEW_ABOUT_TITLE, 'О программе...');
   SetLocaleString(@COMMAND_SHOW_ABOUT_CAPTION, 'О программе...');
   SetLocaleString(@MAIN_MENU_CAPTION,  'Главное меню');
   SetLocaleString(@StrWaitMessage, 'Загрузка данных. Подождите пожалуйста...');

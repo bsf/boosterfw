@@ -49,7 +49,7 @@ type
   ['{220B21AC-CD11-48DF-ADCB-BE6F577EC416}']
     procedure Authenticate;
   end;
-    
+
 {Services}
 
   IServices = interface

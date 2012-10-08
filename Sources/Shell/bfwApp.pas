@@ -8,7 +8,8 @@ uses windows, classes, forms, sysutils, graphics,
   ConfigServiceIntf, ConfigService,
   SecurityIntf, SecurityService, SecurityController,
   EntityServiceIntf, EntityService,
-  UIServiceIntf, UIService;
+  UIServiceIntf, UIService,
+  LicenseServiceIntf, LicenseService;
 
 const
   APP_VERSION = 'ver 1.0';
@@ -24,6 +25,7 @@ type
     //IApp
     function Version: string;
     function Logo: Graphics.TBitmap;
+    function License: ILicenseService;
     function Settings: ISettings;
     function UserProfile: IProfile;
     function HostProfile: IProfile;
@@ -53,6 +55,9 @@ begin
   WorkItem.Services.Add(
     TUIService.Create(Self, WorkItem) as IUIService);
 
+  //License
+  WorkItem.Services.Add(
+    TLicenseService.Create(Self, WorkItem) as ILicenseService);
 
   //Security
   securityService := TSecurityService.Create(Self, WorkItem);
@@ -181,6 +186,11 @@ begin
     Services[IConfigurationService]).HostProfile;
 end;
 
+
+function TApp.License: ILicenseService;
+begin
+  Result := ILicenseService(WorkItem.Services[ILicenseService]);
+end;
 
 function TApp.Logo: Graphics.TBitmap;
 var

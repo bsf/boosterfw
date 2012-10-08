@@ -52,6 +52,8 @@ contains
   DAL_IBE in '..\Sources\DAL\DAL_IBE.pas',
   DAL_BDE in '..\Sources\DAL\DAL_BDE.pas',
   DAL_DSE in '..\Sources\DAL\DAL_DSE.pas',
-  DAL_DSE_ClientProxy in '..\Sources\DAL\DAL_DSE_ClientProxy.pas';
+  DAL_DSE_ClientProxy in '..\Sources\DAL\DAL_DSE_ClientProxy.pas',
+  LicenseService in '..\Sources\Shell\Services\LicenseService.pas',
+  LicenseUtils in '..\Sources\Shell\Services\LicenseUtils.pas';
 
 end.
