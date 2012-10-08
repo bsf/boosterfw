@@ -70,6 +70,7 @@ var
   signature: string;
   checkSignature: boolean;
 begin
+  Result := false;
   str := TStringList.Create;
   try
     str.Text := Data;
@@ -79,11 +80,14 @@ begin
     if str.Count > 0  then
       str.Delete(str.Count - 1);
 
-    checkSignature :=
-      StringToHash(StringToHash(str.Text) + clientID) = signature;
-
-    Result := checkSignature and
-      ((GetClientID = clientID) or (clientID = GetDemoClientID));
+    //checkSignature
+    if StringToHash(StringToHash(str.Text) + clientID) = signature then
+    begin
+      if clientID = GetDemoClientID then
+        Result := true
+      else if GetClientID = clientID then
+        Result := true;
+    end;
 
   finally
     str.Free;

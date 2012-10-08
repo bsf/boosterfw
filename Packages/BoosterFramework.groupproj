@@ -9,6 +9,9 @@
 			<Projects Include="..\Utility\KeyGen\BoosterKeyGen.dproj">
 				<Dependencies/>
 			</Projects>
+			<Projects Include="..\LServer\BoosterLServer.dproj">
+				<Dependencies/>
+			</Projects>
 			<Projects Include="..\Server\BoosterServerWin.dproj">
 				<Dependencies/>
 			</Projects>
@@ -76,6 +79,15 @@
 		</Target>
 		<Target Name="BoosterKeyGen:Make">
 			<MSBuild Projects="..\Utility\KeyGen\BoosterKeyGen.dproj" Targets="Make"/>
+		</Target>
+		<Target Name="BoosterLServer">
+			<MSBuild Projects="..\LServer\BoosterLServer.dproj"/>
+		</Target>
+		<Target Name="BoosterLServer:Clean">
+			<MSBuild Projects="..\LServer\BoosterLServer.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="BoosterLServer:Make">
+			<MSBuild Projects="..\LServer\BoosterLServer.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="BoosterServerWin">
 			<MSBuild Projects="..\Server\BoosterServerWin.dproj"/>
@@ -204,13 +216,13 @@
 			<MSBuild Projects="Modules\bfwServeModule.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="BoosterConfigTool;BoosterKeyGen;BoosterServerWin;BoosterServerSvc;BoosterUpdater;BoosterLauncher;bfwCore;bfwInterfaces;bfwShell;bfwUI;bfwUITemplates;bfwShellLayout;bfwReportingModule;bfwEntityUIModule;bfwAdminModule;bfwServeModule"/>
+			<CallTarget Targets="BoosterConfigTool;BoosterKeyGen;BoosterLServer;BoosterServerWin;BoosterServerSvc;BoosterUpdater;BoosterLauncher;bfwCore;bfwInterfaces;bfwShell;bfwUI;bfwUITemplates;bfwShellLayout;bfwReportingModule;bfwEntityUIModule;bfwAdminModule;bfwServeModule"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="BoosterConfigTool:Clean;BoosterKeyGen:Clean;BoosterServerWin:Clean;BoosterServerSvc:Clean;BoosterUpdater:Clean;BoosterLauncher:Clean;bfwCore:Clean;bfwInterfaces:Clean;bfwShell:Clean;bfwUI:Clean;bfwUITemplates:Clean;bfwShellLayout:Clean;bfwReportingModule:Clean;bfwEntityUIModule:Clean;bfwAdminModule:Clean;bfwServeModule:Clean"/>
+			<CallTarget Targets="BoosterConfigTool:Clean;BoosterKeyGen:Clean;BoosterLServer:Clean;BoosterServerWin:Clean;BoosterServerSvc:Clean;BoosterUpdater:Clean;BoosterLauncher:Clean;bfwCore:Clean;bfwInterfaces:Clean;bfwShell:Clean;bfwUI:Clean;bfwUITemplates:Clean;bfwShellLayout:Clean;bfwReportingModule:Clean;bfwEntityUIModule:Clean;bfwAdminModule:Clean;bfwServeModule:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="BoosterConfigTool:Make;BoosterKeyGen:Make;BoosterServerWin:Make;BoosterServerSvc:Make;BoosterUpdater:Make;BoosterLauncher:Make;bfwCore:Make;bfwInterfaces:Make;bfwShell:Make;bfwUI:Make;bfwUITemplates:Make;bfwShellLayout:Make;bfwReportingModule:Make;bfwEntityUIModule:Make;bfwAdminModule:Make;bfwServeModule:Make"/>
+			<CallTarget Targets="BoosterConfigTool:Make;BoosterKeyGen:Make;BoosterLServer:Make;BoosterServerWin:Make;BoosterServerSvc:Make;BoosterUpdater:Make;BoosterLauncher:Make;bfwCore:Make;bfwInterfaces:Make;bfwShell:Make;bfwUI:Make;bfwUITemplates:Make;bfwShellLayout:Make;bfwReportingModule:Make;bfwEntityUIModule:Make;bfwAdminModule:Make;bfwServeModule:Make"/>
 		</Target>
 		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" Project="$(BDS)\Bin\CodeGear.Group.Targets"/>
 	</Project>
