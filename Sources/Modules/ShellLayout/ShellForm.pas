@@ -24,7 +24,8 @@ uses
   cxGridCustomView, cxGridCustomTableView, cxGridTableView,
   cxGridDBTableView, cxGrid, dxOffice11, UIServiceIntf,
   NotifyReceiver, NotifySenderPresenter, NotifySenderView,
-  UICatalog, ShellLayoutStr, SplashForm, cxPCdxBarPopupMenu;
+  UICatalog, ShellLayoutStr, SplashForm, cxPCdxBarPopupMenu,
+  LicenseServiceIntf;
 
 const
   STATUSBAR_INFO_PANEL = 0;
@@ -312,6 +313,7 @@ end;
 procedure TfrMain.AppStartedHandler(EventData: Variant);
 var
   startActivity: string;
+  licenseSvc: ILicenseService;
 begin
   FWorkItem.EventTopics[ET_LOAD_CONFIGURATION].Fire;
 
@@ -329,7 +331,12 @@ begin
   FWorkItem.EventTopics[ET_WAITBOX_UPDATE].AddSubscription(Self, WaitProgressUpdateHandler);
   FWorkItem.EventTopics[ET_WAITBOX_STOP].AddSubscription(Self, WaitProgressStopHandler);
 
- startActivity := App.Settings[START_ACTIVITY_SETTING];
+  licenseSvc := WorkItem.Services[ILicenseService] as ILicenseService;
+  if licenseSvc.GetStatus <> lsRegistered then
+    startActivity := VIEW_ABOUT
+  else
+    startActivity := App.Settings[START_ACTIVITY_SETTING];
+
   if startActivity <> '' then
     FWorkItem.Activities[startActivity].Execute(FWorkItem);
 end;

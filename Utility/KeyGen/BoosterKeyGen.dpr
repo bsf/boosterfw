@@ -8,27 +8,27 @@ uses
 
 const
   LICENSE_FILE_NAME = 'license.dat';
+  HELP_MESSAGE = 'BoosterKeyGen -c <client ID> [-s <filename>] [-o <filename>] [-e <value>] [-lt <value>]' + #10#13 + #10#13 +
+                 '-c      client ID or DEMO' + #10#13 +
+                 '-s      license source' + #10#13 +
+                 '-o      output filename (default: license.dat)' + #10#13 +
+                 '-e      expires date (format: yyyy-mm-dd)' + #10#13 +
+                 '-lt     license type (default: 1))';
 
 var
-  sourceLicense: string;
+  sourceFile: string;
+  resultFile: string;
   license: TStringList;
   licenseHash: string;
   licenseSignature: string;
   clientID: string;
   savePath: string;
-
+  swVal: string;
 begin
-  FindCmdLineSwitch('s', sourceLicense);
-  if sourceLicense = '' then
+  if (ParamCount = 0) or (ParamStr(1) = '?')  then
   begin
-    WriteLn('Error: source file not defined. Use switch "s"');
-    Halt(1);
-  end;
-
-  if not FileExists(sourceLicense) then
-  begin
-    WriteLn('Error: ' + sourceLicense + ' not found.');
-    Halt(1);
+    Writeln(HELP_MESSAGE);
+    Exit;
   end;
 
   FindCmdLineSwitch('c', clientID);
@@ -38,16 +38,32 @@ begin
     Halt(1);
   end;
 
-  FindCmdLineSwitch('o', savePath);
-  if savePath = '' then
-    savePath := ExtractFilePath(ParamStr(0));
+  sourceFile := '';
+  if FindCmdLineSwitch('s', sourceFile) and (not FileExists(sourceFile)) then
+  begin
+    WriteLn('Error: ' + sourceFile + ' not found.');
+    Halt(1);
+  end;
+
+  if not FindCmdLineSwitch('o', resultFile) then
+    resultFile := ExtractFilePath(ParamStr(0)) + '\' + LICENSE_FILE_NAME;
 
   license := TStringList.Create;
 
-  license.LoadFromFile(sourceLicense);
+  if sourceFile <> '' then
+    license.LoadFromFile(sourceFile);
+
+  if FindCmdLineSwitch('lt', swVal) then
+    license.Values['LT'] := swVal;
+
+  if FindCmdLineSwitch('e', swVal) then
+    license.Values['Expires'] := swVal;
+
+  if clientID = 'DEMO' then
+    clientID := GetDemoClientID;
 
   license.Text := SignLicense(license.Text, clientID);
 
-  license.SaveToFile(savePath + '\' + LICENSE_FILE_NAME);
+  license.SaveToFile(resultFile);
 
 end.
