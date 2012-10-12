@@ -37,6 +37,7 @@ contains
   SecurityIntf in '..\Sources\Interfaces\SecurityIntf.pas',
   ShellIntf in '..\Sources\Interfaces\ShellIntf.pas',
   UIServiceIntf in '..\Sources\Interfaces\UIServiceIntf.pas',
-  LicenseServiceIntf in '..\Sources\Interfaces\LicenseServiceIntf.pas';
+  LicenseServiceIntf in '..\Sources\Interfaces\LicenseServiceIntf.pas',
+  UpdaterIntf in '..\Sources\Interfaces\UpdaterIntf.pas';
 
 end.

@@ -40,7 +40,6 @@ requires
 
 contains
   bfwShellLayoutModuleInit in '..\..\Sources\Modules\ShellLayout\bfwShellLayoutModuleInit.pas',
-  ShellAbout in '..\..\Sources\Modules\ShellLayout\ShellAbout.pas' {frShellAbout},
   ShellForm in '..\..\Sources\Modules\ShellLayout\ShellForm.pas' {frMain},
   ShellNavBar in '..\..\Sources\Modules\ShellLayout\ShellNavBar.pas',
   ShellWaitBox in '..\..\Sources\Modules\ShellLayout\ShellWaitBox.pas' {frWaitBox},

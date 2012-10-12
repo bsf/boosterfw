@@ -15,7 +15,7 @@ uses
   ShellWaitBox,
   ViewStyleController, cxPC, cxDropDownEdit,
   cxBarEditItem, cxButtonEdit, dxBarExtItems, EntityServiceIntf,
-  cxLookAndFeels, cxLookAndFeelPainters, TabbedWorkspace, ShellAbout,
+  cxLookAndFeels, cxLookAndFeelPainters, TabbedWorkspace,
    UIClasses,
   UserPreferencesPresenter, UserPreferencesView,
   AboutPresenter, AboutView,
@@ -120,10 +120,6 @@ type
         FMainForm: TForm;
       public
         constructor Create(AMainForm: TForm);
-        procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
-      end;
-
-      TShowAboutHandler = class(TActivityHandler)
         procedure Execute(Sender: TWorkItem; Activity: IActivity); override;
       end;
 
@@ -517,13 +513,6 @@ end;
 procedure TfrMain.TCloseAppHandler.Execute(Sender: TWorkItem; Activity: IActivity);
 begin
   FMainForm.Close;
-end;
-
-{ TfrMain.TShowAboutHandler }
-
-procedure TfrMain.TShowAboutHandler.Execute(Sender: TWorkItem; Activity: IActivity);
-begin
-  ShellAboutShow;
 end;
 
 { TfrMain.TReloadConfigurationHandler }

@@ -63,6 +63,7 @@
 			<DCCReference Include="..\Sources\Interfaces\ShellIntf.pas"/>
 			<DCCReference Include="..\Sources\Interfaces\UIServiceIntf.pas"/>
 			<DCCReference Include="..\Sources\Interfaces\LicenseServiceIntf.pas"/>
+			<DCCReference Include="..\Sources\Interfaces\UpdaterIntf.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>
