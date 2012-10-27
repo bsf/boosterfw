@@ -22,8 +22,6 @@ object Form2: TForm2
     PanelStyle.Active = True
     Style.Shadow = False
     TabOrder = 0
-    ExplicitTop = 40
-    ExplicitHeight = 393
     Height = 458
     Width = 289
     object cxGrid1: TcxGrid
@@ -39,8 +37,6 @@ object Form2: TForm2
       TabOrder = 0
       LookAndFeel.Kind = lfFlat
       LookAndFeel.NativeStyle = True
-      ExplicitWidth = 253
-      ExplicitHeight = 404
       object cxGrid1DBTableView1: TcxGridDBTableView
         DataController.DataSource = DataSource1
         DataController.Summary.DefaultGroupSummaryItems = <>
@@ -126,7 +122,6 @@ object Form2: TForm2
       LookAndFeel.NativeStyle = False
       SpeedButtonOptions.Flat = True
       TabOrder = 1
-      ExplicitWidth = 259
     end
     object cxButton5: TcxButton
       Left = 2
@@ -139,8 +134,6 @@ object Form2: TForm2
       LookAndFeel.NativeStyle = False
       SpeedButtonOptions.Flat = True
       TabOrder = 2
-      ExplicitTop = 467
-      ExplicitWidth = 259
     end
   end
   object cxButton6: TcxButton
@@ -208,9 +201,6 @@ object Form2: TForm2
     StyleFocused.LookAndFeel.Kind = lfOffice11
     StyleHot.LookAndFeel.Kind = lfOffice11
     TabOrder = 5
-    ExplicitLeft = 0
-    ExplicitTop = 0
-    ExplicitWidth = 765
     Height = 40
     Width = 914
   end
@@ -282,5 +272,25 @@ object Form2: TForm2
     StorageName = 'cxPropertiesStore1'
     Left = 368
     Top = 104
+  end
+  object IBBackupService1: TIBBackupService
+    TraceFlags = []
+    BlockingFactor = 0
+    Options = []
+    Left = 688
+    Top = 328
+  end
+  object IBSQL1: TIBSQL
+    Left = 328
+    Top = 224
+  end
+  object IBExtract1: TIBExtract
+    Left = 384
+    Top = 216
+  end
+  object IBScript1: TIBScript
+    Terminator = ';'
+    Left = 400
+    Top = 280
   end
 end

@@ -1,5 +1,6 @@
 inherited frEntityItemExtView: TfrEntityItemExtView
   Caption = 'frEntityItemExtView'
+  ExplicitHeight = 543
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
@@ -9,8 +10,9 @@ inherited frEntityItemExtView: TfrEntityItemExtView
       Width = 765
       Height = 201
       Align = alTop
-      LayoutStyle = lsMultiRecordView
+      LayoutStyle = lsBandsView
       LookAndFeel.Kind = lfOffice11
+      OptionsView.AutoScaleBands = False
       OptionsView.CategoryExplorerStyle = True
       OptionsView.GridLineColor = clBtnFace
       OptionsView.RowHeaderWidth = 300

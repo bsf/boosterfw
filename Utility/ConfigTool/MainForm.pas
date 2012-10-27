@@ -24,7 +24,7 @@ uses
   IdTCPClient, IdHTTP, cxTL, cxTLdxBarBuiltInMenu, cxTLData, cxDBTL,
   ButtonGroup, dxBreadcrumbEdit, dxDBBreadcrumbEdit, cxCalendar, cxCheckBox,
   cxGridBandedTableView, cxGridDBBandedTableView, cxPropertiesStore, cxCalc,
-  ICommandBarImpl, coreClasses, UIClasses;
+  ICommandBarImpl, coreClasses, UIClasses, IBServices, IBScript, IBExtract;
 
 type
   TForm2 = class(TForm)
@@ -58,6 +58,10 @@ type
     cxButton1: TcxButton;
     pnButtons: TcxGroupBox;
     cxGroupBox2: TcxGroupBox;
+    IBBackupService1: TIBBackupService;
+    IBSQL1: TIBSQL;
+    IBExtract1: TIBExtract;
+    IBScript1: TIBScript;
     procedure cxGrid1DBBandedTableView1CellClick(Sender: TcxCustomGridTableView;
       ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton;
       AShift: TShiftState; var AHandled: Boolean);

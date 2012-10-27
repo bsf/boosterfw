@@ -15,7 +15,7 @@ uses
   cxDBExtLookupComboBox, cxDBEdit, cxTL, cxTLdxBarBuiltInMenu, cxDBTL, cxTLData,
   frxRich, cxMemo, cxRichEdit, cxMRUEdit, cxGridCardView, cxGridDBCardView,
   cxGridCustomLayoutView, cxGridBandedTableView, cxGridDBBandedTableView,
-  StdCtrls;
+  StdCtrls, cxListBox, cxButtonEdit;
 
 type
   TForm1 = class(TForm)
@@ -69,6 +69,8 @@ type
     cxStyle18: TcxStyle;
     cxStyle19: TcxStyle;
     cxStyle20: TcxStyle;
+    cxDBButtonEdit1: TcxDBButtonEdit;
+    cxDBListBox1: TcxDBListBox;
     procedure cxDBComboBox1PropertiesInitPopup(Sender: TObject);
     procedure cxGrid1DBCardView1CellClick(Sender: TcxCustomGridTableView;
       ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton;

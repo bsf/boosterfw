@@ -23,7 +23,6 @@ object Form1: TForm1
     TabOrder = 0
     View = 17
     ViewStyle.ColorSchemeName = 'Blue'
-    ExplicitHeight = 461
     object dxNavBar1Group1: TdxNavBarGroup
       Caption = 'dxNavBar1Group1'
       SelectedLinkIndex = -1
@@ -57,7 +56,6 @@ object Form1: TForm1
     Align = alClient
     TabOrder = 1
     LookAndFeel.Kind = lfOffice11
-    ExplicitHeight = 461
     object cxGrid1DBBandedTableView1: TcxGridDBBandedTableView
       DataController.DataSource = DataSource1
       DataController.Summary.DefaultGroupSummaryItems = <>
@@ -166,6 +164,28 @@ object Form1: TForm1
     Height = 21
     TabOrder = 2
     Text = 'Edit1'
+  end
+  object cxDBButtonEdit1: TcxDBButtonEdit
+    Left = 520
+    Top = 312
+    ParentShowHint = False
+    Properties.Buttons = <
+      item
+        Default = True
+        Kind = bkEllipsis
+      end>
+    Properties.ViewStyle = vsButtonsOnly
+    ShowHint = False
+    TabOrder = 3
+    Width = 121
+  end
+  object cxDBListBox1: TcxDBListBox
+    Left = 360
+    Top = 352
+    Width = 121
+    Height = 97
+    ItemHeight = 13
+    TabOrder = 4
   end
   object DataSource1: TDataSource
     DataSet = IBQuery1
