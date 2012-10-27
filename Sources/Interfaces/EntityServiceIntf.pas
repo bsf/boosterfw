@@ -49,6 +49,7 @@ const
   DATASET_ATTR_READONLY = 'ReadOnly';
   DATASET_ATTR_ENTITY = 'Entity';
   DATASET_ATTR_ENTITY_VIEW = 'EntityView';
+  DATASET_ATTR_RELOADAFTERUPDATE = 'ReloadAfterUpdate';
 
   //System field names
   FIELD_UI_TITLE = 'UI_TITLE';
@@ -75,6 +76,7 @@ type
     function LinksCount: integer;
     function GetLinksInfo(AIndex: integer): TEntityViewLinkInfo;
     function LinkedFields: TStringList;
+    function OptionExists(const AName: string): boolean;
     function GetOptions(const AName: string): string;
     property Options[const AName: string]: string read GetOptions;
   end;

@@ -54,7 +54,6 @@
 			<DCCReference Include="ShellView.pas">
 				<Form>frMain</Form>
 			</DCCReference>
-			<DCCReference Include="ConstUnit.pas"/>
 			<DCCReference Include="Updater.pas"/>
 			<DCCReference Include="ShellViewIntf.pas"/>
 			<BuildConfiguration Include="Release">

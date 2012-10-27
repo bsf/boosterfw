@@ -40,6 +40,7 @@ type
     FMasterLink: TDataLink;
     FUpdateErrorText: string;
     FImmediateApplyUpdates: boolean;
+    FOnAfterImmediateApplyUpdates: TNotifyEvent;
     procedure SetImmediateApplyUpdates(const Value: boolean);
     procedure ReconcileErrorHandler(DataSet: TCustomClientDataSet;
       E: EReconcileError; UpdateKind: TUpdateKind; var Action: TReconcileAction);
@@ -68,6 +69,8 @@ type
     procedure Post; override;
     property ImmediateApplyUpdates: boolean read FImmediateApplyUpdates
       write SetImmediateApplyUpdates;
+    property OnAfterImmediateApplyUpdates: TNotifyEvent read FOnAfterImmediateApplyUpdates
+      write FOnAfterImmediateApplyUpdates;
     property LastUpdateErrorMessage: string read FUpdateErrorText;
   end;
 
@@ -98,6 +101,7 @@ type
     function GetLastUpdateErrorMessage: string;
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
+    procedure AfterImmediateApplyUpdates(Sender: TObject); virtual;
   public
     class function ProviderKind: TProviderNameBuilder.TProviderKind; virtual;
     constructor Create(AConnection: TCustomRemoteServer;
@@ -114,6 +118,7 @@ type
     FDataSetInitialized: boolean;
     FPrimaryKeys: TStringList;
     FLinkedFields: TStringList;
+    FReloadAfterUpdate: boolean;
     procedure ApplyPKInfo;
     procedure ApplyFieldInfo;
     procedure ApplyLinksInfo;
@@ -126,6 +131,7 @@ type
     function SchemeInfoDef: IEntitySchemeInfo;
     procedure CheckRequiredFields;
   protected
+     procedure AfterImmediateApplyUpdates(Sender: TObject); override;
     //IEntityView
     function IEntityView.EntityName = GetEntityName;
     function ViewName: string;
@@ -198,6 +204,7 @@ type
     function GetLinksInfo(AIndex: integer): TEntityViewLinkInfo;
     function LinkedFields: TStringList;
     function GetOptions(const AName: string): string;
+    function OptionExists(const AName: string): boolean;
   public
     constructor Create(AOwner: TComponent; AConnection: TCustomRemoteServer); reintroduce;
     destructor Destroy; override;
@@ -672,6 +679,20 @@ end;
 
 { TEntityView }
 
+procedure TEntityView.AfterImmediateApplyUpdates(Sender: TObject);
+var
+  I: integer;
+  pkValues: Variant;
+begin
+  if FReloadAfterUpdate and (FPrimaryKeys.Count <> 0) and (not FDataSet.IsEmpty) then
+  begin
+    pkValues := VarArrayCreate([0, FPrimaryKeys.Count], varVariant);
+    for I := 0 to FPrimaryKeys.Count - 1 do
+      pkValues[I] := FDataSet[FPrimaryKeys[I]];
+    ReloadRecord(pkValues, false);
+  end;
+end;
+
 procedure TEntityView.ApplyFieldInfo;
 
   procedure SetFieldProp(AFieldInfo, AField: TField);
@@ -901,6 +922,13 @@ begin
     SetDataSetAttribute(GetDataSet, DATASET_ATTR_READONLY, 'Yes')
   else
     SetDataSetAttribute(GetDataSet, DATASET_ATTR_READONLY, 'No');
+
+  FReloadAfterUpdate := Info.OptionExists(DATASET_ATTR_RELOADAFTERUPDATE);
+  if FReloadAfterUpdate then
+    SetDataSetAttribute(GetDataSet, DATASET_ATTR_RELOADAFTERUPDATE, 'Yes')
+  else
+    SetDataSetAttribute(GetDataSet, DATASET_ATTR_RELOADAFTERUPDATE, 'No');
+
 end;
 
 function TEntityView.IsLoaded: boolean;
@@ -1456,6 +1484,11 @@ end;
 
 { TEntityAttr }
 
+procedure TEntityAttr.AfterImmediateApplyUpdates(Sender: TObject);
+begin
+
+end;
+
 constructor TEntityAttr.Create(AConnection: TCustomRemoteServer;
   const AEntityName, AttrName: string; AWorkItem: TWorkItem);
 begin
@@ -1467,7 +1500,7 @@ begin
   FDataSet.RemoteServer := AConnection;
   FDataSet.ProviderName := DAL.TProviderNameBuilder.Encode(ProviderKind,
     FEntityName, AttrName);
-
+  FDataSet.OnAfterImmediateApplyUpdates := AfterImmediateApplyUpdates;
   FParamsFetched := false;
   SetImmediateSave(false);
 end;
@@ -1701,10 +1734,16 @@ end;
 procedure TEntityDataSet.Post;
 begin
   inherited;
-  if FImmediateApplyUpdates and (ApplyUpdates(0) <> 0) then
+  if FImmediateApplyUpdates then
   begin
-    UndoLastChange(true);
-    raise Exception.Create(FUpdateErrorText);
+    if ApplyUpdates(0) <> 0 then
+    begin
+      UndoLastChange(true);
+      raise Exception.Create(FUpdateErrorText);
+    end;
+
+    if Assigned(FOnAfterImmediateApplyUpdates) then
+      FOnAfterImmediateApplyUpdates(Self);
   end;
 end;
 
@@ -2049,6 +2088,11 @@ begin
     FMetaDS.Next;
   end;
 
+end;
+
+function TEntityViewInfo.OptionExists(const AName: string): boolean;
+begin
+  Result := (FOptions.IndexOfName(AName) <> -1) or (FOptions.IndexOf(AName) <> -1);
 end;
 
 function TEntityViewInfo.PrimaryKey: string;

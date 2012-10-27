@@ -43,7 +43,6 @@ inherited frEntityItemExtView: TfrEntityItemExtView
       Align = alClient
       TabOrder = 3
       LookAndFeel.Kind = lfOffice11
-      RootLevelOptions.DetailTabsPosition = dtpTop
       OnActiveTabChanged = grDetailsActiveTabChanged
     end
   end

@@ -187,6 +187,28 @@ object Form1: TForm1
     ItemHeight = 13
     TabOrder = 4
   end
+  object cxDBBlobEdit1: TcxDBBlobEdit
+    Left = 464
+    Top = 184
+    Properties.BlobEditKind = bekBlob
+    Properties.BlobPaintStyle = bpsText
+    TabOrder = 5
+    Width = 121
+  end
+  object cxDBImage1: TcxDBImage
+    Left = 384
+    Top = 240
+    TabOrder = 6
+    Height = 100
+    Width = 140
+  end
+  object cxDBMemo1: TcxDBMemo
+    Left = 664
+    Top = 232
+    TabOrder = 7
+    Height = 89
+    Width = 185
+  end
   object DataSource1: TDataSource
     DataSet = IBQuery1
     Left = 144

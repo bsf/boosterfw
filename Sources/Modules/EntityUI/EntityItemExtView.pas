@@ -106,7 +106,11 @@ var
 begin
   dataSource := TDataSource.Create(Self);
   level := grDetails.Levels.Add;
+
   level.Caption := ACaption;
+  if level.Caption <> '' then
+    grDetails.RootLevelOptions.DetailTabsPosition := dtpTop;
+
   view := TcxGridDBTableView(grDetails.CreateView(TcxGridDBTableView));
   view.Name := MakeValidViewName('grDetails' + AName);
   view.AssignSettings(cxGridViewRepositoryDBTableView); //grDetails.Views[0]);
