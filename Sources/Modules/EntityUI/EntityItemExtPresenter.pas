@@ -65,6 +65,8 @@ var
 begin
   for I := 0 to FEVDetailList.Count - 1 do
     GetEVDetail(FEVDetailList[I]).Load(true);
+
+  UpdateCommandStatus;
 end;
 
 destructor TEntityItemExtPresenter.Destroy;

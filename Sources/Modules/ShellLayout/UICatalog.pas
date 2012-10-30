@@ -574,6 +574,12 @@ procedure TUICatalog.TViewCommandExtension.CommandUpdate;
            VarIsNull(WorkItem.State[ACondition.Params.Names[I]]) then
           Result := csDisabled;
       end
+      else if SameText(ACondition.Params.ValueFromIndex[I], 'Empty') then
+      begin
+        if not (VarIsEmpty(WorkItem.State[ACondition.Params.Names[I]]) or
+            VarIsNull(WorkItem.State[ACondition.Params.Names[I]])) then
+          Result := csDisabled;
+      end
       else
       begin
         if VarToStr(WorkItem.State[ACondition.Params.Names[I]]) <>

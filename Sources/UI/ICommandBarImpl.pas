@@ -19,11 +19,12 @@ type
     FWorkItem: TWorkItem;
     FBar: TcxGroupBox;
     FButtonAlignment: TButtonAlignment;
+
     function FindOrCreateGroupButton(ACaption: string): TcxButton;
     function GetButtonWidth(const ACaption: string): integer;
     function CreateButton(const ACaption: string): TcxButton;
     procedure DoExecuteDefaultCommand(Sender: TObject);
-
+    procedure ChangeDropDownMenuHandler(Sender: TObject; Source: TMenuItem; Rebuild: Boolean);
   protected
     procedure AddCommand(const AName, ACaption: string; const AShortCut: string = '';
       const AGroup: string = ''; ADefault: boolean = false);
@@ -73,6 +74,35 @@ begin
   else
     CreateButton(commandAction.Caption).Action := commandAction;
 
+end;
+
+procedure TICommandBarImpl.ChangeDropDownMenuHandler(Sender: TObject; Source: TMenuItem; Rebuild: Boolean);
+var
+  I: integer;
+  btn: TcxButton;
+  ppm: TPopupMenu;
+begin
+  if not (Sender is TPopupMenu) then Exit;
+
+  ppm := TPopupMenu(Sender);
+
+  btn := nil;
+  for I := 0 to FBar.ControlCount - 1 do
+    if (FBar.Controls[I] is TcxButton) and (TcxButton(FBar.Controls[I]).DropDownMenu = Sender) then
+    begin
+      btn := TcxButton(FBar.Controls[I]);
+      Break;
+    end;
+
+  if btn <> nil then
+  begin
+    for I := 0 to ppm.Items.Count - 1 do
+      if ppm.Items[I].Default then
+      begin
+        btn.Visible := ppm.Items[I].Visible;
+        break;
+      end;
+  end;
 end;
 
 constructor TICommandBarImpl.Create(AOwner: TForm; WorkItem: TWorkItem;
@@ -178,6 +208,7 @@ begin
   begin
     Result.Kind := cxbkDropDown;
     Result.DropDownMenu := TPopupMenu.Create(Owner);
+    Result.DropDownMenu.OnChange := ChangeDropDownMenuHandler;
   end;
 end;
 
