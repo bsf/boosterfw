@@ -17,6 +17,8 @@ type
   end;
 
   TEntityItemExtPresenter = class(TEntityContentPresenter)
+  const
+    CMD_CLOSE = 'cmd.Close';
   private
     FIsReady: boolean;
     FHeadEntityViewReady: boolean;
@@ -201,9 +203,10 @@ begin
 
 //----------------- CommandBar
   View.CommandBar.
-    AddCommand(COMMAND_CLOSE,
+    AddCommand(CMD_CLOSE,
       GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT);
-  WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
+
+  WorkItem.Commands[CMD_CLOSE].SetHandler(CmdClose);
 
   WorkItem.Commands[COMMAND_RELOAD].SetHandler(CmdReload);
 
