@@ -77,6 +77,7 @@ type
     property ViewVisible: boolean read FViewVisible write FViewVisible;
     //
     procedure CmdClose(Sender: TObject);
+    procedure CmdReloadCaller(Sender: TObject);
     procedure SetCommandStatus(const AName: string; AEnable: boolean);
     procedure UpdateCommandStatus;
     procedure OnUpdateCommandStatus; virtual;
@@ -209,6 +210,8 @@ begin
   WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
  // WorkItem.Commands[COMMAND_CLOSE].Caption := GetLocaleString(@COMMAND_CLOSE_CAPTION);
   WorkItem.Commands[COMMAND_CLOSE].ShortCut := COMMAND_CLOSE_SHORTCUT;
+
+  WorkItem.Commands[COMMAND_RELOAD_CALLER].SetHandler(CmdReloadCaller);
 
   GetView.SetShowHandler(ViewShowHandler);
   GetView.SetCloseHandler(ViewCloseHandler);
@@ -390,6 +393,15 @@ end;
 procedure TCustomPresenter.CmdClose(Sender: TObject);
 begin
   CloseView;
+end;
+
+procedure TCustomPresenter.CmdReloadCaller(Sender: TObject);
+var
+  callerWI: TWorkItem;
+begin
+  callerWI := GetVisibleCaller;
+  if callerWI <> nil then
+    callerWI.Commands[COMMAND_RELOAD].Execute;
 end;
 
 procedure TCustomPresenter.CmdUpdateCommandStatus(Sender: TObject);

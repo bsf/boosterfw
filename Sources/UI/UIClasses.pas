@@ -28,6 +28,8 @@ const
 //  COMMAND_RELOAD_CAPTION = 'Обновить';
   COMMAND_RELOAD_SHORTCUT = 'F5';
 
+  COMMAND_RELOAD_CALLER = 'commands.reload.caller';
+
   COMMAND_OPEN = 'commands.view.open';
 // COMMAND_OPEN_CAPTION = 'Открыть';
   COMMAND_OPEN_SHORTCUT = 'Ctrl+Enter';

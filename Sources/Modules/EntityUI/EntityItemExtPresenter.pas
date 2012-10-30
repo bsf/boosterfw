@@ -20,6 +20,8 @@ type
   private
     FIsReady: boolean;
     FHeadEntityViewReady: boolean;
+    FEVDetailList: TStringList;
+    procedure CmdReload(Sender: Tobject);
     procedure CmdDetailDelete(Sender: TObject);
     function View: IEntityItemExtView;
     function GetEVHead: IEntityView;
@@ -28,6 +30,8 @@ type
   protected
     function OnGetWorkItemState(const AName: string; var Done: boolean): Variant; override;
     procedure OnViewReady; override;
+  public
+    destructor Destroy; override;
   end;
 
 implementation
@@ -53,6 +57,21 @@ begin
   end;
 
 
+end;
+
+procedure TEntityItemExtPresenter.CmdReload(Sender: Tobject);
+var
+  I: integer;
+begin
+  for I := 0 to FEVDetailList.Count - 1 do
+    GetEVDetail(FEVDetailList[I]).Load(true);
+end;
+
+destructor TEntityItemExtPresenter.Destroy;
+begin
+  if Assigned(FEVDetailList) then
+    FEVDetailList.Free;
+  inherited;
 end;
 
 function TEntityItemExtPresenter.GetEVDetail(const AName: string): IEntityView;
@@ -154,26 +173,21 @@ procedure TEntityItemExtPresenter.OnViewReady;
   procedure DetailViewsInit;
   var
     entityView: IEntityView;
-    entityViews: TStringList;
     I: integer;
   begin
-    entityViews := TStringList.Create;
-    try
-      GetDetailEViews(entityViews);
-      for I := 0 to entityViews.Count - 1 do
-      begin
-        entityView := GetEVDetail(entityViews[I]);
-        entityView.ImmediateSave := true;
-        View.LinkDetailData(entityView.ViewName, entityView.Info.Title, entityView.DataSet);
-      end;
-    finally
-      entityViews.Free;
+    GetDetailEViews(FEVDetailList);
+    for I := 0 to FEVDetailList.Count - 1 do
+    begin
+      entityView := GetEVDetail(FEVDetailList[I]);
+      entityView.ImmediateSave := true;
+      View.LinkDetailData(entityView.ViewName, entityView.Info.Title, entityView.DataSet);
     end;
   end;
 
 var
   fieldTitle: TField;
 begin
+  FEVDetailList := TStringList.Create;
   ViewTitle := ViewInfo.Title;
 
   fieldTitle := GetEVHead.DataSet.FindField('UI_TITLE');
@@ -189,6 +203,7 @@ begin
       GetLocaleString(@COMMAND_CLOSE_CAPTION), COMMAND_CLOSE_SHORTCUT);
   WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
 
+  WorkItem.Commands[COMMAND_RELOAD].SetHandler(CmdReload);
 
   WorkItem.Commands[COMMAND_DETAIL_DELETE].SetHandler(CmdDetailDelete);
 
