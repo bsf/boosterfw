@@ -7,6 +7,14 @@ uses classes, cxGroupBox, cxButtons, ActnList, sysutils, CoreClasses, ShellIntf,
 type
   TButtonAlignment = (alLeft, alRight);
 
+  TCommandActionLink = class(TActionLink)
+  protected
+    FClient: TObject;
+    FButton: TcxButton;
+    procedure AssignClient(AClient: TObject); override;
+    procedure SetVisible(Value: Boolean); override;
+  end;
+
   TICommandBarImpl = class(TComponent, ICommandBar)
   const
     TOP_BOTTOM_MARGIN = 5;
@@ -16,21 +24,23 @@ type
 
   private
     FActionList: TActionList;
+    FActionLinks: TList;
     FWorkItem: TWorkItem;
     FBar: TcxGroupBox;
+    FButtons: TList;
     FButtonAlignment: TButtonAlignment;
-
     function FindOrCreateGroupButton(ACaption: string): TcxButton;
     function GetButtonWidth(const ACaption: string): integer;
     function CreateButton(const ACaption: string): TcxButton;
     procedure DoExecuteDefaultCommand(Sender: TObject);
-    procedure ChangeDropDownMenuHandler(Sender: TObject; Source: TMenuItem; Rebuild: Boolean);
+    procedure AlignButton(AButton: TcxButton);
   protected
     procedure AddCommand(const AName, ACaption: string; const AShortCut: string = '';
       const AGroup: string = ''; ADefault: boolean = false);
   public
     constructor Create(AOwner: TForm; WorkItem: TWorkItem;
       ABar: TcxGroupBox; AButtonAlignment: TButtonAlignment = alLeft); reintroduce;
+    destructor Destroy; override;
   end;
 
 implementation
@@ -43,9 +53,14 @@ var
   btn: TcxButton;
   mi: TMenuItem;
   commandAction: TAction;
+  actionLink: TCommandActionLink;
 begin
   commandAction := TAction.Create(FBar);
   commandAction.ActionList := FActionList;
+
+  actionLink := TCommandActionLink.Create(Self);
+  FActionLinks.Add(actionLink);
+  actionLink.Action := commandAction;
 
   with FWorkItem.Commands[AName] do
   begin
@@ -59,7 +74,6 @@ begin
   if AGroup <> '' then
   begin
     btn := FindOrCreateGroupButton(AGroup);
-
     mi := TMenuItem.Create(FBar);
     mi.Action := commandAction;
     btn.DropDownMenu.Items.Add(mi);
@@ -69,40 +83,29 @@ begin
       mi.Default := true;
       btn.Kind := cxbkDropDownButton;
       btn.OnClick := DoExecuteDefaultCommand;
+      actionLink.FButton := btn;
     end;
   end
   else
-    CreateButton(commandAction.Caption).Action := commandAction;
-
+  begin
+    btn := CreateButton(commandAction.Caption);
+    btn.Action := commandAction;
+    actionLink.FButton := btn;
+  end;
 end;
 
-procedure TICommandBarImpl.ChangeDropDownMenuHandler(Sender: TObject; Source: TMenuItem; Rebuild: Boolean);
+procedure TICommandBarImpl.AlignButton(AButton: TcxButton);
 var
+  idx: integer;
   I: integer;
-  btn: TcxButton;
-  ppm: TPopupMenu;
+  minLeft: integer;
 begin
-  if not (Sender is TPopupMenu) then Exit;
-
-  ppm := TPopupMenu(Sender);
-
-  btn := nil;
-  for I := 0 to FBar.ControlCount - 1 do
-    if (FBar.Controls[I] is TcxButton) and (TcxButton(FBar.Controls[I]).DropDownMenu = Sender) then
-    begin
-      btn := TcxButton(FBar.Controls[I]);
-      Break;
-    end;
-
-  if btn <> nil then
-  begin
-    for I := 0 to ppm.Items.Count - 1 do
-      if ppm.Items[I].Default then
-      begin
-        btn.Visible := ppm.Items[I].Visible;
-        break;
-      end;
-  end;
+  minLeft := AButton.Left;
+  idx := FButtons.IndexOf(AButton);
+  for I := idx + 1 to FButtons.Count - 1 do
+    if TcxButton(FButtons[I]).Left < minLeft then
+      minLeft := TcxButton(FButtons[I]).Left;
+  AButton.Left := minLeft;
 end;
 
 constructor TICommandBarImpl.Create(AOwner: TForm; WorkItem: TWorkItem;
@@ -113,6 +116,8 @@ begin
   FBar := ABar;
   FActionList := TActionList.Create(AOwner); //for shortcut
   FButtonAlignment := AButtonAlignment;
+  FActionLinks := TList.Create;
+  FButtons := TList.Create;
 end;
 
 function TICommandBarImpl.CreateButton(const ACaption: string): TcxButton;
@@ -120,7 +125,7 @@ var
   leftPosition: integer;
 begin
   Result := TcxButton.Create(Owner);
-
+  FButtons.Add(Result);
   leftPosition := 0;
   if FBar.ControlCount <> 0 then
     leftPosition := FBar.Controls[FBar.ControlCount - 1].Left +
@@ -157,6 +162,21 @@ begin
 
   Result.ScaleBy(App.UI.Scale, 100);
 
+end;
+
+destructor TICommandBarImpl.Destroy;
+var
+  I: integer;
+begin
+  for I := FActionLinks.Count - 1 downto 0 do
+  begin
+    TActionLink(FActionLinks[I]).Action := nil;
+    TActionLink(FActionLinks[I]).Free;
+  end;
+
+  FButtons.Free;
+
+  inherited;
 end;
 
 procedure TICommandBarImpl.DoExecuteDefaultCommand(Sender: TObject);
@@ -208,7 +228,6 @@ begin
   begin
     Result.Kind := cxbkDropDown;
     Result.DropDownMenu := TPopupMenu.Create(Owner);
-    Result.DropDownMenu.OnChange := ChangeDropDownMenuHandler;
   end;
 end;
 
@@ -218,6 +237,24 @@ begin
   Result := Result + BUTTON_CAPTION_MARGIN;
   if Result < BUTTON_MIN_WITH then
     Result := BUTTON_MIN_WITH;
+end;
+
+{ TCommandActionLink }
+
+procedure TCommandActionLink.AssignClient(AClient: TObject);
+begin
+  FClient := AClient;
+end;
+
+procedure TCommandActionLink.SetVisible(Value: Boolean);
+begin
+  if Assigned(FButton) then
+  begin
+    FButton.Visible := Value; //1. For Group Button;
+                              //2. ActionLink.SetVisible fired before FButton.ActionLink.SetVisible
+    if FButton.Visible then
+      TICommandBarImpl(FClient).AlignButton(FButton);
+  end;
 end;
 
 end.

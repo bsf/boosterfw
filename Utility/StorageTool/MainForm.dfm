@@ -209,6 +209,14 @@ object Form1: TForm1
     Height = 89
     Width = 185
   end
+  object cxButton1: TcxButton
+    Left = 552
+    Top = 408
+    Width = 75
+    Height = 25
+    Caption = 'cxButton1'
+    TabOrder = 8
+  end
   object DataSource1: TDataSource
     DataSet = IBQuery1
     Left = 144
