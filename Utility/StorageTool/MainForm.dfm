@@ -154,7 +154,7 @@ object Form1: TForm1
     end
     object cxGrid1Level1: TcxGridLevel
       Caption = 'ytrye6'
-      GridView = cxGrid1DBCardView1
+      GridView = cxGrid1DBBandedTableView1
     end
   end
   object Edit1: TEdit

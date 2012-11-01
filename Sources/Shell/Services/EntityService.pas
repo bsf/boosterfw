@@ -1430,8 +1430,9 @@ function TEntityOper.Execute: TDataSet;
     strList := TStringList.Create;
     try
       strList.Text := AMessage;
-      if strList.Count >= 2 then
-        Result := strList[2];
+      if strList.Count > 0 then
+        strList.Delete(0);
+      Result := strList.Text;
     finally
       strList.Free;
     end;
