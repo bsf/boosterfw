@@ -285,8 +285,6 @@ type
   end;
 
 {Event broker}
-  TEventThreadOption = (etoPublisher, etoBackground);
-
   TEventHandlerMethod = procedure(Context: TWorkItem; EventData: Variant) of object;
 
   IEventTopic = interface
@@ -301,7 +299,7 @@ type
     property Enabled: boolean read GetEnabled write SetEnabled;
   end;
 
-  IEventTopics = interface(ICollection)
+  IEventTopics = interface
   ['{7F28464E-51C9-4365-ABE5-7C944AB4DC5A}']
     function GetEventTopic(const AName: string): IEventTopic;
     property EventTopic[const AName: string]: IEventTopic read GetEventTopic; default;
@@ -559,9 +557,8 @@ begin
 
   //Collections
   ParentList := nil;
-  if FParent <> nil then
-    ParentList := TEventTopics(FParent.FEventTopics);
-  FEventTopics := TEventTopics.Create(Self, lsmUp, ParentList);
+  if FParent = nil then
+    FEventTopics := TEventTopics.Create(Self);
 
   ParentList := nil;
   if FParent <> nil then
@@ -615,7 +612,6 @@ begin
     TWorkItems(FWorkItems).Clear;
     TItems(FItems).Clear;
     TCommands(FCommands).Clear;
-    TEventTopics(FEventTopics).Clear;
     TWorkspaces(FWorkspaces).Clear;
 
     if Assigned(FServices) then TServices(FServices).Clear;
@@ -660,8 +656,7 @@ end;
 
 function TWorkItem.GetEventTopics: IEventTopics;
 begin
-//  FEventTopics.GetInterface(IEventTopics, Result);
-  Root.FEventTopics.GetInterface(IEventTopics, Result);
+  Result := Root.FEventTopics as IEventTopics;
 end;
 
 function TWorkItem.GetItems: IItems;

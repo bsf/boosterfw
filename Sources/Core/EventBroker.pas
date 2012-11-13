@@ -1,7 +1,7 @@
 unit EventBroker;
 
 interface
-uses Classes, CoreClasses, Contnrs, typinfo, sysutils, ManagedList, Variants;
+uses Classes, CoreClasses, Contnrs, sysutils, Variants, Generics.Collections;
 
 type
   TSubscription = class(TComponent)
@@ -17,14 +17,14 @@ type
     procedure Fire(Context: TWorkItem; EventData: Variant);
   end;
 
-  TEventTopic = class(TManagedItem, IEventTopic)
+  TEventTopic = class(TComponent, IEventTopic)
   private
     FSubscriptions: TComponentList;
     FEnabled: boolean;
     function GetEnabled: boolean;
     procedure SetEnabled(Value: boolean);
   public
-    constructor Create(AOwner: TManagedItemList; const AID: string); override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Fire(Context: TWorkItem; EventData: Variant);
     procedure AddSubscription(ASubscriber: TComponent; AHandlerMethod: TEventHandlerMethod); overload;
@@ -34,10 +34,13 @@ type
     property Enabled: boolean read GetEnabled write SetEnabled;
   end;
 
-  TEventTopics = class(TManagedItemList, IEventTopics)
+  TEventTopics = class(TComponent, IEventTopics)
   private
+    FItems: TObjectDictionary<string, TEventTopic>;
     function GetEventTopic(const AName: string): IEventTopic;
   public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
     property EventTopic[const AName: string]: IEventTopic read GetEventTopic; default;
   end;
 
@@ -45,19 +48,28 @@ implementation
 
 { TEventTopics }
 
+constructor TEventTopics.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FItems := TObjectDictionary<string, TEventTopic>.Create([doOwnsValues]);
+end;
+
+destructor TEventTopics.Destroy;
+begin
+  FItems.Free;
+  inherited;
+end;
+
 function TEventTopics.GetEventTopic(const AName: string): IEventTopic;
 var
   et: TEventTopic;
 begin
-  et := TEventTopic(GetByID(AName));
-
-  if et = nil then
+  if not FItems.TryGetValue(UpperCase(AName), et) then
   begin
-    et := TEventTopic.Create(Self, AName);
-    InternalAdd(et);
+    et := TEventTopic.Create(nil);
+    FItems.Add(UpperCase(AName), et);
   end;
-
-  et.QueryInterface(IEventTopic, Result);
+  Result := et as IEventTopic;
 end;
 
 { TEventTopic }
@@ -68,10 +80,9 @@ begin
   FSubscriptions.Add(TSubscription.Create(Self, ASubscriber, AHandlerMethod));
 end;
 
-constructor TEventTopic.Create(AOwner: TManagedItemList;
-  const AID: string);
+constructor TEventTopic.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner, AID);
+  inherited Create(AOwner);
   FSubscriptions := TComponentList.Create(True);
   FEnabled := True;
 end;
