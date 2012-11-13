@@ -49,6 +49,7 @@ type
     function GetGridList: TComponentList;
 
     function FindGridByDataSet(ADataSet: TDataSet): TcxDBVerticalGrid;
+    function FindGridByDataSource(ADataSource: TDataSource): TcxDBVerticalGrid;
 
     function FindEditorRowByFieldName(AGrid: TcxDBVerticalGrid;
       const AFieldName: string): TcxDBEditorRow;
@@ -74,7 +75,6 @@ type
     procedure LoadPreference(AGrid: TcxDBVerticalGrid);
     procedure SavePreference(AGrid: TcxDBVerticalGrid);
     procedure SaveAllPreference;
-
   protected
     //IViewHelper
     procedure ViewInitialize;
@@ -82,6 +82,7 @@ type
     procedure ViewClose;
     //IViewDataSetHelper
     procedure LinkDataSet(ADataSource: TDataSource; ADataSet: TDataSet);
+    procedure UnLinkDataSet(ADataSource: TDataSource);
     procedure FocusDataSetControl(ADataSet: TDataSet; const AFieldName: string; var Done: boolean);
     function GetFocusedField(ADataSet: TDataSet; var Done: boolean): string;
     procedure SetFocusedField(ADataSet: TDataSet; const AFieldName: string; var Done: boolean);
@@ -438,6 +439,18 @@ begin
 
   end
 
+end;
+
+procedure TcxVGridViewHelper.UnLinkDataSet(ADataSource: TDataSource);
+var
+  grid: TcxDBVerticalGrid;
+begin
+  grid := FindGridByDataSource(ADataSource);
+  if Assigned(grid) then
+  begin
+    SavePreference(grid);
+    grid.ClearRows;
+  end;
 end;
 
 procedure TcxVGridViewHelper.ViewClose;
@@ -896,6 +909,27 @@ begin
     end;
 
   Result := nil;
+end;
+
+function TcxVGridViewHelper.FindGridByDataSource(
+  ADataSource: TDataSource): TcxDBVerticalGrid;
+var
+  I: integer;
+  _gridList: TComponentList;
+begin
+  _gridList := GetDBGridList;
+  for I := 0 to _gridList.Count - 1 do
+    if ((_gridList[I] as TcxDBVerticalGrid).DataController.DataSource <> nil)
+       and
+      (ADataSource =
+       (_gridList[I] as TcxDBVerticalGrid).DataController.DataSource) then
+    begin
+      Result := (_gridList[I] as TcxDBVerticalGrid);
+      Exit;
+    end;
+
+  Result := nil;
+
 end;
 
 function TcxVGridViewHelper.GetGridList: TComponentList;

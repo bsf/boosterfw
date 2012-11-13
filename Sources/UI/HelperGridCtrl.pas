@@ -127,6 +127,7 @@ type
     procedure ViewClose;
     //IViewDataSetHelper
     procedure LinkDataSet(ADataSource: TDataSource; ADataSet: TDataSet);
+    procedure UnLinkDataSet(ADataSource: TDataSource);
     procedure FocusDataSetControl(ADataSet: TDataSet; const AFieldName: string; var Done: boolean);
 
     function GetFocusedField(ADataSet: TDataSet; var Done: boolean): string;
@@ -869,6 +870,11 @@ begin
 
   end;
 
+
+end;
+
+procedure TcxGridViewHelper.UnLinkDataSet(ADataSource: TDataSource);
+begin
 
 end;
 

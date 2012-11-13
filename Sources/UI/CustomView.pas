@@ -35,6 +35,7 @@ type
   IViewDataSetHelper = interface
   ['{09366273-0BAD-4E50-977D-29702D425137}']
     procedure LinkDataSet(ADataSource: TDataSource; ADataSet: TDataSet);
+    procedure UnLinkDataSet(ADataSource: TDataSource);
     procedure FocusDataSetControl(ADataSet: TDataSet; const AFieldName: string; var Done: boolean);
 
     function GetFocusedField(ADataSet: TDataSet; var Done: boolean): string;
@@ -110,7 +111,8 @@ type
     function GetValueStatus(const AName: string): TValueStatus;
     procedure SetValueStatus(const AName: string; AStatus: TValueStatus);
 
-    procedure LinkDataSet(ADataSource: TDataSource; ADataSet: TDataSet); overload;
+    procedure LinkDataSet(ADataSource: TDataSource; ADataSet: TDataSet);
+    procedure UnLinkDataSet(ADataSource: TDataSource);
 
     procedure FocusValueControl(const AName: string);
     procedure FocusDataSetControl(ADataSet: TDataSet; const AFieldName: string = '');
@@ -147,7 +149,6 @@ type
 
 
     //
-    procedure OnLinkDataSet(const AName: string; ADataSet: TDataSet); virtual;
     procedure OnGetValue(const AName: string; var AValue: Variant); virtual;
     procedure OnSetValue(const AName: string; AValue: Variant; var Done: boolean); virtual;
     procedure OnFocusDataSetControl(ADataSet: TDataSet; const AFieldName: string;
@@ -327,27 +328,6 @@ function TfrCustomView.GetViewControl: TControl;
 begin
   Result := ViewControl;
 end;
-{
-procedure TfrCustomView.LinkDataSet(const AName: string; ADataSet: TDataSet);
-const
-  DataSourceNameFmt = '%sDataSource';
-
-var
-  DS: TComponent;
-  DSName: string;
-begin
-
-  DSName := Format(DataSourceNameFmt, [AName]);
-  DS := FindComponent(DSName);
-  if Assigned(DS) and (DS is TDataSource) then
-    TDataSource(DS).DataSet := ADataSet;
-
-  OnLinkDataSet(AName, ADataSet);
-
-  LinkDataSet(TDataSource(DS), ADataSet);
-
-
-end;  }
 
 procedure TfrCustomView.OnGetValue(const AName: string; var AValue: Variant);
 begin
@@ -379,11 +359,6 @@ begin
     helper.WriteValue(AControl, AValue);
 end;
 
-procedure TfrCustomView.OnLinkDataSet(const AName: string; ADataSet: TDataSet);
-begin
-
-end;
-
 procedure TfrCustomView.SetCloseQueryHandler(
   AHandler: TViewCloseQueryHandler);
 begin
@@ -399,10 +374,6 @@ procedure TfrCustomView.SetPreferenceValue(const AName, AValue: string);
 begin
   GetPreferenceValues.WriteString('_', AName, AValue);
 end;
-
-
-
-
 
 procedure TfrCustomView.SavePreferenceValues;
 var
@@ -562,6 +533,18 @@ begin
 
 end;
 
+procedure TfrCustomView.UnLinkDataSet(ADataSource: TDataSource);
+var
+  I: integer;
+  _helpers: TInterfaceList;
+begin
+  ADataSource.DataSet := nil;
+
+  _helpers := GetHelperList(IViewDataSetHelper);
+  for I := 0 to _helpers.Count - 1 do
+    IViewDataSetHelper(_helpers[I]).UnLinkDataSet(ADataSource);
+end;
+
 function TfrCustomView.ReadValueStatus(AControl: TComponent): TValueStatus;
 var
   helper: IViewValueEditorHelper;
@@ -676,15 +659,11 @@ var
   I: integer;
   _helpers: TInterfaceList;
 begin
-
   ADataSource.DataSet := ADataSet;
-
-//  OnLinkDataSet(AName, ADataSet);
 
   _helpers := GetHelperList(IViewDataSetHelper);
   for I := 0 to _helpers.Count - 1 do
     IViewDataSetHelper(_helpers[I]).LinkDataSet(ADataSource, ADataSet);
-
 end;
 
 

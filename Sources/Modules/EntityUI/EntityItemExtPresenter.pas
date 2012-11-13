@@ -7,13 +7,28 @@ uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
 
 const
   COMMAND_DETAIL_DELETE = 'commands.Detail.Delete';
+  COMMAND_PICK_PANEL_SHOW = 'commands.PickPanel.Show';
+  COMMAND_PICK_PANEL_HIDE = '{BA085EFD-77DA-436C-92E9-F82B26CDC2DA}';
+  COMMAND_PICK_SEARCH = '{5029AB50-DE3D-4862-BC74-8DBC02C3BBF1}';
+  COMMAND_PICK_ITEM_SELECTED = '{3978566F-7545-4D8E-AE70-56087488CE1F}';
+  COMMAND_PICK_ITEM_ADD = '{B52AA2E3-CD8F-4227-AD88-43A4BF2833EC}';
+  COMMAND_PICK_ITEM_CANCEL = '{D1F2BB98-B868-493E-B110-7AC9D79E6BD4}';
 
 type
   IEntityItemExtView = interface(IContentView)
   ['{F2CB6C89-5688-4566-A972-5D787A528C0C}']
     procedure LinkHeadData(AData: TDataSet);
     procedure LinkDetailData(const AName, ACaption: string; AData: TDataSet);
+    procedure LinkPickListData(AData: TDataSet);
+    procedure LinkPickItemData(AData: TDataSet);
     function GetActiveDetailData: string;
+    procedure ShowPickPanel;
+    procedure HidePickPanel;
+    procedure ShowPickItemPanel;
+    procedure HidePickItemPanel;
+    procedure SetPickBulkMode;
+    function GetPickSeartText: string;
+    function PickListSelection: ISelection;
   end;
 
   TEntityItemExtPresenter = class(TEntityContentPresenter)
@@ -23,12 +38,21 @@ type
     FIsReady: boolean;
     FHeadEntityViewReady: boolean;
     FEVDetailList: TStringList;
+    FPickBulkMode: boolean;
     procedure CmdReload(Sender: Tobject);
     procedure CmdDetailDelete(Sender: TObject);
+    procedure CmdPickPanelShow(Sender: TObject);
+    procedure CmdPickPanelHide(Sender: TObject);
+    procedure CmdPickSearch(Sender: TObject);
+    procedure CmdPickItemSelected(Sender: TObject);
+    procedure CmdPickItemCancel(Sender: TObject);
+
     function View: IEntityItemExtView;
     function GetEVHead: IEntityView;
     function GetEVDetailEViews: IEntityView;
     function GetEVDetail(const AName: string): IEntityView;
+    function GetEVPickList: IEntityView;
+    function GetEVPickItem: IEntityView;
   protected
     function OnGetWorkItemState(const AName: string; var Done: boolean): Variant; override;
     procedure OnViewReady; override;
@@ -59,6 +83,53 @@ begin
   end;
 
 
+end;
+
+procedure TEntityItemExtPresenter.CmdPickPanelHide(Sender: TObject);
+begin
+  WorkItem.Commands[COMMAND_PICK_SEARCH].Status := csDisabled;
+  View.LinkPickListData(nil);
+  View.LinkPickItemData(nil);
+  View.HidePickItemPanel;
+  View.HidePickPanel;
+end;
+
+procedure TEntityItemExtPresenter.CmdPickItemCancel(Sender: TObject);
+begin
+  View.HidePickItemPanel;
+  View.ShowPickPanel;
+end;
+
+procedure TEntityItemExtPresenter.CmdPickSearch(Sender: TObject);
+var
+  searchText: string;
+begin
+  searchText := Trim(View.GetPickSeartText);
+  if searchText = '' then
+    WorkItem.State['PICK_SEARCH'] := null
+  else
+    WorkItem.State['PICK_SEARCH'] := searchText;
+  GetEVPickList.Load(true);
+end;
+
+procedure TEntityItemExtPresenter.CmdPickItemSelected(Sender: TObject);
+begin
+  if not FPickBulkMode then
+  begin
+    GetEVPickItem.Load(true);
+    View.LinkPickItemData(GetEVPickItem.DataSet);
+    View.ShowPickItemPanel;
+    View.FocusDataSetControl(GetEVPickItem.DataSet);
+  end;
+end;
+
+procedure TEntityItemExtPresenter.CmdPickPanelShow(Sender: TObject);
+begin
+  WorkItem.State['PICK_SEARCH'] := null;
+  WorkItem.Commands[COMMAND_PICK_SEARCH].Status := csEnabled;
+  View.ShowPickPanel;
+  GetEVPickList.Load(true);
+  View.LinkPickListData(GetEVPickList.DataSet);
 end;
 
 procedure TEntityItemExtPresenter.CmdReload(Sender: Tobject);
@@ -101,6 +172,24 @@ begin
     Entity[EntityName].GetView(EntityViewName, WorkItem);
   Result.Load(false);
   FHeadEntityViewReady := true;
+end;
+
+function TEntityItemExtPresenter.GetEVPickItem: IEntityView;
+begin
+  Result := (WorkItem.Services[IEntityService] as IEntityService).
+    Entity[EntityName].GetView('DetailsPickItem', WorkItem);
+
+
+  Result.Load(false);
+end;
+
+function TEntityItemExtPresenter.GetEVPickList: IEntityView;
+begin
+  Result := (WorkItem.Services[IEntityService] as IEntityService).
+    Entity[EntityName].GetView('DetailsPickList', WorkItem);
+
+  Result.Load(false);
+
 end;
 
 function TEntityItemExtPresenter.OnGetWorkItemState(const AName: string;
@@ -147,6 +236,12 @@ begin
     end;
   end;
 
+  if SameText(AName, 'PICK_ID') then
+  begin
+    Result := View.PickListSelection.First;
+    Done := true;
+    Exit;
+  end;
 end;
 
 procedure TEntityItemExtPresenter.OnViewReady;
@@ -211,6 +306,13 @@ begin
   WorkItem.Commands[COMMAND_RELOAD].SetHandler(CmdReload);
 
   WorkItem.Commands[COMMAND_DETAIL_DELETE].SetHandler(CmdDetailDelete);
+
+  FPickBulkMode :=  ViewInfo.OptionExists('PickBulkMode');
+  WorkItem.Commands[COMMAND_PICK_PANEL_SHOW].SetHandler(CmdPickPanelShow);
+  WorkItem.Commands[COMMAND_PICK_PANEL_HIDE].SetHandler(CmdPickPanelHide);
+  WorkItem.Commands[COMMAND_PICK_SEARCH].SetHandler(CmdPickSearch);
+  WorkItem.Commands[COMMAND_PICK_ITEM_SELECTED].SetHandler(CmdPickItemSelected);
+  WorkItem.Commands[COMMAND_PICK_ITEM_CANCEL].SetHandler(CmdPickItemCancel);
 
   View.LinkHeadData(GetEVHead.DataSet);
 
