@@ -15,7 +15,7 @@ type
     FSkinName: string;
     FSkinFolderPath: string;
     FdxSkinController: TdxSkinController;
-    procedure ProfileChangedEventHandler(EventData: Variant);
+    procedure ProfileChangedEventHandler(Context: TWorkItem; EventData: Variant);
     procedure LoadSkin(const ASkinFile, ASkinName: string);
     procedure RegisterSettings;
   public
@@ -76,7 +76,7 @@ begin
   end;
 end;
 
-procedure TViewStyleController.ProfileChangedEventHandler(
+procedure TViewStyleController.ProfileChangedEventHandler(Context: TWorkItem;
   EventData: Variant);
 var
   scale: integer;

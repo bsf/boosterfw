@@ -100,15 +100,15 @@ type
     function CloseAllContentView: boolean;
 
     //Event Handlers
-    procedure StatusUpdateHandler(EventData: Variant);
-    procedure NotifyMessageHandler(EventData: Variant);
+    procedure StatusUpdateHandler(Context: TWorkItem; EventData: Variant);
+    procedure NotifyMessageHandler(Context: TWorkItem; EventData: Variant);
 
-    procedure WaitProgressStartHandler(EventData: Variant);
-    procedure WaitProgressStopHandler(EventData: Variant);
-    procedure WaitProgressUpdateHandler(EventData: Variant);
+    procedure WaitProgressStartHandler(Context: TWorkItem; EventData: Variant);
+    procedure WaitProgressStopHandler(Context: TWorkItem; EventData: Variant);
+    procedure WaitProgressUpdateHandler(Context: TWorkItem; EventData: Variant);
 
-    procedure AppStartedHandler(EventData: Variant);
-    procedure AppStopedHandler(EventData: Variant);
+    procedure AppStartedHandler(Context: TWorkItem; EventData: Variant);
+    procedure AppStopedHandler(Context: TWorkItem; EventData: Variant);
 
     //Shell Commands
     procedure RegisterShellCommands;
@@ -280,12 +280,12 @@ begin
   end;
 end;
 
-procedure TfrMain.StatusUpdateHandler(EventData: Variant);
+procedure TfrMain.StatusUpdateHandler(Context: TWorkItem; EventData: Variant);
 begin
   BarStatus.Panels[STATUSBAR_INFO_PANEL].Text := VarToStr(EventData);
 end;
 
-procedure TfrMain.WaitProgressStartHandler(EventData: Variant);
+procedure TfrMain.WaitProgressStartHandler(Context: TWorkItem; EventData: Variant);
 begin
   if Assigned(FWaitBox) then FWaitBox.Show;
   BarStatus.Panels[STATUSBAR_PROGRESS_PANEL].Visible := true;
@@ -293,25 +293,25 @@ begin
   Self.Update;
 end;
 
-procedure TfrMain.WaitProgressStopHandler(EventData: Variant);
+procedure TfrMain.WaitProgressStopHandler(Context: TWorkItem; EventData: Variant);
 begin
   if Assigned(FWaitBox) then FWaitBox.Hide;
   BarStatus.Panels[STATUSBAR_PROGRESS_PANEL].Visible := false;
   WaitProgressBar.Properties.Marquee := false;
 end;
 
-procedure TfrMain.WaitProgressUpdateHandler(EventData: Variant);
+procedure TfrMain.WaitProgressUpdateHandler(Context: TWorkItem; EventData: Variant);
 begin
   if Assigned(FWaitBox) then FWaitBox.Update;
   WaitProgressBar.Update;
 end;
 
-procedure TfrMain.AppStartedHandler(EventData: Variant);
+procedure TfrMain.AppStartedHandler(Context: TWorkItem; EventData: Variant);
 var
   startActivity: string;
   licenseSvc: ILicenseService;
 begin
-  FWorkItem.EventTopics[ET_LOAD_CONFIGURATION].Fire;
+  FWorkItem.EventTopics[ET_LOAD_CONFIGURATION].Fire(FWorkItem, Unassigned);
 
   FViewStyleController.LoadPreferences;
 
@@ -337,7 +337,7 @@ begin
     FWorkItem.Activities[startActivity].Execute(FWorkItem);
 end;
 
-procedure TfrMain.AppStopedHandler(EventData: Variant);
+procedure TfrMain.AppStopedHandler(Context: TWorkItem; EventData: Variant);
 begin
   FNavBarControlManager.SavePreference;
 end;
@@ -427,7 +427,7 @@ begin
     FContentWorkspace.MouseWheelHandler(Sender, Shift, WheelDelta, MousePos, Handled);
 end;
 
-procedure TfrMain.NotifyMessageHandler(EventData: Variant);
+procedure TfrMain.NotifyMessageHandler(Context: TWorkItem; EventData: Variant);
 begin
   grNotifyListView.DataController.InsertRecord(0);
   grNotifyListView.DataController.Values[0, grNotifyListViewID.Index] := VarToStr(EventData[0]);
@@ -529,7 +529,7 @@ begin
 
   App.Entities.ClearMetadataCache;
 
-  Sender.EventTopics[ET_RELOAD_CONFIGURATION].Fire;
+  Sender.EventTopics[ET_RELOAD_CONFIGURATION].Fire(Sender, Unassigned);
 
   FNavBar.SavePreference;
   FNavBar.BuildMainMenu;

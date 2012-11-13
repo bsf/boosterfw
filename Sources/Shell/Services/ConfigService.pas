@@ -497,7 +497,7 @@ begin
   try
     Ini.WriteString('Default', AName, AValue);
     Ini.UpdateFile;
-    FWorkItem.EventTopics[ET_PROFILE_CHANGED].Fire(AName);
+    FWorkItem.EventTopics[ET_PROFILE_CHANGED].Fire(FWorkItem, AName);
   finally
     Ini.Free;
   end;

@@ -145,13 +145,13 @@ end;
 
 procedure TUIService.NotifyAccept(const AID: string);
 begin
-  FWorkItem.EventTopics[ET_NOTIFY_ACCEPT].Fire(AID);
+  FWorkItem.EventTopics[ET_NOTIFY_ACCEPT].Fire(FWorkItem, AID);
 end;
 
 procedure TUIService.NotifyExt(const AID, ASender, AMessage: string;
   ADateTime: TDateTime);
 begin
-  FWorkItem.EventTopics[ET_NOTIFY_MESSAGE].Fire(VarArrayOf([AID, ASender, AMessage, ADateTime]));
+  FWorkItem.EventTopics[ET_NOTIFY_MESSAGE].Fire(FWorkItem, VarArrayOf([AID, ASender, AMessage, ADateTime]));
 end;
 
 procedure TUIService.SetLocale(AValue: string);
@@ -159,7 +159,7 @@ begin
   if (FLocale <> AValue) and (SysUtils.Languages.IndexOf(AValue) <> -1) then
   begin
     FLocale := AVAlue;
-    FWorkItem.EventTopics[ET_LOCALE_CHANGED].Fire(FLocale);
+    FWorkItem.EventTopics[ET_LOCALE_CHANGED].Fire(FWorkItem, FLocale);
   end;
 end;
 
@@ -187,17 +187,17 @@ end;
 
 procedure TUIService.StartWait;
 begin
-  FWorkItem.EventTopics[ET_WAITBOX_START].Fire;
+  FWorkItem.EventTopics[ET_WAITBOX_START].Fire(FWorkItem, Unassigned);
 end;
 
 procedure TUIService.StatusBarMessage(const AMessage: string);
 begin
-  FWorkItem.EventTopics[ET_STATUSBARMESSAGE].Fire(AMessage);
+  FWorkItem.EventTopics[ET_STATUSBARMESSAGE].Fire(FWorkItem, AMessage);
 end;
 
 procedure TUIService.StopWait;
 begin
-  FWorkItem.EventTopics[ET_WAITBOX_STOP].Fire;
+  FWorkItem.EventTopics[ET_WAITBOX_STOP].Fire(FWorkItem, Unassigned);
 end;
 
 function TUIService.WaitBox: IWaitBox;

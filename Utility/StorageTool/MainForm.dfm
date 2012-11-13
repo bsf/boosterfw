@@ -48,174 +48,19 @@ object Form1: TForm1
       Caption = 'dxNavBar1Item2'
     end
   end
-  object cxGrid1: TcxGrid
-    Left = 193
-    Top = 0
-    Width = 741
-    Height = 534
-    Align = alClient
-    TabOrder = 1
-    LookAndFeel.Kind = lfOffice11
-    object cxGrid1DBBandedTableView1: TcxGridDBBandedTableView
-      DataController.DataSource = DataSource1
-      DataController.Summary.DefaultGroupSummaryItems = <>
-      DataController.Summary.FooterSummaryItems = <>
-      DataController.Summary.SummaryGroups = <>
-      OptionsData.Editing = False
-      OptionsSelection.InvertSelect = False
-      OptionsView.FocusRect = False
-      OptionsView.ScrollBars = ssNone
-      OptionsView.ColumnAutoWidth = True
-      OptionsView.GridLines = glNone
-      OptionsView.GroupByBox = False
-      OptionsView.Header = False
-      OptionsView.RowSeparatorColor = clGradientActiveCaption
-      OptionsView.RowSeparatorWidth = 3
-      OptionsView.BandHeaders = False
-      Bands = <
-        item
-        end>
-      object cxGrid1DBBandedTableView1PARENT: TcxGridDBBandedColumn
-        DataBinding.FieldName = 'PARENT'
-        Options.Focusing = False
-        SortIndex = 0
-        SortOrder = soAscending
-        Position.BandIndex = 0
-        Position.ColIndex = 0
-        Position.RowIndex = 1
-      end
-      object cxGrid1DBBandedTableView1ID: TcxGridDBBandedColumn
-        DataBinding.FieldName = 'ID'
-        Options.Focusing = False
-        Position.BandIndex = 0
-        Position.ColIndex = 1
-        Position.RowIndex = 1
-      end
-      object cxGrid1DBBandedTableView1NAME: TcxGridDBBandedColumn
-        DataBinding.FieldName = 'NAME'
-        Options.Focusing = False
-        Styles.Content = cxStyle17
-        Position.BandIndex = 0
-        Position.ColIndex = 0
-        Position.RowIndex = 0
-      end
-      object cxGrid1DBBandedTableView1PARENT_ID: TcxGridDBBandedColumn
-        DataBinding.FieldName = 'PARENT_ID'
-        Visible = False
-        Position.BandIndex = 0
-        Position.ColIndex = 1
-        Position.RowIndex = 0
-      end
-    end
-    object cxGrid1DBCardView1: TcxGridDBCardView
-      OnCellClick = cxGrid1DBCardView1CellClick
-      DataController.DataSource = DataSource1
-      DataController.KeyFieldNames = 'ID'
-      DataController.Summary.DefaultGroupSummaryItems = <>
-      DataController.Summary.FooterSummaryItems = <>
-      DataController.Summary.SummaryGroups = <>
-      OptionsCustomize.RowMoving = True
-      OptionsData.Deleting = False
-      OptionsData.Editing = False
-      OptionsData.Inserting = False
-      OptionsSelection.InvertSelect = False
-      OptionsSelection.CardBorderSelection = False
-      OptionsView.CaptionSeparator = #0
-      OptionsView.CardAutoWidth = True
-      OptionsView.CardIndent = 5
-      OptionsView.CardWidth = 210
-      OptionsView.CellAutoHeight = True
-      OptionsView.EmptyRows = False
-      OptionsView.LayerSeparatorWidth = 5
-      Styles.Background = cxStyle20
-      object cxGrid1DBCardView1PARENT: TcxGridDBCardViewRow
-        DataBinding.FieldName = 'PARENT'
-        Visible = False
-        Options.ShowCaption = False
-        Position.BeginsLayer = True
-      end
-      object cxGrid1DBCardView1ID: TcxGridDBCardViewRow
-        DataBinding.FieldName = 'ID'
-        Options.ShowCaption = False
-        Position.BeginsLayer = True
-      end
-      object cxGrid1DBCardView1NAME: TcxGridDBCardViewRow
-        DataBinding.FieldName = 'NAME'
-        Options.ShowCaption = False
-        Position.BeginsLayer = False
-        Styles.Content = cxStyle18
-        Styles.Caption = cxStyle18
-      end
-      object cxGrid1DBCardView1PARENT_ID: TcxGridDBCardViewRow
-        DataBinding.FieldName = 'PARENT_ID'
-        Options.ShowCaption = False
-        Position.BeginsLayer = True
-      end
-    end
-    object cxGrid1Level1: TcxGridLevel
-      Caption = 'ytrye6'
-      GridView = cxGrid1DBBandedTableView1
-    end
-  end
-  object Edit1: TEdit
-    Left = 816
-    Top = 168
-    Width = 121
-    Height = 21
-    TabOrder = 2
-    Text = 'Edit1'
-  end
-  object cxDBButtonEdit1: TcxDBButtonEdit
-    Left = 520
-    Top = 312
-    ParentShowHint = False
-    Properties.Buttons = <
-      item
-        Default = True
-        Kind = bkEllipsis
-      end>
-    Properties.ViewStyle = vsButtonsOnly
-    ShowHint = False
-    TabOrder = 3
-    Width = 121
-  end
-  object cxDBListBox1: TcxDBListBox
-    Left = 360
-    Top = 352
-    Width = 121
-    Height = 97
-    ItemHeight = 13
-    TabOrder = 4
-  end
-  object cxDBBlobEdit1: TcxDBBlobEdit
-    Left = 464
-    Top = 184
-    Properties.BlobEditKind = bekBlob
-    Properties.BlobPaintStyle = bpsText
-    TabOrder = 5
-    Width = 121
-  end
-  object cxDBImage1: TcxDBImage
-    Left = 384
-    Top = 240
-    TabOrder = 6
-    Height = 100
-    Width = 140
-  end
-  object cxDBMemo1: TcxDBMemo
-    Left = 664
-    Top = 232
-    TabOrder = 7
-    Height = 89
-    Width = 185
-  end
-  object cxButton1: TcxButton
+  object cxDBVerticalGrid1: TcxDBVerticalGrid
     Left = 552
-    Top = 408
-    Width = 75
-    Height = 25
-    Caption = 'cxButton1'
-    TabOrder = 8
+    Top = 240
+    Width = 150
+    Height = 200
+    TabOrder = 1
+    Version = 1
+    object cxDBVerticalGrid1DBEditorRow1: TcxDBEditorRow
+      ID = 0
+      ParentID = -1
+      Index = 0
+      Version = 1
+    end
   end
   object DataSource1: TDataSource
     DataSet = IBQuery1

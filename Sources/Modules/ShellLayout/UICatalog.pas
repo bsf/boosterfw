@@ -15,7 +15,7 @@ type
 
   private
     FWorkItem: TWorkItem;
-    procedure ReloadConfigurationHandler(EventData: Variant);
+    procedure ReloadConfigurationHandler(Context: TWorkItem; EventData: Variant);
     class procedure LoadUI(AWorkItem: TWorkItem);
     class procedure LoadStyles(AWorkItem: TWorkItem);
     class procedure Load(AWorkItem: TWorkItem);
@@ -159,7 +159,7 @@ begin
   RegisterViewExtension(TViewCommandExtension);
 end;
 
-procedure TUICatalog.ReloadConfigurationHandler(EventData: Variant);
+procedure TUICatalog.ReloadConfigurationHandler(Context: TWorkItem; EventData: Variant);
 begin
   Load(FWorkItem);
 end;

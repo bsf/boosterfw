@@ -15,7 +15,8 @@ uses
   cxDBExtLookupComboBox, cxDBEdit, cxTL, cxTLdxBarBuiltInMenu, cxDBTL, cxTLData,
   frxRich, cxMemo, cxRichEdit, cxMRUEdit, cxGridCardView, cxGridDBCardView,
   cxGridCustomLayoutView, cxGridBandedTableView, cxGridDBBandedTableView,
-  StdCtrls, cxListBox, cxButtonEdit, cxImage, cxBlobEdit, Menus, cxButtons;
+  StdCtrls, cxListBox, cxButtonEdit, cxImage, cxBlobEdit, Menus, cxButtons,
+  cxDBVGrid;
 
 type
   TForm1 = class(TForm)
@@ -32,8 +33,6 @@ type
     IBDatabase1: TIBDatabase;
     IBQuery1: TIBQuery;
     IBTransaction1: TIBTransaction;
-    cxGrid1Level1: TcxGridLevel;
-    cxGrid1: TcxGrid;
     cxStyleRepository1: TcxStyleRepository;
     cxStyle1: TcxStyle;
     cxGridTableViewStyleSheet1: TcxGridTableViewStyleSheet;
@@ -54,27 +53,12 @@ type
     cxStyle15: TcxStyle;
     cxStyle16: TcxStyle;
     Query1: TQuery;
-    cxGrid1DBBandedTableView1: TcxGridDBBandedTableView;
-    cxGrid1DBBandedTableView1PARENT: TcxGridDBBandedColumn;
-    cxGrid1DBBandedTableView1ID: TcxGridDBBandedColumn;
-    cxGrid1DBBandedTableView1NAME: TcxGridDBBandedColumn;
-    cxGrid1DBBandedTableView1PARENT_ID: TcxGridDBBandedColumn;
     cxStyle17: TcxStyle;
-    Edit1: TEdit;
-    cxGrid1DBCardView1: TcxGridDBCardView;
-    cxGrid1DBCardView1PARENT: TcxGridDBCardViewRow;
-    cxGrid1DBCardView1ID: TcxGridDBCardViewRow;
-    cxGrid1DBCardView1NAME: TcxGridDBCardViewRow;
-    cxGrid1DBCardView1PARENT_ID: TcxGridDBCardViewRow;
     cxStyle18: TcxStyle;
     cxStyle19: TcxStyle;
     cxStyle20: TcxStyle;
-    cxDBButtonEdit1: TcxDBButtonEdit;
-    cxDBListBox1: TcxDBListBox;
-    cxDBBlobEdit1: TcxDBBlobEdit;
-    cxDBImage1: TcxDBImage;
-    cxDBMemo1: TcxDBMemo;
-    cxButton1: TcxButton;
+    cxDBVerticalGrid1: TcxDBVerticalGrid;
+    cxDBVerticalGrid1DBEditorRow1: TcxDBEditorRow;
     procedure cxDBComboBox1PropertiesInitPopup(Sender: TObject);
     procedure cxGrid1DBCardView1CellClick(Sender: TcxCustomGridTableView;
       ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton;

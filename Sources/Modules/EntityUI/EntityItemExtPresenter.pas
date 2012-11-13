@@ -45,6 +45,7 @@ type
     procedure CmdPickPanelHide(Sender: TObject);
     procedure CmdPickSearch(Sender: TObject);
     procedure CmdPickItemSelected(Sender: TObject);
+    procedure CmdPickItemAdd(Sender: TObject);
     procedure CmdPickItemCancel(Sender: TObject);
 
     function View: IEntityItemExtView;
@@ -94,10 +95,23 @@ begin
   View.HidePickPanel;
 end;
 
+procedure TEntityItemExtPresenter.CmdPickItemAdd(Sender: TObject);
+begin
+  if not FPickBulkMode then
+  begin
+    GetEVPickItem.Save;
+    View.HidePickItemPanel;
+  end;
+  WorkItem.Commands[COMMAND_PICK_ITEM_ADD].Status := csDisabled;
+  WorkItem.Commands[COMMAND_PICK_ITEM_CANCEL].Status := csDisabled;
+end;
+
 procedure TEntityItemExtPresenter.CmdPickItemCancel(Sender: TObject);
 begin
   View.HidePickItemPanel;
   View.ShowPickPanel;
+  WorkItem.Commands[COMMAND_PICK_ITEM_ADD].Status := csDisabled;
+  WorkItem.Commands[COMMAND_PICK_ITEM_CANCEL].Status := csDisabled;
 end;
 
 procedure TEntityItemExtPresenter.CmdPickSearch(Sender: TObject);
@@ -113,14 +127,30 @@ begin
 end;
 
 procedure TEntityItemExtPresenter.CmdPickItemSelected(Sender: TObject);
+var
+  fieldAux: TField;
+  focusField: string;
+  ds: TDataSet;
 begin
+  WorkItem.Commands[COMMAND_PICK_ITEM_ADD].Status := csEnabled;
+  WorkItem.Commands[COMMAND_PICK_ITEM_CANCEL].Status := csEnabled;
+
   if not FPickBulkMode then
   begin
-    GetEVPickItem.Load(true);
-    View.LinkPickItemData(GetEVPickItem.DataSet);
+    ds := GetEVPickItem.Load(true);
+    View.LinkPickItemData(ds);
+    GetEVPickItem.DoModify;
     View.ShowPickItemPanel;
-    View.FocusDataSetControl(GetEVPickItem.DataSet);
-  end;
+
+    focusField := '';
+    fieldAux := ds.FindField(FIELD_UI_FIRST_FOCUS);
+    if Assigned(fieldAux) then
+      focusField := VarToStr(fieldAux.Value);
+
+    View.FocusDataSetControl(ds, focusField);
+  end
+  else
+    WorkItem.Commands[COMMAND_PICK_ITEM_ADD].Execute;
 end;
 
 procedure TEntityItemExtPresenter.CmdPickPanelShow(Sender: TObject);
@@ -136,6 +166,8 @@ procedure TEntityItemExtPresenter.CmdReload(Sender: Tobject);
 var
   I: integer;
 begin
+  GetEVHead.ReloadRecord(WorkItem.State['ID']);
+
   for I := 0 to FEVDetailList.Count - 1 do
     GetEVDetail(FEVDetailList[I]).Load(true);
 
@@ -280,6 +312,7 @@ procedure TEntityItemExtPresenter.OnViewReady;
       entityView := GetEVDetail(FEVDetailList[I]);
       entityView.ImmediateSave := true;
       View.LinkDetailData(entityView.ViewName, entityView.Info.Title, entityView.DataSet);
+      GetEVHead.SynchronizeOnEntityChange(entityView.EntityName, entityView.ViewName, 'HID');
     end;
   end;
 
@@ -312,7 +345,10 @@ begin
   WorkItem.Commands[COMMAND_PICK_PANEL_HIDE].SetHandler(CmdPickPanelHide);
   WorkItem.Commands[COMMAND_PICK_SEARCH].SetHandler(CmdPickSearch);
   WorkItem.Commands[COMMAND_PICK_ITEM_SELECTED].SetHandler(CmdPickItemSelected);
+  WorkItem.Commands[COMMAND_PICK_ITEM_ADD].SetHandler(CmdPickItemAdd);
   WorkItem.Commands[COMMAND_PICK_ITEM_CANCEL].SetHandler(CmdPickItemCancel);
+  WorkItem.Commands[COMMAND_PICK_ITEM_ADD].Status := csDisabled;
+  WorkItem.Commands[COMMAND_PICK_ITEM_CANCEL].Status := csDisabled;
 
   View.LinkHeadData(GetEVHead.DataSet);
 

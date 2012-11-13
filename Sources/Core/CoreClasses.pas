@@ -287,14 +287,12 @@ type
 {Event broker}
   TEventThreadOption = (etoPublisher, etoBackground);
 
-  TEventHandlerMethod = procedure(EventData: Variant) of object;
+  TEventHandlerMethod = procedure(Context: TWorkItem; EventData: Variant) of object;
 
   IEventTopic = interface
   ['{EBB1CD3E-9922-44E0-BF2C-5281C8E2EA03}']
-    procedure Fire; overload;
-    procedure Fire(EventData: Variant); overload;
-    procedure AddSubscription(ASubscriber: TComponent; AHandlerMethod: TEventHandlerMethod;
-      AWorkItem: TWorkItem = nil; AThreadOption: TEventThreadOption = etoPublisher);
+    procedure Fire(Context: TWorkItem; EventData: Variant);
+    procedure AddSubscription(ASubscriber: TComponent; AHandlerMethod: TEventHandlerMethod);
     procedure RemoveSubscription(ASubscriber: TComponent;
       const AHandlerMethod: TEventHandlerMethod); overload;
     procedure RemoveSubscription(ASubscriber: TComponent); overload;

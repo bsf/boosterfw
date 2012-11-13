@@ -139,7 +139,7 @@ end;
 
 procedure TBarScanKeyboard.SendBarCodeEvent(const ABarCode: string);
 begin
-  WorkItem.Root.EventTopics[ET_BARSCAN_BARCODE].Fire(ABarCode);
+  WorkItem.Root.EventTopics[ET_BARSCAN_BARCODE].Fire(WorkItem, ABarCode);
 end;
 
 function TBarScanKeyboard.WorkItem: TWorkItem;

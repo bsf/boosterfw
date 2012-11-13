@@ -24,7 +24,7 @@ type
     pnPick: TcxGroupBox;
     PickPanelSplitter: TcxSplitter;
     pnPickCommands: TcxGroupBox;
-    btPickAdd: TcxButton;
+    btPickItemAdd: TcxButton;
     pnPickSearch: TcxGroupBox;
     edPickSearch: TcxTextEdit;
     btPickPanelHide: TcxButton;
@@ -59,6 +59,7 @@ type
       Shift: TShiftState);
   private
     FDetails: TStringList;
+    FPickPanelPreferenceLoaded: boolean;
   protected
     procedure LinkHeadData(AData: TDataSet);
     procedure LinkDetailData(const AName, ACaption: string; AData: TDataSet);
@@ -75,7 +76,6 @@ type
     function PickListSelection: ISelection;
     //
     procedure Initialize; override;
-    procedure OnViewShow(AView: TControl); override;
   public
     destructor Destroy; override;
   end;
@@ -196,11 +196,17 @@ begin
 end;
 
 procedure TfrEntityItemExtView.LinkPickItemData(AData: TDataSet);
+var
+  I: integer;
 begin
   if AData = nil then
     UnLinkDataSet(PickItemDataSource)
   else if PickItemDataSource.DataSet <> AData then
     LinkDataSet(PickItemDataSource, AData);
+
+  if AData <> nil then
+    for I := 0 to AData.FieldCount - 1 do
+      AData.Fields[I].Alignment := taLeftJustify;
 end;
 
 procedure TfrEntityItemExtView.LinkPickListData(AData: TDataSet);
@@ -209,20 +215,6 @@ begin
     UnLinkDataSet(PickListDataSource)
   else if PickListDataSource.DataSet <> AData then
     LinkDataSet(PickListDataSource, AData);
-end;
-
-procedure TfrEntityItemExtView.OnViewShow(AView: TControl);
-var
-  widthPickPanel: integer;
-begin
-  inherited;
-  widthPickPanel := StrToIntDef(GetPreferenceValue('PickPanel.Width'), 0);
-  if (widthPickPanel = 0) or (ViewControl.Width <= widthPickPanel) then
-    widthPickPanel := ViewControl.Width div 3;
-  pnPick.Width := widthPickPanel;
-  PickPanelSplitter.CloseSplitter;
-  PickPanelSplitter.Visible := false;
-
 end;
 
 function TfrEntityItemExtView.PickListSelection: ISelection;
@@ -242,17 +234,31 @@ begin
 end;
 
 procedure TfrEntityItemExtView.ShowPickPanel;
+var
+  widthPickPanel: integer;
 begin
   PickPanelSplitter.Visible := true;
   PickPanelSplitter.OpenSplitter;
   edPickSearch.SetFocus;
+
+  if not FPickPanelPreferenceLoaded then
+  begin
+    widthPickPanel := StrToIntDef(GetPreferenceValue('PickPanel.Width'), 0);
+    if (widthPickPanel = 0) or (ViewControl.Width <= widthPickPanel) then
+      widthPickPanel := ViewControl.Width div 3;
+    pnPick.Width := widthPickPanel;
+    FPickPanelPreferenceLoaded := true;
+  end;
 end;
 
 procedure TfrEntityItemExtView.Initialize;
 begin
   inherited;
   FDetails := TStringList.Create;
+  WorkItem.Commands[COMMAND_PICK_ITEM_ADD].AddInvoker(btPickItemAdd, 'OnClick');
   WorkItem.Commands[COMMAND_PICK_PANEL_HIDE].AddInvoker(btPickPanelHide, 'OnClick');
+  PickPanelSplitter.CloseSplitter;
+  PickPanelSplitter.Visible := false;
 end;
 
 procedure TfrEntityItemExtView.grDetailsActiveTabChanged(Sender: TcxCustomGrid;
@@ -265,7 +271,9 @@ procedure TfrEntityItemExtView.grPickItemKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if (Key = VK_ESCAPE) and (not grPickItem.DataController.IsEditing)  then
-    WorkItem.Commands[COMMAND_PICK_ITEM_CANCEL].Execute;
+    WorkItem.Commands[COMMAND_PICK_ITEM_CANCEL].Execute
+  else if (Key = VK_RETURN) and (ssShift in Shift) then
+    WorkItem.Commands[COMMAND_PICK_ITEM_ADD].Execute;
 end;
 
 procedure TfrEntityItemExtView.grPickListCellDblClick(
@@ -288,6 +296,7 @@ end;
 procedure TfrEntityItemExtView.HidePickItemPanel;
 begin
   grPickItem.Visible := false;
+  edPickSearch.SetFocus;
 end;
 
 procedure TfrEntityItemExtView.HidePickPanel;

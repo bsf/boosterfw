@@ -1,7 +1,8 @@
 unit CustomApp;
 
 interface
-uses Classes, CoreClasses, SysUtils, Contnrs, Generics.Collections, forms;
+uses Classes, CoreClasses, SysUtils, Contnrs, Generics.Collections, forms,
+  variants;
 
 type
   TCustomShellForm = class(TForm)
@@ -38,9 +39,6 @@ type
 
 
 implementation
-
-
-{ TAbstractApplication }
 
 
 procedure TCustomApplication.AddServices;
@@ -128,11 +126,11 @@ begin
 
   LoadModules(mkExtension);
 
-  WorkItem.EventTopics[etAppStarted].Fire;
+  WorkItem.EventTopics[etAppStarted].Fire(WorkItem, Unassigned);
 
   Application.Run;
 
-  WorkItem.EventTopics[etAppStoped].Fire;
+  WorkItem.EventTopics[etAppStoped].Fire(WorkItem, Unassigned);
 
   UnLoadModules;
 

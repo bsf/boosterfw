@@ -27,7 +27,7 @@ type
     procedure ReceiveMessages;
     procedure OnTimer(Sender: TObject);
     procedure RegisterSettings;
-    procedure NotifyAcceptHandler(EventData: Variant);
+    procedure NotifyAcceptHandler(Context: TWorkItem; EventData: Variant);
   protected
     procedure Terminate; override;
     procedure Initialize; override;
@@ -84,7 +84,7 @@ begin
   FTimer.Enabled := App.Settings[SETTING_RECEIVER_ENABLED] = '1';
 end;
 
-procedure TNotifyReceiver.NotifyAcceptHandler(EventData: Variant);
+procedure TNotifyReceiver.NotifyAcceptHandler(Context: TWorkItem; EventData: Variant);
 begin
   FEntitySvc.Entity[ENT_MSG_BOX].GetOper(ENT_MSG_BOX_OPER_MARK, WorkItem).Execute([EventData]);
 end;

@@ -29,7 +29,7 @@ type
     FReportCatalog: TReportCatalog;
     FFactories: TComponentList;
 
-    procedure ReloadConfigurationHandler(EventData: Variant);
+    procedure ReloadConfigurationHandler(Context: TWorkItem; EventData: Variant);
     procedure LoadCatalogItems;
     procedure UnLoadCatalogItem(AItem: TReportCatalogItem);
 
@@ -190,7 +190,7 @@ begin
       LoadItem(FReportCatalog.Groups[I].Items[Y]);
 end;
 
-procedure TReportingController.ReloadConfigurationHandler(EventData: Variant);
+procedure TReportingController.ReloadConfigurationHandler(Context: TWorkItem; EventData: Variant);
 begin
   LoadCatalogItems;
 end;
@@ -252,9 +252,9 @@ procedure TReportingController.ReportProgressCallback(
   AProgressState: TReportProgressState);
 begin
   case AProgressState of
-    rpsStart: WorkItem.EventTopics[ET_WAITBOX_START].Fire;
-    rpsFinish: WorkItem.EventTopics[ET_WAITBOX_STOP].Fire;
-    rpsProcess: WorkItem.EventTopics[ET_WAITBOX_UPDATE].Fire;
+    rpsStart: WorkItem.EventTopics[ET_WAITBOX_START].Fire(WorkItem, Unassigned);
+    rpsFinish: WorkItem.EventTopics[ET_WAITBOX_STOP].Fire(WorkItem, Unassigned);
+    rpsProcess: WorkItem.EventTopics[ET_WAITBOX_UPDATE].Fire(WorkItem, Unassigned);
   end;
 end;
 

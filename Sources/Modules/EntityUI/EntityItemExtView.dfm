@@ -90,7 +90,7 @@ inherited frEntityItemExtView: TfrEntityItemExtView
         TabOrder = 3
         Height = 40
         Width = 253
-        object btPickAdd: TcxButton
+        object btPickItemAdd: TcxButton
           AlignWithMargins = True
           Left = 80
           Top = 5

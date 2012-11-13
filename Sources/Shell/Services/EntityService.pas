@@ -124,7 +124,7 @@ type
     procedure ApplyLinksInfo;
     procedure InitDataSetAttributes;
 
-    procedure DoSynchronizeOnEntityChange(EventData: Variant);
+    procedure DoSynchronizeOnEntityChange(Context: TWorkItem; EventData: Variant);
 
     function EntityInfo: IEntityInfo;
     function SchemeInfo: IEntitySchemeInfo;
@@ -691,6 +691,7 @@ begin
       pkValues[I] := FDataSet[FPrimaryKeys[I]];
     ReloadRecord(pkValues, false);
   end;
+  ReloadLinksData;
 end;
 
 procedure TEntityView.ApplyFieldInfo;
@@ -899,7 +900,7 @@ begin
   end;
 end;
 
-procedure TEntityView.DoSynchronizeOnEntityChange(EventData: Variant);
+procedure TEntityView.DoSynchronizeOnEntityChange(Context: TWorkItem; EventData: Variant);
 begin
   ReloadRecord(EventData);
 end;
@@ -1052,7 +1053,7 @@ begin
       if FDataSet.Active then
         FDataSet.Close;
 
-      GetWorkItem.Root.EventTopics[ET_ENTITY_VIEW_OPEN_START].Fire;
+      GetWorkItem.Root.EventTopics[ET_ENTITY_VIEW_OPEN_START].Fire(GetWorkItem, Unassigned);
       try
         FDataSet.Open;
         if not IsReloading then
@@ -1062,7 +1063,7 @@ begin
         end;
         ApplyFieldInfo;
       finally
-        GetWorkItem.Root.EventTopics[ET_ENTITY_VIEW_OPEN_FINISH].Fire;
+        GetWorkItem.Root.EventTopics[ET_ENTITY_VIEW_OPEN_FINISH].Fire(GetWorkItem, Unassigned);
       end;
     finally
       FDataSet.EnableControls;
@@ -1366,7 +1367,7 @@ begin
       eventData[I] := FDataSet[FPrimaryKeys[I]];
 
     GetWorkItem.Root.EventTopics[format(ET_ENTITY_VIEW_RELOAD_LINKS_PK,
-        [FEntityName, ViewName])].Fire(eventData);
+        [FEntityName, ViewName])].Fire(GetWorkItem, eventData);
   end;
 
   eventData := Unassigned;//VarArrayCreate([0, FLinkedFields.Count], varVariant);
@@ -1381,7 +1382,7 @@ begin
 
     if not VarIsEmpty(eventData) then
       GetWorkItem.Root.EventTopics[format(ET_ENTITY_VIEW_RELOAD_LINKS_LF,
-        [FEntityName, ViewName, FLinkedFields[I]])].Fire(eventData);
+        [FEntityName, ViewName, FLinkedFields[I]])].Fire(GetWorkItem, eventData);
   end;
 end;
 
@@ -1650,11 +1651,18 @@ end;
 procedure TEntityDataSet.DoAfterDelete;
 begin
   inherited;
-  if FImmediateApplyUpdates and (ApplyUpdates(0) <> 0) then
+  if FImmediateApplyUpdates then
   begin
-    UndoLastChange(true);
-    raise Exception.Create(FUpdateErrorText);
+    if ApplyUpdates(0) <> 0 then
+    begin
+      UndoLastChange(true);
+      raise Exception.Create(FUpdateErrorText);
+    end;
+
+    if Assigned(FOnAfterImmediateApplyUpdates) then
+      FOnAfterImmediateApplyUpdates(Self);
   end;
+
 end;
 
 procedure TEntityDataSet.DoAfterInsert;
