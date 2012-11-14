@@ -75,10 +75,8 @@ begin
 
   dsItem := GetEVItem.DataSet;
 
-  View.SetData(dsItem); //перед инсерт иначе cancel срабатывает
-
   GetEVItem.DoModify;
-  
+
   fieldAux := dsItem.FindField('UI_TITLE');
   if not Assigned(fieldAux) then
     fieldAux := dsItem.FindField('VIEW_TITLE');
@@ -96,8 +94,7 @@ begin
     GetLocaleString(@COMMAND_CANCEL_CAPTION), COMMAND_CANCEL_SHORTCUT);
   WorkItem.Commands[COMMAND_CANCEL].SetHandler(CmdCancel);
 
-
-
+  View.SetData(dsItem);
 
   // FocusField
   if VarToStr(WorkItem.State['FOCUS_FIELD']) = '' then

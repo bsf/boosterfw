@@ -119,6 +119,7 @@ type
     FPrimaryKeys: TStringList;
     FLinkedFields: TStringList;
     FRefreshAfterUpdate: boolean;
+    FRefreshAppendMode: boolean;
     procedure ApplyPKInfo;
     procedure ApplyFieldInfo;
     procedure ApplyLinksInfo;
@@ -863,37 +864,53 @@ end;
 destructor TEntityView.Destroy;
 begin
   FPrimaryKeys.Free;
-  FLinkedFields.Free;  
+  FLinkedFields.Free;
   inherited;
 end;
 
 procedure TEntityView.DoModify;
 var
-  fieldAux: TField;
   _immediateSave: boolean;
+  rowData: Variant;
+  I: integer;
+  saveReadOnly: boolean;
 begin
   _immediateSave := GetImmediateSave;
   try
 
     SetImmediateSave(false);
 
-    if GetDataSet.IsEmpty then
+    if not GetDataSet.IsEmpty then
     begin
-      GetDataSet.Insert;
-     // GetDataSet.Post; // ReqFields!!!
+      rowData := VarArrayCreate([0, GetDataSet.FieldCount - 1], varVariant);
+      for I := 0 to GetDataSet.FieldCount - 1 do
+        rowData[I] := GetDataSet.Fields[I].Value;
+
+      GetDataSet.DisableControls;
+      try
+        GetDataSet.LogChanges := false;
+        GetDataSet.Delete;
+        GetDataSet.LogChanges := true;
+
+        GetDataSet.Insert;
+        for I := 0 to GetDataSet.FieldCount - 1 do
+        begin
+          saveReadOnly := GetDataSet.Fields[I].ReadOnly;
+          GetDataSet.Fields[I].ReadOnly := false;
+          GetDataSet.Fields[I].Value := rowData[I];
+          GetDataSet.Fields[I].ReadOnly := saveReadOnly;
+        end;
+        GetDataSet.Post;
+      finally
+        GetDataSet.EnableControls;
+      end;
     end
     else
     begin
-      fieldAux := GetDataSet.FindField('UI_MODIFIED');
-      if fieldAux = nil then
-        fieldAux := GetDataSet.FindField('MODIFIED'); //obsolete
-      if Assigned(fieldAux) then
-      begin
-        GetDataSet.Edit;
-        fieldAux.Value := 1;
-        GetDataSet.Post;
-      end;
+      GetDataSet.Insert;
+      GetDataSet.Post; //need disabled field's property "required" on server side !!!
     end;
+
 
   finally
     SetImmediateSave(_immediateSave);
@@ -948,10 +965,7 @@ begin
     SetDataSetAttribute(GetDataSet, DATASET_ATTR_READONLY, 'No');
 
   FRefreshAfterUpdate := Info.OptionExists(DATASET_ATTR_REFRESH_AFTER_UPDATE);
-  if FRefreshAfterUpdate then
-    SetDataSetAttribute(GetDataSet, DATASET_ATTR_REFRESH_AFTER_UPDATE, 'Yes')
-  else
-    SetDataSetAttribute(GetDataSet, DATASET_ATTR_REFRESH_AFTER_UPDATE, 'No');
+  FRefreshAppendMode := Info.OptionExists(DATASET_ATTR_REFRESH_APPEND_MODE);
 
 end;
 
@@ -1182,7 +1196,7 @@ begin
 
         if not cloneDS.Locate(Info.PrimaryKey, APrimaryKeyValues, []) then
         begin
-          if cloneDS.IsEmpty then
+          if cloneDS.IsEmpty or FRefreshAppendMode then
             cloneDS.Append
           else
             cloneDS.Insert;

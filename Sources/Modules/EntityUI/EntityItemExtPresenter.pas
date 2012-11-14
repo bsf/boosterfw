@@ -89,7 +89,6 @@ end;
 procedure TEntityItemExtPresenter.CmdPickPanelHide(Sender: TObject);
 begin
   WorkItem.Commands[COMMAND_PICK_SEARCH].Status := csDisabled;
-  View.LinkPickListData(nil);
   View.LinkPickItemData(nil);
   View.HidePickItemPanel;
   View.HidePickPanel;

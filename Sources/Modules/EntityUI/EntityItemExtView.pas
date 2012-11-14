@@ -109,7 +109,8 @@ end;
 
 destructor TfrEntityItemExtView.Destroy;
 begin
-  Self.SetPreferenceValue('PickPanel.Width', IntToStr(pnPick.Width));
+  if PickPanelSplitter.Visible then
+    SetPreferenceValue('PickPanel.Width', IntToStr(pnPick.Width));
   FDetails.Free;
   inherited;
 end;
@@ -211,9 +212,7 @@ end;
 
 procedure TfrEntityItemExtView.LinkPickListData(AData: TDataSet);
 begin
-  if AData = nil then
-    UnLinkDataSet(PickListDataSource)
-  else if PickListDataSource.DataSet <> AData then
+  if PickListDataSource.DataSet <> AData then
     LinkDataSet(PickListDataSource, AData);
 end;
 
@@ -301,6 +300,7 @@ end;
 
 procedure TfrEntityItemExtView.HidePickPanel;
 begin
+  SetPreferenceValue('PickPanel.Width', IntToStr(pnPick.Width));
   edPickSearch.Text := '';
   PickPanelSplitter.CloseSplitter;
   PickPanelSplitter.Visible := false;

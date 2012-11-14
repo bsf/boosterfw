@@ -16,7 +16,7 @@ uses
   frxRich, cxMemo, cxRichEdit, cxMRUEdit, cxGridCardView, cxGridDBCardView,
   cxGridCustomLayoutView, cxGridBandedTableView, cxGridDBBandedTableView,
   StdCtrls, cxListBox, cxButtonEdit, cxImage, cxBlobEdit, Menus, cxButtons,
-  cxDBVGrid;
+  cxDBVGrid, Provider;
 
 type
   TForm1 = class(TForm)
@@ -59,6 +59,8 @@ type
     cxStyle20: TcxStyle;
     cxDBVerticalGrid1: TcxDBVerticalGrid;
     cxDBVerticalGrid1DBEditorRow1: TcxDBEditorRow;
+    DataSetProvider1: TDataSetProvider;
+    Query1s: TStringField;
     procedure cxDBComboBox1PropertiesInitPopup(Sender: TObject);
     procedure cxGrid1DBCardView1CellClick(Sender: TcxCustomGridTableView;
       ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton;

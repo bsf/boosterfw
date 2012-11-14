@@ -721,7 +721,18 @@ var
   _storage: TMemInifile;
   _strings: TStringList;
   data: TMemoryStream;
+  doSave: boolean;
 begin
+  doSave:= false;
+  if AGridView is TcxGridDBBandedTableView then
+    doSave := TcxGridDBBandedTableView(AGridView).ColumnCount <> 0
+  else if AGridView is TcxGridDBTableView then
+    doSave := TcxGridDBTableView(AGridView).ColumnCount <> 0
+  else
+    doSave := true;
+
+  if not doSave then Exit;
+
   _storage := TMemInifile.Create('');
   data := TMemoryStream.Create;
   try
@@ -875,7 +886,6 @@ end;
 
 procedure TcxGridViewHelper.UnLinkDataSet(ADataSource: TDataSource);
 begin
-
 end;
 
 procedure TcxGridViewHelper.ViewClose;
@@ -890,7 +900,9 @@ var
 begin
   _gridViews := GetGridViewList;
   for I := 0 to _gridViews.Count - 1 do
-    if _gridViews[I] is TcxGridTableView then
+    if (_gridViews[I] is TcxGridTableView)
+        and (not (_gridViews[I] is TcxGridDBTableView))
+        and (not (_gridViews[I] is TcxGridDBBandedTableView))then
       LoadPreference(TcxCustomGridView(_gridViews[I]));
 
   LinkGridPopupMenus(GetForm);

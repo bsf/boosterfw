@@ -88,6 +88,7 @@ type
     FTransaction: TIBTransaction;
     FPrimaryKey: TStringList;
     procedure LoadMetadataCallback(AResultData: TIBXSQLDA);
+    procedure AfterOpen(DataSet: TDataSet);
   protected
     function DataRequestHandler(Sender: TObject; Input : OleVariant) : OleVariant;
   public
@@ -296,6 +297,14 @@ end;
 
 { TIBEntityViewProvider }
 
+procedure TIBEntityViewProvider.AfterOpen(DataSet: TDataSet);
+var
+  I: integer;
+begin
+  for I := 0 to DataSet.FieldCount - 1 do
+    DataSet.Fields[I].Required := false; //Disable constraint for IEntityView.DoModify method !!!
+end;
+
 constructor TIBEntityViewProvider.Create(AOwner: TComponent; ADataBase: TIBDatabase;
   const AEntityName, AViewName: string);
 begin
@@ -312,6 +321,7 @@ begin
   FQuery.Transaction := FTransaction;
   FQuery.Database := FDatabase;
   FQuery.Transaction.DefaultDatabase := FDatabase;
+  FQuery.AfterOpen := AfterOpen;
   Self.DataSet := FQuery;
 
   FUpdateSql := TIBUpdateSQL.Create(Self);
@@ -400,6 +410,9 @@ begin
   FUpdateSql.InsertSQL.Text := AResultData.ByName('SQL_Insert').AsString;
   FUpdateSql.ModifySQL.Text := AResultData.ByName('SQL_Update').AsString;
   FUpdateSql.DeleteSQL.Text := AResultData.ByName('SQL_Delete').AsString;
+
+  if FUpdateSql.InsertSQL.Text = '' then
+    FUpdateSql.InsertSQL.Text := FUpdateSql.ModifySQL.Text;
 
   FRequestReloadRecordSQL := AResultData.ByName('SQL_Refresh').AsString;
   FRequestInsertDefSQL := AResultData.ByName('SQL_InsertDef').AsString;

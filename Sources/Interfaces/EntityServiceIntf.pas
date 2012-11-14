@@ -50,6 +50,7 @@ const
   DATASET_ATTR_ENTITY = 'Entity';
   DATASET_ATTR_ENTITY_VIEW = 'EntityView';
   DATASET_ATTR_REFRESH_AFTER_UPDATE = 'RefreshAfterUpdate';
+  DATASET_ATTR_REFRESH_APPEND_MODE = 'RefreshAppendMode';
 
   //System field names
   FIELD_UI_TITLE = 'UI_TITLE';

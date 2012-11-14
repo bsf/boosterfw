@@ -1036,6 +1036,8 @@ var
   _strings: TStringList;
   data: TMemoryStream;
 begin
+  if AGrid.Rows.Count = 0 then Exit;
+
   _storage := TMemInifile.Create('');
   data := TMemoryStream.Create;
   try

@@ -272,5 +272,13 @@ object Form1: TForm1
   object Query1: TQuery
     Left = 304
     Top = 48
+    object Query1s: TStringField
+      FieldName = 's'
+      Size = 2
+    end
+  end
+  object DataSetProvider1: TDataSetProvider
+    Left = 432
+    Top = 168
   end
 end
