@@ -118,7 +118,7 @@ type
     FDataSetInitialized: boolean;
     FPrimaryKeys: TStringList;
     FLinkedFields: TStringList;
-    FReloadAfterUpdate: boolean;
+    FRefreshAfterUpdate: boolean;
     procedure ApplyPKInfo;
     procedure ApplyFieldInfo;
     procedure ApplyLinksInfo;
@@ -684,7 +684,7 @@ var
   I: integer;
   pkValues: Variant;
 begin
-  if FReloadAfterUpdate and (FPrimaryKeys.Count <> 0) and (not FDataSet.IsEmpty) then
+  if FRefreshAfterUpdate and (FPrimaryKeys.Count <> 0) and (not FDataSet.IsEmpty) then
   begin
     pkValues := VarArrayCreate([0, FPrimaryKeys.Count], varVariant);
     for I := 0 to FPrimaryKeys.Count - 1 do
@@ -901,7 +901,30 @@ begin
 end;
 
 procedure TEntityView.DoSynchronizeOnEntityChange(Context: TWorkItem; EventData: Variant);
+var
+  I: integer;
+  PName: string;
+  PValue: variant;
+  P: TParam;
 begin
+//Check same PK values.
+//если DataSet открыт с заданым первичным ключем
+//то обновляем только в том случае если значение PK В EventData
+//совподает со значением PK в параметре DataSet
+
+  for I := 0 to FPrimaryKeys.Count -1 do
+  begin
+    if VarIsArray(EventData) then
+      PValue := EventData[I]
+    else
+      PValue := EventData;
+
+    PName := FPrimaryKeys[I];
+    P := GetDataSet.Params.FindParam(PName);
+    if (P <> nil) and (not P.IsNull) and (P.Value <> PValue) then
+      Exit;
+  end;
+
   ReloadRecord(EventData);
 end;
 
@@ -924,11 +947,11 @@ begin
   else
     SetDataSetAttribute(GetDataSet, DATASET_ATTR_READONLY, 'No');
 
-  FReloadAfterUpdate := Info.OptionExists(DATASET_ATTR_RELOADAFTERUPDATE);
-  if FReloadAfterUpdate then
-    SetDataSetAttribute(GetDataSet, DATASET_ATTR_RELOADAFTERUPDATE, 'Yes')
+  FRefreshAfterUpdate := Info.OptionExists(DATASET_ATTR_REFRESH_AFTER_UPDATE);
+  if FRefreshAfterUpdate then
+    SetDataSetAttribute(GetDataSet, DATASET_ATTR_REFRESH_AFTER_UPDATE, 'Yes')
   else
-    SetDataSetAttribute(GetDataSet, DATASET_ATTR_RELOADAFTERUPDATE, 'No');
+    SetDataSetAttribute(GetDataSet, DATASET_ATTR_REFRESH_AFTER_UPDATE, 'No');
 
 end;
 
@@ -1098,6 +1121,12 @@ var
   end;
 
 begin
+//Обновляем запись в DataSet без переоткрытия (используем вспомогательный запрос)
+//Если вспомогательный запрос не вернул данных, то удаляем соответсвующую запись
+//из DataSet.
+//Если вспомогательный запрос вернул запись которой нет в DataSet то добавляем
+//эту запись.
+
   if (not GetDataSet.Active) or VarIsEmpty(APrimaryKeyValues) then Exit;
 
   if FPrimaryKeys.Count = 0 then

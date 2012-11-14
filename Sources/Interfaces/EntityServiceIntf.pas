@@ -49,7 +49,7 @@ const
   DATASET_ATTR_READONLY = 'ReadOnly';
   DATASET_ATTR_ENTITY = 'Entity';
   DATASET_ATTR_ENTITY_VIEW = 'EntityView';
-  DATASET_ATTR_RELOADAFTERUPDATE = 'ReloadAfterUpdate';
+  DATASET_ATTR_REFRESH_AFTER_UPDATE = 'RefreshAfterUpdate';
 
   //System field names
   FIELD_UI_TITLE = 'UI_TITLE';
