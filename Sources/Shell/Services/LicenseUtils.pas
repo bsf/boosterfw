@@ -68,7 +68,6 @@ var
   str: TStringList;
   clientID: string;
   signature: string;
-  checkSignature: boolean;
 begin
   Result := false;
   str := TStringList.Create;

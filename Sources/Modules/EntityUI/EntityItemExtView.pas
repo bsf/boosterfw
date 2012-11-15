@@ -272,6 +272,10 @@ begin
   if (Key = VK_ESCAPE) and (not grPickItem.DataController.IsEditing)  then
     WorkItem.Commands[COMMAND_PICK_ITEM_CANCEL].Execute
   else if (Key = VK_RETURN) and (ssShift in Shift) then
+    WorkItem.Commands[COMMAND_PICK_ITEM_ADD].Execute
+  else if (Key = VK_RETURN) and (Shift = [])
+          and (not grPickItem.DataController.IsEditing)
+          and (grPickItem.FocusedRow.IsLast) then
     WorkItem.Commands[COMMAND_PICK_ITEM_ADD].Execute;
 end;
 

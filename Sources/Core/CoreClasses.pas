@@ -556,7 +556,6 @@ begin
   FStateNames := TStringList.Create;
 
   //Collections
-  ParentList := nil;
   if FParent = nil then
     FEventTopics := TEventTopics.Create(Self);
 

@@ -723,7 +723,6 @@ var
   data: TMemoryStream;
   doSave: boolean;
 begin
-  doSave:= false;
   if AGridView is TcxGridDBBandedTableView then
     doSave := TcxGridDBBandedTableView(AGridView).ColumnCount <> 0
   else if AGridView is TcxGridDBTableView then

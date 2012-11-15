@@ -6,6 +6,7 @@ uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
   EntityCatalogIntf, EntityCatalogConst, UIStr, strUtils;
 
 const
+  COMMAND_CHANGE_DETAIL_TAB = '{0D260C9C-568E-451B-B1F7-1EA7ABEA2CE9}';
   COMMAND_DETAIL_DELETE = 'commands.Detail.Delete';
   COMMAND_PICK_PANEL_SHOW = 'commands.PickPanel.Show';
   COMMAND_PICK_PANEL_HIDE = '{BA085EFD-77DA-436C-92E9-F82B26CDC2DA}';
@@ -34,6 +35,8 @@ type
   TEntityItemExtPresenter = class(TEntityContentPresenter)
   const
     CMD_CLOSE = 'cmd.Close';
+    ENT_VIEW_PICK_PANEL_LIST = 'PickPanelList';
+    ENT_VIEW_PICK_PANEL_ITEM = 'PickPanelItem';
   private
     FIsReady: boolean;
     FHeadEntityViewReady: boolean;
@@ -208,7 +211,7 @@ end;
 function TEntityItemExtPresenter.GetEVPickItem: IEntityView;
 begin
   Result := (WorkItem.Services[IEntityService] as IEntityService).
-    Entity[EntityName].GetView('DetailsPickItem', WorkItem);
+    Entity[EntityName].GetView(ENT_VIEW_PICK_PANEL_ITEM, WorkItem);
 
 
   Result.Load(false);
@@ -217,7 +220,7 @@ end;
 function TEntityItemExtPresenter.GetEVPickList: IEntityView;
 begin
   Result := (WorkItem.Services[IEntityService] as IEntityService).
-    Entity[EntityName].GetView('DetailsPickList', WorkItem);
+    Entity[EntityName].GetView(ENT_VIEW_PICK_PANEL_LIST, WorkItem);
 
   Result.Load(false);
 
