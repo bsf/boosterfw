@@ -37,6 +37,8 @@ type
     CMD_CLOSE = 'cmd.Close';
     ENT_VIEW_PICK_PANEL_LIST = 'PickPanelList';
     ENT_VIEW_PICK_PANEL_ITEM = 'PickPanelItem';
+    UI_OPTION_PICK_BULK_MODE = 'PickBulkMode';
+    UI_OPTION_DETAIL_EVIEWS = 'DetailEViews';
   private
     FIsReady: boolean;
     FHeadEntityViewReady: boolean;
@@ -189,7 +191,6 @@ begin
     Entity[EntityName].GetView(AName, WorkItem);
 
   Result.Load(false);
-
 end;
 
 function TEntityItemExtPresenter.GetEVDetailEViews: IEntityView;
@@ -284,9 +285,9 @@ procedure TEntityItemExtPresenter.OnViewReady;
   var
     ds: TDataSet;
   begin
-    if ViewInfo.OptionExists('DetailEViews') then
+    if ViewInfo.OptionExists(UI_OPTION_DETAIL_EVIEWS) then
     begin
-       ExtractStrings([','], [], PWideChar(ViewInfo.OptionValue('DetailEViews')), AList);
+       ExtractStrings([','], [], PWideChar(ViewInfo.OptionValue(UI_OPTION_DETAIL_EVIEWS)), AList);
     end;
 
     if App.Entities.EntityViewExists(EntityName, 'DetailEViews') then
@@ -342,7 +343,7 @@ begin
 
   WorkItem.Commands[COMMAND_DETAIL_DELETE].SetHandler(CmdDetailDelete);
 
-  FPickBulkMode :=  ViewInfo.OptionExists('PickBulkMode');
+  FPickBulkMode :=  ViewInfo.OptionExists(UI_OPTION_PICK_BULK_MODE);
   WorkItem.Commands[COMMAND_PICK_PANEL_SHOW].SetHandler(CmdPickPanelShow);
   WorkItem.Commands[COMMAND_PICK_PANEL_HIDE].SetHandler(CmdPickPanelHide);
   WorkItem.Commands[COMMAND_PICK_SEARCH].SetHandler(CmdPickSearch);
