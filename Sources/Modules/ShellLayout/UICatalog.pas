@@ -49,6 +49,7 @@ type
     const
       CMD_HANDLER = 'HANDLER';
       CMD_PARAMS = 'PARAMS';
+      CMD_OPTION_CONFIRM = 'Confirm';
       CMD_OPTION_FOREACH = 'ForEach';
       CMD_OPTION_FOREACH_PARAM = 'ForEachParam';
       CMD_OPTION_HIDDEN = 'Hidden';
@@ -344,7 +345,7 @@ procedure TUICatalog.TViewCommandExtension.CommandExtend;
   begin
      strList := TStringList.Create;
      try
-        ExtractStrings([',',';'], [], PWideChar(AOptions), strList);
+        ExtractStrings([';'], [], PWideChar(AOptions), strList);
         for I := 0 to strList.Count - 1 do
         begin
           optionValue := strList.ValueFromIndex[I];
@@ -524,10 +525,20 @@ var
   cmdHandler: string;
   I: integer;
   strList: TStringList;
+  confirmText: string;
+  confirm: boolean;
 begin
   Sender.GetInterface(ICommand, cmd);
 
   cmdHandler := cmd.Data[CMD_HANDLER];
+  confirmText := cmd.Data[CMD_OPTION_CONFIRM];
+
+  if (confirmText <> '') then
+    confirm := App.UI.MessageBox.ConfirmYesNo(confirmText)
+  else
+    confirm := true;
+
+  if not confirm then Exit;
 
   strList := TStringList.Create;
   try
