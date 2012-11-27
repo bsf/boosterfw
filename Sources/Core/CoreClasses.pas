@@ -403,7 +403,7 @@ type
     property Status: TWorkItemStatus read FStatus;
     property Parent: TWorkItem read FParent;
     //можно использовать как хочешь
-    property Context: string read FContext write FContext;
+  //  property Context: string read FContext write FContext;
     property CallStack: TStringList read GetCallStack;
   end;
 

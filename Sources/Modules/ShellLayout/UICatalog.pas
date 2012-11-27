@@ -436,6 +436,18 @@ end;
 
 procedure TUICatalog.TViewCommandExtension.CommandHandler(Sender: TObject);
 
+  function GetCallerWI: TWorkItem;
+  var
+    I: integer;
+  begin
+    for I := 0 to Workitem.CallStack.Count - 1 do
+    begin
+      Result := WorkItem.Root.WorkItems.Find(WorkItem.CallStack[I]);
+      if Assigned(Result) then Exit;
+    end;
+    Result := WorkItem.Parent;
+  end;
+
   function ExecuteHandler(ACommand: ICommand; const AHandler: string): boolean;
   var
     callerWI: TWorkItem;
@@ -476,14 +488,7 @@ procedure TUICatalog.TViewCommandExtension.CommandHandler(Sender: TObject);
     workItemClosed := false;
     if ACommand.Data[CMD_OPTION_CLOSE_VIEW_BEFORE] = '1' then
     begin
-      if WorkItem.ID <> WorkItem.Context then
-      begin
-        callerWI := WorkItem.Root.WorkItems.Find(WorkItem.Context);
-        if callerWI = nil then
-          callerWI := WorkItem.Parent;
-      end
-      else
-        callerWI := WorkItem.Parent;
+      callerWI := GetCallerWI;
 
       WorkItem.Commands[COMMAND_CLOSE].Execute;
       workItemClosed := true;

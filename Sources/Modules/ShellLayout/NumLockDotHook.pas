@@ -25,7 +25,7 @@ begin
       if wParam = PM_REMOVE then
         if FChangeKey then
         begin
-          Msg.wParam := Ord(DecimalSeparator);
+          Msg.wParam := Ord(FormatSettings.DecimalSeparator);
           FChangeKey := false;
           result:=0;
           exit;

@@ -95,7 +95,6 @@ procedure TCustomPresenter.CloseView(ABackToCaller: boolean = true);
 var
   viewIntf: IView;
   ctrl: TControl;
-  //contextWI: TWorkItem;
   visibleCaller: TWorkItem;
 begin
   if not FViewVisible then Exit;
@@ -112,16 +111,6 @@ begin
     visibleCaller := GetVisibleCaller;
     if Assigned(visibleCaller) then
       visibleCaller.Activate;
-    {contextWI := FindWorkItem(FCallerURI, WorkItem.Root);
-    if Assigned(contextWI) and (contextWI.Controller is TCustomPresenter)
-       and (contextWI.Controller as TCustomPresenter).ViewVisible then
-       contextWI.Activate
-    else if WorkItem.ID <> WorkItem.Context then
-    begin
-      contextWI := FindWorkItem(WorkItem.Context, WorkItem.Root);
-      if Assigned(contextWI) then
-        contextWI.Activate;
-    end;}
   end;
 end;
 
@@ -189,9 +178,6 @@ begin
 
   WorkItem.CallStack.Add(Sender.ID);
   WorkItem.CallStack.AddStrings(Sender.CallStack);
-
-  WorkItem.Context := Sender.Context;
-  if (WorkItem.Context = '')  then WorkItem.Context := WorkItem.ID;
 
   if VarToStr(Activity.Params[TViewActivityParams.Title]) <> '' then
     FViewTitle := Activity.Params[TViewActivityParams.Title];

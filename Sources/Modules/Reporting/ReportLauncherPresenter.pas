@@ -152,9 +152,6 @@ var
 begin
   FreeOnViewClose := false;
 
-  if WorkItem.Context = WorkItem.ID then
-    WorkItem.Context := '';
-
   FReportCatalogItem :=
    (WorkItem.Services[IReportCatalogService] as IReportCatalogService).
       GetItem(WorkItem.State['ReportURI']);                          //Reinit on reload!!!
