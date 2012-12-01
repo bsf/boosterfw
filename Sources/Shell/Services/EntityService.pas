@@ -167,6 +167,10 @@ type
   end;
 
   TEntityOper = class(TEntityAttr, IEntityOper)
+  private
+    FLinkedFields: TStringList;
+    FInfoApplied: boolean;
+    procedure ReloadLinksData;
   protected
     //IEntityOper
     function IEntityOper.EntityName = GetEntityName;
@@ -176,7 +180,10 @@ type
     function Execute: TDataSet; overload;
     function Info: IEntityViewInfo;
   public
-    class function ProviderKind: TProviderNameBuilder.TProviderKind;override;
+    class function ProviderKind: TProviderNameBuilder.TProviderKind; override;
+    constructor Create(AConnection: TCustomRemoteServer;
+      const AEntityName, AttrName: string; AWorkItem: TWorkItem); override;
+    destructor Destroy; override;
   end;
 
 
@@ -1452,17 +1459,24 @@ function TEntityOper.Execute(AParams: array of variant): TDataSet;
 var
   I: integer;
 begin
-  {Result := GetDataSet;
-  if OperInfo.IsSelect then
-    Open(AParams)
-  else
-    Exec(AParams);}
-
   for I := 0 to High(AParams) do
     if Params.Count > I then
         Params[I].Value := AParams[I];
 
   Result := Execute;
+end;
+
+constructor TEntityOper.Create(AConnection: TCustomRemoteServer;
+  const AEntityName, AttrName: string; AWorkItem: TWorkItem);
+begin
+  inherited;
+  FLinkedFields := TStringList.Create;
+end;
+
+destructor TEntityOper.Destroy;
+begin
+  FLinkedFields.Free;
+  inherited;
 end;
 
 function TEntityOper.Execute: TDataSet;
@@ -1489,9 +1503,19 @@ begin
 
   if FDataSet.Active then FDataSet.Close;
 
+  if not FInfoApplied then
+  begin
+    FLinkedFields.Clear;
+    FLinkedFields.AddStrings(Info.LinkedFields);
+    FInfoApplied := true;
+  end;
+
   try
     if Info.IsExec then
-      FDataSet.Execute
+    begin
+      FDataSet.Execute;
+      ReloadLinksData;
+    end
     else
       FDataSet.Open;
   except
@@ -1520,6 +1544,33 @@ end;
 class function TEntityOper.ProviderKind: TProviderNameBuilder.TProviderKind;
 begin
   Result := pkEntityOper;
+end;
+
+procedure TEntityOper.ReloadLinksData;
+var
+  I: integer;
+  eventData: Variant;
+  lf: string;
+begin
+  if FLinkedFields.Count <> 0 then
+  begin
+    lf := '';
+    eventData := VarArrayCreate([0, FLinkedFields.Count], varVariant);
+    for I := 0 to FLinkedFields.Count - 1 do
+    begin
+      if lf = '' then
+        lf := FLinkedFields[I]
+      else
+        lf := lf + ';' + FLinkedFields[I];
+
+      if Assigned(Params.FindParam(FLinkedFields[I])) then
+        eventData[I] := Params.ParamValues[FLinkedFields[I]];
+    end;
+
+    GetWorkItem.Root.EventTopics[format(ET_ENTITY_VIEW_RELOAD_LINKS_LF,
+        [FEntityName, OperName, lf])].Fire(GetWorkItem, eventData);
+  end;
+
 end;
 
 function TEntityOper.ResultData: TDataSet;
