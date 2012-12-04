@@ -37,7 +37,7 @@ procedure TfrEntityItemView.grMainKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if (Key = VK_RETURN) and (Shift = []) and (not grMain.DataController.IsEditing)
-      and (grMain.FocusedRow.IsLastVisible) then
+      and (grMain.FocusedRow = grMain.LastVisibleRow) then
     WorkItem.Commands[COMMAND_SAVE].Execute;
 end;
 

@@ -40,7 +40,7 @@ begin
   if Key = VK_ESCAPE then
      Key := 0 //Blocked cancel inserted record
   else if (Key = VK_RETURN) and (Shift = []) and (not grMain.DataController.IsEditing)
-      and (grMain.FocusedRow.IsLastVisible) then
+      and (grMain.FocusedRow = grMain.LastVisibleRow) then
     WorkItem.Commands[COMMAND_SAVE].Execute;
 
 end;

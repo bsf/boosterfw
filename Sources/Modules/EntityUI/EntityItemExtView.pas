@@ -275,7 +275,7 @@ begin
     WorkItem.Commands[COMMAND_PICK_ITEM_ADD].Execute
   else if (Key = VK_RETURN) and (Shift = [])
           and (not grPickItem.DataController.IsEditing)
-          and (grPickItem.FocusedRow.IsLastVisible) then
+          and (grPickItem.FocusedRow = grPickItem.LastVisibleRow) then
     WorkItem.Commands[COMMAND_PICK_ITEM_ADD].Execute;
 end;
 
