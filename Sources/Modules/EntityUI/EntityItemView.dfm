@@ -28,6 +28,7 @@ inherited frEntityItemView: TfrEntityItemView
       OptionsData.Deleting = False
       OptionsData.Inserting = False
       TabOrder = 0
+      OnKeyDown = grMainKeyDown
       DataController.DataSource = ItemDataSource
       Version = 1
     end
