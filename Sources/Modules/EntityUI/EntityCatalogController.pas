@@ -415,7 +415,7 @@ begin
   ActivityDataBinding(Activity.Params, targetActivity.Params);
   //Outs -> Params bind
   ActivityDataBinding(Activity.Outs, targetActivity.Params);
-
+  targetActivity.CallMode := Activity.CallMode;
 
   targetActivity.Execute(Sender);
 

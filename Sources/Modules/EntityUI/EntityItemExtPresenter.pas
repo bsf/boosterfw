@@ -295,7 +295,7 @@ procedure TEntityItemExtPresenter.OnViewReady;
       ds := GetEVDetailEViews.DataSet;
       while not ds.Eof do
       begin
-        AList.Add(ds.Fields[0].asString);
+        AList.Add(Trim(ds.Fields[0].asString));
         ds.Next;
       end;
     end

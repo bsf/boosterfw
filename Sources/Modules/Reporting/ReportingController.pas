@@ -20,6 +20,7 @@ const
 type
   TReportingController = class(TWorkItemController, IReportCatalogService)
   const
+    REPORT_ACTIVITY_PARAM_LAUNCHMODE = 'LaunchMode';
     REPORT_ACTIVITY_OPTION_REPORT_URI = 'ReportURI';
     REPORT_ACTIVITY_OPTION_REPORT_LAYOUT = 'ReportLayout';
     REPORT_TO_ACTIVITY_URI_FMT = '%s.%s';
@@ -139,6 +140,7 @@ procedure TReportingController.LoadCatalogItems;
       Options.Values[REPORT_ACTIVITY_OPTION_REPORT_URI] := AItem.ID;
       for I := 0 to  AItem.Manifest.ParamNodes.Count - 1 do
         Params.Value[AItem.Manifest.ParamNodes[I].Name] := Unassigned;
+      Params.Value[REPORT_ACTIVITY_PARAM_LAUNCHMODE] := 0;
     end;
 
     for repLayout in AItem.Manifest.Layouts do
