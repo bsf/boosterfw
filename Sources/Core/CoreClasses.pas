@@ -114,7 +114,7 @@ type
     property OnViewClose: TNotifyEvent read GetOnViewClose write SetOnViewClose;
   end;
 
-  IWorkspaces = interface(ICollection)
+  IWorkspaces = interface
   ['{5E1BBC32-3807-4FDB-98BF-C245A6B689EC}']
     procedure RegisterWorkspace(const AName: string; AWorkspace: TComponent);
     procedure UnregisterWorkspace(const AName: string);
@@ -420,7 +420,7 @@ procedure SetLocaleString(AResStr: Pointer; const Value: string);
 
 implementation
 
-uses  EventBroker, Services, CommandsList, Activities, WorkspacesList,
+uses  EventBroker, Services, CommandsList, Activities, Workspaces,
    ItemsList;
 
 var
@@ -567,10 +567,9 @@ begin
   if FParent = nil then
     FActivities := TActivities.Create(Self);
 
-  ParentList := nil;
-  if FParent <> nil then
-    ParentList := TManagedItemList(FParent.FWorkspaces);
-  FWorkspaces := TWorkspaces.Create(Self, lsmUp, ParentList);
+
+  if FParent = nil then
+    FWorkspaces := TWorkspaces.Create(Self);
 
   if FParent = nil then
     FServices := TServices.Create(Self);
@@ -611,7 +610,6 @@ begin
     TWorkItems(FWorkItems).Clear;
     TItems(FItems).Clear;
     TCommands(FCommands).Clear;
-    TWorkspaces(FWorkspaces).Clear;
 
     if Assigned(FServices) then TServices(FServices).Clear;
 
@@ -702,7 +700,7 @@ end;
 
 function TWorkItem.GetWorkspaces: IWorkspaces;
 begin
-  FWorkspaces.GetInterface(IWorkspaces, Result);
+  Result := Root.FWorkspaces as IWorkspaces;
 end;
 
 procedure TWorkItem.Notification(AComponent: TComponent;

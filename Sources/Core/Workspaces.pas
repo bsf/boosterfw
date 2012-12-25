@@ -1,26 +1,29 @@
-unit WorkspacesList;
+unit Workspaces;
 
 interface
-uses SysUtils, Classes, ManagedList, CoreClasses, Contnrs, Typinfo;
+uses SysUtils, Classes, CoreClasses, Generics.Collections;
 
 type
 
-  TWorkspaceItem = class(TManagedItem)
+  TWorkspaceItem = class(TComponent)
   private
     FWorkspace: TComponent;
   protected
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
   public
-    constructor Create(AOwner: TManagedItemList; const AID: string;
+    constructor Create(const AID: string;
       AWorkspace: TComponent); reintroduce;
     destructor Destroy; override;
   end;
 
-  TWorkspaces = class(TManagedItemList, IWorkspaces)
+  TWorkspaces = class(TComponent, IWorkspaces)
   private
+    FItems: TObjectDictionary<string, TWorkspaceItem>;
     function GetWorkspace(const AName: string): IWorkspace;
   public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
     procedure RegisterWorkspace(const AName: string; AWorkspace: TComponent);
     procedure UnregisterWorkspace(const AName: string);
     property Workspace[const AName: string]: IWorkspace read GetWorkspace; default;
@@ -31,40 +34,52 @@ implementation
 
 { TWorkspaces }
 
+constructor TWorkspaces.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FItems := TObjectDictionary<string, TWorkspaceItem>.Create([doOwnsValues]);
+end;
+
+destructor TWorkspaces.Destroy;
+begin
+  FItems.Free;
+  inherited;
+end;
+
 function TWorkspaces.GetWorkspace(const AName: string): IWorkspace;
 var
   item: TWorkspaceItem;
 begin
-  item := TWorkspaceItem(GetByID(AName));
-
-  if item = nil then
+  if not FItems.TryGetValue(AName, item) then
     raise EWorkspaceMissingError.Create('Workspace ' + AName + ' not found.');
 
-  if not item.FWorkspace.GetInterface(IWorkspace, Result) then
-    raise EInterfaceMissingError.Create('Interface ' + GUIDToString(IWorkspace) + ' not found.');
+  Result := item.FWorkspace as IWorkspace;
 end;
 
 procedure TWorkspaces.RegisterWorkspace(const AName: string;
   AWorkspace: TComponent);
+var
+  chk: IWorkspace;
 begin
-  InternalAdd(TWorkspaceItem.Create(Self, AName, AWorkspace));
+  if not AWorkspace.GetInterface(IWorkspace, chk) then
+    raise EInterfaceMissingError.Create('Interface ' + GUIDToString(IWorkspace) + ' not found.');
+
+  FItems.Add(AName, TWorkspaceItem.Create(AName, AWorkspace));
 end;
 
 procedure TWorkspaces.UnregisterWorkspace(const AName: string);
 var
   Item: TWorkspaceItem;
 begin
-  Item := TWorkspaceItem(GetByID(AName));
-  if Assigned(Item) then
-    Item.Free;
+  FItems.Remove(AName);
 end;
 
 { TWorkspaceItem }
 
-constructor TWorkspaceItem.Create(AOwner: TManagedItemList; const AID: string;
+constructor TWorkspaceItem.Create(const AID: string;
   AWorkspace: TComponent);
 begin
-  inherited Create(AOwner, AID);
+  inherited Create(nil);
   FWorkspace := AWorkspace;
   FWorkspace.FreeNotification(Self);
 end;

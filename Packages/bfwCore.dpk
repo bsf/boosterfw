@@ -38,8 +38,8 @@ contains
   Services in '..\Sources\Core\Services.pas',
   WindowWorkspace in '..\Sources\Core\WindowWorkspace.pas',
   Workspace in '..\Sources\Core\Workspace.pas',
-  WorkspacesList in '..\Sources\Core\WorkspacesList.pas',
   HashList in '..\Sources\Core\HashList.pas',
-  Activities in '..\Sources\Core\Activities.pas';
+  Activities in '..\Sources\Core\Activities.pas',
+  Workspaces in '..\Sources\Core\Workspaces.pas';
 
 end.

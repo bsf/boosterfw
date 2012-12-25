@@ -63,9 +63,9 @@
 			<DCCReference Include="..\Sources\Core\Services.pas"/>
 			<DCCReference Include="..\Sources\Core\WindowWorkspace.pas"/>
 			<DCCReference Include="..\Sources\Core\Workspace.pas"/>
-			<DCCReference Include="..\Sources\Core\WorkspacesList.pas"/>
 			<DCCReference Include="..\Sources\Core\HashList.pas"/>
 			<DCCReference Include="..\Sources\Core\Activities.pas"/>
+			<DCCReference Include="..\Sources\Core\Workspaces.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>
