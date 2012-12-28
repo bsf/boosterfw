@@ -33,13 +33,13 @@ contains
   CommandsList in '..\Sources\Core\CommandsList.pas',
   CoreClasses in '..\Sources\Core\CoreClasses.pas',
   EventBroker in '..\Sources\Core\EventBroker.pas',
-  ItemsList in '..\Sources\Core\ItemsList.pas',
   ManagedList in '..\Sources\Core\ManagedList.pas',
   Services in '..\Sources\Core\Services.pas',
   WindowWorkspace in '..\Sources\Core\WindowWorkspace.pas',
   Workspace in '..\Sources\Core\Workspace.pas',
   HashList in '..\Sources\Core\HashList.pas',
   Activities in '..\Sources\Core\Activities.pas',
-  Workspaces in '..\Sources\Core\Workspaces.pas';
+  Workspaces in '..\Sources\Core\Workspaces.pas',
+  Items in '..\Sources\Core\Items.pas';
 
 end.

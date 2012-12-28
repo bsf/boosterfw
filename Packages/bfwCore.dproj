@@ -58,7 +58,6 @@
 			<DCCReference Include="..\Sources\Core\CommandsList.pas"/>
 			<DCCReference Include="..\Sources\Core\CoreClasses.pas"/>
 			<DCCReference Include="..\Sources\Core\EventBroker.pas"/>
-			<DCCReference Include="..\Sources\Core\ItemsList.pas"/>
 			<DCCReference Include="..\Sources\Core\ManagedList.pas"/>
 			<DCCReference Include="..\Sources\Core\Services.pas"/>
 			<DCCReference Include="..\Sources\Core\WindowWorkspace.pas"/>
@@ -66,6 +65,7 @@
 			<DCCReference Include="..\Sources\Core\HashList.pas"/>
 			<DCCReference Include="..\Sources\Core\Activities.pas"/>
 			<DCCReference Include="..\Sources\Core\Workspaces.pas"/>
+			<DCCReference Include="..\Sources\Core\Items.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

@@ -306,13 +306,12 @@ type
   end;
 
 {TItems}
-  IItems = interface(ICollection)
+  IItems = interface
   ['{918294AA-3730-4CE2-8610-BF8490369242}']
     procedure Add(const AID: string; AObj: TObject); overload;
     function Add(AObj: TObject): string; overload;
     procedure Remove(AObj: TObject);
     procedure Delete(const AID: string);
-    procedure Clear(AClass: TClass);
     function Get(const AID: string; AClass: TClass): TObject;
     property Item[const AID: string; AClass: TClass]: TObject read Get; default;
   end;
@@ -421,7 +420,7 @@ procedure SetLocaleString(AResStr: Pointer; const Value: string);
 implementation
 
 uses  EventBroker, Services, CommandsList, Activities, Workspaces,
-   ItemsList;
+   Items;
 
 var
   DebugInfoProc: procedure(const AInfo: string);
@@ -576,7 +575,7 @@ begin
 
   FWorkItems := TWorkItems.Create(Self, lsmLocal, nil);
 
-  FItems := TItems.Create(Self, lsmLocal, nil);
+  FItems := TItems.Create(Self);
 
   FControllerClass := AControllerClass;
   if Assigned(FControllerClass) then
