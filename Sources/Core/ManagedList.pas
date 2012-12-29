@@ -9,7 +9,7 @@ type
   ICollectionItem = interface
   ['{1AF595BD-3E80-4689-A5C7-F826F224E6C3}']
     function GetID: string;
-    function GetInfo: string;
+//    function GetInfo: string;
     property ID: string read GetID;
   end;
 
