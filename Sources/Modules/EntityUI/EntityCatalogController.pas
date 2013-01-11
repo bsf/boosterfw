@@ -131,7 +131,6 @@ begin
     RegisterHandler('IEntityItemExtView', TViewActivityHandler.Create(TEntityItemExtPresenter, TfrEntityItemExtView));
     RegisterHandler('IEntityComplexView', TViewActivityHandler.Create(TEntityComplexPresenter, TfrEntityComplexView));
     RegisterHandler('IEntityCollectView', TViewActivityHandler.Create(TEntityCollectPresenter, TfrEntityCollectView));
-    RegisterHandler('IEntityListView', TViewActivityHandler.Create(TEntityListPresenter, TfrEntityListView));
     RegisterHandler('IEntityTreeListView', TViewActivityHandler.Create(TEntityTreeListPresenter, TfrEntityTreeListView));
     RegisterHandler('IEntityPickListView', TViewActivityHandler.Create(TEntityPickListPresenter, TfrEntityPickListView));
     RegisterHandler('IEntityJournalView', TViewActivityHandler.Create(TEntityJournalPresenter, TfrEntityJournalView));

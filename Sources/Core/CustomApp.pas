@@ -25,7 +25,6 @@ type
     procedure LoadModules(Kind: TModuleKind);
     procedure UnLoadModules;
   protected
-    //procedure OnLoadModule(const AModuleName, AInfo: string; Kind: TModuleKind); virtual;
     procedure AddServices; virtual;
   public
     class function AppInstance: TCustomApplication;

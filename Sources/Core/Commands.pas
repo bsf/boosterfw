@@ -98,7 +98,6 @@ type
     function Count: integer;
     function GetItem(AIndex: integer): ICommand;
     function IndexOf(const AName: string): integer;
-
     procedure Remove(const AName: string);
     function FindOrCreate(const AName: string): ICommand;
   public
@@ -333,15 +332,11 @@ end;
 
 function TCommands.FindOrCreate(const AName: string): ICommand;
 var
-  cmd: TCommand;
   idx: integer;
 begin
   idx := IndexOf(AName);
   if idx = -1 then
-  begin
-    cmd := TCommand.Create(Self, AName);
-    idx := FItems.Add(cmd);
-  end;
+    idx := FItems.Add(TCommand.Create(Self, AName));
 
   Result := GetItem(idx);
 end;

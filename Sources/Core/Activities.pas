@@ -1,7 +1,8 @@
 unit Activities;
 
 interface
-uses classes, CoreClasses, HashList, graphics, sysutils, variants, menus, strUtils;
+uses classes, CoreClasses, graphics, sysutils, variants, menus, strUtils,
+  Generics.Collections, Contnrs;
 
 type
   TActivityData = class(TComponent, IActivityData)
@@ -88,8 +89,8 @@ type
   TActivities = class(TComponent, IActivities)
   private
     FPermissionHandler: IActivityPermissionHandler;
-    FHandlers: THashList<TActivityHandler>;
-    FItems: THashList<TActivity>;
+    FHandlers: TObjectDictionary<string, TActivityHandler>;
+    FItems: TComponentList;
   protected
     procedure ExecuteActivity(Sender: TWorkItem; Activity: TActivity);
     function CheckPermission(Activity: TActivity): boolean;
@@ -127,8 +128,8 @@ end;
 constructor TActivities.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FItems := THashList<TActivity>.Create;
-  FHandlers := THashList<TActivityHandler>.Create;
+  FItems := TComponentList.Create(true);
+  FHandlers := TObjectDictionary<string, TActivityHandler>.Create([doOwnsValues]);
 end;
 
 destructor TActivities.Destroy;
@@ -140,15 +141,15 @@ end;
 
 procedure TActivities.ExecuteActivity(Sender: TWorkItem; Activity: TActivity);
 var
-  idx: integer;
+  handler: TActivityHandler;
 begin
-  idx := FHandlers.IndexOf(Activity.GetActivityClass);
-  if idx <> -1 then
+  FHandlers.TryGetValue(Activity.GetActivityClass, handler);
+  if handler <> nil then
   begin
     if Activity.FUsePermission and Assigned(FPermissionHandler) then
       FPermissionHandler.DemandPermission(Activity);
 
-    FHandlers.Items[idx].Execute(Sender, Activity);
+    handler.Execute(Sender, Activity);
   end;
 end;
 
@@ -156,20 +157,26 @@ function TActivities.FindOrCreate(const URI: string): IActivity;
 var
   idx: integer;
 begin
-  idx := FItems.IndexOf(URI);
+  idx := IndexOf(URI);
   if idx = -1 then
-    idx := FItems.Add(URI, TActivity.Create(Self, URI));
-  Result := FItems.Items[idx];
+    idx := FItems.Add(TActivity.Create(Self, URI));
+
+  Result := GetItem(idx);
 end;
 
 function TActivities.GetItem(AIndex: integer): IActivity;
 begin
-  Result := FItems.Items[AIndex];
+  Result := FItems.Items[AIndex] as IActivity;
 end;
 
 function TActivities.IndexOf(const URI: string): integer;
+var
+  I: integer;
 begin
-  Result := FItems.IndexOf(URI);
+  Result := -1;
+  for I := 0 to FItems.Count - 1 do
+    if SameText(URI, (FItems[I] as TActivity).URI) then
+      Exit(I);
 end;
 
 function TActivities.IsShortCut(AWorkItem: TWorkItem; AShortCut: TShortCut): Boolean;
@@ -180,10 +187,10 @@ begin
   if AShortCut = scNone then Exit;
 
   for I := 0 to FItems.Count - 1 do
-    if FItems.Items[I].FShortCutI = AShortCut then
+    if (FItems.Items[I] as TActivity).FShortCutI = AShortCut then
     begin
        Result := true;
-       FItems.Items[I].Execute(AWorkItem);
+       (FItems.Items[I] as TActivity).Execute(AWorkItem);
        Exit;
     end;
 
@@ -192,7 +199,7 @@ end;
 procedure TActivities.RegisterHandler(const ActivityClass: string;
   AHandler: TActivityHandler);
 begin
-  FHandlers.Add(ActivityClass, AHandler);
+  FHandlers.AddOrSetValue(ActivityClass, AHandler);
 end;
 
 procedure TActivities.RegisterPermissionHandler(
