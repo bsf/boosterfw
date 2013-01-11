@@ -83,7 +83,6 @@
 			<DCCReference Include="..\Sources\Core\CustomApp.pas"/>
 			<DCCReference Include="..\Sources\Core\CoreClasses.pas"/>
 			<DCCReference Include="..\Sources\Core\EventBroker.pas"/>
-			<DCCReference Include="..\Sources\Core\ManagedList.pas"/>
 			<DCCReference Include="..\Sources\Core\Services.pas"/>
 			<DCCReference Include="..\Sources\Core\WindowWorkspace.pas"/>
 			<DCCReference Include="..\Sources\Core\Workspace.pas"/>

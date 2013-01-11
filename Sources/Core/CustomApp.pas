@@ -103,7 +103,7 @@ begin
   RegisterUnhandledExceptionHandler();
 
   // Create RootWorkItem
-  FWorkItem := TWorkItem.Create(nil, nil, 'RootWorkItem', nil);
+  FWorkItem := TWorkItem.Create(nil, 'RootWorkItem', nil);
 
   AddServices;  //virtual
 

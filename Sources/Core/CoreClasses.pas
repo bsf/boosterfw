@@ -1,8 +1,8 @@
 unit CoreClasses;
 
 interface
-uses SysUtils, Classes, Contnrs, Controls, Messages, ManagedList, Variants,
-  typinfo, windows, graphics, StrUtils;
+uses SysUtils, Classes, Contnrs, Controls, Messages, Variants,
+  typinfo, windows, graphics, StrUtils, ComObj;
 
 const
   etAppStarted = 'Application.Started';
@@ -341,15 +341,16 @@ type
 
   TControllerClass = class of TWorkItemController;
 
-  IWorkItems = interface(ICollection)
+  IWorkItems = interface
   ['{09683504-8734-4CA6-83B9-A2BD006A2CC3}']
+    function Count: integer;
     function Add(AControllerClass: TControllerClass = nil; const AID: string = ''): TWorkItem;
     function Find(const AID: string): TWorkItem;
     function Get(Index: integer): TWorkItem;
     property WorkItem[Index: integer]: TWorkItem read Get; default;
   end;
 
-  TWorkItem = class(TManagedItem)
+  TWorkItem = class(TComponent)
   private
     FParent: TWorkItem;
     FStatus: TWorkItemStatus;
@@ -366,6 +367,7 @@ type
     FStateNames: TStringList;
     FContext: string;
     FCallStack: TStringList;
+    FID: string;
     procedure ChangeStatus(NewStatus: TWorkItemStatus);
     function GetRoot: TWorkItem;
     function GetServices: IServices;
@@ -385,13 +387,14 @@ type
   public
     procedure DebugInfo(const AInfoText: string);
 
-    constructor Create(AOwner: TManagedItemList; AParent: TWorkItem;
+    constructor Create(AParent: TWorkItem;
       const AID: string; AControllerClass: TControllerClass); reintroduce;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure Run;
     procedure Activate;
     procedure Deactivate;
+    property ID: string read FID;
     property Root: TWorkItem read GetRoot;
     property Services: IServices read GetServices;
     property WorkItems: IWorkItems read GetWorkItems;
@@ -498,11 +501,17 @@ begin
 end;
 
 type
-  TWorkItems = class(TManagedItemList, IWorkItems)
+  TWorkItems = class(TComponent, IWorkItems)
+  private
+    FItems: TComponentList;
   public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    function Count: integer;
     function Add(AControllerClass: TControllerClass = nil; const AID: string = ''): TWorkItem;
     function Find(const AID: string): TWorkItem;
     function Get(Index: integer): TWorkItem;
+    procedure Clear;
   end;
 
 { TWorkItem }
@@ -542,12 +551,14 @@ begin
   end;
 end;
 
-constructor TWorkItem.Create(AOwner: TManagedItemList; AParent: TWorkItem;
+constructor TWorkItem.Create(AParent: TWorkItem;
   const AID: string; AControllerClass: TControllerClass);
 begin
-  inherited Create(AOwner, '');
+  inherited Create(nil);
 
-  if AID <> '' then Self.ID := AID;
+  FID := AID;
+  if AID = '' then
+    FID := CreateClassID;
 
   DebugInfo('Create WorkItem: ' + Self.ID);
 
@@ -564,14 +575,13 @@ begin
   if FParent = nil then
     FActivities := TActivities.Create(Self);
 
-
   if FParent = nil then
     FWorkspaces := TWorkspaces.Create(Self);
 
   if FParent = nil then
     FServices := TServices.Create(Self);
 
-  FWorkItems := TWorkItems.Create(Self, lsmLocal, nil);
+  FWorkItems := TWorkItems.Create(Self);
 
   FItems := TItems.Create(Self);
 
@@ -794,26 +804,47 @@ end;
 { TWorkItems }
 
 function TWorkItems.Add(AControllerClass: TControllerClass; const AID: string): TWorkItem;
-var
-  wID: string;
 begin
-  wID := AID;
-  if (wID = '') and (AControllerClass <> nil) then
-    wID := AControllerClass.ClassName;
+  Result := TWorkItem.Create(TWorkItem(Self.Owner), AID, AControllerClass);
+  FItems.Add(Result);
+end;
 
-  Result := TWorkItem.Create(Self, TWorkItem(Self.Owner), wID, AControllerClass);
-  InternalAdd(Result);
+procedure TWorkItems.Clear;
+begin
+  FItems.Clear;
+end;
+
+function TWorkItems.Count: integer;
+begin
+  Result := FItems.Count;
+end;
+
+constructor TWorkItems.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FItems := TComponentList.Create(true);
+end;
+
+destructor TWorkItems.Destroy;
+begin
+  FItems.Free;
+  inherited;
 end;
 
 function TWorkItems.Find(const AID: string): TWorkItem;
+var
+  I: integer;
 begin
-  Result := TWorkItem(GetByID(AID));
+  Result := nil;
+  for I := 0 to FItems.Count - 1 do
+    if SameText(AID, (FItems[I] as TWorkItem).ID) then
+      Exit(FItems[I] as TWorkItem);
 end;
 
 
 function TWorkItems.Get(Index: integer): TWorkItem;
 begin
-  Result := TWorkItem(inherited Get(Index));
+  Result := FItems[Index] as TWorkItem;
 end;
 
 { TViewSiteInfo }

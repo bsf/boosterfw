@@ -35,7 +35,6 @@ contains
   CustomApp in '..\Sources\Core\CustomApp.pas',
   CoreClasses in '..\Sources\Core\CoreClasses.pas',
   EventBroker in '..\Sources\Core\EventBroker.pas',
-  ManagedList in '..\Sources\Core\ManagedList.pas',
   Services in '..\Sources\Core\Services.pas',
   WindowWorkspace in '..\Sources\Core\WindowWorkspace.pas',
   Workspace in '..\Sources\Core\Workspace.pas',

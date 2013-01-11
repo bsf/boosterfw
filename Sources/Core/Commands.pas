@@ -2,7 +2,7 @@ unit Commands;
 
 interface
 
-uses SysUtils, Classes, ManagedList, CoreClasses, Contnrs, Typinfo, Variants,
+uses SysUtils, Classes, CoreClasses, Contnrs, Typinfo, Variants,
   menus, actnlist;
 
 type

@@ -1,7 +1,7 @@
 unit Items;
 
 interface
-uses SysUtils, Classes, ManagedList, CoreClasses, ComObj, Generics.Collections;
+uses SysUtils, Classes, CoreClasses, ComObj, Generics.Collections;
 
 type
   TItem = class(TObject)
