@@ -33,7 +33,6 @@ requires
 
 contains
   CustomApp in '..\Sources\Core\CustomApp.pas',
-  CommandsList in '..\Sources\Core\CommandsList.pas',
   CoreClasses in '..\Sources\Core\CoreClasses.pas',
   EventBroker in '..\Sources\Core\EventBroker.pas',
   ManagedList in '..\Sources\Core\ManagedList.pas',
@@ -43,6 +42,7 @@ contains
   HashList in '..\Sources\Core\HashList.pas',
   Activities in '..\Sources\Core\Activities.pas',
   Workspaces in '..\Sources\Core\Workspaces.pas',
-  Items in '..\Sources\Core\Items.pas';
+  Items in '..\Sources\Core\Items.pas',
+  Commands in '..\Sources\Core\Commands.pas';
 
 end.

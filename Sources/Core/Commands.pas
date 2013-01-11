@@ -1,4 +1,4 @@
-unit CommandsList;
+unit Commands;
 
 interface
 
@@ -47,8 +47,9 @@ type
     destructor Destroy; override;
   end;
 
-  TCommand = class(TManagedItem, ICommand)
+  TCommand = class(TComponent, ICommand)
   private
+    FID: string;
     FCaption: string;
     FGroup: string;
     FShortCut: string;
@@ -72,7 +73,7 @@ type
     function ICommand.Name = GetCommandName;
     function InternalCanExecute: boolean;
   public
-    constructor Create(AOwner: TManagedItemList; const AID: string); override;
+    constructor Create(AOwner: TComponent; const AID: string); reintroduce;
     destructor Destroy; override;
     procedure Execute;
     procedure AddInvoker(AInvoker: TComponent; const AEventName: string);
@@ -90,12 +91,20 @@ type
     property Status: TCommandStatus read GetStatus write SetStatus;
   end;
 
-  TCommands = class(TManagedItemList, ICommands)
+  TCommands = class(TComponent, ICommands)
+  private
+    FItems: TComponentList;
   protected
-    procedure RemoveCommand(const AName: string);
-    function GetCommand(const AName: string): ICommand;
+    function Count: integer;
+    function GetItem(AIndex: integer): ICommand;
+    function IndexOf(const AName: string): integer;
+
+    procedure Remove(const AName: string);
+    function FindOrCreate(const AName: string): ICommand;
   public
-    property Command[const AName: string]: ICommand read GetCommand; default;
+    property Command[const AName: string]: ICommand read FindOrCreate; default;
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
   end;
 
 implementation
@@ -113,9 +122,10 @@ begin
   TCommandInvoker(FInvokers[Idx]).SetInvokerShortCuts(FShortCuts);
 end;
 
-constructor TCommand.Create(AOwner: TManagedItemList; const AID: string);
+constructor TCommand.Create(AOwner: TComponent; const AID: string);
 begin
-  inherited Create(AOwner, AID);
+  inherited Create(AOwner);
+  FID := AID;
   FInvokers := TComponentList.Create(True);
   FStatus := csEnabled;
   FConditions := TConditionList.Create;
@@ -142,7 +152,7 @@ end;
 
 function TCommand.GetCommandName: string;
 begin
-  Result := ID;
+  Result := FID;
 end;
 
 function TCommand.GetStatus: TCommandStatus;
@@ -304,29 +314,60 @@ end;
 
 { TCommands }
 
-function TCommands.GetCommand(const AName: string): ICommand;
-var
-  cmd: TCommand;
+function TCommands.Count: integer;
 begin
-  cmd := TCommand(GetByID(AName));
-
-  if cmd = nil then
-  begin
-    cmd := TCommand.Create(Self, AName);
-    InternalAdd(cmd);
-  end;
-
-  cmd.QueryInterface(ICommand, Result);
-
+  Result := FItems.Count;
 end;
 
-procedure TCommands.RemoveCommand(const AName: string);
-var
-  item: TCommand;
+constructor TCommands.Create(AOwner: TComponent);
 begin
-  Item := TCommand(GetByID(AName));
-  if Assigned(Item) then
-    Item.Free;
+  inherited Create(AOwner);
+  FItems := TComponentList.Create(true);
+end;
+
+destructor TCommands.Destroy;
+begin
+  FItems.Free;
+  inherited;
+end;
+
+function TCommands.FindOrCreate(const AName: string): ICommand;
+var
+  cmd: TCommand;
+  idx: integer;
+begin
+  idx := IndexOf(AName);
+  if idx = -1 then
+  begin
+    cmd := TCommand.Create(Self, AName);
+    idx := FItems.Add(cmd);
+  end;
+
+  Result := GetItem(idx);
+end;
+
+function TCommands.GetItem(AIndex: integer): ICommand;
+begin
+  Result := FItems[AIndex] as ICommand;
+end;
+
+function TCommands.IndexOf(const AName: string): integer;
+var
+  I: integer;
+begin
+  Result := -1;
+  for I := 0 to FItems.Count - 1 do
+    if SameText(AName, (FItems[I] as TCommand).FID) then
+      Exit(I);
+end;
+
+procedure TCommands.Remove(const AName: string);
+var
+  idx: integer;
+begin
+  idx := IndexOf(AName);
+  if idx <> -1 then
+    FItems.Delete(idx);
 end;
 
 { TCommandInvoker }

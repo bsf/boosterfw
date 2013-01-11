@@ -55,7 +55,6 @@ type
   public
     constructor Create(AOwner: TManagedItemList; const AID: string); reintroduce; virtual;
     destructor Destroy; override;
-    function GetInfo: string; virtual;
     property ID: string read GetID write SetID;
   end;
 
@@ -80,11 +79,6 @@ begin
   if FID = '' then
     FID := CreateClassID;
   Result := FID;
-end;
-
-function TManagedItem.GetInfo: string;
-begin
-
 end;
 
 procedure TManagedItem.SetID(const Value: string);

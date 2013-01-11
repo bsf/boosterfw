@@ -255,11 +255,15 @@ type
     property Data[const AName: string]: Variant read GetData write SetData;
   end;
 
-  ICommands = interface(ICollection)
+  ICommands = interface
   ['{5E1BBC32-3807-4FDB-98BF-C245A6B689EC}']
-    procedure RemoveCommand(const AName: string);
-    function GetCommand(const AName: string): ICommand;
-    property Command[const AName: string]: ICommand read GetCommand; default;
+    function Count: integer;
+    function GetItem(AIndex: integer): ICommand;
+    function IndexOf(const AName: string): integer;
+
+    procedure Remove(const AName: string);
+    function FindOrCreate(const AName: string): ICommand;
+    property Command[const AName: string]: ICommand read FindOrCreate; default;
   end;
 
 {UIExtansions}
@@ -419,8 +423,7 @@ procedure SetLocaleString(AResStr: Pointer; const Value: string);
 
 implementation
 
-uses  EventBroker, Services, CommandsList, Activities, Workspaces,
-   Items;
+uses  EventBroker, Services, Commands, Activities, Workspaces, Items;
 
 var
   DebugInfoProc: procedure(const AInfo: string);
@@ -541,8 +544,6 @@ end;
 
 constructor TWorkItem.Create(AOwner: TManagedItemList; AParent: TWorkItem;
   const AID: string; AControllerClass: TControllerClass);
-var
-  ParentList: TManagedItemList;
 begin
   inherited Create(AOwner, '');
 
@@ -558,10 +559,7 @@ begin
   if FParent = nil then
     FEventTopics := TEventTopics.Create(Self);
 
-  ParentList := nil;
-  if FParent <> nil then
-    ParentList := TManagedItemList(FParent.FCommands);
-  FCommands := TCommands.Create(Self, lsmLocal{lsmUp}, ParentList);
+  FCommands := TCommands.Create(Self);
 
   if FParent = nil then
     FActivities := TActivities.Create(Self);
@@ -608,7 +606,6 @@ begin
 
     TWorkItems(FWorkItems).Clear;
     TItems(FItems).Clear;
-    TCommands(FCommands).Clear;
 
     if Assigned(FServices) then TServices(FServices).Clear;
 

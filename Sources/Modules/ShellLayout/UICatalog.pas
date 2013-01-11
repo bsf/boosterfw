@@ -310,7 +310,7 @@ begin
   Result := false;
   for I := 0 to WorkItem.Commands.Count - 1 do
   begin
-    Result := SameText(WorkItem.Commands.GetItem(I).ID, AName);
+    Result := SameText(WorkItem.Commands.GetItem(I).Name, AName);
     if Result then Break;
   end;
 
