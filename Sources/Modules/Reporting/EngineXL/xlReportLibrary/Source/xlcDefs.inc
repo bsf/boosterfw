@@ -46,6 +46,18 @@
   {$WARN UNSAFE_CAST OFF}
 {$ENDIF}
 
+{$IFDEF VER230} { Delphi 16.0 } // Rad Studio XE 2
+  {$DEFINE XLR_VCL7}
+  {$WARN SYMBOL_DEPRECATED OFF}
+  {$WARN SYMBOL_PLATFORM OFF}
+  {$WARN UNIT_PLATFORM OFF}
+  {$WARN UNIT_DEPRECATED OFF}
+  {$WARN UNSAFE_TYPE OFF}
+  {$WARN UNSAFE_TYPE OFF}
+  {$WARN UNSAFE_CODE OFF}
+  {$WARN UNSAFE_CAST OFF}
+{$ENDIF}
+
 { Compiler defines }
 
 //                                   DEBUG options - comment before release

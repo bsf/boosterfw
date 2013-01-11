@@ -5,7 +5,7 @@ uses classes, sysutils, Generics.Collections, typInfo;
 
 type
 
-  THashList<T> = class(TObject)
+  THashList<T: class> = class(TObject)
   private
 
     type
@@ -189,8 +189,8 @@ end;
 
 destructor THashList<T>.TItem.Destroy;
 begin
-  if FOwnsObject and (PTypeInfo(TypeInfo(T))^.Kind = tkClass) then
-    (FVal as TObject).Free;
+  if FOwnsObject then
+    FVal.Free;
   inherited;
 end;
 

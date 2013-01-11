@@ -2,15 +2,26 @@
 		<PropertyGroup>
 			<ProjectGuid>{B411E806-0CFC-48AC-987D-FD7EDF202440}</ProjectGuid>
 			<MainSource>bfwUI.dpk</MainSource>
-			<ProjectVersion>12.3</ProjectVersion>
+			<ProjectVersion>13.4</ProjectVersion>
 			<Base>True</Base>
 			<Config Condition="'$(Config)'==''">Debug</Config>
-			<Platform>Win32</Platform>
 			<AppType>Package</AppType>
 			<FrameworkType>VCL</FrameworkType>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+			<Platform Condition="'$(Platform)'==''">Win32</Platform>
+			<TargetedPlatforms>1</TargetedPlatforms>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Base)'=='true') or '$(Base_Win64)'!=''">
+			<Base_Win64>true</Base_Win64>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Base)'=='true') or '$(Base_Win32)'!=''">
+			<Base_Win32>true</Base_Win32>
+			<CfgParent>Base</CfgParent>
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_1)'!=''">
@@ -24,17 +35,32 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+			<VerInfo_Locale>1058</VerInfo_Locale>
+			<DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;Winapi;$(DCC_Namespace)</DCC_Namespace>
+			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
 			<DCC_OutputNeverBuildDcps>true</DCC_OutputNeverBuildDcps>
 			<DCC_DcuOutput>.\$(Config)\$(Platform)</DCC_DcuOutput>
 			<DCC_E>false</DCC_E>
 			<GenPackage>true</GenPackage>
-			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;$(DCC_UnitAlias)</DCC_UnitAlias>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_S>false</DCC_S>
 			<GenDll>true</GenDll>
 			<DCC_N>false</DCC_N>
 			<DCC_F>false</DCC_F>
 			<DCC_K>false</DCC_K>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base_Win64)'!=''">
+			<Icon_MainIcon>bfwUI_Icon.ico</Icon_MainIcon>
+			<Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base_Win32)'!=''">
+			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+			<Icon_MainIcon>bfwUI_Icon.ico</Icon_MainIcon>
+			<DCC_Namespace>System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
+			<VerInfo_Locale>1033</VerInfo_Locale>
+			<Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
+			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
 			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
@@ -48,7 +74,7 @@
 			<DCC_DebugInformation>false</DCC_DebugInformation>
 		</PropertyGroup>
 		<ItemGroup>
-			<DelphiCompile Include="bfwUI.dpk">
+			<DelphiCompile Include="$(MainSource)">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
 			<DCCReference Include="rtl.dcp"/>
@@ -59,22 +85,23 @@
 			<DCCReference Include="dbrtl.dcp"/>
 			<DCCReference Include="bfwCore.dcp"/>
 			<DCCReference Include="bfwInterfaces.dcp"/>
-			<DCCReference Include="dxCoreD15.dcp"/>
-			<DCCReference Include="cxLibraryD15.dcp"/>
-			<DCCReference Include="dxThemeD15.dcp"/>
-			<DCCReference Include="dxGDIPlusD15.dcp"/>
-			<DCCReference Include="cxEditorsD15.dcp"/>
-			<DCCReference Include="cxDataD15.dcp"/>
-			<DCCReference Include="dxBarD15.dcp"/>
-			<DCCReference Include="dxComnD15.dcp"/>
-			<DCCReference Include="cxPageControlD15.dcp"/>
-			<DCCReference Include="cxGridD15.dcp"/>
-			<DCCReference Include="cxExportD15.dcp"/>
-			<DCCReference Include="cxTreeListD15.dcp"/>
-			<DCCReference Include="cxTreeListdxBarPopupMenuD15.dcp"/>
-			<DCCReference Include="dxSkinsCoreD15.dcp"/>
-			<DCCReference Include="cxVerticalGridD15.dcp"/>
 			<DCCReference Include="vclie.dcp"/>
+			<DCCReference Include="dxCoreRS16.dcp"/>
+			<DCCReference Include="cxLibraryRS16.dcp"/>
+			<DCCReference Include="dxGDIPlusRS16.dcp"/>
+			<DCCReference Include="dxThemeRS16.dcp"/>
+			<DCCReference Include="cxEditorsRS16.dcp"/>
+			<DCCReference Include="cxDataRS16.dcp"/>
+			<DCCReference Include="dxBarRS16.dcp"/>
+			<DCCReference Include="dxComnRS16.dcp"/>
+			<DCCReference Include="cxPageControlRS16.dcp"/>
+			<DCCReference Include="dxLayoutControlRS16.dcp"/>
+			<DCCReference Include="cxGridRS16.dcp"/>
+			<DCCReference Include="cxExportRS16.dcp"/>
+			<DCCReference Include="cxTreeListRS16.dcp"/>
+			<DCCReference Include="cxTreeListdxBarPopupMenuRS16.dcp"/>
+			<DCCReference Include="dxSkinsCoreRS16.dcp"/>
+			<DCCReference Include="cxVerticalGridRS16.dcp"/>
 			<DCCReference Include="..\Sources\UI\CommonUtils.pas"/>
 			<DCCReference Include="..\Sources\UI\UIClasses.pas"/>
 			<DCCReference Include="..\Sources\UI\CustomContentPresenter.pas"/>
@@ -153,6 +180,7 @@
 					</VersionInfoKeys>
 				</Delphi.Personality>
 				<Platforms>
+					<Platform value="Win64">False</Platform>
 					<Platform value="Win32">True</Platform>
 				</Platforms>
 			</BorlandProject>

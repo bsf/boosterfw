@@ -1,6 +1,7 @@
 package bfwUI;
 
 {$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -11,17 +12,19 @@ package bfwUI;
 {$LOCALSYMBOLS ON}
 {$LONGSTRINGS ON}
 {$OPENSTRINGS ON}
-{$OPTIMIZATION ON}
+{$OPTIMIZATION OFF}
 {$OVERFLOWCHECKS OFF}
 {$RANGECHECKS OFF}
 {$REFERENCEINFO ON}
 {$SAFEDIVIDE OFF}
-{$STACKFRAMES OFF}
+{$STACKFRAMES ON}
 {$TYPEDADDRESS OFF}
 {$VARSTRINGCHECKS ON}
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
 {$IMPLICITBUILD OFF}
 
 requires
@@ -33,22 +36,23 @@ requires
   dbrtl,
   bfwCore,
   bfwInterfaces,
-  dxCoreD15,
-  cxLibraryD15,
-  dxThemeD15,
-  dxGDIPlusD15,
-  cxEditorsD15,
-  cxDataD15,
-  dxBarD15,
-  dxComnD15,
-  cxPageControlD15,
-  cxGridD15,
-  cxExportD15,
-  cxTreeListD15,
-  cxTreeListdxBarPopupMenuD15,
-  dxSkinsCoreD15,
-  cxVerticalGridD15,
-  vclie;
+  vclie,
+  dxCoreRS16,
+  cxLibraryRS16,
+  dxGDIPlusRS16,
+  dxThemeRS16,
+  cxEditorsRS16,
+  cxDataRS16,
+  dxBarRS16,
+  dxComnRS16,
+  cxPageControlRS16,
+  dxLayoutControlRS16,
+  cxGridRS16,
+  cxExportRS16,
+  cxTreeListRS16,
+  cxTreeListdxBarPopupMenuRS16,
+  dxSkinsCoreRS16,
+  cxVerticalGridRS16;
 
 contains
   CommonUtils in '..\Sources\UI\CommonUtils.pas',

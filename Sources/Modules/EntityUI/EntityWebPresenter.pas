@@ -19,8 +19,9 @@ type
   TEntityWebPresenter = class(TEntityContentPresenter)
   private
     FEntityViewReady: boolean;
+
     procedure OnWebBrowserDocumentComplete(ASender: TObject;
-      const pDisp: IDispatch; var URL: OleVariant);
+      const pDisp: IDispatch; const URL: OleVariant);
 
     function View: IEntityWebView;
     function GetEV: IEntityView;
@@ -149,7 +150,7 @@ begin
 end;
 
 procedure TEntityWebPresenter.OnWebBrowserDocumentComplete(ASender: TObject;
-  const pDisp: IDispatch; var URL: OleVariant);
+  const pDisp: IDispatch; const URL: OleVariant);
 begin
 
 end;

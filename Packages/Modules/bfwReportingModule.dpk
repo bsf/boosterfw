@@ -1,6 +1,7 @@
 package bfwReportingModule;
 
 {$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -11,17 +12,19 @@ package bfwReportingModule;
 {$LOCALSYMBOLS ON}
 {$LONGSTRINGS ON}
 {$OPENSTRINGS ON}
-{$OPTIMIZATION ON}
+{$OPTIMIZATION OFF}
 {$OVERFLOWCHECKS OFF}
 {$RANGECHECKS OFF}
 {$REFERENCEINFO ON}
 {$SAFEDIVIDE OFF}
-{$STACKFRAMES OFF}
+{$STACKFRAMES ON}
 {$TYPEDADDRESS OFF}
 {$VARSTRINGCHECKS ON}
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
 {$IMPLICITBUILD ON}
 
 requires
@@ -30,15 +33,15 @@ requires
   bfwUI,
   rtl,
   ibxpress,
-  dxmdsD15,
-  dxNavBarD15,
-  fs15,
-  frx15,
-  frxDB15,
-  frxe15,
-  fsDB15,
   dsnapcon,
-  cxPageControldxBarPopupMenuD15;
+  dxmdsRS16,
+  cxPageControldxBarPopupMenuRS16,
+  dxNavBarRS16,
+  fs16,
+  fsDB16,
+  frx16,
+  frxDB16,
+  frxe16;
 
 contains
   bfwReportingModuleInit in '..\..\Sources\Modules\Reporting\bfwReportingModuleInit.pas',

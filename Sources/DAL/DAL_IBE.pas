@@ -194,7 +194,7 @@ begin
       AParams[I].Value := prm.Value;
   end;
 
-  Result := inherited;
+  Result := inherited PSExecuteStatement(ASQL, AParams, ResultSet);
 end;
 
 function TIBQueryFix.PSGetUpdateException(E: Exception;

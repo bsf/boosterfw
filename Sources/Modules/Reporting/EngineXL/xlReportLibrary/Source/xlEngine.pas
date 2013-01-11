@@ -1101,7 +1101,11 @@ end;
 function InsertBlankRows(const StartRow, RowCount, ColCount: integer; IBlankSheet: IxlWorksheet; IRange: IxlRange): IxlRange;
 begin
   IBlankSheet.Range[A1(xlrMaxRowCount - RowCount + 1, 1), A1(xlrMaxRowCount, ColCount) ].Copy(EmptyParam);
-  IRange.Rows.Item[StartRow, EmptyParam].Insert(TOLEEnum(xlShiftDown));
+
+  //Fix XE2 bug (https://forums.embarcadero.com/thread.jspa?threadID=63416 - EOleException on XE2 Update 2 (works fine under XE)
+  //change Insert(TOLEEnum(xlShiftDown)) -> //Insert(integer(xlShiftDown));
+  IRange.Rows.Item[StartRow, EmptyParam].Insert(integer(xlShiftDown));
+
   Result := IRange.Range[A1(StartRow, 1), A1(StartRow + RowCount - 1, ColCount)];
 end;
 
@@ -2568,7 +2572,11 @@ begin
   else
     FHeights := UnAssigned;
   // Add empty row
-  IRange.Rows.Item[1, EmptyParam].Insert(TOLEEnum(xlShiftDown));
+
+  //Fix XE2 bug (https://forums.embarcadero.com/thread.jspa?threadID=63416 - EOleException on XE2 Update 2 (works fine under XE)
+  //change Insert(TOLEEnum(xlShiftDown)) -> //Insert(integer(xlShiftDown));
+  IRange.Rows.Item[1, EmptyParam].Insert(integer(xlShiftDown));
+
   s := '=' + '''' + IWorksheet.Name + '''' + '!' +
     R1C1(IRange.Row - 1, IRange.Column) + ':' +
     R1C1(IRange.Row + IRange.Rows.Count - 1, IRange.Column + IRange.Columns.Count - 1);
@@ -2743,7 +2751,9 @@ begin
       // Start Buffer
       (GetRoot.FBuff as TxlBuffer).StartBuffer;
       // Add first empty row
-      IRange.Rows.Item[1, EmptyParam].Insert(TOLEEnum(xlShiftDown));
+      //Fix XE2 bug (https://forums.embarcadero.com/thread.jspa?threadID=63416 - EOleException on XE2 Update 2 (works fine under XE)
+      //change Insert(TOLEEnum(xlShiftDown)) -> //Insert(integer(xlShiftDown));
+      IRange.Rows.Item[1, EmptyParam].Insert(integer(xlShiftDown));
       s := '=' + '''' + IWorksheet.Name + '''' + '!' +
         R1C1(IRange.Row - 1, IRange.Column) + ':' +
         R1C1(IRange.Row + IRange.Rows.Count - 1, IRange.Column + IRange.Columns.Count - 1);
