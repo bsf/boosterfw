@@ -11,23 +11,6 @@ const
   EVT_MODULE_LOAD = 'events.OnModuleLoad';
 
 type
-  EArgumentError = class(Exception);
-  EArgumentTypeError = class(EArgumentError);
-  EInterfaceMissingError = class(Exception);
-  EServiceMissingError = class(Exception);
-  EUIExtensionSiteMissingError = class(Exception);
-  EWorkspaceMissingError = class(Exception);
-  EViewMissingError = class(Exception);
-  EDuplicateItemIDError = class(Exception);
-
-  TGuard = class
-  public
-    class procedure CheckArgumentType(AClass: TClass; AInstance: TObject;
-      const ArgumentName: string = '');
-    class procedure CheckArgumentNotEmpty(AValue: Variant;
-      const ArgumentName: string = '');
-  end;
-
   TWorkItem = class;
 
   TModuleKind = (mkInfrastructure, mkFoundation, mkExtension);
@@ -266,27 +249,6 @@ type
     property Command[const AName: string]: ICommand read FindOrCreate; default;
   end;
 
-{UIExtansions}
-  IUIElementAdapter = interface
-    function Add(AElement: TObject): TObject;
-    procedure Remove(AElement: TObject);
-  end;
-
-  IUIExtensionSite = interface
-  ['{B4CA1138-533A-4010-B6D5-DC986DE8E8C3}']
-    function Add(AElement: TObject): TObject;
-    procedure Remove(AElement: TObject);
-    function Count: integer;
-    function Get(Index: integer): TObject;
-  end;
-
-  IUIExtensionSites = interface
-  ['{B78D07FB-9E66-4A40-8278-4CF70A397CB4}']
-    procedure RegisterSite(const AName: string; AUIElementAdapter: IUIElementAdapter); overload;
-    procedure UnregisterSite(const AName: string);
-    function GetSite(const AName: string): IUIExtensionSite;
-    property Sites[const AName: string]: IUIExtensionSite read GetSite; default;
-  end;
 
 {Event broker}
   TEventHandlerMethod = procedure(Context: TWorkItem; EventData: Variant) of object;
@@ -352,6 +314,7 @@ type
 
   TWorkItem = class(TComponent)
   private
+    FID: string;
     FParent: TWorkItem;
     FStatus: TWorkItemStatus;
     FControllerClass: TControllerClass;
@@ -367,7 +330,7 @@ type
     FStateNames: TStringList;
     FContext: string;
     FCallStack: TStringList;
-    FID: string;
+    FDebugMode: boolean;
     procedure ChangeStatus(NewStatus: TWorkItemStatus);
     function GetRoot: TWorkItem;
     function GetServices: IServices;
@@ -380,10 +343,6 @@ type
     function GetState(const AName: string): Variant;
     procedure SetState(const AName: string; const Value: Variant);
     function GetCallStack: TStringList;
-  protected
-
-    procedure Notification(AComponent: TComponent;
-      Operation: TOperation); override;
   public
     procedure DebugInfo(const AInfoText: string);
 
@@ -401,20 +360,16 @@ type
     property EventTopics: IEventTopics read GetEventTopics;
     property Commands: ICommands read GetCommands;
     property Activities: IActivities read GetActivities;
-
     property Workspaces: IWorkspaces read GetWorkspaces;
     property Items: IItems read GetItems;
     property State[const AName: string]: Variant read GetState write SetState;
     property Controller: TWorkItemController read FController;
     property Status: TWorkItemStatus read FStatus;
     property Parent: TWorkItem read FParent;
-    //можно использовать как хочешь
-  //  property Context: string read FContext write FContext;
     property CallStack: TStringList read GetCallStack;
+    //можно использовать как хочешь
+    property Context: string read FContext write FContext;
   end;
-
-  TWorkItemClass = class of TWorkItem;
-
 
 procedure RegisterModule(ModuleClass: TModuleClass);
 function ModuleClasses: TClassList;
@@ -427,9 +382,6 @@ procedure SetLocaleString(AResStr: Pointer; const Value: string);
 implementation
 
 uses  EventBroker, Services, Commands, Activities, Workspaces, Items;
-
-var
-  DebugInfoProc: procedure(const AInfo: string);
 
 var
   ModuleClassesList: TClassList;
@@ -560,29 +512,30 @@ begin
   if AID = '' then
     FID := CreateClassID;
 
-  DebugInfo('Create WorkItem: ' + Self.ID);
-
   FStatus := wisInactive;
   FParent := AParent;
   FStateNames := TStringList.Create;
 
-  //Collections
+  //Root only
   if FParent = nil then
+  begin
+    if FindCmdLineSwitch('debug') then
+    begin
+      AllocConsole();
+      FDebugMode := true;
+      WriteLn(format('Start debug %s', [ParamStr(0)]));
+    end;
+
     FEventTopics := TEventTopics.Create(Self);
+    FActivities := TActivities.Create(Self);
+    FWorkspaces := TWorkspaces.Create(Self);
+    FServices := TServices.Create(Self);
+  end;
+
+  DebugInfo('Create WorkItem: ' + Self.ID);
 
   FCommands := TCommands.Create(Self);
-
-  if FParent = nil then
-    FActivities := TActivities.Create(Self);
-
-  if FParent = nil then
-    FWorkspaces := TWorkspaces.Create(Self);
-
-  if FParent = nil then
-    FServices := TServices.Create(Self);
-
   FWorkItems := TWorkItems.Create(Self);
-
   FItems := TItems.Create(Self);
 
   FControllerClass := AControllerClass;
@@ -604,7 +557,8 @@ end;
 
 procedure TWorkItem.DebugInfo(const AInfoText: string);
 begin
-  DebugInfoProc(AInfoText);
+  if GetRoot.FDebugMode then
+    WriteLn(AInfoText);
 end;
 
 destructor TWorkItem.Destroy;
@@ -634,16 +588,10 @@ begin
   end;
 end;
 
-
 function TWorkItem.GetActivities: IActivities;
 begin
   Result := Root.FActivities as IActivities;
 end;
-
-{function TWorkItem.GetApplication: IInterface;
-begin
-  Result := Root.OnGetApplication;
-end;}
 
 function TWorkItem.GetCallStack: TStringList;
 begin
@@ -676,7 +624,6 @@ end;
 
 function TWorkItem.GetServices: IServices;
 begin
-//  FServices.GetInterface(IServices, Result);
   Result := Root.FServices as IServices;
 end;
 
@@ -691,7 +638,7 @@ begin
   if Assigned(FController) then
     Result := FController.OnGetWorkItemState(AName, Done);
 
-  if not Done { VarIsEmpty(Result)} then
+  if not Done then
   begin
     Idx := FStateNames.IndexOf(AName);
     if Idx <> - 1 then
@@ -709,25 +656,11 @@ begin
   Result := Root.FWorkspaces as IWorkspaces;
 end;
 
-procedure TWorkItem.Notification(AComponent: TComponent;
-  Operation: TOperation);
-begin
-  inherited Notification(AComponent, Operation);
-end;
-
-{function TWorkItem.OnGetApplication: IInterface;
-begin
-  Result := nil;
-end;}
-
-
 procedure TWorkItem.Run;
 begin
   if Assigned(FController) then
     FController.Run;
 end;
-
-
 
 { AbstractTController }
 
@@ -860,33 +793,6 @@ begin
     FTitle := AValue;
 end;
 
-{ TGuard }
-
-class procedure TGuard.CheckArgumentNotEmpty(AValue: Variant;
-  const ArgumentName: string = '');
-begin
-  if VarIsEmpty(AValue) then
-    raise EArgumentError.CreateFmt('Argument %s is Empty', [ArgumentName]);
-end;
-
-class procedure TGuard.CheckArgumentType(AClass: TClass; AInstance: TObject;
-  const ArgumentName: string = '');
-begin
-  if (not Assigned(AInstance)) or ( not (AInstance is AClass)) then
-    raise EArgumentTypeError.CreateFmt('Type of argument %s error', [ArgumentName]);
-end;
-
-procedure DebugInfoProcConsole(const AInfo: string);
-begin
-  WriteLn(AInfo);
-end;
-
-procedure DebugInfoProcStub(const AInfo: string);
-begin
-
-end;
-
-
 { TModule }
 
 constructor TModule.Create(AWorkItem: TWorkItem);
@@ -912,13 +818,5 @@ end;
 
 initialization
 
-  if FindCmdLineSwitch('debug') then
-  begin
-    AllocConsole();
-    DebugInfoProc := DebugInfoProcConsole;
-  end
-  else
-    DebugInfoProc := DebugInfoProcStub;
 
-  DebugInfoProc(format('Start debug %s', [ParamStr(0)]));
 end.

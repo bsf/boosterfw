@@ -51,7 +51,7 @@ var
   item: TWorkspaceItem;
 begin
   if not FItems.TryGetValue(AName, item) then
-    raise EWorkspaceMissingError.Create('Workspace ' + AName + ' not found.');
+    raise Exception.Create('Workspace ' + AName + ' not found.');
 
   Result := item.FWorkspace as IWorkspace;
 end;
@@ -62,14 +62,12 @@ var
   chk: IWorkspace;
 begin
   if not AWorkspace.GetInterface(IWorkspace, chk) then
-    raise EInterfaceMissingError.Create('Interface ' + GUIDToString(IWorkspace) + ' not found.');
+    raise Exception.Create('Interface ' + GUIDToString(IWorkspace) + ' not found.');
 
   FItems.Add(AName, TWorkspaceItem.Create(AName, AWorkspace));
 end;
 
 procedure TWorkspaces.UnregisterWorkspace(const AName: string);
-var
-  Item: TWorkspaceItem;
 begin
   FItems.Remove(AName);
 end;

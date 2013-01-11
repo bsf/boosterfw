@@ -219,7 +219,7 @@ begin
   Result := nil;
 
   if EnsureExists then
-    raise EViewMissingError.Create('View not found.');
+    raise Exception.Create('View not found.');
 
 end;
 

@@ -3,7 +3,7 @@ unit WindowWorkspace;
 interface
 
 uses Classes, Controls, CoreClasses, Workspace, Forms, Contnrs, messages,
-  windows;
+  windows, Sysutils;
 
 type
   TWindowSiteInfo = class(TViewSiteInfo)
@@ -163,7 +163,7 @@ begin
   Result := nil;
 
   if EnsureExists then
-    raise EViewMissingError.Create('View not found.');
+    raise Exception.Create('View not found.');
 end;
 
 procedure TWindowWorkspace.Show(AView: TControl; const ATitle: string);

@@ -1,7 +1,7 @@
 unit Services;
 
 interface
-uses Classes, CoreClasses, ComObj;
+uses Classes, CoreClasses, ComObj, Sysutils;
 
 type
   TServices = class(TComponent, IServices)
@@ -53,7 +53,7 @@ begin
     if FItems[I].QueryInterface(AService, Result) = 0 then Exit;
 
   if Result = nil then
-    raise EServiceMissingError.Create('Service ' + GUIDToString(AService) + ' not found.');
+    raise Exception.Create('Service ' + GUIDToString(AService) + ' not found.');
 end;
 
 
