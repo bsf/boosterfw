@@ -6,9 +6,8 @@ uses classes, CoreClasses,  sysutils, variants, Contnrs,
   CommonUtils, ConfigServiceIntf, graphics, UIClasses,
   EntityServiceIntf, UIServiceIntf,
   ReportCatalogConst, ReportCatalogClasses,
-  ReportCatalogPresenter, ReportCatalogView,
   ReportLauncherPresenter, ReportLauncherView,
-  ReportSetupPresenter, ReportSetupView, IOUtils;
+   IOUtils;
 
 const
   COMMAND_REPORT_CATALOG_RELOAD = '{04496C3E-9A87-40A5-84BD-CD6E409F4C13}';
@@ -211,14 +210,6 @@ begin
   FReportCatalog := TReportCatalog.Create(Self);
 
   FCatalogPath := App.Settings[SETTING_REPORTS_LOCATION];
-
-{  with  WorkItem.Activities[VIEW_RPT_CATALOG] do
-  begin
-    Title := VIEW_RPT_CATALOG_CAPTION;
-    Group := MENU_GROUP_SERVICE;
-    UsePermission := true;
-    RegisterHandler(TViewActivityHandler.Create(TReportCatalogPresenter, TfrReportCatalogView));
-  end;}
 
   WorkItem.Activities[TReportLauncherPresenter.ACTIVITY_REPORT_LAUNCHER].
     RegisterHandler(TViewActivityHandler.Create(TReportLauncherPresenter, TfrReportLauncherView));

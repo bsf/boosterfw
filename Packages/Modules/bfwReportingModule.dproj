@@ -109,26 +109,9 @@
 			<DCCReference Include="..\..\Sources\Modules\Reporting\ReportingController.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\Reporting\ReportCatalogClasses.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\Reporting\ReportCatalogConst.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\Reporting\ReportCatalogDesigner.pas">
-				<Form>frReportCatalogDesigner</Form>
-			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\Reporting\ReportCatalogDesignerItem.pas">
-				<Form>ReportCatalogDesignerItemView</Form>
-			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\Reporting\ReportCatalogItemView.pas">
-				<Form>frReportCatalogItemView</Form>
-			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\Reporting\ReportCatalogPresenter.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\Reporting\ReportCatalogView.pas">
-				<Form>frReportCatalogView</Form>
-			</DCCReference>
 			<DCCReference Include="..\..\Sources\Modules\Reporting\ReportLauncherPresenter.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\Reporting\ReportLauncherView.pas">
 				<Form>frReportLauncherView</Form>
-			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\Reporting\ReportSetupPresenter.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\Reporting\ReportSetupView.pas">
-				<Form>frReportSetupView</Form>
 			</DCCReference>
 			<DCCReference Include="..\..\Sources\Modules\Reporting\EngineFR\frReportFactory.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\Reporting\EngineFR\frReportPreviewPresenter.pas"/>
