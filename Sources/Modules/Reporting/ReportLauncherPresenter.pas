@@ -3,8 +3,8 @@ unit ReportLauncherPresenter;
 interface
 uses classes, CoreClasses, CustomPresenter, ShellIntf, UIClasses, SysUtils,
   dxmdaset, db, ReportCatalogClasses, EntityServiceIntf,
-  variants, StrUtils, controls, ReportCatalogConst, CommonUtils,
-  cxDateUtils, Generics.Collections, UIStr;
+  variants, StrUtils, controls, ReportCatalogConst,
+  cxDateUtils, Generics.Collections, UIStr, windows;
 
 const
   COMMAND_EXECUTE = '{1D84C651-1B31-4F77-87BF-86A00AC0232B}';
@@ -76,7 +76,7 @@ var
   doClose: boolean;
 begin
 
-  doClose := not IsControlKeyDown;
+  doClose := not ((Word(GetKeyState(VK_CONTROL)) and $8000)<>0); //IsControlKeyDown
 
   if FParamDataSet.State in [dsEdit] then FParamDataSet.Post;
 

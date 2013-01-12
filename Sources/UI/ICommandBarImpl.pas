@@ -2,7 +2,7 @@ unit ICommandBarImpl;
 
 interface
 uses classes, cxGroupBox, cxButtons, ActnList, sysutils, CoreClasses, ShellIntf,
-  UIClasses, Menus, types, windows, Graphics, forms, controls, CommonUtils;
+  UIClasses, Menus, types, windows, Graphics, forms, controls;
 
 type
   TButtonAlignment = (alLeft, alRight);
@@ -34,6 +34,7 @@ type
     function CreateButton(const ACaption: string): TcxButton;
     procedure DoExecuteDefaultCommand(Sender: TObject);
     procedure AlignButton(AButton: TcxButton);
+    function GetTextWidth(AFont: TFont; const AText: string): integer;
   protected
     procedure AddCommand(const AName, ACaption: string; const AShortCut: string = '';
       const AGroup: string = ''; ADefault: boolean = false);
@@ -237,6 +238,20 @@ begin
   Result := Result + BUTTON_CAPTION_MARGIN;
   if Result < BUTTON_MIN_WITH then
     Result := BUTTON_MIN_WITH;
+end;
+
+function TICommandBarImpl.GetTextWidth(AFont: TFont;
+  const AText: string): integer;
+var
+  BM: TBitmap;
+begin
+  BM := TBitmap.Create;
+  try
+    BM.Canvas.Font := AFont;
+    Result := BM.Canvas.TextWidth(AText);
+  finally
+    BM.Free;
+  end;
 end;
 
 { TCommandActionLink }

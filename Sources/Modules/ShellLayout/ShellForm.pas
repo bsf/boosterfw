@@ -19,7 +19,7 @@ uses
    UIClasses,
   UserPreferencesPresenter, UserPreferencesView,
   AboutPresenter, AboutView,
-  CommonUtils, dxGDIPlusClasses, cxGroupBox, cxStyles, cxCustomData,
+  dxGDIPlusClasses, cxGroupBox, cxStyles, cxCustomData,
   cxFilter, cxData, cxDataStorage, DB, cxDBData, cxGridLevel,
   cxGridCustomView, cxGridCustomTableView, cxGridTableView,
   cxGridDBTableView, cxGrid, dxOffice11, UIServiceIntf,

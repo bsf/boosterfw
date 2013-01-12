@@ -2,7 +2,7 @@ unit SettingsPresenter;
 
 interface
 uses coreClasses, CustomContentPresenter, UIClasses, ShellIntf,
-  sysutils, Contnrs, classes, ConfigServiceIntf, db, CommonUtils,
+  sysutils, Contnrs, classes, ConfigServiceIntf, db,
   dxmdaset, EntityServiceIntf, variants, AdminConst, UIStr;
 
 const
@@ -26,6 +26,7 @@ type
     procedure InitAppSettingsData;
     procedure AppSettingsChangedHandler(AField: TField );
     procedure LoadAppSettingValue(AField: TField; ALevel: TSettingStorageLevel);
+    function NormalizeComponentName(const AName: string): string;
   protected
     procedure OnInit(Sender: IActivity); override;
     procedure OnViewReady; override;
@@ -173,6 +174,19 @@ begin
     else
       AField.Value := setting.GetStoredValue(ALevel);
   end;
+end;
+
+function TSettingsPresenter.NormalizeComponentName(const AName: string): string;
+const
+  Alpha = ['A'..'Z', 'a'..'z', '_'];
+  AlphaNumeric = Alpha + ['0'..'9'];
+var
+  I: Integer;
+begin
+  Result := AName;
+  for I := 1 to Length(Result) do
+    if not CharInSet(Result[I], AlphaNumeric) then
+      Result[I] := '_';
 end;
 
 procedure TSettingsPresenter.OnInit(Sender: IActivity);

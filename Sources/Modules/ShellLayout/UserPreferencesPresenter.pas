@@ -1,7 +1,7 @@
 unit UserPreferencesPresenter;
 interface
 uses coreClasses, CustomContentPresenter, UIClasses, cxCustomData, ShellIntf,
-  cxVGrid, sysutils, Contnrs, classes, ConfigServiceIntf, db, CommonUtils,
+  cxVGrid, sysutils, Contnrs, classes, ConfigServiceIntf, db,
   dxmdaset, EntityServiceIntf, variants, ShellLayoutStr, UIStr;
 
 
@@ -25,6 +25,7 @@ type
     procedure InitAppPreferencesData;
     procedure AppPreferencesChangedHandler(AField: TField);
     procedure LoadAppPreferenceValue(AField: TField);
+    function NormalizeComponentName(const AName: string): string;
   protected
     procedure OnInit(Activity: IActivity); override;
     procedure OnViewReady; override;
@@ -127,6 +128,20 @@ begin
     else
       AField.Value := setting.GetStoredValue(slUserProfile);
   end;
+end;
+
+function TUserPreferencesPresenter.NormalizeComponentName(
+  const AName: string): string;
+const
+  Alpha = ['A'..'Z', 'a'..'z', '_'];
+  AlphaNumeric = Alpha + ['0'..'9'];
+var
+  I: Integer;
+begin
+  Result := AName;
+  for I := 1 to Length(Result) do
+    if not CharInSet(Result[I], AlphaNumeric) then
+      Result[I] := '_';
 end;
 
 procedure TUserPreferencesPresenter.OnInit(Activity: IActivity);

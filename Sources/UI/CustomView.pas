@@ -8,7 +8,7 @@ uses
   cxGroupBox, CoreClasses, CustomPresenter, ShellIntf,
   ImgList, cxGraphics, ActnList, cxButtons,
   UIClasses, db, Contnrs, cxEdit, Typinfo, cxLookAndFeels, dxSkinsCore,
-  dxSkinsDefaultPainters, CommonUtils, inifiles, cxStyles;
+  dxSkinsDefaultPainters, inifiles, cxStyles;
 
 const
   const_PreferenceValueFileName = 'PreferenceValue.ini';

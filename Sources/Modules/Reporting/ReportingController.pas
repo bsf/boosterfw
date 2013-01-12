@@ -3,7 +3,7 @@ unit ReportingController;
 interface
 uses classes, CoreClasses,  sysutils, variants, Contnrs,
   ShellIntf, SecurityIntf, LicenseServiceIntf,
-  CommonUtils, ConfigServiceIntf, graphics, UIClasses,
+  ConfigServiceIntf, graphics, UIClasses,
   EntityServiceIntf, UIServiceIntf,
   ReportCatalogConst, ReportCatalogClasses,
   ReportLauncherPresenter, ReportLauncherView,
