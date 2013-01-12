@@ -2624,7 +2624,7 @@ begin
       xrgoPreserveRowHeight in Options, xroHideExcel in Report.Options);
   end
   else begin
-    IRange.Rows.Item[1, EmptyParam].Delete(xlShiftUp);
+    IRange.Rows.Item[1, EmptyParam].Delete(integer(xlShiftUp));
   end;
   // FRanges emulation
   FRanges := VarArrayCreate([1, 2], varVariant);

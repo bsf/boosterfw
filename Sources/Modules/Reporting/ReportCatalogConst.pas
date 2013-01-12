@@ -22,12 +22,6 @@ resourcestring
 
   strPagesLabelFmt = '%s from %s';
 
-const
-// VIEWS
-  VIEW_RPT_CATALOG = 'view.reports.catalog';
-  VIEW_RPT_CATALOG_CAPTION = 'Диспетчер отчетов';
-
-  VIEW_REPORT_ITEM_SETUP = 'views.reports.item.setup';
 
 type
   TReportProgressState = (rpsStart, rpsProcess, rpsFinish);

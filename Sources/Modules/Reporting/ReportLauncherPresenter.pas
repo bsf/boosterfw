@@ -148,6 +148,7 @@ procedure TReportLauncherPresenter.OnInit(Sender: IActivity);
   end;
 
 var
+  I: integer;
   layout: TReportLayout;
 begin
   FreeOnViewClose := false;
@@ -165,8 +166,9 @@ begin
   FLayoutDataSet := TdxMemData.Create(Self);
   LayoutDataSetCreateFields;
   FLayoutDataSet.Open;
-  for layout in FReportCatalogItem.Manifest.Layouts do
+  for I := 0 to FReportCatalogItem.Manifest.Layouts.Count - 1 do
   begin
+    layout := FReportCatalogItem.Manifest.Layouts[I];
     FLayoutDataSet.Append;
     FLayoutDataSet.FieldValues['ID'] := layout.ID;
     FLayoutDataSet.FieldValues['NAME'] := layout.Caption;
@@ -358,7 +360,7 @@ begin
     //Layouts
     initLayout := WorkItem.State[TReportLaunchParams.InitLayout];
 
-    if (initLayout <> '') and (FReportCatalogItem.Manifest.Layouts.IndexOf(initLayout) <> -1) then
+    if (initLayout <> '') and (FReportCatalogItem.Manifest.Layouts.Find(initLayout) <> nil) then
       FParamDataSet.FieldByName(REPORT_LAYOUT_PARAM).Value := initLayout;
 
     if FParamDataSet.FieldByName(REPORT_LAYOUT_PARAM).AsString = '' then

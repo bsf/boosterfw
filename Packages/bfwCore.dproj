@@ -86,7 +86,6 @@
 			<DCCReference Include="..\Sources\Core\Services.pas"/>
 			<DCCReference Include="..\Sources\Core\WindowWorkspace.pas"/>
 			<DCCReference Include="..\Sources\Core\Workspace.pas"/>
-			<DCCReference Include="..\Sources\Core\HashList.pas"/>
 			<DCCReference Include="..\Sources\Core\Activities.pas"/>
 			<DCCReference Include="..\Sources\Core\Workspaces.pas"/>
 			<DCCReference Include="..\Sources\Core\Items.pas"/>

@@ -1,7 +1,7 @@
 unit ReportCatalogClasses;
 
 interface
-uses Classes, sysutils, ComObj, inifiles, windows, Contnrs, HashList, Generics.Collections;
+uses Classes, sysutils, ComObj, inifiles, windows, Contnrs, Generics.Collections;
 
 const
   cnstReportManifestFileName = 'ReportManifest.ini';
@@ -66,13 +66,26 @@ type
     property Template: string read FTemplate;
   end;
 
+  TReportLayouts = class(TObject)
+  private
+    FItems: TObjectList;
+    function GetItem(AIndex: integer): TReportLayout;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    function Count: integer;
+    procedure Clear;
+    procedure Add(const AID, ACaption, ATemplate: string);
+    function Find(const AID: string): TReportLayout;
+    property Items[AIndex: integer]: TReportLayout read GetItem; default;
+  end;
 
   TReportCatalogManifest = class(TComponent)
   const
     BASE_REPORT_LAYOUT_CAPTION = 'Основной макет';
   private
     FParamNodes: TManifestParamNodes;
-    FLayouts: THashList<TReportLayout>;
+    FLayouts: TReportLayouts;
 
     FGroup: string;
     FCaption: string;
@@ -98,7 +111,7 @@ type
     property ID: string read FID write FID;
 
     property ParamNodes: TManifestParamNodes read FParamNodes;
-    property Layouts: THashList<TReportLayout> read FLayouts;
+    property Layouts: TReportLayouts read FLayouts;
     property ExtendCommands: TStrings read GetExtendCommands write SetExtendCommands;
   end;
 
@@ -558,7 +571,7 @@ begin
   inherited Create(AOwner);
   FParamNodes := TManifestParamNodes.Create;
   FExtendCommands := TStringList.Create;
-  FLayouts := THashList<TReportLayout>.Create;
+  FLayouts := TReportLayouts.Create;
 end;
 
 destructor TReportCatalogManifest.Destroy;
@@ -659,15 +672,15 @@ begin
 
   FLayouts.Clear;
 
-  FLayouts.Add(FID, TReportLayout.Create(FID, defLayoutCaption, FTemplate));
+  FLayouts.Add(FID, defLayoutCaption, FTemplate);
 
   GetSectionList('Layout.', Sections);
   for i := 0 to Sections.Count - 1 do
   begin
     nameID := StringReplace(Sections[I], 'Layout.', '', []);
-    FLayouts.Add(nameID, TReportLayout.Create(nameID,
+    FLayouts.Add(nameID,
       AManifest.ReadString(Sections[I], 'Caption', nameID),
-      AManifest.ReadString(Sections[I], 'Template', FTemplate)));
+      AManifest.ReadString(Sections[I], 'Template', FTemplate));
   end;
 
   Sections.Free;
@@ -777,6 +790,52 @@ begin
   FID := AID;
   FCaption := ACaption;
   FTemplate := ATemplate;
+end;
+
+{ TReportLayouts }
+
+procedure TReportLayouts.Add(const AID, ACaption, ATemplate: string);
+var
+  item: TReportLayout;
+begin
+  item := TReportLayout.Create(AID, ACaption, ATemplate);
+  FItems.Add(item);
+end;
+
+procedure TReportLayouts.Clear;
+begin
+  FItems.Clear;
+end;
+
+function TReportLayouts.Count: integer;
+begin
+  Result := FItems.Count;
+end;
+
+constructor TReportLayouts.Create;
+begin
+  FItems := TObjectList.Create(true);
+end;
+
+destructor TReportLayouts.Destroy;
+begin
+  FItems.Free;
+  inherited;
+end;
+
+function TReportLayouts.Find(const AID: string): TReportLayout;
+var
+  I: integer;
+begin
+  Result := nil;
+  for I := 0 to FItems.Count - 1 do
+    if SameText((FItems[I] as TReportLayout).FID, AID) then
+      Exit((FItems[I] as TReportLayout));
+end;
+
+function TReportLayouts.GetItem(AIndex: integer): TReportLayout;
+begin
+  Result := FItems[AIndex] as TReportLayout;
 end;
 
 end.

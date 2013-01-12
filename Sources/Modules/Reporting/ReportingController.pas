@@ -73,7 +73,7 @@ begin
 
   repItem := GetItem(AURI);
 
-  tmpl := repItem.Path + repItem.Manifest.Layouts[ALayout].Template;
+  tmpl := repItem.Path + repItem.Manifest.Layouts.Find(ALayout).Template;
 
   rLauncher := nil;
   for I := 0 to FFactories.Count - 1 do
@@ -120,7 +120,7 @@ procedure TReportingController.LoadCatalogItems;
 
   procedure LoadItem(AItem: TReportCatalogItem);
   var
-    I: integer;
+    I, Y: integer;
     repLayout: TReportLayout;
     layoutURI: string;
   begin
@@ -142,8 +142,9 @@ procedure TReportingController.LoadCatalogItems;
       Params.Value[REPORT_ACTIVITY_PARAM_LAUNCHMODE] := 0;
     end;
 
-    for repLayout in AItem.Manifest.Layouts do
+    for I := 0 to AItem.Manifest.Layouts.Count - 1 do
     begin
+      repLayout := AItem.Manifest.Layouts[I];
       if repLayout.ID = AItem.ID then Continue;
 
       layoutURI := format(REPORT_TO_ACTIVITY_URI_FMT, [AItem.ID, repLayout.ID]);
@@ -160,8 +161,8 @@ procedure TReportingController.LoadCatalogItems;
 
         Options.Values[REPORT_ACTIVITY_OPTION_REPORT_URI] := AItem.ID;
         Options.Values[REPORT_ACTIVITY_OPTION_REPORT_LAYOUT] := repLayout.ID;
-        for I := 0 to  AItem.Manifest.ParamNodes.Count - 1 do
-          Params.Value[AItem.Manifest.ParamNodes[I].Name] := Unassigned;
+        for Y := 0 to  AItem.Manifest.ParamNodes.Count - 1 do
+          Params.Value[AItem.Manifest.ParamNodes[Y].Name] := Unassigned;
       end;
 
     end;
