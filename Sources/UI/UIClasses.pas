@@ -95,7 +95,7 @@ type
 
   TPresenter = class(TWorkItemController)
   public
-    // called by ViewActivityBuilder
+    // called by TViewActivityHandler
     class procedure Execute(Sender: TWorkItem; Activity: IActivity; AViewClass: TViewClass); virtual; abstract;
   end;
 
@@ -117,15 +117,12 @@ type
   TViewCloseHandler = procedure of object;
   TViewCloseQueryHandler = procedure(var CanClose: boolean) of object;
 
- // TViewFocusedFieldChangedHandler = procedure(ADataSet: TDataSet);
-
   ICommandBar = interface;
 
   ICustomView = interface(IView)
   ['{5A77F2C8-C19A-4BD6-A8B0-E9F737BC4775}']
     function CommandBar: ICommandBar;
 
-    procedure FocusValueControl(const AName: string);
     procedure FocusDataSetControl(ADataSet: TDataSet; const AFieldName: string = '');
 
     function GetPreferencePath: string;

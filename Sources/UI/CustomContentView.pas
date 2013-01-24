@@ -16,7 +16,6 @@ type
     FICommandBarImpl: TICommandBarImpl;
   protected
     function CommandBar: ICommandBar; override;
-    procedure DoInitialize; override;
   end;
 
 
@@ -29,13 +28,9 @@ implementation
 
 function TfrCustomContentView.CommandBar: ICommandBar;
 begin
+  if FICommandBarImpl = nil then
+    FICommandBarImpl := TICommandBarImpl.Create(Self, WorkItem, pnButtons);
   Result := FICommandBarImpl as ICommandBar;
-end;
-
-procedure TfrCustomContentView.DoInitialize;
-begin
-  FICommandBarImpl := TICommandBarImpl.Create(Self, WorkItem, pnButtons);
-  inherited;
 end;
 
 

@@ -130,9 +130,6 @@ type
     procedure UnLinkDataSet(ADataSource: TDataSource);
     procedure FocusDataSetControl(ADataSet: TDataSet; const AFieldName: string; var Done: boolean);
 
-    function GetFocusedField(ADataSet: TDataSet; var Done: boolean): string;
-    procedure SetFocusedField(ADataSet: TDataSet; const AFieldName: string; var Done: boolean);
-
   public
     constructor Create(AOwner: TfrCustomView); override;
     destructor Destroy; override;
@@ -268,13 +265,6 @@ begin
     if col <> nil then
       col.Focused := true;
   end;
-end;
-
-function TcxGridViewHelper.GetFocusedField(ADataSet: TDataSet;
-  var Done: boolean): string;
-begin
-
-
 end;
 
 function TcxGridViewHelper.GetGridList: TComponentList;
@@ -757,12 +747,6 @@ begin
     _storage.Free;
     data.free;
   end;
-end;
-
-procedure TcxGridViewHelper.SetFocusedField(ADataSet: TDataSet;
-  const AFieldName: string; var Done: boolean);
-begin
-
 end;
 
 procedure TcxGridViewHelper.TuneGridForDataSet(AView: TcxCustomGridView;

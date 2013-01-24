@@ -95,9 +95,6 @@ type
     procedure LinkDataSet(ADataSource: TDataSource; ADataSet: TDataSet);
     procedure UnLinkDataSet(ADataSource: TDataSource);
     procedure FocusDataSetControl(ADataSet: TDataSet; const AFieldName: string; var Done: boolean);
-    function GetFocusedField(ADataSet: TDataSet; var Done: boolean): string;
-    procedure SetFocusedField(ADataSet: TDataSet; const AFieldName: string; var Done: boolean);
-
 
   public
     constructor Create(AOwner: TfrCustomView); override;
@@ -923,25 +920,6 @@ procedure TcxVGridViewHelper.Grid_OnEditValueChanged(Sender: TObject;
 begin
 end;
 
-
-function TcxVGridViewHelper.GetFocusedField(ADataSet: TDataSet;
-  var Done: boolean): string;
-var
-  grid: TcxDBVerticalGrid;
-  row: TcxCustomRow;//TcxDBEditorRow;
-begin
-  grid := FindGridByDataSet(ADataSet);
-  if Assigned(grid) then
-  begin
-    row := grid.FocusedRow;
-    if (row <> nil) and (row is TcxDBEditorRow) then
-      Result := (row as TcxDBEditorRow).Properties.DataBinding.FieldName
-    else
-      Result := '';
-    Done := true;
-  end;
-end;
-
 procedure TcxVGridViewHelper.SaveAllPreference;
 var
   I: integer;
@@ -998,12 +976,6 @@ begin
     _storage.Free;
     data.free;
   end;
-
-end;
-
-procedure TcxVGridViewHelper.SetFocusedField(ADataSet: TDataSet;
-  const AFieldName: string; var Done: boolean);
-begin
 
 end;
 

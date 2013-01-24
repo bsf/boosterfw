@@ -1,14 +1,16 @@
 inherited frSettingsView: TfrSettingsView
   Caption = 'frSettingsView'
   ClientHeight = 429
+  ExplicitWidth = 320
   ExplicitHeight = 457
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
+    ExplicitHeight = 429
     Height = 429
     object cxGroupBox1: TcxGroupBox
-      Left = 2
-      Top = 42
+      Left = 0
+      Top = 40
       Align = alTop
       PanelStyle.Active = True
       Style.BorderStyle = ebsNone
@@ -17,10 +19,8 @@ inherited frSettingsView: TfrSettingsView
       StyleFocused.LookAndFeel.Kind = lfOffice11
       StyleHot.LookAndFeel.Kind = lfOffice11
       TabOrder = 1
-      ExplicitLeft = -6
-      ExplicitTop = 66
       Height = 31
-      Width = 761
+      Width = 765
       object chCommonAppSettings: TcxRadioButton
         Left = 12
         Top = 8
@@ -58,26 +58,27 @@ inherited frSettingsView: TfrSettingsView
       end
     end
     object pcAppSettings: TcxPageControl
-      Left = 2
-      Top = 73
-      Width = 761
-      Height = 354
+      Left = 0
+      Top = 71
+      Width = 765
+      Height = 358
       Align = alClient
       Focusable = False
       TabOrder = 2
       Properties.ActivePage = tsCommonAppSettings
       LookAndFeel.Kind = lfOffice11
-      ExplicitLeft = 0
       ExplicitTop = 31
       ExplicitWidth = 753
       ExplicitHeight = 412
-      ClientRectBottom = 350
+      ClientRectBottom = 354
       ClientRectLeft = 4
-      ClientRectRight = 757
+      ClientRectRight = 761
       ClientRectTop = 24
       object tsCommonAppSettings: TcxTabSheet
         Caption = 'Common'
         ImageIndex = 0
+        ExplicitLeft = 0
+        ExplicitTop = 0
         ExplicitWidth = 745
         ExplicitHeight = 415
         object grCommonAppSettings: TcxDBVerticalGrid
@@ -107,6 +108,10 @@ inherited frSettingsView: TfrSettingsView
       object tsAliasAppSettings: TcxTabSheet
         Caption = 'Alias'
         ImageIndex = 1
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object cxDBVerticalGrid1: TcxDBVerticalGrid
           Left = 0
           Top = 0
@@ -132,6 +137,10 @@ inherited frSettingsView: TfrSettingsView
       object tsHostAppSettings: TcxTabSheet
         Caption = 'Host'
         ImageIndex = 2
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object cxDBVerticalGrid2: TcxDBVerticalGrid
           Left = 0
           Top = 0

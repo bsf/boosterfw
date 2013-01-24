@@ -3,8 +3,6 @@ inherited frCustomDialogView: TfrCustomDialogView
   Top = 260
   Caption = 'frCustomDialogView'
   OldCreateOrder = True
-  ExplicitWidth = 676
-  ExplicitHeight = 543
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
@@ -20,7 +18,6 @@ inherited frCustomDialogView: TfrCustomDialogView
       StyleFocused.LookAndFeel.Kind = lfOffice11
       StyleHot.LookAndFeel.Kind = lfOffice11
       TabOrder = 0
-      ExplicitTop = 478
       Height = 40
       Width = 670
     end

@@ -1,5 +1,7 @@
 inherited frEntityPickListView: TfrEntityPickListView
   Caption = 'frEntityPickListView'
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
@@ -64,6 +66,8 @@ inherited frEntityPickListView: TfrEntityPickListView
       object tsGridList: TcxTabSheet
         Caption = 'tsGridList'
         ImageIndex = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object grList: TcxGrid
           Left = 0
           Top = 0
@@ -95,6 +99,8 @@ inherited frEntityPickListView: TfrEntityPickListView
       object tsTreeList: TcxTabSheet
         Caption = 'tsTreeList'
         ImageIndex = 1
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object grTreeList: TcxDBTreeList
           Left = 0
           Top = 0
@@ -120,7 +126,6 @@ inherited frEntityPickListView: TfrEntityPickListView
     end
   end
   inherited ActionList: TActionList
-    Left = 62
     Top = 110
   end
   object ListDataSource: TDataSource

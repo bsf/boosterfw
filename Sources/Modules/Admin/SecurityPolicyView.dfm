@@ -14,19 +14,21 @@ inherited frSecurityPolicyView: TfrSecurityPolicyView
     Height = 645
     Width = 977
     inherited pnButtons: TcxGroupBox
-      ExplicitWidth = 973
-      Width = 973
+      ExplicitWidth = 977
+      Width = 977
     end
     object grPermissions: TcxGrid
-      Left = 2
-      Top = 42
+      Left = 0
+      Top = 40
       Width = 485
-      Height = 601
+      Height = 605
       Align = alLeft
       TabOrder = 1
       LookAndFeel.Kind = lfOffice11
+      ExplicitLeft = 2
+      ExplicitTop = 42
+      ExplicitHeight = 601
       object grPermissionsView: TcxGridTableView
-        NavigatorButtons.ConfirmDelete = False
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
         DataController.Summary.SummaryGroups = <>
@@ -60,15 +62,18 @@ inherited frSecurityPolicyView: TfrSecurityPolicyView
       end
     end
     object cxSplitter1: TcxSplitter
-      Left = 487
-      Top = 42
+      Left = 485
+      Top = 40
       Width = 8
-      Height = 601
+      Height = 605
       Control = grPermissions
+      ExplicitLeft = 487
+      ExplicitTop = 42
+      ExplicitHeight = 601
     end
     object TcxGroupBox
-      Left = 495
-      Top = 42
+      Left = 493
+      Top = 40
       Align = alClient
       PanelStyle.Active = True
       Style.BorderStyle = ebsNone
@@ -77,8 +82,8 @@ inherited frSecurityPolicyView: TfrSecurityPolicyView
       StyleFocused.LookAndFeel.Kind = lfOffice11
       StyleHot.LookAndFeel.Kind = lfOffice11
       TabOrder = 3
-      Height = 601
-      Width = 480
+      Height = 605
+      Width = 484
       object cxGroupBox2: TcxGroupBox
         Left = 2
         Top = 2
@@ -91,7 +96,7 @@ inherited frSecurityPolicyView: TfrSecurityPolicyView
         StyleHot.LookAndFeel.Kind = lfOffice11
         TabOrder = 0
         Height = 39
-        Width = 476
+        Width = 480
         object btUsersShowAll: TcxButton
           Left = 6
           Top = 6
@@ -133,13 +138,14 @@ inherited frSecurityPolicyView: TfrSecurityPolicyView
       object grUsers: TcxGrid
         Left = 2
         Top = 41
-        Width = 476
-        Height = 558
+        Width = 480
+        Height = 562
         Align = alClient
         TabOrder = 1
         LookAndFeel.Kind = lfOffice11
+        ExplicitWidth = 476
+        ExplicitHeight = 558
         object grUsersView: TcxGridTableView
-          NavigatorButtons.ConfirmDelete = False
           FilterBox.Visible = fvNever
           DataController.Options = [dcoAssignGroupingValues, dcoAssignMasterDetailKeys, dcoSaveExpanding, dcoImmediatePost]
           DataController.Summary.DefaultGroupSummaryItems = <>

@@ -28,10 +28,6 @@ type
     procedure ParamEditorValueChanged(Sender: TObject);
     procedure LayoutChanged(Sender: TObject);
   protected
-    //TCustomView
-    procedure OnFocusDataSetControl(ADataSet: TDataSet; const AFieldName: string;
-      var Done: boolean); override;
-
     //IReportLauncherView
     procedure LinkParamDataSet(const ADataSet: TDataSet);
     procedure InitParamEditor_DBLookup(const AParamName: string; ADataSet: TDataSet;
@@ -42,6 +38,7 @@ type
     procedure InitParamEditor_ButtonEdit(const AParamName, ACommandName: string);
     procedure InitLayoutEditor(const AParamName: string; ADataSet: TDataSet);
     procedure SetParamsStatus;
+    procedure FocusParamGrid;
   public
     { Public declarations }
   end;
@@ -200,6 +197,11 @@ begin
 
 end;
 
+procedure TfrReportLauncherView.FocusParamGrid;
+begin
+  GetParentForm(grParams).ActiveControl := grParams;
+end;
+
 procedure TfrReportLauncherView.InitLayoutEditor(const AParamName: string;
   ADataSet: TDataSet);
 var
@@ -329,22 +331,5 @@ begin
 
 end;
 
-procedure TfrReportLauncherView.OnFocusDataSetControl(ADataSet: TDataSet;
-  const AFieldName: string; var Done: boolean);
-var
-  grRow: TcxDBEditorRow;
-begin
-  if ParamDataSource.DataSet = ADataSet then
-  begin
-    Done := true;
-
-    //if grParams.CanFocus then grParams.SetFocus;
-    GetParentForm(grParams).ActiveControl := grParams;
-
-    grRow := FindParamEditor(AFieldName);
-    if Assigned(grRow) then
-      grParams.FocusRow(grRow);
-  end
-end;
 
 end.

@@ -57,7 +57,7 @@ type
     function RolesSelection: ISelection;
     function RoleUsersSelection: ISelection;
 
-    procedure OnInitialize; override;
+    procedure Initialize; override;
   end;
 
 implementation
@@ -180,7 +180,7 @@ begin
 
 end;
 
-procedure TfrUserAccountsView.OnInitialize;
+procedure TfrUserAccountsView.Initialize;
 begin
   pcMain.ActivePageIndex := 0;
 end;

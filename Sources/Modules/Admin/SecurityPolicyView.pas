@@ -42,7 +42,7 @@ type
     procedure ClearUserList;
     function PermissionSelection: ISelection;
     function UserSelection: ISelection;
-    procedure OnInitialize; override;
+    procedure Initialize; override;
   end;
 
 implementation
@@ -89,7 +89,7 @@ begin
   grUsersView.DataController.RecordCount := 0;
 end;
 
-procedure TfrSecurityPolicyView.OnInitialize;
+procedure TfrSecurityPolicyView.Initialize;
 begin
   with (grUsersPermissionState.Properties as TcxCustomCheckBoxProperties) do
   begin

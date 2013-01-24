@@ -38,9 +38,6 @@ type
     procedure UnLinkDataSet(ADataSource: TDataSource);
     procedure FocusDataSetControl(ADataSet: TDataSet; const AFieldName: string; var Done: boolean);
 
-    function GetFocusedField(ADataSet: TDataSet; var Done: boolean): string;
-    procedure SetFocusedField(ADataSet: TDataSet; const AFieldName: string; var Done: boolean);
-
   public
     constructor Create(AOwner: TfrCustomView); override;
     destructor Destroy; override;
@@ -65,13 +62,6 @@ end;
 
 procedure TcxTreeGridViewHelper.FocusDataSetControl(ADataSet: TDataSet;
   const AFieldName: string; var Done: boolean);
-begin
-
-end;
-
-
-function TcxTreeGridViewHelper.GetFocusedField(ADataSet: TDataSet;
-  var Done: boolean): string;
 begin
 
 end;
@@ -264,12 +254,6 @@ begin
     _storage.Free;
     data.free;
   end;
-
-end;
-
-procedure TcxTreeGridViewHelper.SetFocusedField(ADataSet: TDataSet;
-  const AFieldName: string; var Done: boolean);
-begin
 
 end;
 

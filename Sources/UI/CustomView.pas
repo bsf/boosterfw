@@ -37,9 +37,6 @@ type
     procedure LinkDataSet(ADataSource: TDataSource; ADataSet: TDataSet);
     procedure UnLinkDataSet(ADataSource: TDataSource);
     procedure FocusDataSetControl(ADataSet: TDataSet; const AFieldName: string; var Done: boolean);
-
-    function GetFocusedField(ADataSet: TDataSet; var Done: boolean): string;
-    procedure SetFocusedField(ADataSet: TDataSet; const AFieldName: string; var Done: boolean);
   end;
 
   TfrCustomView = class(TView, IView, ICustomView, IViewOwner)
@@ -80,12 +77,7 @@ type
     procedure LinkDataSet(ADataSource: TDataSource; ADataSet: TDataSet);
     procedure UnLinkDataSet(ADataSource: TDataSource);
 
-    procedure FocusValueControl(const AName: string);
     procedure FocusDataSetControl(ADataSet: TDataSet; const AFieldName: string = '');
-
-    function GetFocusedField(ADataSet: TDataSet): string;
-    procedure SetFocusedField(ADataSet: TDataSet; const AFieldName: string);
-
 
     function GetChildInterface(const AName: string): IInterface;
 
@@ -114,10 +106,6 @@ type
 
 
     //
-    procedure OnFocusDataSetControl(ADataSet: TDataSet; const AFieldName: string;
-      var Done: boolean); virtual;
-    procedure DoInitialize; virtual;
-    procedure OnInitialize; virtual;
     procedure Initialize; virtual;
   public
     constructor Create(APresenterWI: TWorkItem; const AViewURI: string); override;
@@ -157,7 +145,6 @@ end;
 
 { TfrCustomView }
 
-
 procedure TfrCustomView.ChangeScale(M, D: Integer);
 var
   I: integer;
@@ -166,8 +153,6 @@ begin
   for I := 0 to Self.ComponentCount - 1 do
     if Components[I] is TcxStyle then
       TcxStyle(Components[I]).Font.Size := MulDiv(TcxStyle(Components[I]).Font.Size, App.UI.Scale, 100);
-
-
 end;
 
 constructor TfrCustomView.Create(APresenterWI: TWorkItem; const AViewURI: string);
@@ -183,7 +168,6 @@ begin
   if not FAddonsInitialized then
     InitializeAddons;
 
-  DoInitialize;
   Initialize;
 end;
 
@@ -415,16 +399,6 @@ begin
   FDeactivateHandler := AHandler;
 end;
 
-procedure TfrCustomView.OnInitialize;
-begin
-
-end;
-
-procedure TfrCustomView.DoInitialize;
-begin
-  OnInitialize;
-end;
-
 procedure TfrCustomView.FocusDataSetControl(ADataSet: TDataSet; const AFieldName: string);
 var
   I: integer;
@@ -432,28 +406,12 @@ var
   Done: boolean;
 begin
   Done := false;
-  OnFocusDataSetControl(ADataSet, AFieldName, Done);
-
-  if not Done then
+  _helpers := GetHelperList(IViewDataSetHelper);
+  for I := 0 to _helpers.Count - 1 do
   begin
-    _helpers := GetHelperList(IViewDataSetHelper);
-    for I := 0 to _helpers.Count - 1 do
-    begin
-      IViewDataSetHelper(_helpers[I]).FocusDataSetControl(ADataSet, AFieldName, Done);
-      if Done then Break;
-    end;
+    IViewDataSetHelper(_helpers[I]).FocusDataSetControl(ADataSet, AFieldName, Done);
+    if Done then Break;
   end;
-end;
-
-procedure TfrCustomView.FocusValueControl(const AName: string);
-begin
-
-end;
-
-procedure TfrCustomView.OnFocusDataSetControl(ADataSet: TDataSet;
-  const AFieldName: string; var Done: boolean);
-begin
-
 end;
 
 procedure TfrCustomView.SetShowHandler(AHandler: TViewShowHandler);
@@ -495,17 +453,6 @@ begin
     IViewDataSetHelper(_helpers[I]).LinkDataSet(ADataSource, ADataSet);
 end;
 
-
-function TfrCustomView.GetFocusedField(ADataSet: TDataSet): string;
-begin
-
-end;
-
-procedure TfrCustomView.SetFocusedField(ADataSet: TDataSet;
-  const AFieldName: string);
-begin
-
-end;
 
 
 { TViewHelper }

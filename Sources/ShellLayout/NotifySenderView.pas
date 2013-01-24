@@ -22,7 +22,7 @@ type
     procedure GetSelectedUsers(AList: TStringList);
     function GetNotifyText: string;
 
-    procedure OnInitialize; override;
+    procedure Initialize; override;
   public
     destructor Destroy; override;
   end;
@@ -65,7 +65,7 @@ begin
       AList.Add(FUsersID[lbUsers.Items[I].Tag]);
 end;
 
-procedure TfrNotifySenderView.OnInitialize;
+procedure TfrNotifySenderView.Initialize;
 begin
   FUsersID := TStringList.Create;
 end;

@@ -5,6 +5,7 @@ inherited frUserAccountsView: TfrUserAccountsView
   ClientHeight = 572
   ClientWidth = 1155
   ExplicitWidth = 1161
+  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
@@ -13,26 +14,31 @@ inherited frUserAccountsView: TfrUserAccountsView
     Height = 572
     Width = 1155
     inherited pnButtons: TcxGroupBox
-      ExplicitWidth = 1151
-      Width = 1151
+      ExplicitWidth = 1155
+      Width = 1155
     end
     object pcMain: TcxPageControl
-      Left = 2
-      Top = 42
-      Width = 1151
-      Height = 528
+      Left = 0
+      Top = 40
+      Width = 1155
+      Height = 532
       Align = alClient
       TabOrder = 1
       Properties.ActivePage = tsUsers
       LookAndFeel.Kind = lfOffice11
       LookAndFeel.NativeStyle = False
-      ClientRectBottom = 528
-      ClientRectRight = 1151
+      ExplicitLeft = 2
+      ExplicitTop = 42
+      ExplicitWidth = 1151
+      ExplicitHeight = 528
+      ClientRectBottom = 532
+      ClientRectRight = 1155
       ClientRectTop = 24
       object tsUsers: TcxTabSheet
         Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1080
         ImageIndex = 0
         ExplicitLeft = 4
+        ExplicitTop = 0
         ExplicitWidth = 1143
         ExplicitHeight = 500
         object grUsers: TcxGrid

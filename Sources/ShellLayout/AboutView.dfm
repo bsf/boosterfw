@@ -8,7 +8,7 @@ inherited frAboutView: TfrAboutView
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
     ExplicitWidth = 695
-    ExplicitHeight = 521
+    ExplicitHeight = 533
     Height = 533
     Width = 695
     object cxGroupBox2: TcxGroupBox
@@ -23,7 +23,6 @@ inherited frAboutView: TfrAboutView
       StyleFocused.LookAndFeel.Kind = lfOffice11
       StyleHot.LookAndFeel.Kind = lfOffice11
       TabOrder = 0
-      ExplicitHeight = 521
       Height = 533
       Width = 407
       object cxGroupBox1: TcxGroupBox
@@ -858,7 +857,6 @@ inherited frAboutView: TfrAboutView
         StyleFocused.LookAndFeel.Kind = lfOffice11
         StyleHot.LookAndFeel.Kind = lfOffice11
         TabOrder = 3
-        ExplicitTop = 399
         Height = 108
         Width = 397
         object cxLabel9: TcxLabel
@@ -895,10 +893,6 @@ inherited frAboutView: TfrAboutView
           StyleFocused.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.Kind = lfOffice11
           TabOrder = 1
-          ExplicitLeft = 32
-          ExplicitTop = 48
-          ExplicitWidth = 185
-          ExplicitHeight = 89
           Height = 88
           Width = 397
         end

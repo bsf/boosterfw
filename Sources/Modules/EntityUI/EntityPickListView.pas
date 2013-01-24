@@ -46,7 +46,7 @@ type
     procedure SetListDataSet(ADataSet: TDataSet);
     procedure SetViewMode(AViewMode: TPickListViewMode);
     procedure SetCanParentSelect(AValue: boolean);
-    procedure OnInitialize; override;
+    procedure Initialize; override;
   end;
 
 
@@ -177,7 +177,7 @@ begin
     WorkItem.Commands[COMMAND_OK].Execute;
 end;
 
-procedure TfrEntityPickListView.OnInitialize;
+procedure TfrEntityPickListView.Initialize;
 begin
   WorkItem.Commands[COMMAND_OK].RegisterCondition(CmdOKCondition);
 end;

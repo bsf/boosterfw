@@ -55,7 +55,7 @@ type
     function GetPreviewObject: TfrxPreview;
     procedure MarkPrinted;
     //
-    procedure OnInitialize; override;
+    procedure Initialize; override;
   end;
 
 implementation
@@ -108,7 +108,7 @@ begin
   cmd.Execute;
 end;
 
-procedure TfrfrReportPreviewView.OnInitialize;
+procedure TfrfrReportPreviewView.Initialize;
 begin
   miZoomPageWidth.Caption := GetLocaleString(@strZoomPageWidth);
   miZoomWholePage.Caption := GetLocaleString(@strZoomWholePage);

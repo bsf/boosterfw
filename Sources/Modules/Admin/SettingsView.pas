@@ -32,7 +32,7 @@ type
   private
   protected
     procedure BindAppSettingsData(ACommonData, AAliasData, AHostData: TDataSet);
-    procedure OnInitialize; override;
+    procedure Initialize; override;
   end;
 
 
@@ -57,7 +57,7 @@ begin
   pcAppSettings.ActivePageIndex := TcxRadioButton(Sender).Tag;
 end;
 
-procedure TfrSettingsView.OnInitialize;
+procedure TfrSettingsView.Initialize;
 begin
   pcAppSettings.HideTabs := true;
   pcAppSettings.ActivePageIndex := 0;

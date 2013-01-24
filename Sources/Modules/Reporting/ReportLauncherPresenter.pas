@@ -29,6 +29,7 @@ type
 
     procedure InitLayoutEditor(const AParamName: string; ADataSet: TDataSet);
     procedure SetParamsStatus;
+    procedure FocusParamGrid;
   end;
 
 
@@ -204,8 +205,7 @@ end;
 procedure TReportLauncherPresenter.OnViewShow;
 begin
  // InitParamValues;
-
-  GetView.FocusDataSetControl(FParamDataSet);
+  View.FocusParamGrid;
 end;
 procedure TReportLauncherPresenter.InitParamDataSet;
   procedure CreateField(AParam: TManifestParamNode);

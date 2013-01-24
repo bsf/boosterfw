@@ -12,8 +12,8 @@ inherited frNotifySenderView: TfrNotifySenderView
     Height = 330
     Width = 476
     inherited pnButtons: TcxGroupBox
-      Top = 293
-      ExplicitTop = 293
+      Top = 290
+      ExplicitTop = 290
       ExplicitWidth = 476
       Width = 476
     end
@@ -64,7 +64,7 @@ inherited frNotifySenderView: TfrNotifySenderView
       StyleFocused.LookAndFeel.Kind = lfOffice11
       StyleHot.LookAndFeel.Kind = lfOffice11
       TabOrder = 2
-      Height = 108
+      Height = 105
       Width = 476
       object mmText: TcxMemo
         Left = 2
@@ -75,7 +75,7 @@ inherited frNotifySenderView: TfrNotifySenderView
         StyleFocused.LookAndFeel.Kind = lfOffice11
         StyleHot.LookAndFeel.Kind = lfOffice11
         TabOrder = 0
-        Height = 88
+        Height = 85
         Width = 472
       end
     end

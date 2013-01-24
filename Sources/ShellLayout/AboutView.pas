@@ -41,7 +41,7 @@ type
     procedure SetContactInfo(const AValue: TStrings);
     procedure SetClientID(const Value: string);
     //
-    procedure OnInitialize; override;
+    procedure Initialize; override;
   public
     { Public declarations }
   end;
@@ -60,7 +60,7 @@ begin
   WorkItem.Commands[COMMAND_CLOSE].Execute;
 end;
 
-procedure TfrAboutView.OnInitialize;
+procedure TfrAboutView.Initialize;
 begin
   if App.UI.Locale = 'ru-RU' then
   begin
