@@ -117,7 +117,7 @@ type
   TViewCloseHandler = procedure of object;
   TViewCloseQueryHandler = procedure(var CanClose: boolean) of object;
 
-  TViewFocusedFieldChangedHandler = procedure(ADataSet: TDataSet);
+ // TViewFocusedFieldChangedHandler = procedure(ADataSet: TDataSet);
 
   ICommandBar = interface;
 

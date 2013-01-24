@@ -40,15 +40,6 @@ type
 
     function GetFocusedField(ADataSet: TDataSet; var Done: boolean): string;
     procedure SetFocusedField(ADataSet: TDataSet; const AFieldName: string; var Done: boolean);
-    procedure SetFocusedFieldChangedHandler(AHandler: TViewFocusedFieldChangedHandler; var Done: boolean);
-
-  end;
-
-
-
-  TStubControl = class(TControl)
-  public
-     procedure ChangeScale(M, D: Integer);  override;
   end;
 
   TfrCustomView = class(TView, IView, ICustomView, IViewOwner)
@@ -94,7 +85,7 @@ type
 
     function GetFocusedField(ADataSet: TDataSet): string;
     procedure SetFocusedField(ADataSet: TDataSet; const AFieldName: string);
-    procedure SetFocusedFieldChangedHandler(AHandler: TViewFocusedFieldChangedHandler);
+
 
     function GetChildInterface(const AName: string): IInterface;
 
@@ -516,11 +507,6 @@ begin
 
 end;
 
-procedure TfrCustomView.SetFocusedFieldChangedHandler(
-  AHandler: TViewFocusedFieldChangedHandler);
-begin
-
-end;
 
 { TViewHelper }
 
@@ -534,11 +520,5 @@ begin
   Result := TfrCustomView(Owner);
 end;
 
-{ TStubControl }
-
-procedure TStubControl.ChangeScale(M, D: Integer);
-begin
-  inherited ChangeScale(M, D);
-end;
 
 end.

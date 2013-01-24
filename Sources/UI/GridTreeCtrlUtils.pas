@@ -40,7 +40,6 @@ type
 
     function GetFocusedField(ADataSet: TDataSet; var Done: boolean): string;
     procedure SetFocusedField(ADataSet: TDataSet; const AFieldName: string; var Done: boolean);
-    procedure SetFocusedFieldChangedHandler(AHandler: TViewFocusedFieldChangedHandler; var Done: boolean);
 
   public
     constructor Create(AOwner: TfrCustomView); override;
@@ -270,12 +269,6 @@ end;
 
 procedure TcxTreeGridViewHelper.SetFocusedField(ADataSet: TDataSet;
   const AFieldName: string; var Done: boolean);
-begin
-
-end;
-
-procedure TcxTreeGridViewHelper.SetFocusedFieldChangedHandler(
-  AHandler: TViewFocusedFieldChangedHandler; var Done: boolean);
 begin
 
 end;
