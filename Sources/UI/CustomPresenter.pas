@@ -35,6 +35,9 @@ type
     procedure ViewValueChangedHandler(const AName: string);
     procedure SetCallerURI(const Value: string);
     procedure CmdUpdateCommandStatus(Sender: TObject);
+
+    function GetEntityViewValue(AWorkItem: TWorkItem; const AName: string;
+      var Done: boolean): Variant;
   protected
     class function GetWorkspaceDefault: string; virtual;
 
@@ -83,6 +86,10 @@ type
     procedure OnUpdateCommandStatus; virtual;
   public
     class procedure Execute(Sender: TWorkItem; Activity: IActivity; AViewClass: TViewClass); override;
+
+    //TODO: move to protected section
+    function EntityName: string;
+    function EntityViewName: string;
 
   end;
 
@@ -292,6 +299,48 @@ begin
   Result := WorkItem.Root.WorkItems.Find(FCallerURI);
 end;
 
+function TCustomPresenter.GetEntityViewValue(AWorkItem: TWorkItem;
+  const AName: string; var Done: boolean): Variant;
+const
+  ENTITY_VIEW_VALUE_PREFIX = 'EV.';
+
+var
+  evName: string;
+  fieldName: string;
+  tmpStr: string;
+  Svc: IEntityService;
+  entityView: IEntityView;
+begin
+  Result := Unassigned;
+
+  if not AnsiStartsText(ENTITY_VIEW_VALUE_PREFIX, AName) then Exit;
+
+  tmpStr := StringReplace(AName, ENTITY_VIEW_VALUE_PREFIX, '', [rfIgnoreCase]);
+
+  if EntityName = '' then Exit;
+
+  evName := AnsiLeftStr(tmpStr, Pos('.', tmpStr) - 1);
+  fieldName :=  AnsiRightStr(tmpStr, Length(tmpStr) - Pos('.', tmpStr));
+
+  if evName = '' then Exit;
+
+  Svc := AWorkItem.Services[IEntityService] as IEntityService;
+
+  if not Svc.EntityViewExists(entityName, evName) then Exit;
+
+  entityView := Svc.Entity[entityName].GetView(evName, AWorkItem);
+
+  if not entityView.IsLoaded then Exit;
+   // entityView.Load(); //Exit;  !!! AV on destroy form
+
+  if entityView.DataSet.FindField(fieldName) <> nil then
+  begin
+    Done := true;
+    Result := entityView.DataSet[fieldName];
+  end;
+
+end;
+
 function TCustomPresenter.GetEView(const AEntityName,
   AEntityViewName: string): IEntityView;
 begin
@@ -344,6 +393,9 @@ end;
 
 function TCustomPresenter.OnGetWorkItemState(const AName: string; var Done: boolean): Variant;
 begin
+  Result := GetEntityViewValue(WorkItem, AName, Done);
+  if Done then Exit;
+
   if Assigned(FView) then
   begin
     Result := GetView.Value[AName];
@@ -406,6 +458,16 @@ procedure TCustomPresenter.Deactivate;
 begin
 
 
+end;
+
+function TCustomPresenter.EntityName: string;
+begin
+  Result := ViewInfo.OptionValue(TViewActivityOptions.EntityName);
+end;
+
+function TCustomPresenter.EntityViewName: string;
+begin
+  Result := ViewInfo.OptionValue(TViewActivityOptions.EntityViewName);
 end;
 
 class procedure TCustomPresenter.Execute(Sender: TWorkItem; Activity: IActivity;
