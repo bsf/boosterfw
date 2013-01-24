@@ -2,7 +2,7 @@ unit ShellIntf;
 
 interface
 
-uses  windows, graphics, forms, jpeg, CoreClasses, ConfigServiceIntf, CustomApp,
+uses  windows, graphics, forms, Vcl.Imaging.jpeg, CoreClasses, ConfigServiceIntf, CustomApp,
   EntityServiceIntf, SecurityIntf, UIServiceIntf;
 
 const

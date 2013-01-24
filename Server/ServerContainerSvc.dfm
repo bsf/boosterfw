@@ -15,6 +15,7 @@ object ServerContainer2: TServerContainer2
     Server = DSServer1
     BufferKBSize = 32
     Filters = <>
+    KeepAliveEnablement = kaDefault
     Left = 48
     Top = 81
   end

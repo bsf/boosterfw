@@ -7,7 +7,7 @@ uses
   SvcMgr, 
   DSTCPServerTransport,
   DSHTTPCommon, DSHTTP,
-  DSServer, DSCommonServer, DSAuth; 
+  DSServer, DSCommonServer, DSAuth, IndyPeerImpl;
 
 type
   TServerContainer2 = class(TService)

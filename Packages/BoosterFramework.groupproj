@@ -30,16 +30,13 @@
 			<Projects Include="bfwInterfaces.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="bfwShell.dproj">
-				<Dependencies/>
-			</Projects>
 			<Projects Include="bfwUI.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="bfwUITemplates.dproj">
+			<Projects Include="bfwShell.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="Modules\bfwShellLayout.dproj">
+			<Projects Include="bfwShellLayout.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="Modules\bfwReportingModule.dproj">
@@ -143,15 +140,6 @@
 		<Target Name="bfwInterfaces:Make">
 			<MSBuild Projects="bfwInterfaces.dproj" Targets="Make"/>
 		</Target>
-		<Target Name="bfwShell">
-			<MSBuild Projects="bfwShell.dproj"/>
-		</Target>
-		<Target Name="bfwShell:Clean">
-			<MSBuild Projects="bfwShell.dproj" Targets="Clean"/>
-		</Target>
-		<Target Name="bfwShell:Make">
-			<MSBuild Projects="bfwShell.dproj" Targets="Make"/>
-		</Target>
 		<Target Name="bfwUI">
 			<MSBuild Projects="bfwUI.dproj"/>
 		</Target>
@@ -161,23 +149,23 @@
 		<Target Name="bfwUI:Make">
 			<MSBuild Projects="bfwUI.dproj" Targets="Make"/>
 		</Target>
-		<Target Name="bfwUITemplates">
-			<MSBuild Projects="bfwUITemplates.dproj"/>
+		<Target Name="bfwShell">
+			<MSBuild Projects="bfwShell.dproj"/>
 		</Target>
-		<Target Name="bfwUITemplates:Clean">
-			<MSBuild Projects="bfwUITemplates.dproj" Targets="Clean"/>
+		<Target Name="bfwShell:Clean">
+			<MSBuild Projects="bfwShell.dproj" Targets="Clean"/>
 		</Target>
-		<Target Name="bfwUITemplates:Make">
-			<MSBuild Projects="bfwUITemplates.dproj" Targets="Make"/>
+		<Target Name="bfwShell:Make">
+			<MSBuild Projects="bfwShell.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="bfwShellLayout">
-			<MSBuild Projects="Modules\bfwShellLayout.dproj"/>
+			<MSBuild Projects="bfwShellLayout.dproj"/>
 		</Target>
 		<Target Name="bfwShellLayout:Clean">
-			<MSBuild Projects="Modules\bfwShellLayout.dproj" Targets="Clean"/>
+			<MSBuild Projects="bfwShellLayout.dproj" Targets="Clean"/>
 		</Target>
 		<Target Name="bfwShellLayout:Make">
-			<MSBuild Projects="Modules\bfwShellLayout.dproj" Targets="Make"/>
+			<MSBuild Projects="bfwShellLayout.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="bfwReportingModule">
 			<MSBuild Projects="Modules\bfwReportingModule.dproj"/>
@@ -216,13 +204,13 @@
 			<MSBuild Projects="Modules\bfwServeModule.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="BoosterConfigTool;BoosterKeyGen;BoosterLServer;BoosterServerWin;BoosterServerSvc;BoosterUpdater;BoosterLauncher;bfwCore;bfwInterfaces;bfwShell;bfwUI;bfwUITemplates;bfwShellLayout;bfwReportingModule;bfwEntityUIModule;bfwAdminModule;bfwServeModule"/>
+			<CallTarget Targets="BoosterConfigTool;BoosterKeyGen;BoosterLServer;BoosterServerWin;BoosterServerSvc;BoosterUpdater;BoosterLauncher;bfwCore;bfwInterfaces;bfwUI;bfwShell;bfwShellLayout;bfwReportingModule;bfwEntityUIModule;bfwAdminModule;bfwServeModule"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="BoosterConfigTool:Clean;BoosterKeyGen:Clean;BoosterLServer:Clean;BoosterServerWin:Clean;BoosterServerSvc:Clean;BoosterUpdater:Clean;BoosterLauncher:Clean;bfwCore:Clean;bfwInterfaces:Clean;bfwShell:Clean;bfwUI:Clean;bfwUITemplates:Clean;bfwShellLayout:Clean;bfwReportingModule:Clean;bfwEntityUIModule:Clean;bfwAdminModule:Clean;bfwServeModule:Clean"/>
+			<CallTarget Targets="BoosterConfigTool:Clean;BoosterKeyGen:Clean;BoosterLServer:Clean;BoosterServerWin:Clean;BoosterServerSvc:Clean;BoosterUpdater:Clean;BoosterLauncher:Clean;bfwCore:Clean;bfwInterfaces:Clean;bfwUI:Clean;bfwShell:Clean;bfwShellLayout:Clean;bfwReportingModule:Clean;bfwEntityUIModule:Clean;bfwAdminModule:Clean;bfwServeModule:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="BoosterConfigTool:Make;BoosterKeyGen:Make;BoosterLServer:Make;BoosterServerWin:Make;BoosterServerSvc:Make;BoosterUpdater:Make;BoosterLauncher:Make;bfwCore:Make;bfwInterfaces:Make;bfwShell:Make;bfwUI:Make;bfwUITemplates:Make;bfwShellLayout:Make;bfwReportingModule:Make;bfwEntityUIModule:Make;bfwAdminModule:Make;bfwServeModule:Make"/>
+			<CallTarget Targets="BoosterConfigTool:Make;BoosterKeyGen:Make;BoosterLServer:Make;BoosterServerWin:Make;BoosterServerSvc:Make;BoosterUpdater:Make;BoosterLauncher:Make;bfwCore:Make;bfwInterfaces:Make;bfwUI:Make;bfwShell:Make;bfwShellLayout:Make;bfwReportingModule:Make;bfwEntityUIModule:Make;bfwAdminModule:Make;bfwServeModule:Make"/>
 		</Target>
 		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" Project="$(BDS)\Bin\CodeGear.Group.Targets"/>
 	</Project>
