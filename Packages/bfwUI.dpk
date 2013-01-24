@@ -55,7 +55,6 @@ requires
   cxVerticalGridRS16;
 
 contains
-  CommonUtils in '..\Sources\UI\CommonUtils.pas',
   UIClasses in '..\Sources\UI\UIClasses.pas',
   CustomContentPresenter in '..\Sources\UI\CustomContentPresenter.pas',
   CustomDialogPresenter in '..\Sources\UI\CustomDialogPresenter.pas',

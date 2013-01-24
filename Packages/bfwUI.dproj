@@ -102,7 +102,6 @@
 			<DCCReference Include="cxTreeListdxBarPopupMenuRS16.dcp"/>
 			<DCCReference Include="dxSkinsCoreRS16.dcp"/>
 			<DCCReference Include="cxVerticalGridRS16.dcp"/>
-			<DCCReference Include="..\Sources\UI\CommonUtils.pas"/>
 			<DCCReference Include="..\Sources\UI\UIClasses.pas"/>
 			<DCCReference Include="..\Sources\UI\CustomContentPresenter.pas"/>
 			<DCCReference Include="..\Sources\UI\CustomDialogPresenter.pas"/>

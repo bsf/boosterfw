@@ -349,7 +349,6 @@ type
     constructor Create(AParent: TWorkItem;
       const AID: string; AControllerClass: TControllerClass); reintroduce;
     destructor Destroy; override;
-    procedure Assign(Source: TPersistent); override;
     procedure Run;
     procedure Activate;
     procedure Deactivate;
@@ -374,8 +373,6 @@ type
 procedure RegisterModule(ModuleClass: TModuleClass);
 function ModuleClasses: TClassList;
 
-function FindWorkItem(const AID: string; AParent: TWorkItem): TWorkItem;
-
 function GetLocaleString(AResStr: Pointer): string;
 procedure SetLocaleString(AResStr: Pointer; const Value: string);
 
@@ -397,25 +394,6 @@ end;
 procedure RegisterModule(ModuleClass: TModuleClass);
 begin
   ModuleClasses.Add(ModuleClass);
-end;
-
-function FindWorkItem(const AID: string; AParent: TWorkItem): TWorkItem;
-var
-  I: integer;
-begin
-  Result := nil;
-
-  if AParent.ID = AID then
-  begin
-    Result := AParent;
-    Exit;
-  end;
-
-  for I := 0 to AParent.WorkItems.Count - 1 do
-  begin
-    Result := FindWorkItem(AID, AParent.WorkItems[I]);
-    if Assigned(Result) then Exit;
-  end;
 end;
 
 var
@@ -473,25 +451,6 @@ begin
   ChangeStatus(wisActive);
   if Assigned(FController) then
     FController.Activate;
-
-end;
-
-procedure TWorkItem.Assign(Source: TPersistent);
-var
-  I, Count: integer;
-  TempList: PPropList;
-  PropInfo: PPropInfo;
-begin
-
-  if Source = nil then
-    raise Exception.Create('Source object is nil.');
-
-  Count := GetPropList(Self, TempList);
-  for I := 0 to Count - 1 do
-  begin
-    PropInfo := TempList^[I];
-    State[string(PropInfo^.Name)] := GetPropValue(Source, string(PropInfo^.Name));
-  end
 
 end;
 
