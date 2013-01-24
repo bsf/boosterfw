@@ -117,24 +117,13 @@ type
   TViewCloseHandler = procedure of object;
   TViewCloseQueryHandler = procedure(var CanClose: boolean) of object;
 
-  TViewValueChangedHandler = procedure(const AName: string) of object;
   TViewFocusedFieldChangedHandler = procedure(ADataSet: TDataSet);
-
-  TValueStatus = (vsEnabled, vsDisabled, vsUnavailable);
 
   ICommandBar = interface;
 
   ICustomView = interface(IView)
   ['{5A77F2C8-C19A-4BD6-A8B0-E9F737BC4775}']
     function CommandBar: ICommandBar;
-
-    function GetValue(const AName: string): Variant;
-    procedure SetValue(const AName: string; AValue: Variant);
-    property Value[const AName: string]: Variant read GetValue write SetValue; default;
-
-    function GetValueStatus(const AName: string): TValueStatus;
-    procedure SetValueStatus(const AName: string; AStatus: TValueStatus);
-    property ValueStatus[const AName: string]: TValueStatus read GetValueStatus write SetValueStatus;
 
     procedure FocusValueControl(const AName: string);
     procedure FocusDataSetControl(ADataSet: TDataSet; const AFieldName: string = '');
@@ -150,7 +139,6 @@ type
     procedure SetShowHandler(AHandler: TViewShowHandler);
     procedure SetCloseHandler(AHandler: TViewCloseHandler);
     procedure SetCloseQueryHandler(AHandler: TViewCloseQueryHandler);
-    procedure SetValueChangedHandler(AHandler: TViewValueChangedHandler);
   end;
 
 //------------------------------------------------------------------------------
@@ -243,17 +231,6 @@ type
   TViewActivityOuts = record
   const
     ModalResult = 'ModalResult';
-  end;
-
-  TPickListActivityParams = record
-  const
-    Filter = 'FILTER';
-  end;
-
-  TPickListActivityOuts = record
-  const
-    ID = 'ID';
-    NAME = 'NAME';
   end;
 
   TViewActivityHandler = class(TActivityHandler)

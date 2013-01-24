@@ -19,7 +19,6 @@ type
     FFreeOnViewClose: boolean;
     FViewVisible: boolean;
     FViewHidden: boolean;
-    FViewValueSetting: boolean;
     FCallerURI: string;
     procedure SetViewTitle(const Value: string);
 
@@ -32,7 +31,6 @@ type
     procedure ViewCloseHandler;
     procedure ViewCloseQueryHandler(var CanClose: boolean);
 
-    procedure ViewValueChangedHandler(const AName: string);
     procedure SetCallerURI(const Value: string);
     procedure CmdUpdateCommandStatus(Sender: TObject);
 
@@ -56,7 +54,6 @@ type
     procedure OnViewShow; virtual;
     procedure OnViewClose; virtual;
     procedure OnViewCloseQuery(var CanClose: boolean); virtual;
-    procedure OnViewValueChanged(const AName: string); virtual;
 
     //
     function GetViewURI: string;
@@ -201,7 +198,6 @@ begin
   end;
 
   WorkItem.Commands[COMMAND_CLOSE].SetHandler(CmdClose);
- // WorkItem.Commands[COMMAND_CLOSE].Caption := GetLocaleString(@COMMAND_CLOSE_CAPTION);
   WorkItem.Commands[COMMAND_CLOSE].ShortCut := COMMAND_CLOSE_SHORTCUT;
 
   WorkItem.Commands[COMMAND_RELOAD_CALLER].SetHandler(CmdReloadCaller);
@@ -209,7 +205,6 @@ begin
   GetView.SetShowHandler(ViewShowHandler);
   GetView.SetCloseHandler(ViewCloseHandler);
   GetView.SetCloseQueryHandler(ViewCloseQueryHandler);
-  GetView.SetValueChangedHandler(ViewValueChangedHandler);
 
   OnInit(Activity);
   OnViewReady;
@@ -361,20 +356,6 @@ begin
   FWorkspace.Show(viewIntf.GetViewControl, FViewTitle);
 end;
 
-procedure TCustomPresenter.ViewValueChangedHandler(const AName: string);
-begin
-  if not FViewValueSetting then
-  begin
-    WorkItem.State[AName] := GetView.Value[AName];
-    OnViewValueChanged(AName);
-  end;
-end;
-
-procedure TCustomPresenter.OnViewValueChanged(const AName: string);
-begin
-
-end;
-
 procedure TCustomPresenter.ReInit(Activity: IActivity);
 begin
   Activity.Params.AssignTo(WorkItem);
@@ -395,26 +376,11 @@ function TCustomPresenter.OnGetWorkItemState(const AName: string; var Done: bool
 begin
   Result := GetEntityViewValue(WorkItem, AName, Done);
   if Done then Exit;
-
-  if Assigned(FView) then
-  begin
-    Result := GetView.Value[AName];
-    Done := not VarIsEmpty(Result);
-  end;
 end;
 
 procedure TCustomPresenter.OnSetWorkItemState(const AName: string;
   const Value: Variant; var Done: boolean);
 begin
-  if Assigned(FView) then
-  begin
-    FViewValueSetting := true;
-    try
-      GetView.Value[AName] := Value;
-    finally
-      FViewValueSetting := false;
-    end;
-  end;
 end;
 
 procedure TCustomPresenter.Terminate;

@@ -37,7 +37,7 @@ object frCustomView: TfrCustomView
     Width = 670
   end
   object ActionList: TActionList
-    Left = 70
+    Left = 62
     Top = 118
   end
 end

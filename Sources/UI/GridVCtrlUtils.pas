@@ -15,10 +15,21 @@ const
   EDITOR_DATA_POPUP = 'Popup';
 
 type
+  TPickListActivityParams = record
+  const
+    Filter = 'FILTER';
+  end;
+
+  TPickListActivityOuts = record
+  const
+    ID = 'ID';
+    NAME = 'NAME';
+  end;
+
   TcxVGridViewHelper = class(TViewHelper, IViewHelper,
-                             IViewDataSetHelper, IViewValueEditorHelper)
+                             IViewDataSetHelper)
   private
-    FViewValueChangedHandler: TViewValueChangedHandler;
+
 
     FGridList: TComponentList;
 
@@ -88,14 +99,6 @@ type
     procedure SetFocusedField(ADataSet: TDataSet; const AFieldName: string; var Done: boolean);
     procedure SetFocusedFieldChangedHandler(AHandler: TViewFocusedFieldChangedHandler; var Done: boolean);
 
-    //IViewValueEditorHelper
-    function CheckEditorClass(AControl: TComponent): boolean;
-    function ReadValue(AControl: TComponent): Variant;
-    procedure WriteValue(AControl: TComponent; AValue: Variant);
-    procedure SetValueChangedHandler(AControl: TComponent;
-      AHandler: TViewValueChangedHandler);
-    function ReadValueStatus(AControl: TComponent): TValueStatus;
-    procedure WriteValueStatus(AControl: TComponent; AStatus: TValueStatus);
   public
     constructor Create(AOwner: TfrCustomView); override;
     destructor Destroy; override;
@@ -829,66 +832,6 @@ begin
 
 end;
 
-function TcxVGridViewHelper.CheckEditorClass(
-  AControl: TComponent): boolean;
-begin
-  Result := AControl is TcxEditorRow;
-end;
-
-function TcxVGridViewHelper.ReadValue(AControl: TComponent): Variant;
-begin
-  Result := (AControl as TcxEditorRow).Properties.Value;
-end;
-
-function TcxVGridViewHelper.ReadValueStatus(
-  AControl: TComponent): TValueStatus;
-begin
-  if not (AControl as TcxEditorRow).Visible then
-    Result := vsUnavailable
-  else if not (AControl as TcxEditorRow).Properties.Options.Editing then
-    Result := vsDisabled
-  else
-    Result := vsEnabled;
-
-end;
-
-procedure TcxVGridViewHelper.SetValueChangedHandler(AControl: TComponent;
-  AHandler: TViewValueChangedHandler);
-begin
-  FViewValueChangedHandler := AHandler; 
-end;
-
-procedure TcxVGridViewHelper.WriteValue(AControl: TComponent;
-  AValue: Variant);
-begin
-  (AControl as TcxEditorRow).Properties.Value := AValue;
-  (AControl as TcxEditorRow).VerticalGrid.HideEdit; //!!! надо для немедленного отображения в ячейке
-end;
-
-procedure TcxVGridViewHelper.WriteValueStatus(AControl: TComponent;
-  AStatus: TValueStatus);
-begin
-  case AStatus of
-
-    vsEnabled: begin
-      (AControl as TcxEditorRow).Visible := true;
-      (AControl as TcxEditorRow).Properties.Options.Editing := true;
-    end;
-
-    vsDisabled: begin
-      (AControl as TcxEditorRow).Visible := true;
-      (AControl as TcxEditorRow).Properties.Options.Editing := false;
-    end;
-
-    vsUnavailable: begin
-      (AControl as TcxEditorRow).Visible := false;
-      (AControl as TcxEditorRow).Properties.Options.Editing := false;
-    end;
-
-  end;
-
-
-end;
 
 function TcxVGridViewHelper.FindGridByDataSet(
   ADataSet: TDataSet): TcxDBVerticalGrid;
@@ -978,8 +921,6 @@ end;
 procedure TcxVGridViewHelper.Grid_OnEditValueChanged(Sender: TObject;
   ARowProperties: TcxCustomEditorRowProperties);
 begin
-  if Assigned(FViewValueChangedHandler) then
-    FViewValueChangedHandler(ARowProperties.Row.Name);
 end;
 
 

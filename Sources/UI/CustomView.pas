@@ -46,18 +46,6 @@ type
 
 
 
-  IViewValueEditorHelper = interface
-  ['{BFBC8B15-A59C-44EB-9E94-CA7EDA8D817E}']
-    //function GetControlClass: TComponentClass;
-    function CheckEditorClass(AControl: TComponent): boolean;
-    function ReadValue(AControl: TComponent): Variant;
-    procedure WriteValue(AControl: TComponent; AValue: Variant);
-    procedure SetValueChangedHandler(AControl: TComponent;
-      AHandler: TViewValueChangedHandler);
-    function ReadValueStatus(AControl: TComponent): TValueStatus;
-    procedure WriteValueStatus(AContorl: TComponent; AStatus: TValueStatus);
-  end;
-
   TStubControl = class(TControl)
   public
      procedure ChangeScale(M, D: Integer);  override;
@@ -73,7 +61,6 @@ type
     FShowHandler: TViewShowHandler;
     FCloseHandler: TViewCloseHandler;
     FCloseQueryHandler: TViewCloseQueryHandler;
-    FValueChangedHandler: TViewValueChangedHandler;
 
     FPreferenceValues: TMemInifile;
 
@@ -87,13 +74,6 @@ type
     procedure InitializeAddons;
     function GetHelperList(const AHelperInterface: TGUID): TInterfaceList;
 
-
-    function GetValueEditorHelper(AControl: TComponent): IViewValueEditorHelper;
-    function ReadValue(AControl: TComponent): Variant;
-    procedure WriteValue(AControl: TComponent; AValue: Variant);
-    function ReadValueStatus(AControl: TComponent): TValueStatus;
-    procedure WriteValueStatus(AControl: TComponent; AStatus: TValueStatus);
-
     function GetPreferenceValues: TMemIniFile;
     procedure SavePreferenceValues;
   protected
@@ -105,11 +85,6 @@ type
 
     //ICustomView
     function CommandBar: ICommandBar; virtual; abstract;
-
-    function GetValue(const AName: string): Variant;
-    procedure SetValue(const AName: string; AValue: Variant);
-    function GetValueStatus(const AName: string): TValueStatus;
-    procedure SetValueStatus(const AName: string; AStatus: TValueStatus);
 
     procedure LinkDataSet(ADataSource: TDataSource; ADataSet: TDataSet);
     procedure UnLinkDataSet(ADataSource: TDataSource);
@@ -132,7 +107,6 @@ type
     procedure SetShowHandler(AHandler: TViewShowHandler);
     procedure SetCloseHandler(AHandler: TViewCloseHandler);
     procedure SetCloseQueryHandler(AHandler: TViewCloseQueryHandler);
-    procedure SetValueChangedHandler(AHandler: TViewValueChangedHandler);
 
     //IViewOwner
     procedure OnViewActivate(AView: TControl); virtual;
@@ -149,8 +123,6 @@ type
 
 
     //
-    procedure OnGetValue(const AName: string; var AValue: Variant); virtual;
-    procedure OnSetValue(const AName: string; AValue: Variant; var Done: boolean); virtual;
     procedure OnFocusDataSetControl(ADataSet: TDataSet; const AFieldName: string;
       var Done: boolean); virtual;
     procedure DoInitialize; virtual;
@@ -242,19 +214,6 @@ begin
 end;
 
 
-function TfrCustomView.GetValue(const AName: string): Variant;
-var
-  valControl: TComponent;
-begin
-  Result := Unassigned;
-
-  valControl := FindComponent(AName);
-  if Assigned(valControl) then
-    Result := ReadValue(valControl);
-
-  OnGetValue(AName, Result);
-end;
-
 procedure TfrCustomView.OnViewClose(AView: TControl);
   procedure DoCloseHelpers;
   var
@@ -304,60 +263,11 @@ begin
 
 end;
 
-procedure TfrCustomView.SetValue(const AName: string; AValue: Variant);
-var
-  valControl: TComponent;
-  Done: boolean;
-begin
-  Done := false;
-  OnSetValue(AName, AValue, Done);
-
-  if not Done then
-  begin
-    valControl := FindComponent(AName);
-    if Assigned(valControl) then
-    begin
-     WriteValue(valControl, AValue);
-     Done := true;
-    end;
-  end;
-
-end;
-
 function TfrCustomView.GetViewControl: TControl;
 begin
   Result := ViewControl;
 end;
 
-procedure TfrCustomView.OnGetValue(const AName: string; var AValue: Variant);
-begin
-
-end;
-
-function TfrCustomView.ReadValue(AControl: TComponent): Variant;
-var
-  helper: IViewValueEditorHelper;
-begin
-  Result := Unassigned;
-  helper := GetValueEditorHelper(AControl);
-  if assigned(helper) then
-    Result := helper.ReadValue(AControl);
-end;
-
-procedure TfrCustomView.OnSetValue(const AName: string; AValue: Variant;
-  var Done: boolean);
-begin
-
-end;
-
-procedure TfrCustomView.WriteValue(AControl: TComponent; AValue: Variant);
-var
-  helper: IViewValueEditorHelper;
-begin
-  helper := GetValueEditorHelper(AControl);
-  if assigned(helper) then
-    helper.WriteValue(AControl, AValue);
-end;
 
 procedure TfrCustomView.SetCloseQueryHandler(
   AHandler: TViewCloseQueryHandler);
@@ -452,36 +362,6 @@ begin
   FAddonsInitialized := true;
 end;
 
-procedure TfrCustomView.SetValueChangedHandler(
-  AHandler: TViewValueChangedHandler);
-var
-  I: integer;
-  helper: IViewValueEditorHelper;
-begin
-  FValueChangedHandler := AHandler;
-  for I := 0 to ComponentCount - 1 do
-  begin
-    helper := GetValueEditorHelper(Components[I]);
-    if assigned(helper) then
-      helper.SetValueChangedHandler(Components[I], FValueChangedHandler);
-  end;
-
-end;
-
-function TfrCustomView.GetValueEditorHelper(
-  AControl: TComponent): IViewValueEditorHelper;
-var
-  I: integer;
-  _helpers: TInterfaceList;
-begin
-  _helpers := GetHelperList(IViewValueEditorHelper);
-  for I := 0 to _helpers.Count - 1 do
-  begin
-    Result := IViewValueEditorHelper(_helpers[I]);
-    if Result.CheckEditorClass(AControl) then Exit;
-  end;
-  Result := nil;
-end;
 
 procedure TfrCustomView.OnViewKeyPress(AView: TControl; var Key: Char);
 begin
@@ -511,28 +391,6 @@ begin
       Result.Add(Intf);
 end;
 
-function TfrCustomView.GetValueStatus(const AName: string): TValueStatus;
-var
-  valControl: TComponent;
-begin
-  Result := vsEnabled;
-
-  valControl := FindComponent(AName);
-  if Assigned(valControl) then
-    Result := ReadValueStatus(valControl);
-
-end;
-
-procedure TfrCustomView.SetValueStatus(const AName: string; AStatus: TValueStatus);
-var
-  valControl: TComponent;
-begin
-  valControl := FindComponent(AName);
-  if Assigned(valControl) then
-    WriteValueStatus(valControl, AStatus);
-
-end;
-
 procedure TfrCustomView.UnLinkDataSet(ADataSource: TDataSource);
 var
   I: integer;
@@ -543,26 +401,6 @@ begin
   _helpers := GetHelperList(IViewDataSetHelper);
   for I := 0 to _helpers.Count - 1 do
     IViewDataSetHelper(_helpers[I]).UnLinkDataSet(ADataSource);
-end;
-
-function TfrCustomView.ReadValueStatus(AControl: TComponent): TValueStatus;
-var
-  helper: IViewValueEditorHelper;
-begin
-  Result := Unassigned;
-  helper := GetValueEditorHelper(AControl);
-  if assigned(helper) then
-    Result := helper.ReadValueStatus(AControl);
-end;
-
-procedure TfrCustomView.WriteValueStatus(AControl: TComponent;
-  AStatus: TValueStatus);
-var
-  helper: IViewValueEditorHelper;
-begin
-  helper := GetValueEditorHelper(AControl);
-  if assigned(helper) then
-    helper.WriteValueStatus(AControl, AStatus);
 end;
 
 procedure TfrCustomView.OnViewActivate(AView: TControl);
