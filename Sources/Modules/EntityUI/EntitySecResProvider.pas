@@ -2,7 +2,7 @@ unit EntitySecResProvider;
 
 interface
 uses SecurityIntf, CoreClasses, classes,  EntityServiceIntf,
-  ShellIntf, db, EntityCatalogIntf;
+  ShellIntf, db;
 
 type
   TEntitySecurityResNode = class(TInterfacedObject, ISecurityResNode)

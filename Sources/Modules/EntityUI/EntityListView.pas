@@ -9,7 +9,7 @@ uses
   cxButtons, cxGroupBox, cxStyles, cxCustomData, cxFilter, cxData,
   cxDataStorage, DB, cxDBData, cxGridLevel, cxClasses, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
-  EntityCatalogIntf, EntityCatalogConst, UIClasses, CoreClasses, EntityListPresenter;
+  UIClasses, CoreClasses, EntityListPresenter;
 
 type
   TfrEntityListView = class(TfrCustomContentView, IEntityListView)

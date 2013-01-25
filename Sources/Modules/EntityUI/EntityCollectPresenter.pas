@@ -2,8 +2,7 @@ unit EntityCollectPresenter;
 
 interface
 uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
-  SysUtils, Variants, ShellIntf, CustomContentPresenter, db,
-  EntityCatalogIntf, EntityCatalogConst, UIStr;
+  SysUtils, Variants, ShellIntf, CustomContentPresenter, db, UIStr;
 
 const
   COMMAND_LIST_SELECTED = '{EE438AAA-D7D9-4849-9958-DD6FDED59783}';
@@ -28,7 +27,7 @@ type
     procedure SetData(AInfo, AList, AItems: TDataSet);
   end;
 
-  TEntityCollectPresenter = class(TEntityContentPresenter)
+  TEntityCollectPresenter = class(TCustomContentPresenter)
   private
     function View: IEntityCollectView;
     procedure CmdClose(Sender: TObject);

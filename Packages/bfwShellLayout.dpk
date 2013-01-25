@@ -1,0 +1,65 @@
+package bfwShellLayout;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$RUNONLY}
+{$IMPLICITBUILD OFF}
+
+requires
+  rtl,
+  bfwCore,
+  bfwInterfaces,
+  bfwUI,
+  dxBarExtItemsRS16,
+  cxBarEditItemRS16,
+  dxmdsRS16,
+  cxPageControldxBarPopupMenuRS16,
+  dxNavBarRS16,
+  dxSkinscxPCPainterRS16,
+  dxSkinsdxBarPainterRS16,
+  dxSkinsdxNavBarPainterRS16;
+
+contains
+  AboutPresenter in '..\Sources\ShellLayout\AboutPresenter.pas',
+  AboutView in '..\Sources\ShellLayout\AboutView.pas' {frAboutView},
+  bfwShellLayoutModuleInit in '..\Sources\ShellLayout\bfwShellLayoutModuleInit.pas',
+  NotifyReceiver in '..\Sources\ShellLayout\NotifyReceiver.pas',
+  NotifySenderPresenter in '..\Sources\ShellLayout\NotifySenderPresenter.pas',
+  NotifySenderView in '..\Sources\ShellLayout\NotifySenderView.pas' {frNotifySenderView},
+  NumLockDotHook in '..\Sources\ShellLayout\NumLockDotHook.pas',
+  ShellForm in '..\Sources\ShellLayout\ShellForm.pas' {frMain},
+  ShellLayoutStr in '..\Sources\ShellLayout\ShellLayoutStr.pas',
+  ShellNavBar in '..\Sources\ShellLayout\ShellNavBar.pas',
+  ShellWaitBox in '..\Sources\ShellLayout\ShellWaitBox.pas' {frWaitBox},
+  SplashForm in '..\Sources\ShellLayout\SplashForm.pas' {frShellSplash},
+  TabbedWorkspace in '..\Sources\ShellLayout\TabbedWorkspace.pas',
+  UICatalog in '..\Sources\ShellLayout\UICatalog.pas',
+  UILocalization in '..\Sources\ShellLayout\UILocalization.pas',
+  UserPreferencesPresenter in '..\Sources\ShellLayout\UserPreferencesPresenter.pas',
+  UserPreferencesView in '..\Sources\ShellLayout\UserPreferencesView.pas' {frUserPreferencesView},
+  ViewStyleController in '..\Sources\ShellLayout\ViewStyleController.pas';
+
+end.

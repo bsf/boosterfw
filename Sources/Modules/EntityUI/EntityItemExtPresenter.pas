@@ -2,8 +2,7 @@ unit EntityItemExtPresenter;
 
 interface
 uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
-  SysUtils, Variants, ShellIntf, CustomContentPresenter, db,
-  EntityCatalogIntf, EntityCatalogConst, UIStr, strUtils;
+  SysUtils, Variants, ShellIntf, CustomContentPresenter, db, UIStr, strUtils;
 
 const
   COMMAND_CHANGE_DETAIL_TAB = '{0D260C9C-568E-451B-B1F7-1EA7ABEA2CE9}';
@@ -32,7 +31,7 @@ type
     function PickListSelection: ISelection;
   end;
 
-  TEntityItemExtPresenter = class(TEntityContentPresenter)
+  TEntityItemExtPresenter = class(TCustomContentPresenter)
   const
     CMD_CLOSE = 'cmd.Close';
     ENT_VIEW_PICK_PANEL_LIST = 'PickPanelList';

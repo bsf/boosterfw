@@ -6,10 +6,10 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, CustomDialogView, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxContainer, cxEdit, ActnList, cxGroupBox,
-  EntityCatalogConst, cxStyles, cxCustomData, cxFilter, cxData,
+  cxStyles, cxCustomData, cxFilter, cxData,
   cxDataStorage, DB, cxDBData, cxGridLevel, cxClasses, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
-  cxLabel, cxTextEdit, EntityCatalogIntf, EntityPickListPresenter, UIClasses,
+  cxLabel, cxTextEdit, EntityPickListPresenter, UIClasses,
   cxPC, cxTL, cxTLdxBarBuiltInMenu, cxInplaceContainer, cxTLData, cxDBTL,
   cxPCdxBarPopupMenu;
 

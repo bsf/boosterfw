@@ -1,7 +1,7 @@
 unit EntitySelectorPresenter;
 
 interface
-uses CustomDialogPresenter, CoreClasses, EntityCatalogIntf, UIClasses,
+uses CustomDialogPresenter, CoreClasses, UIClasses,
   controls, db, EntityServiceIntf, UIStr;
 
 type
@@ -10,7 +10,7 @@ type
     procedure LinkData(AData: TDataSet);
   end;
 
-  TEntitySelectorPresenter = class(TEntityDialogPresenter)
+  TEntitySelectorPresenter = class(TCustomDialogPresenter)
   private
     function View: IEntitySelectorView;
     procedure CmdCancel(Sender: TObject);

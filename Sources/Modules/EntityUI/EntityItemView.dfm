@@ -2,6 +2,7 @@ inherited frEntityItemView: TfrEntityItemView
   Left = 393
   Top = 331
   Caption = 'frEntityItemView'
+  ExplicitWidth = 320
   ExplicitHeight = 543
   PixelsPerInch = 96
   TextHeight = 13

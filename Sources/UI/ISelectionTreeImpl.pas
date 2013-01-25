@@ -39,7 +39,7 @@ type
 
   end;
 
-  THelperTreeISelectionHelper = class(TViewHelper, IViewHelper)
+  TISelectionTreeHelper = class(TViewHelper, IViewHelper)
   protected
     //IViewHelper
     procedure ViewInitialize;
@@ -205,12 +205,12 @@ end;
 
 { THelperTreeISelectionHelper }
 
-procedure THelperTreeISelectionHelper.ViewClose;
+procedure TISelectionTreeHelper.ViewClose;
 begin
 
 end;
 
-procedure THelperTreeISelectionHelper.ViewInitialize;
+procedure TISelectionTreeHelper.ViewInitialize;
 var
   I: integer;
   intfImpl: TISelectionTreeImpl;
@@ -223,12 +223,12 @@ begin
     end
 end;
 
-procedure THelperTreeISelectionHelper.ViewShow;
+procedure TISelectionTreeHelper.ViewShow;
 begin
 
 end;
 
 initialization
-  RegisterViewHelperClass(THelperTreeISelectionHelper);
+  RegisterViewHelperClass(TISelectionTreeHelper);
 
 end.

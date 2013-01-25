@@ -4,8 +4,7 @@ interface
 
 uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
   SysUtils, Variants, ShellIntf, CustomContentPresenter, db,
-  EntityCatalogIntf, EntityCatalogConst, UIStr, SHDocVw, MSHTML,
-  strUtils, WBCtrl;
+  UIStr, SHDocVw, MSHTML, strUtils, WBCtrl;
 
 const
   COMMAND_INVOKE_SCRIPT = 'command.view.invokescript';
@@ -16,7 +15,7 @@ type
     function WebBrowser: TWebBrowserCtrl;
   end;
 
-  TEntityWebPresenter = class(TEntityContentPresenter)
+  TEntityWebPresenter = class(TCustomContentPresenter)
   private
     FEntityViewReady: boolean;
 

@@ -2,8 +2,7 @@ unit EntityPickListPresenter;
 
 interface
 uses CustomDialogPresenter, UIClasses, CoreClasses, EntityServiceIntf,
-  CustomPresenter, sysutils, db, EntityCatalogIntf, EntityCatalogConst, controls,
-  UIStr;
+  CustomPresenter, sysutils, db, controls, UIStr;
 
 const
  // COMMAND_OK = 'commands://picklist.ok';
@@ -28,7 +27,7 @@ type
     procedure SetCanParentSelect(AValue: boolean);
   end;
 
-  TEntityPickListPresenter = class(TEntityDialogPresenter)
+  TEntityPickListPresenter = class(TCustomDialogPresenter)
   private
     FViewMode: TPickListViewMode;
     procedure SetFilter(const AText: string);

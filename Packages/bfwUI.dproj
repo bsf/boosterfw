@@ -110,7 +110,6 @@
 				<Form>frCustomView</Form>
 			</DCCReference>
 			<DCCReference Include="..\Sources\UI\EditCtrlUtils.pas"/>
-			<DCCReference Include="..\Sources\UI\HelperGridCtrl.pas"/>
 			<DCCReference Include="..\Sources\UI\GridTreeCtrlUtils.pas"/>
 			<DCCReference Include="..\Sources\UI\GridTreeGtrlUtils.pas"/>
 			<DCCReference Include="..\Sources\UI\GridVCtrlUtils.pas"/>
@@ -124,7 +123,7 @@
 				<Form>frCustomContentView</Form>
 			</DCCReference>
 			<DCCReference Include="..\Sources\UI\UIStr.pas"/>
-			<DCCReference Include="..\Sources\UI\HelperTreeISelection.pas"/>
+			<DCCReference Include="..\Sources\UI\ISelectionTreeImpl.pas"/>
 			<DCCReference Include="..\Sources\UI\WBCtrl.pas"/>
 			<DCCReference Include="..\Sources\UI\WBHelper.pas"/>
 			<DCCReference Include="..\Sources\UI\GridCtrlUtils.pas"/>

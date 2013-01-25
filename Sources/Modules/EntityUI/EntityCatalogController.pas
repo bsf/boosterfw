@@ -2,8 +2,9 @@ unit EntityCatalogController;
 
 interface
 uses classes, CoreClasses,  ShellIntf, Variants, db, Contnrs,
-  EntityCatalogIntf, EntityServiceIntf, UIClasses, sysutils,
+  EntityServiceIntf, UIClasses, sysutils,
   StrUtils, SecurityIntf, controls,
+  CustomPresenter,
   EntityJournalPresenter, EntityJournalView,
   EntityListPresenter, EntityListView,
   EntityTreeListPresenter, EntityTreeListView,
@@ -178,10 +179,8 @@ begin
   entityName := Activity.OptionValue(TViewActivityOptions.EntityName);
   if entityName = '-' then
   begin
-    if Sender.Controller is TEntityContentPresenter then
-      entityName := (Sender.Controller as TEntityContentPresenter).EntityName
-    else if Sender.Controller is TEntityDialogPresenter then
-      entityName := (Sender.Controller as TEntityDialogPresenter).EntityName
+    if Sender.Controller is TCustomPresenter then
+      entityName := (Sender.Controller as TCustomPresenter).EntityName
     else
       entityName := '';
   end;
@@ -276,10 +275,8 @@ begin
   entityName := Activity.OptionValue(TViewActivityOptions.EntityName);
   if entityName = '-' then
   begin
-    if Sender.Controller is TEntityContentPresenter then
-      entityName := (Sender.Controller as TEntityContentPresenter).EntityName
-    else if Sender.Controller is TEntityDialogPresenter then
-      entityName := (Sender.Controller as TEntityDialogPresenter).EntityName
+    if Sender.Controller is TCustomPresenter then
+      entityName := (Sender.Controller as TCustomPresenter).EntityName
     else
       entityName := '';
   end;

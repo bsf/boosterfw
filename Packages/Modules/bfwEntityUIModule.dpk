@@ -40,7 +40,6 @@ requires
 
 contains
   bfwEntityUIModuleInit in '..\..\Sources\Modules\EntityUI\bfwEntityUIModuleInit.pas',
-  EntityCatalogConst in '..\..\Sources\Modules\EntityUI\EntityCatalogConst.pas',
   EntityCatalogController in '..\..\Sources\Modules\EntityUI\EntityCatalogController.pas',
   EntityCatalogIntf in '..\..\Sources\Modules\EntityUI\EntityCatalogIntf.pas',
   EntityCollectPresenter in '..\..\Sources\Modules\EntityUI\EntityCollectPresenter.pas',

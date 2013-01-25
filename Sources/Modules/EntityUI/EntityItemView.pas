@@ -7,7 +7,7 @@ uses
   Dialogs, CustomContentView, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxContainer, cxEdit, Menus, ActnList, StdCtrls,
   cxButtons, cxGroupBox, cxStyles, cxInplaceContainer, cxVGrid, cxDBVGrid,
-  DB, EntityCatalogIntf, EntityCatalogConst, EntityItemPresenter, UIClasses;
+  DB, EntityItemPresenter, UIClasses;
 
 type
   TfrEntityItemView = class(TfrCustomContentView, IEntityItemView)

@@ -3,8 +3,7 @@ unit EntityItemPresenter;
 interface
 
 uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
-  SysUtils, Variants, ShellIntf, CustomContentPresenter, db,
-  EntityCatalogIntf, EntityCatalogConst, UIStr;
+  SysUtils, Variants, ShellIntf, CustomContentPresenter, db, UIStr;
 
 type
   IEntityItemView = interface(IContentView)
@@ -13,7 +12,7 @@ type
     procedure CancelEdit;
   end;
 
-  TEntityItemPresenter = class(TEntityContentPresenter)
+  TEntityItemPresenter = class(TCustomContentPresenter)
   private
     FEntityViewReady: boolean;
     procedure CmdCancel(Sender: TObject);

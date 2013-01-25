@@ -1,12 +1,12 @@
 ﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
-			<ProjectGuid>{5C0E99F7-8938-486E-9E3B-98F7A69E9498}</ProjectGuid>
-			<MainSource>bfwEntityUIModule.dpk</MainSource>
+			<ProjectGuid>{5D1662F2-E39D-4667-9E2F-3C93541305EA}</ProjectGuid>
+			<MainSource>bfwShellLayout.dpk</MainSource>
 			<ProjectVersion>13.4</ProjectVersion>
 			<Base>True</Base>
 			<Config Condition="'$(Config)'==''">Debug</Config>
 			<AppType>Package</AppType>
-			<FrameworkType>None</FrameworkType>
+			<FrameworkType>VCL</FrameworkType>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 			<Platform Condition="'$(Platform)'==''">Win32</Platform>
 			<TargetedPlatforms>1</TargetedPlatforms>
@@ -29,15 +29,23 @@
 			<CfgParent>Base</CfgParent>
 			<Base>true</Base>
 		</PropertyGroup>
+		<PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_1)'=='true') or '$(Cfg_1_Win32)'!=''">
+			<Cfg_1_Win32>true</Cfg_1_Win32>
+			<CfgParent>Cfg_1</CfgParent>
+			<Cfg_1>true</Cfg_1>
+			<Base>true</Base>
+		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_2)'!=''">
 			<Cfg_2>true</Cfg_2>
 			<CfgParent>Base</CfgParent>
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_OutputNeverBuildDcps>true</DCC_OutputNeverBuildDcps>
+			<RuntimeOnlyPackage>true</RuntimeOnlyPackage>
 			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
-			<VerInfo_Locale>1049</VerInfo_Locale>
-			<DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;Vcl;$(DCC_Namespace)</DCC_Namespace>
+			<VerInfo_Locale>1058</VerInfo_Locale>
+			<DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
 			<GenPackage>true</GenPackage>
 			<DCC_DcuOutput>.\$(Config)\$(Platform)</DCC_DcuOutput>
@@ -51,21 +59,25 @@
 			<DCC_K>false</DCC_K>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base_Win64)'!=''">
-			<Icon_MainIcon>bfwEntityUIModule_Icon.ico</Icon_MainIcon>
+			<Icon_MainIcon>bfwShellLayout_Icon.ico</Icon_MainIcon>
 			<Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base_Win32)'!=''">
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-			<Icon_MainIcon>bfwEntityUIModule_Icon.ico</Icon_MainIcon>
+			<Icon_MainIcon>bfwShellLayout_Icon.ico</Icon_MainIcon>
 			<DCC_Namespace>System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
 			<VerInfo_Locale>1033</VerInfo_Locale>
 			<Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
 			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<DCC_SYMBOL_DEPRECATED>false</DCC_SYMBOL_DEPRECATED>
 			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
 			<DCC_Optimize>false</DCC_Optimize>
 			<DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+			<VerInfo_Locale>1033</VerInfo_Locale>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
 			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -77,75 +89,51 @@
 			<DelphiCompile Include="$(MainSource)">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
+			<DCCReference Include="rtl.dcp"/>
 			<DCCReference Include="bfwCore.dcp"/>
 			<DCCReference Include="bfwInterfaces.dcp"/>
 			<DCCReference Include="bfwUI.dcp"/>
-			<DCCReference Include="rtl.dcp"/>
-			<DCCReference Include="vclie.dcp"/>
+			<DCCReference Include="dxBarExtItemsRS16.dcp"/>
+			<DCCReference Include="cxBarEditItemRS16.dcp"/>
+			<DCCReference Include="dxmdsRS16.dcp"/>
 			<DCCReference Include="cxPageControldxBarPopupMenuRS16.dcp"/>
-			<DCCReference Include="dxorgcRS16.dcp"/>
-			<DCCReference Include="dxdborRS16.dcp"/>
-			<DCCReference Include="cxSchedulerRS16.dcp"/>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\bfwEntityUIModuleInit.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityCatalogController.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityCatalogIntf.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityCollectPresenter.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityCollectView.pas">
-				<Form>frEntityCollectView</Form>
+			<DCCReference Include="dxNavBarRS16.dcp"/>
+			<DCCReference Include="dxSkinscxPCPainterRS16.dcp"/>
+			<DCCReference Include="dxSkinsdxBarPainterRS16.dcp"/>
+			<DCCReference Include="dxSkinsdxNavBarPainterRS16.dcp"/>
+			<DCCReference Include="..\Sources\ShellLayout\AboutPresenter.pas"/>
+			<DCCReference Include="..\Sources\ShellLayout\AboutView.pas">
+				<Form>frAboutView</Form>
 			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityComplexPresenter.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityComplexView.pas">
-				<Form>frEntityComplexView</Form>
+			<DCCReference Include="..\Sources\ShellLayout\bfwShellLayoutModuleInit.pas"/>
+			<DCCReference Include="..\Sources\ShellLayout\NotifyReceiver.pas"/>
+			<DCCReference Include="..\Sources\ShellLayout\NotifySenderPresenter.pas"/>
+			<DCCReference Include="..\Sources\ShellLayout\NotifySenderView.pas">
+				<Form>frNotifySenderView</Form>
 			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityController.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityDeskPresenter.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityDeskView.pas">
-				<Form>frEntityDeskView</Form>
+			<DCCReference Include="..\Sources\ShellLayout\NumLockDotHook.pas"/>
+			<DCCReference Include="..\Sources\ShellLayout\ShellForm.pas">
+				<Form>frMain</Form>
 			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityItemPresenter.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityItemView.pas">
-				<Form>frEntityItemView</Form>
+			<DCCReference Include="..\Sources\ShellLayout\ShellLayoutStr.pas"/>
+			<DCCReference Include="..\Sources\ShellLayout\ShellNavBar.pas"/>
+			<DCCReference Include="..\Sources\ShellLayout\ShellWaitBox.pas">
+				<Form>frWaitBox</Form>
 			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityJournalPresenter.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityJournalView.pas">
-				<Form>frEntityJournalView</Form>
+			<DCCReference Include="..\Sources\ShellLayout\SplashForm.pas">
+				<Form>frShellSplash</Form>
 			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityListPresenter.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityListView.pas">
-				<Form>frEntityListView</Form>
+			<DCCReference Include="..\Sources\ShellLayout\TabbedWorkspace.pas"/>
+			<DCCReference Include="..\Sources\ShellLayout\UICatalog.pas"/>
+			<DCCReference Include="..\Sources\ShellLayout\UILocalization.pas"/>
+			<DCCReference Include="..\Sources\ShellLayout\UserPreferencesPresenter.pas"/>
+			<DCCReference Include="..\Sources\ShellLayout\UserPreferencesView.pas">
+				<Form>frUserPreferencesView</Form>
 			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityNewPresenter.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityNewView.pas">
-				<Form>frEntityNewView</Form>
-			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityOrgChartPresenter.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityOrgChartView.pas">
-				<Form>frEntityOrgChartView</Form>
-			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityPickListPresenter.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityPickListView.pas">
-				<Form>frEntityPickListView</Form>
-			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntitySelectorPresenter.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntitySelectorView.pas">
-				<Form>frEntitySelectorView</Form>
-			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityTreeListView.pas">
-				<Form>frEntityTreeListView</Form>
-			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityTreeListPresenter.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityDeskMenuView.pas">
-				<Form>frEntityDeskMenuView</Form>
-			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityDeskMenuPresenter.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityItemExtView.pas">
-				<Form>frEntityItemExtView</Form>
-			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityItemExtPresenter.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityWebView.pas">
-				<Form>frEntityWebView</Form>
-			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityWebPresenter.pas"/>
+			<DCCReference Include="..\Sources\ShellLayout\ViewStyleController.pas"/>
+			<RcCompile Include="..\Sources\ShellLayout\Shell.rc">
+				<Form>Shell.res</Form>
+			</RcCompile>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>
@@ -166,7 +154,7 @@
 			<BorlandProject>
 				<Delphi.Personality>
 					<Source>
-						<Source Name="MainSource">bfwEntityUIModule.dpk</Source>
+						<Source Name="MainSource">bfwShellLayout.dpk</Source>
 					</Source>
 					<VersionInfo>
 						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
@@ -180,7 +168,7 @@
 						<VersionInfo Name="Special">False</VersionInfo>
 						<VersionInfo Name="Private">False</VersionInfo>
 						<VersionInfo Name="DLL">False</VersionInfo>
-						<VersionInfo Name="Locale">1049</VersionInfo>
+						<VersionInfo Name="Locale">1058</VersionInfo>
 						<VersionInfo Name="CodePage">1251</VersionInfo>
 					</VersionInfo>
 					<VersionInfoKeys>
@@ -195,6 +183,12 @@
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
 					</VersionInfoKeys>
+					<Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\bcboffice2k160.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\bcbofficexp160.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\dcloffice2k160.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\dclofficexp160.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+					</Excluded_Packages>
 				</Delphi.Personality>
 				<Platforms>
 					<Platform value="Win64">False</Platform>

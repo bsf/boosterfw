@@ -3,8 +3,7 @@ unit EntityDeskPresenter;
 interface
 
 uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
-  SysUtils, Variants, ShellIntf, CustomContentPresenter, db,
-  EntityCatalogIntf, EntityCatalogConst, UIStr;
+  SysUtils, Variants, ShellIntf, CustomContentPresenter, db, UIStr;
 
 const
   ENT_OPER_STATE_CHANGE_DEFAULT = 'StateChange';
@@ -20,7 +19,7 @@ type
   end;
 
 
-  TEntityDeskPresenter = class(TEntityContentPresenter)
+  TEntityDeskPresenter = class(TCustomContentPresenter)
   private
     function View: IEntityDeskView;
     procedure CmdClose(Sender: TObject);
