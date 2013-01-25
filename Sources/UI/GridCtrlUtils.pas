@@ -7,13 +7,11 @@ uses classes, forms, cxGridPopupMenu, cxGrid, menus, inifiles, variants, cxDBDat
   db, cxGridDBDataDefinitions, Contnrs, cxGridTableView, cxGridDBTableView,
   cxGridStdPopupMenu, cxGridMenuOperations, cxGridHeaderPopupMenuItems,
   cxGridDBBandedTableView, EntityServiceIntf, cxCustomData, cxFilter, cxGraphics,
-  cxDBLookupComboBox, cxCheckBox, UIClasses, ShellIntf, cxStyles;
+  cxDBLookupComboBox, cxCheckBox, UIClasses, ShellIntf, cxStyles, UIStr,
+  coreClasses, cxControls;
 
 
-resourcestring
-  cxGridExportToExcel = 'Экспорт в Excel';
-  cxGridAdjustColumnWidths = 'По ширине таблицы';
-  cxGridQuickFilter = 'Фильтр по выделенному';
+
 
 type
 
@@ -49,6 +47,16 @@ type
     function GetEnabled: Boolean; override;
   public
     constructor Create; override;
+  end;
+
+  TGridFilterRowShowMenuItem = class(TMenuItem)
+  private
+    FAction: TAction;
+    FGrid: TcxGridTableView;
+    procedure OnClickHandler(Sender: TObject);
+    procedure OnUpdateHandler(Sender: TObject);
+  public
+    constructor Create(AOwner: TComponent; AGrid: TcxGridTableView); reintroduce;
   end;
 
   TGridQuickFilterExtMenuItem = class(TMenuItem)
@@ -119,11 +127,8 @@ type
     procedure ViewClose;
     //IViewDataSetHelper
     procedure LinkDataSet(ADataSource: TDataSource; ADataSet: TDataSet);
+    procedure UnLinkDataSet(ADataSource: TDataSource);
     procedure FocusDataSetControl(ADataSet: TDataSet; const AFieldName: string; var Done: boolean);
-
-    function GetFocusedField(ADataSet: TDataSet; var Done: boolean): string;
-    procedure SetFocusedField(ADataSet: TDataSet; const AFieldName: string; var Done: boolean);
-    procedure SetFocusedFieldChangedHandler(AHandler: TViewFocusedFieldChangedHandler; var Done: boolean);
 
   public
     constructor Create(AOwner: TfrCustomView); override;
@@ -206,7 +211,7 @@ end;
 destructor TcxGridViewHelper.Destroy;
 begin
   FGridList.Free;
-  FGridViewList.Free;  
+  FGridViewList.Free;
   inherited;
 end;
 
@@ -219,6 +224,10 @@ begin
   AMenu.Items.Add(mi);
   mi := TGridQuickFilterResetExtMenuItem.Create(AMenu, AGridView);
   AMenu.Items.Add(mi);
+  mi := TGridFilterRowShowMenuItem.Create(AMenu, AGridView);
+  AMenu.Items.Add(mi);
+
+
 end;
 
 function TcxGridViewHelper.FindGridViewByDataSet(
@@ -256,13 +265,6 @@ begin
     if col <> nil then
       col.Focused := true;
   end;
-end;
-
-function TcxGridViewHelper.GetFocusedField(ADataSet: TDataSet;
-  var Done: boolean): string;
-begin
-
-
 end;
 
 function TcxGridViewHelper.GetGridList: TComponentList;
@@ -464,7 +466,7 @@ procedure TcxGridViewHelper.LoadPreference(AGridView: TcxCustomGridView);
       AView.Columns[I].Position.ColIndex :=
         AStorage.ReadInteger(_section, 'ColIndex', AView.Columns[I].Position.ColIndex);
     end;
-   
+
     for I := 0 to AView.ColumnCount - 1 do
     begin
       _section := 'COLUMN_' + AView.Columns[I].DataBinding.FieldName;
@@ -484,19 +486,31 @@ procedure TcxGridViewHelper.LoadPreference(AGridView: TcxCustomGridView);
   var
     I: integer;
     _section: string;
+    colArray: array of string;
+    colIdx: integer;
   begin
     _section := 'COMMON';
     AView.OptionsView.Footer :=
       AStorage.ReadBool(_section, 'Footer', AView.OptionsView.Footer);
 
-    // begin setup position
+    //setup position
+    SetLength(colArray, AView.ColumnCount);
+    for I := 0 to AView.ColumnCount - 1 do
+      colArray[I] := AView.Columns[I].DataBinding.FieldName;
+
     for I := 0 to AView.ColumnCount - 1 do
     begin
       _section := 'COLUMN_' + AView.Columns[I].DataBinding.FieldName;
-      AView.Columns[I].Index :=
-        AStorage.ReadInteger(_section, 'ColIndex', AView.Columns[I].Index);
+      colIdx := AStorage.ReadInteger(_section, 'ColIndex', AView.Columns[I].Index);
+      if colIdx > (AView.ColumnCount - 1) then
+        colIdx := AView.Columns[I].Index;
+      colArray[colIdx] := AView.Columns[I].DataBinding.FieldName;
     end;
 
+    for I := 0 to High(colArray) do
+      AView.GetColumnByFieldName(colArray[I]).Index := I;
+
+    //setup etc
     for I := 0 to AView.ColumnCount - 1 do
     begin
       _section := 'COLUMN_' + AView.Columns[I].DataBinding.FieldName;
@@ -510,8 +524,33 @@ procedure TcxGridViewHelper.LoadPreference(AGridView: TcxCustomGridView);
         TcxSummaryKind(
         AStorage.ReadInteger(_section + '_Summary', 'FooterKind', Ord(AView.Columns[I].Summary.FooterKind)));
     end;
-
   end;
+
+  procedure LoadTableView(AView: TcxGridTableView; AStorage: TMemInifile);
+  var
+    I: integer;
+    _section: string;
+    colIdx: integer;
+  begin
+    _section := 'COMMON';
+    AView.OptionsView.Footer :=
+      AStorage.ReadBool(_section, 'Footer', AView.OptionsView.Footer);
+
+    for I := 0 to AView.ColumnCount - 1 do
+    begin
+      _section := 'COLUMN_' + IntToStr(I);
+      AView.Columns[I].Visible :=
+        AStorage.ReadBool(_section, 'Visible', AView.Columns[I].Visible);
+      AView.Columns[I].Width :=
+        AStorage.ReadInteger(_section, 'Width', AView.Columns[I].Width);
+
+        //Summary
+      AView.Columns[I].Summary.FooterKind :=
+        TcxSummaryKind(
+        AStorage.ReadInteger(_section + '_Summary', 'FooterKind', Ord(AView.Columns[I].Summary.FooterKind)));
+    end;
+  end;
+
 var
   _storage: TMemInifile;
   _strings: TStringList;
@@ -543,7 +582,8 @@ begin
           LoadDBBandedTableView(TcxGridDBBandedTableView(AGridView), _storage)
         else if AGridView is TcxGridDBTableView then
           LoadDBTableView(TcxGridDBTableView(AGridView), _storage)
-          //gridView.RestoreFromStream(AData, false, false, [], gridView.Name)
+        else if AGridView is TcxGridTableView then
+          LoadTableView(TcxGridTableView(AGridView), _storage)
         else
           AGridView.RestoreFromStream(data, false, false, [], AGridView.Name);
       finally
@@ -571,8 +611,7 @@ begin
         (Sender.DataController as TcxGridDBDataController).
           GetItemByFieldName(format(FIELD_UI_STYLE_FMT, [fieldName])).Index])]);
 
-{  if AStyle <> nil then
-    AStyle.Font.Assign((Sender.Owner as TForm).Font);}
+
 end;
 
 procedure TcxGridViewHelper.OnGetRowStyle(Sender: TcxCustomGridTableView;
@@ -595,10 +634,6 @@ begin
     if Owner.Components[I] is TcxGrid then
       for Y := 0 to TcxGrid(Owner.Components[I]).ViewCount - 1 do
         SavePreference(TcxGrid(Owner.Components[I]).Views[Y]);
-        {ACategories.Add(Format(cnstGridPreferenceCategoryFmt,
-          [Owner.Components[I].Name,
-            TcxGrid(Owner.Components[I]).Views[Y].Name]));}
-
 end;
 
 procedure TcxGridViewHelper.SavePreference(AGridView: TcxCustomGridView);
@@ -649,13 +684,43 @@ procedure TcxGridViewHelper.SavePreference(AGridView: TcxCustomGridView);
       //footer
       AStorage.WriteInteger(_section + '_Summary', 'FooterKind', Ord(AView.Columns[I].Summary.FooterKind) );
     end
+  end;
+
+  procedure SaveTableView(AView: TcxGridTableView; AStorage: TMemInifile);
+  var
+    I: integer;
+    _section: string;
+  begin
+    _section := 'COMMON';
+    AStorage.WriteBool(_section, 'Footer', AView.OptionsView.Footer);
+
+    for I := 0 to AView.ColumnCount - 1 do
+    begin
+      _section := 'COLUMN_' +  IntToStr(I);
+      AStorage.WriteBool(_section, 'Visible', AView.Columns[I].Visible);
+      AStorage.WriteInteger(_section, 'Width', AView.Columns[I].Width);
+      //footer
+      AStorage.WriteInteger(_section + '_Summary', 'FooterKind', Ord(AView.Columns[I].Summary.FooterKind) );
+    end
 
   end;
+
+
 var
   _storage: TMemInifile;
   _strings: TStringList;
   data: TMemoryStream;
+  doSave: boolean;
 begin
+  if AGridView is TcxGridDBBandedTableView then
+    doSave := TcxGridDBBandedTableView(AGridView).ColumnCount <> 0
+  else if AGridView is TcxGridDBTableView then
+    doSave := TcxGridDBTableView(AGridView).ColumnCount <> 0
+  else
+    doSave := true;
+
+  if not doSave then Exit;
+
   _storage := TMemInifile.Create('');
   data := TMemoryStream.Create;
   try
@@ -663,6 +728,8 @@ begin
       SaveDBBandedTableView(TcxGridDBBandedTableView(AGridView), _storage)
     else if AGridView is TcxGridDBTableView then
       SaveDBTableView(TcxGridDBTableView(AGridView), _storage)
+    else if AGridView is TcxGridTableView then
+      SaveTableView(TcxGridTableView(AGridView), _storage)
     else
       AGridView.StoreToStream(data, [], AGridView.Name);
 
@@ -680,18 +747,6 @@ begin
     _storage.Free;
     data.free;
   end;
-end;
-
-procedure TcxGridViewHelper.SetFocusedField(ADataSet: TDataSet;
-  const AFieldName: string; var Done: boolean);
-begin
-
-end;
-
-procedure TcxGridViewHelper.SetFocusedFieldChangedHandler(
-  AHandler: TViewFocusedFieldChangedHandler; var Done: boolean);
-begin
-
 end;
 
 procedure TcxGridViewHelper.TuneGridForDataSet(AView: TcxCustomGridView;
@@ -805,14 +860,29 @@ begin
 
 end;
 
+procedure TcxGridViewHelper.UnLinkDataSet(ADataSource: TDataSource);
+begin
+end;
+
 procedure TcxGridViewHelper.ViewClose;
 begin
   SaveAllPreference;
 end;
 
 procedure TcxGridViewHelper.ViewInitialize;
+var
+  I: integer;
+  _gridViews: TComponentList;
 begin
+  _gridViews := GetGridViewList;
+  for I := 0 to _gridViews.Count - 1 do
+    if (_gridViews[I] is TcxGridTableView)
+        and (not (_gridViews[I] is TcxGridDBTableView))
+        and (not (_gridViews[I] is TcxGridDBBandedTableView))then
+      LoadPreference(TcxCustomGridView(_gridViews[I]));
+
   LinkGridPopupMenus(GetForm);
+
 end;
 
 procedure TcxGridViewHelper.ViewShow;
@@ -977,11 +1047,36 @@ begin
 end;
 
 
+{ TGridFilterRowShowMenuItem }
+
+constructor TGridFilterRowShowMenuItem.Create(AOwner: TComponent;
+  AGrid: TcxGridTableView);
+begin
+  inherited Create(AOwner);
+  FGrid := AGrid;
+  FAction := TAction.Create(AOwner);
+  FAction.OnExecute := OnClickHandler;
+  FAction.OnUpdate := OnUpdateHandler;
+  FAction.ShortCut := TextToShortCut('Ctrl+F');
+  FAction.Visible := false;
+  Self.Action := FAction;
+end;
+
+procedure TGridFilterRowShowMenuItem.OnClickHandler(Sender: TObject);
+begin
+  FGrid.FilterRow.Visible := not FGrid.FilterRow.Visible;
+  FGrid.FilterRow.ApplyChanges := fracImmediately;
+end;
+
+procedure TGridFilterRowShowMenuItem.OnUpdateHandler(Sender: TObject);
+begin
+
+end;
+
 initialization
   RegisterViewHelperClass(TcxGridViewHelper);
 
   // Registers the column header popup menu
   RegisterPopupMenuClass(TcxGridNewHeaderMenu, [gvhtColumnHeader], TcxGridTableView);
-
 
 end.

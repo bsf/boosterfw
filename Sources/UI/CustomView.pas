@@ -122,7 +122,7 @@ function GetViewHelperClasses: TClassList;
 implementation
 uses
   // for linked only
-  HelperGridCtrl, EditCtrlUtils, GridVCtrlUtils, GridTreeCtrlUtils, HelperTreeISelection,
+  GridCtrlUtils, EditCtrlUtils, GridVCtrlUtils, GridTreeCtrlUtils, HelperTreeISelection,
   ISelectionGridImpl, ITabsImpl; //View helpers
 
 {$R *.dfm}

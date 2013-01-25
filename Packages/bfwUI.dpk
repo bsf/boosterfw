@@ -66,7 +66,6 @@ contains
   GridTreeGtrlUtils in '..\Sources\UI\GridTreeGtrlUtils.pas',
   GridVCtrlUtils in '..\Sources\UI\GridVCtrlUtils.pas',
   ICommandBarImpl in '..\Sources\UI\ICommandBarImpl.pas',
-  IPagesImpl in '..\Sources\UI\IPagesImpl.pas',
   ISelectionGridImpl in '..\Sources\UI\ISelectionGridImpl.pas',
   ITabsImpl in '..\Sources\UI\ITabsImpl.pas',
   CustomDialogView in '..\Sources\UI\CustomDialogView.pas' {frCustomDialogView},
@@ -74,6 +73,7 @@ contains
   UIStr in '..\Sources\UI\UIStr.pas',
   HelperTreeISelection in '..\Sources\UI\HelperTreeISelection.pas',
   WBCtrl in '..\Sources\UI\WBCtrl.pas',
-  WBHelper in '..\Sources\UI\WBHelper.pas';
+  WBHelper in '..\Sources\UI\WBHelper.pas',
+  GridCtrlUtils in '..\Sources\UI\GridCtrlUtils.pas';
 
 end.

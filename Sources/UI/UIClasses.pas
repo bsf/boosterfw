@@ -221,7 +221,6 @@ type
   TViewActivityParams = record
   const
     InstanceID = 'InstanceID';
-    Workspace = 'WORKSPACE';
     Title = 'TITLE';
   end;
 

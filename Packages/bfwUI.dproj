@@ -115,7 +115,6 @@
 			<DCCReference Include="..\Sources\UI\GridTreeGtrlUtils.pas"/>
 			<DCCReference Include="..\Sources\UI\GridVCtrlUtils.pas"/>
 			<DCCReference Include="..\Sources\UI\ICommandBarImpl.pas"/>
-			<DCCReference Include="..\Sources\UI\IPagesImpl.pas"/>
 			<DCCReference Include="..\Sources\UI\ISelectionGridImpl.pas"/>
 			<DCCReference Include="..\Sources\UI\ITabsImpl.pas"/>
 			<DCCReference Include="..\Sources\UI\CustomDialogView.pas">
@@ -128,6 +127,7 @@
 			<DCCReference Include="..\Sources\UI\HelperTreeISelection.pas"/>
 			<DCCReference Include="..\Sources\UI\WBCtrl.pas"/>
 			<DCCReference Include="..\Sources\UI\WBHelper.pas"/>
+			<DCCReference Include="..\Sources\UI\GridCtrlUtils.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

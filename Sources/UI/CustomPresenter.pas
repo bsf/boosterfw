@@ -13,7 +13,6 @@ type
   private
     FViewURI: string;
     FViewTitle: string;
-    FWorkspaceID: string;
     FWorkspace: IWorkspace;
     FView: IView;
     FFreeOnViewClose: boolean;
@@ -59,7 +58,7 @@ type
     function GetViewURI: string;
     function GetView: ICustomView;
     function ViewInfo: IActivity;
-    procedure ShowView(const WorkspaceID: string);
+    procedure ShowView;
     procedure CloseView(ABackToCaller: boolean = true);
 
     function GetEView(const AEntityName, AEntityViewName: string;
@@ -344,14 +343,11 @@ begin
 end;
 
 
-procedure TCustomPresenter.ShowView(const WorkspaceID: string);
+procedure TCustomPresenter.ShowView;
 var
   viewIntf: IView;
 begin
-  FWorkspaceID := WorkspaceID;
-  if FWorkspaceID = '' then
-    FWorkspaceID := GetWorkspaceDefault;
-  FWorkspace := WorkItem.Workspaces[FWorkspaceID];
+  FWorkspace := WorkItem.Workspaces[GetWorkspaceDefault];
   FView.QueryInterface(IView, viewIntf);
   FWorkspace.Show(viewIntf.GetViewControl, FViewTitle);
 end;
@@ -416,7 +412,7 @@ end;
 procedure TCustomPresenter.Activate;
 begin
   if Assigned(Workspace) and Workspace.ViewExists(FView.GetViewControl) then
-    ShowView(FWorkspaceID);
+    ShowView;
 end;
 
 
@@ -516,7 +512,7 @@ begin
   end;
 
   if not inst.ViewHidden then
-    inst.ShowView(Activity.Params[TViewActivityParams.Workspace]);
+    inst.ShowView;
 
   Activity.Outs.Assign(inst.WorkItem);
 
