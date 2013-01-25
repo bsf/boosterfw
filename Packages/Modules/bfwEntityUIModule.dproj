@@ -88,7 +88,6 @@
 			<DCCReference Include="cxSchedulerRS16.dcp"/>
 			<DCCReference Include="..\..\Sources\Modules\EntityUI\bfwEntityUIModuleInit.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityCatalogController.pas"/>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityCatalogIntf.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityCollectPresenter.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityCollectView.pas">
 				<Form>frEntityCollectView</Form>

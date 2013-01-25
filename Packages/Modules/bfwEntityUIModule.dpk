@@ -41,7 +41,6 @@ requires
 contains
   bfwEntityUIModuleInit in '..\..\Sources\Modules\EntityUI\bfwEntityUIModuleInit.pas',
   EntityCatalogController in '..\..\Sources\Modules\EntityUI\EntityCatalogController.pas',
-  EntityCatalogIntf in '..\..\Sources\Modules\EntityUI\EntityCatalogIntf.pas',
   EntityCollectPresenter in '..\..\Sources\Modules\EntityUI\EntityCollectPresenter.pas',
   EntityCollectView in '..\..\Sources\Modules\EntityUI\EntityCollectView.pas' {frEntityCollectView},
   EntityComplexPresenter in '..\..\Sources\Modules\EntityUI\EntityComplexPresenter.pas',
