@@ -5,7 +5,7 @@ uses CustomDialogPresenter, CoreClasses, UIClasses,
   controls, db, EntityServiceIntf, UIStr;
 
 type
-  IEntitySelectorView = interface(IContentView)
+  IEntitySelectorView = interface(ICustomView)
   ['{7A7171B2-A22A-4956-987A-A8C133757483}']
     procedure LinkData(AData: TDataSet);
   end;

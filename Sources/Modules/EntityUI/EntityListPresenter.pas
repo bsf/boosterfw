@@ -16,7 +16,7 @@ const
 
 
 type
-  IEntityListView = interface(IContentView)
+  IEntityListView = interface(ICustomView)
   ['{B1E6FCB6-EAC1-4B63-880F-C662B09579B4}']
     function Selection: ISelection;
     procedure SetListDataSet(ADataSet: TDataSet);

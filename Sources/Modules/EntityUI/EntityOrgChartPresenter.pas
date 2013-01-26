@@ -8,7 +8,7 @@ const
   ENT_VIEW_ORGCHART = 'OrgChart';
 
 type
-  IEntityOrgChartView = interface(IContentView)
+  IEntityOrgChartView = interface(ICustomView)
   ['{A646F00E-AB1E-4BF6-9F05-EA609209B2E5}']
     procedure LinkData(AData: TDataSet);
     procedure Rotate;

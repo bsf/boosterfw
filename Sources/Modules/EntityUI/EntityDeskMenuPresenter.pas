@@ -6,7 +6,7 @@ uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
   SysUtils, Variants, ShellIntf, db, UIStr;
 
 type
-  IEntityDeskMenuView = interface(IContentView)
+  IEntityDeskMenuView = interface(ICustomView)
   ['{1DBB5B01-51A0-4BB0-85D2-D6724AEDC6F4}']
     procedure LinkItems(ADataSet: TDataSet);
   end;

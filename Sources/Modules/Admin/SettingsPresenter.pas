@@ -12,7 +12,7 @@ const
   COMMAND_RESET_VALUE = '{B8BF4546-DB9D-49AD-A85C-6B09983931DD}';
 
 type
-  ISettingsView = interface(IContentView)
+  ISettingsView = interface(ICustomView)
   ['{1A6A98E7-8662-4D57-AE0A-6F8899424057}']
     procedure BindAppSettingsData(ACommonData, AAliasData, AHostData: TDataSet);
   end;

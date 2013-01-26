@@ -10,7 +10,7 @@ const
   COMMAND_INVOKE_SCRIPT = 'command.view.invokescript';
 
 type
-  IEntityWebView = interface(IContentView)
+  IEntityWebView = interface(ICustomView)
   ['{11008510-83A2-4451-B554-CEB1CD20FA4D}']
     function WebBrowser: TWebBrowserCtrl;
   end;

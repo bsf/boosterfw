@@ -14,7 +14,7 @@ const
   COMMAND_ROLEUSER_REMOVE = '{514240EE-3E8D-4999-8D09-EC1BC9B61ED4}';
 
 type
-  IUserAccountsView = interface(IContentView)
+  IUserAccountsView = interface(ICustomView)
   ['{0036C309-6D6D-43CF-8D38-7C72772A228A}']
     procedure AddUser(const AUserID, AUserName: string);
     procedure AddUserRoles(const ARoleID, ARoleName: string; AStatus: boolean);

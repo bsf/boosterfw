@@ -19,7 +19,7 @@ const
 
 
 type
-  IEntityJournalView = interface(IContentView)
+  IEntityJournalView = interface(ICustomView)
   ['{254B9732-7666-4733-BC3C-6D9D078FC5A7}']
     function Selection: ISelection;
     function Tabs: ITabs;

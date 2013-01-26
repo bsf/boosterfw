@@ -16,7 +16,7 @@ const
 type
   TChangeSelectedPolicyHandler = procedure of object;
 
-  ISecurityPoliciesView = interface(IContentView)
+  ISecurityPoliciesView = interface(ICustomView)
   ['{466F2289-FBD1-46B9-84F0-BDC6A7EE7C1D}']
     procedure AddPolicyItem(const AName: string; AID, AParentID: variant; AState: TPolicyState);
     procedure SetPolicyState(AState: TPolicyState);

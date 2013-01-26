@@ -15,7 +15,7 @@ const
   ENT_MSG_BOX_OPER_PUSH = 'PUSH';
 
 type
-  INotifySenderView = interface(IDialogView)
+  INotifySenderView = interface
   ['{AF9BB33F-9644-4B13-9C08-FA40DF88F5DF}']
     procedure AddUser(const AUserID, AUserName: string);
     procedure GetSelectedUsers(AList: TStringList);
@@ -68,10 +68,10 @@ begin
   ViewTitle := GetLocaleString(@VIEW_NOTIFYSENDER_TITLE);
   FreeOnViewClose := true;
 
-  View.CommandBar.AddCommand(COMMAND_CANCEL, 'Отмена', 'Esc', '', false);
+  GetView.CommandBar.AddCommand(COMMAND_CANCEL, 'Отмена', 'Esc', '', false);
   WorkItem.Commands[COMMAND_CANCEL].SetHandler(CmdCancel);
 
-  View.CommandBar.AddCommand(COMMAND_SEND, 'Отослать', 'Enter', '', false);
+  GetView.CommandBar.AddCommand(COMMAND_SEND, 'Отослать', 'Enter', '', false);
   WorkItem.Commands[COMMAND_SEND].SetHandler(CmdSend);
 
   dsUsers := App.Entities[ENT_USER].GetView(ENT_USER_VIEW_LIST, WorkItem).Load;

@@ -17,7 +17,7 @@ type
   TPickListViewMode = (pvmList, pvmTreeList);
 
 
-  IEntityPickListView = interface(IDialogView)
+  IEntityPickListView = interface
   ['{87CC1751-FFA3-4F9E-9336-5C4E9D765593}']
     function Selection: ISelection;
     procedure SetFilterText(const AText: string);
@@ -106,11 +106,11 @@ begin
   View.SetCanParentSelect(ViewInfo.OptionExists('CanParentSelect'));
 
   WorkItem.Commands[COMMAND_OK].SetHandler(CmdOK);
-  View.CommandBar.AddCommand(COMMAND_OK,
+  GetView.CommandBar.AddCommand(COMMAND_OK,
     GetLocaleString(@COMMAND_OK_CAPTION), 'Enter', '', false);
 
   WorkItem.Commands[COMMAND_CANCEL].SetHandler(CmdCancel);
-  View.CommandBar.AddCommand(COMMAND_CANCEL,
+  GetView.CommandBar.AddCommand(COMMAND_CANCEL,
     GetLocaleString(@COMMAND_CANCEL_CAPTION), 'Esc', '', false);
 
   WorkItem.Commands[COMMAND_DATA_RELOAD].SetHandler(CmdDataReload);
@@ -119,7 +119,7 @@ begin
   View.Selection.SetSelectionChangedHandler(SelectionChangedHandler);
   View.SetListDataSet(GetEVList.DataSet);
   if GetEVList.DataSet.FieldByName('Name') <> nil then
-    View.FocusDataSetControl(GetEVList.DataSet, 'Name');
+    GetView.FocusDataSetControl(GetEVList.DataSet, 'Name');
   inherited;
 
 end;

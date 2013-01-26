@@ -15,7 +15,7 @@ const
   COMMAND_PICK_ITEM_CANCEL = '{D1F2BB98-B868-493E-B110-7AC9D79E6BD4}';
 
 type
-  IEntityItemExtView = interface(IContentView)
+  IEntityItemExtView = interface(ICustomView)
   ['{F2CB6C89-5688-4566-A972-5D787A528C0C}']
     procedure LinkHeadData(AData: TDataSet);
     procedure LinkDetailData(const AName, ACaption: string; AData: TDataSet);

@@ -11,7 +11,7 @@ const
   COMMAND_PERMEFFECTIVE = '{53B03BB9-FB54-48AD-AEBD-AE878D58F77D}';
 
 type
-  ISecurityPolicyView = interface(IContentView)
+  ISecurityPolicyView = interface(ICustomView)
   ['{053D18E3-27C6-4FA2-B070-7DBEC803B28C}']
     procedure AddPermission(AID: variant; const AName, ADescription: string);
     procedure AddUser(AUserID: variant; const AUserName: string; AIsRole: boolean; APermState: TPermissionState);

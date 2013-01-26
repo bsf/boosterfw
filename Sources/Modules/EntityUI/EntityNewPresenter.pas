@@ -5,7 +5,7 @@ uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
   SysUtils, Variants, ShellIntf, db, UIStr;
 
 type
-  IEntityNewView = interface(IContentView)
+  IEntityNewView = interface(ICustomView)
   ['{AE156F18-E05A-49CC-85C2-5A8258111B5E}']
     procedure SetData(ADataSet: TDataSet);
     procedure CancelEdit;

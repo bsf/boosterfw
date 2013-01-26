@@ -192,16 +192,6 @@ type
 
   end;
 
-
-  IContentView = interface(ICustomView)
-  ['{45410026-2DBE-4CBF-B2EE-D0AD93B7AF6A}']
-  end;
-
-  IDialogView = interface(ICustomView)
-  ['{7C1DBBD0-90BF-431D-BF48-D4EC34E39244}']
-  end;
-
-
   IExtensionCommand = interface
   ['{C4670269-B360-45A6-A3DD-836A1B635DA0}']
     procedure CommandExtend;

@@ -19,7 +19,7 @@ const
   ENT_OPER_ADD = 'CollectAdd';
 
 type
-  IEntityCollectView = interface(IContentView)
+  IEntityCollectView = interface(ICustomView)
   ['{E6CD76D9-2A5C-4BA2-93C5-BBF13CA41A07}']
     procedure SetCommandAddDef(const AName: string);
     function SelectionList: ISelection;

@@ -6,7 +6,7 @@ uses CustomPresenter, UIClasses, coreClasses, ShellIntf, SecurityIntf,
 
 
 type
-  ISecurityPermEffectiveView = interface(IContentView)
+  ISecurityPermEffectiveView = interface(ICustomView)
   ['{D1A21631-0948-4CA9-9B39-EF204F9C6C6B}']
     procedure AddItem(const UserName, Perm, InheritByPerm, InheritByRes: string;
       State: TPermissionState);

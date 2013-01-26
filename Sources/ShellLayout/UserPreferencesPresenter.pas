@@ -11,7 +11,7 @@ const
   COMMAND_RESET_VALUE = '{B8BF4546-DB9D-49AD-A85C-6B09983931DD}';
 
 type
-  IUserPreferencesView = interface(IContentView)
+  IUserPreferencesView = interface(ICustomView)
   ['{DC531533-08E8-4F57-9295-E17D3A5B8997}']
     procedure BindAppPreferences(AData: TDataSet);
     function GetSelectedAppSetting: string;

@@ -18,7 +18,7 @@ const
 type
 
 
-  ISecurityPolicyResView = interface(IContentView)
+  ISecurityPolicyResView = interface(ICustomView)
   ['{053D18E3-27C6-4FA2-B070-7DBEC803B28C}']
     procedure AddTopRes(AID: variant; const AName, ADescription: string; AHasChildren: boolean);
     procedure AddChildRes(AID, APARENTID: variant; const AName, ADescription: string;

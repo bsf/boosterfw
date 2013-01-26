@@ -11,7 +11,7 @@ const
   ENT_VIEW_ITEM_DEFAULT = 'Item';
 
 type
-  IEntityDeskView = interface(IContentView)
+  IEntityDeskView = interface(ICustomView)
   ['{5D92D298-2E39-4565-B03A-460DDF9EE79E}']
     function Selection: ISelection;
     function Tabs: ITabs;

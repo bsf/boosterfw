@@ -8,7 +8,7 @@ const
   VIEW_ABOUT = 'views.shell.about';
 
 type
-  IAboutView = interface(IContentView)
+  IAboutView = interface(ICustomView)
   ['{C62864EB-90E6-409F-AB8D-41333513D073}']
     procedure SetLicenseInfo(const AType, AExpires, ADescription: string);
     procedure SetClientID(const Value: string);

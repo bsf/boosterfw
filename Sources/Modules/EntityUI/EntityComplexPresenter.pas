@@ -21,7 +21,7 @@ const
   VIEW_DETAIL_COLLECT = 'views.%s.Collect';
 
 type
-  IEntityComplexView = interface(IContentView)
+  IEntityComplexView = interface(ICustomView)
   ['{55DC9892-D25A-41EB-A891-CCE81BDF4988}']
     procedure LinkData(AHead, ADetails: TDataSet);
     function DetailSelection: ISelection;
