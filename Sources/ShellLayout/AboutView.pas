@@ -7,7 +7,7 @@ uses
   Dialogs, CustomView, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxContainer, cxEdit, ActnList, cxGroupBox,
   AboutPresenter, StdCtrls, ExtCtrls, ShellIntf, CustomDialogView,
-  CustomContentView, Menus, cxButtons, UIClasses, UIServiceIntf, cxLabel,
+  Menus, cxButtons, UIClasses, UIServiceIntf, cxLabel,
   cxTextEdit, cxMemo, jpeg, dxBevel, cxImage;
 
 type

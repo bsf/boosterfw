@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, CustomContentView, cxGraphics, cxControls, cxLookAndFeels,
+  Dialogs, CustomView, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxContainer, cxEdit, ActnList, cxGroupBox, Menus,
   cxStyles, cxScheduler, cxSchedulerStorage, cxSchedulerCustomControls,
   cxSchedulerCustomResourceView, cxSchedulerDayView,
@@ -13,7 +13,7 @@ uses
   cxSchedulerGanttView, dxorgchr, dxdborgc, EntityOrgChartPresenter, DB;
 
 type
-  TfrEntityOrgChartView = class(TfrCustomContentView, IEntityOrgChartView)
+  TfrEntityOrgChartView = class(TfrCustomView, IEntityOrgChartView)
     OrgChart: TdxDbOrgChart;
     OrgChartDataSource: TDataSource;
     procedure OrgChartLoadNode(Sender: TObject; Node: TdxOcNode);

@@ -4,31 +4,35 @@ inherited frSecurityPoliciesView: TfrSecurityPoliciesView
   Caption = 'frSecurityPoliciesView'
   ClientHeight = 564
   ClientWidth = 1177
+  ExplicitWidth = 1183
+  ExplicitHeight = 592
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
+    ExplicitWidth = 1177
+    ExplicitHeight = 564
     Height = 564
     Width = 1177
     inherited pnButtons: TcxGroupBox
-      Width = 1173
+      ExplicitWidth = 1177
+      Width = 1177
     end
     object cxSplitter1: TcxSplitter
-      Left = 311
-      Top = 42
+      Left = 309
+      Top = 40
       Width = 8
-      Height = 520
+      Height = 524
       Control = trPolicies
     end
     object grPermissions: TcxGrid
-      Left = 319
-      Top = 42
-      Width = 856
-      Height = 520
+      Left = 317
+      Top = 40
+      Width = 860
+      Height = 524
       Align = alClient
       TabOrder = 2
       LookAndFeel.Kind = lfOffice11
       object grPermissionsView: TcxGridTableView
-        NavigatorButtons.ConfirmDelete = False
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
         DataController.Summary.SummaryGroups = <>
@@ -57,10 +61,10 @@ inherited frSecurityPoliciesView: TfrSecurityPoliciesView
       end
     end
     object trPolicies: TcxTreeList
-      Left = 2
-      Top = 42
+      Left = 0
+      Top = 40
       Width = 309
-      Height = 520
+      Height = 524
       Align = alLeft
       Bands = <
         item

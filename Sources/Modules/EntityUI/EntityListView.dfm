@@ -3,6 +3,7 @@ inherited frEntityListView: TfrEntityListView
   Top = 519
   Caption = 'frEntityListView'
   ExplicitWidth = 320
+  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
@@ -32,18 +33,20 @@ inherited frEntityListView: TfrEntityListView
       StyleHot.LookAndFeel.Kind = lfOffice11
       TabOrder = 1
       Visible = False
+      ExplicitWidth = 765
       Height = 30
-      Width = 765
+      Width = 670
     end
     object grList: TcxGrid
       Left = 0
       Top = 70
-      Width = 765
+      Width = 670
       Height = 445
       Align = alClient
       TabOrder = 2
       LookAndFeel.Kind = lfOffice11
       LookAndFeel.NativeStyle = False
+      ExplicitWidth = 765
       object grListView: TcxGridDBTableView
         FilterBox.Position = fpTop
         OnCellDblClick = grListViewCellDblClick

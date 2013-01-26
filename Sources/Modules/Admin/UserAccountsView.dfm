@@ -5,7 +5,7 @@ inherited frUserAccountsView: TfrUserAccountsView
   ClientHeight = 572
   ClientWidth = 1155
   ExplicitWidth = 1161
-  ExplicitHeight = 240
+  ExplicitHeight = 600
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
@@ -27,29 +27,23 @@ inherited frUserAccountsView: TfrUserAccountsView
       Properties.ActivePage = tsUsers
       LookAndFeel.Kind = lfOffice11
       LookAndFeel.NativeStyle = False
-      ExplicitLeft = 2
-      ExplicitTop = 42
-      ExplicitWidth = 1151
-      ExplicitHeight = 528
       ClientRectBottom = 532
       ClientRectRight = 1155
       ClientRectTop = 24
       object tsUsers: TcxTabSheet
         Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1080
         ImageIndex = 0
-        ExplicitLeft = 4
         ExplicitTop = 0
-        ExplicitWidth = 1143
-        ExplicitHeight = 500
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object grUsers: TcxGrid
           Left = 0
           Top = 0
           Width = 485
-          Height = 504
+          Height = 508
           Align = alLeft
           TabOrder = 0
           LookAndFeel.Kind = lfOffice11
-          ExplicitHeight = 500
           object grUsersView: TcxGridTableView
             DataController.Summary.DefaultGroupSummaryItems = <>
             DataController.Summary.FooterSummaryItems = <>
@@ -79,20 +73,17 @@ inherited frUserAccountsView: TfrUserAccountsView
           Left = 485
           Top = 0
           Width = 8
-          Height = 504
+          Height = 508
           Control = grUsers
-          ExplicitHeight = 500
         end
         object grUserRoles: TcxGrid
           Left = 493
           Top = 0
-          Width = 658
-          Height = 504
+          Width = 662
+          Height = 508
           Align = alClient
           TabOrder = 2
           LookAndFeel.Kind = lfOffice11
-          ExplicitWidth = 650
-          ExplicitHeight = 500
           object grUserRolesView: TcxGridTableView
             FilterBox.Visible = fvNever
             DataController.Options = [dcoAssignGroupingValues, dcoAssignMasterDetailKeys, dcoSaveExpanding, dcoImmediatePost]

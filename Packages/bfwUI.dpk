@@ -56,7 +56,6 @@ requires
 
 contains
   UIClasses in '..\Sources\UI\UIClasses.pas',
-  CustomContentPresenter in '..\Sources\UI\CustomContentPresenter.pas',
   CustomDialogPresenter in '..\Sources\UI\CustomDialogPresenter.pas',
   CustomPresenter in '..\Sources\UI\CustomPresenter.pas',
   CustomView in '..\Sources\UI\CustomView.pas' {frCustomView},
@@ -68,7 +67,6 @@ contains
   ISelectionGridImpl in '..\Sources\UI\ISelectionGridImpl.pas',
   ITabsImpl in '..\Sources\UI\ITabsImpl.pas',
   CustomDialogView in '..\Sources\UI\CustomDialogView.pas' {frCustomDialogView},
-  CustomContentView in '..\Sources\UI\CustomContentView.pas' {frCustomContentView},
   UIStr in '..\Sources\UI\UIStr.pas',
   ISelectionTreeImpl in '..\Sources\UI\ISelectionTreeImpl.pas',
   WBCtrl in '..\Sources\UI\WBCtrl.pas',

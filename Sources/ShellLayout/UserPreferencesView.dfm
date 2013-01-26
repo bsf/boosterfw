@@ -1,14 +1,15 @@
 inherited frUserPreferencesView: TfrUserPreferencesView
   Caption = 'frUserPreferencesView'
-  ExplicitHeight = 543
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
     object grAppPreference: TcxDBVerticalGrid
-      Left = 2
-      Top = 42
-      Width = 761
-      Height = 471
+      Left = 0
+      Top = 40
+      Width = 670
+      Height = 475
       Align = alClient
       LayoutStyle = lsMultiRecordView
       OptionsView.ShowEditButtons = ecsbAlways
@@ -24,7 +25,6 @@ inherited frUserPreferencesView: TfrUserPreferencesView
       OnDrawRowHeader = grAppPreferenceDrawRowHeader
       OnDrawValue = grAppPreferenceDrawValue
       DataController.DataSource = AppPreferencesDataSource
-      ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 753
       ExplicitHeight = 443

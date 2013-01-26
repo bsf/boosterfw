@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, CustomContentView, cxGraphics, cxControls, cxLookAndFeels,
+  Dialogs, CustomView, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxContainer, cxEdit, ActnList, cxGroupBox,
   SecurityPoliciesPresenter, ComCtrls, cxStyles, cxCustomData, cxFilter,
   cxData, cxDataStorage, DB, cxDBData, cxGridLevel, cxClasses,
@@ -18,7 +18,7 @@ type
     ID: variant;
   end;
 
-  TfrSecurityPoliciesView = class(TfrCustomContentView, ISecurityPoliciesView)
+  TfrSecurityPoliciesView = class(TfrCustomView, ISecurityPoliciesView)
     cxSplitter1: TcxSplitter;
     grPermissionsLevel1: TcxGridLevel;
     grPermissions: TcxGrid;

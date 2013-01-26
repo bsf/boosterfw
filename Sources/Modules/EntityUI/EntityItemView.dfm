@@ -3,14 +3,14 @@ inherited frEntityItemView: TfrEntityItemView
   Top = 331
   Caption = 'frEntityItemView'
   ExplicitWidth = 320
-  ExplicitHeight = 543
+  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
     object grMain: TcxDBVerticalGrid [0]
       Left = 0
       Top = 40
-      Width = 765
+      Width = 670
       Height = 475
       Align = alClient
       LayoutStyle = lsMultiRecordView
@@ -31,6 +31,7 @@ inherited frEntityItemView: TfrEntityItemView
       TabOrder = 0
       OnKeyDown = grMainKeyDown
       DataController.DataSource = ItemDataSource
+      ExplicitWidth = 765
       Version = 1
     end
     inherited pnButtons: TcxGroupBox

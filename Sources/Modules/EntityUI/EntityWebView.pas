@@ -4,12 +4,12 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, CustomContentView, cxGraphics, cxControls, cxLookAndFeels,
+  Dialogs, CustomView, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxContainer, cxEdit, ActnList, cxGroupBox, OleCtrls,
   SHDocVw, EntityWebPresenter, WBCtrl, WBHelper;
 
 type
-  TfrEntityWebView = class(TfrCustomContentView, IEntityWebView)
+  TfrEntityWebView = class(TfrCustomView, IEntityWebView)
   private
     FWebBrowser: TWebBrowserCtrl;
   protected

@@ -2,21 +2,22 @@ inherited frEntityJournalView: TfrEntityJournalView
   Left = 629
   Caption = 'frEntityJournalView'
   ExplicitWidth = 320
-  ExplicitHeight = 543
+  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
     object tcStates: TcxTabControl
       Left = 0
       Top = 40
-      Width = 765
+      Width = 670
       Height = 475
       Align = alClient
       TabOrder = 1
       LookAndFeel.Kind = lfOffice11
       LookAndFeel.NativeStyle = False
+      ExplicitWidth = 765
       ClientRectBottom = 475
-      ClientRectRight = 765
+      ClientRectRight = 670
       ClientRectTop = 0
       object pnInfo: TcxGroupBox
         Left = 0
@@ -45,16 +46,17 @@ inherited frEntityJournalView: TfrEntityJournalView
         TabOrder = 0
         Visible = False
         Height = 30
-        Width = 765
+        Width = 670
       end
       object grList: TcxGrid
         Left = 0
         Top = 30
-        Width = 765
+        Width = 670
         Height = 445
         Align = alClient
         TabOrder = 1
         LookAndFeel.Kind = lfOffice11
+        ExplicitWidth = 765
         object grJrnView: TcxGridDBTableView
           FilterBox.Position = fpTop
           OnCellDblClick = grJrnViewCellDblClick

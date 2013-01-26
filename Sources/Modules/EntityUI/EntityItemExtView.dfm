@@ -1,6 +1,7 @@
 inherited frEntityItemExtView: TfrEntityItemExtView
   Caption = 'frEntityItemExtView'
-  ExplicitHeight = 543
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
@@ -15,12 +16,13 @@ inherited frEntityItemExtView: TfrEntityItemExtView
       Style.TransparentBorder = False
       TabOrder = 1
       Transparent = True
+      ExplicitWidth = 504
       Height = 475
-      Width = 504
+      Width = 409
       object grHeader: TcxDBVerticalGrid
         Left = 0
         Top = 0
-        Width = 504
+        Width = 409
         Height = 201
         Align = alTop
         LayoutStyle = lsBandsView
@@ -38,29 +40,32 @@ inherited frEntityItemExtView: TfrEntityItemExtView
         OptionsData.Inserting = False
         TabOrder = 0
         DataController.DataSource = HeadDataSource
+        ExplicitWidth = 504
         Version = 1
       end
       object cxSplitter1: TcxSplitter
         Left = 0
         Top = 201
-        Width = 504
+        Width = 409
         Height = 8
         AlignSplitter = salTop
         Control = grHeader
+        ExplicitWidth = 504
       end
       object grDetails: TcxGrid
         Left = 0
         Top = 209
-        Width = 504
+        Width = 409
         Height = 266
         Align = alClient
         TabOrder = 2
         LookAndFeel.Kind = lfOffice11
         OnActiveTabChanged = grDetailsActiveTabChanged
+        ExplicitWidth = 504
       end
     end
     object pnPick: TcxGroupBox
-      Left = 512
+      Left = 417
       Top = 40
       Align = alRight
       Caption = 'pnPick'
@@ -73,6 +78,7 @@ inherited frEntityItemExtView: TfrEntityItemExtView
       StyleFocused.LookAndFeel.Kind = lfOffice11
       StyleHot.LookAndFeel.Kind = lfOffice11
       TabOrder = 2
+      ExplicitLeft = 512
       Height = 475
       Width = 253
       object pnPickCommands: TcxGroupBox
@@ -208,13 +214,14 @@ inherited frEntityItemExtView: TfrEntityItemExtView
       end
     end
     object PickPanelSplitter: TcxSplitter
-      Left = 504
+      Left = 409
       Top = 40
       Width = 8
       Height = 475
       AlignSplitter = salRight
       MinSize = 250
       Control = pnPick
+      ExplicitLeft = 504
     end
   end
   object HeadDataSource: TDataSource

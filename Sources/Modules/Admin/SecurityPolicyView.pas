@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, CustomContentView, cxGraphics, cxControls, cxLookAndFeels,
+  Dialogs, CustomView, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxContainer, cxEdit, ActnList, cxGroupBox,
   SecurityPolicyPresenter, cxStyles, cxCustomData, cxFilter, cxData,
   cxDataStorage, cxSplitter, cxGridLevel, cxGridCustomTableView,
@@ -12,7 +12,7 @@ uses
   UIClasses, SecurityIntf, cxDropDownEdit, Menus, StdCtrls, cxButtons;
 
 type
-  TfrSecurityPolicyView = class(TfrCustomContentView, ISecurityPolicyView)
+  TfrSecurityPolicyView = class(TfrCustomView, ISecurityPolicyView)
     grPermissions: TcxGrid;
     grPermissionsView: TcxGridTableView;
     grPermissionsViewNAME: TcxGridColumn;

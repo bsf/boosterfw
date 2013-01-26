@@ -5,7 +5,7 @@ inherited frSecurityPolicyView: TfrSecurityPolicyView
   ClientHeight = 645
   ClientWidth = 977
   ExplicitWidth = 983
-  ExplicitHeight = 681
+  ExplicitHeight = 673
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
@@ -25,9 +25,6 @@ inherited frSecurityPolicyView: TfrSecurityPolicyView
       Align = alLeft
       TabOrder = 1
       LookAndFeel.Kind = lfOffice11
-      ExplicitLeft = 2
-      ExplicitTop = 42
-      ExplicitHeight = 601
       object grPermissionsView: TcxGridTableView
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
@@ -67,9 +64,6 @@ inherited frSecurityPolicyView: TfrSecurityPolicyView
       Width = 8
       Height = 605
       Control = grPermissions
-      ExplicitLeft = 487
-      ExplicitTop = 42
-      ExplicitHeight = 601
     end
     object TcxGroupBox
       Left = 493
@@ -143,8 +137,6 @@ inherited frSecurityPolicyView: TfrSecurityPolicyView
         Align = alClient
         TabOrder = 1
         LookAndFeel.Kind = lfOffice11
-        ExplicitWidth = 476
-        ExplicitHeight = 558
         object grUsersView: TcxGridTableView
           FilterBox.Visible = fvNever
           DataController.Options = [dcoAssignGroupingValues, dcoAssignMasterDetailKeys, dcoSaveExpanding, dcoImmediatePost]

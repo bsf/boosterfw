@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, CustomContentView, cxGraphics, cxControls, cxLookAndFeels,
+  Dialogs, CustomView, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxContainer, cxEdit, ActnList, cxGroupBox,
   EntityDeskPresenter, cxStyles, DB, cxSplitter, cxInplaceContainer,
   cxVGrid, cxDBVGrid, cxCustomData, cxFilter, cxData, cxDataStorage,
@@ -13,7 +13,7 @@ uses
   UIClasses, cxPC, cxPCdxBarPopupMenu;
 
 type
-  TfrEntityDeskView = class(TfrCustomContentView, IEntityDeskView)
+  TfrEntityDeskView = class(TfrCustomView, IEntityDeskView)
     grParams: TcxDBVerticalGrid;
     cxSplitter1: TcxSplitter;
     ParamsDataSource: TDataSource;

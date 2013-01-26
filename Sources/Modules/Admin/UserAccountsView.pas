@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, CustomContentView, cxGraphics, cxControls, cxLookAndFeels,
+  Dialogs, CustomView, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxContainer, cxEdit, ActnList, cxGroupBox,
   UserAccountsPresenter, cxStyles, cxCustomData, cxFilter, cxData,
   cxDataStorage, cxCheckBox, cxSplitter, cxGridLevel,
@@ -12,7 +12,7 @@ uses
   cxGrid, cxPC, UIClasses, cxPCdxBarPopupMenu;
 
 type
-  TfrUserAccountsView = class(TfrCustomContentView, IUserAccountsView)
+  TfrUserAccountsView = class(TfrCustomView, IUserAccountsView)
     pcMain: TcxPageControl;
     tsUsers: TcxTabSheet;
     tsRoles: TcxTabSheet;

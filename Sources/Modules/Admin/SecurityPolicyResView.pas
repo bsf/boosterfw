@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, CustomContentView, cxGraphics, cxControls, cxLookAndFeels,
+  Dialogs, CustomView, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxContainer, cxEdit, ActnList, cxGroupBox,
   cxCustomData, cxStyles, cxTL, cxTLdxBarBuiltInMenu, Menus, cxFilter,
   cxData, cxDataStorage, cxCheckBox, cxGridLevel, cxGridCustomTableView,
@@ -13,7 +13,7 @@ uses
   SecurityIntf, cxEditRepositoryItems, UIClasses;
 
 type
-  TfrSecurityPolicyResView = class(TfrCustomContentView, ISecurityPolicyResView)
+  TfrSecurityPolicyResView = class(TfrCustomView, ISecurityPolicyResView)
     trRes: TcxTreeList;
     cxSplitter1: TcxSplitter;
     cxGroupBox2: TcxGroupBox;

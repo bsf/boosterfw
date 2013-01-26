@@ -4,13 +4,13 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, CustomContentView, cxGraphics, cxControls, cxLookAndFeels,
+  Dialogs, CustomView, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxContainer, cxEdit, Menus, ActnList, StdCtrls,
   cxButtons, cxGroupBox, cxStyles, cxInplaceContainer, cxVGrid, cxDBVGrid,
   DB, EntityItemPresenter, UIClasses;
 
 type
-  TfrEntityItemView = class(TfrCustomContentView, IEntityItemView)
+  TfrEntityItemView = class(TfrCustomView, IEntityItemView)
     ItemDataSource: TDataSource;
     grMain: TcxDBVerticalGrid;
     procedure grMainKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

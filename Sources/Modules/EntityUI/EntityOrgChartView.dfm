@@ -2,15 +2,16 @@ inherited frEntityOrgChartView: TfrEntityOrgChartView
   Left = 612
   Top = 323
   Caption = 'frEntityOrgChartView'
-  ExplicitHeight = 543
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
     object OrgChart: TdxDbOrgChart
-      Left = 2
-      Top = 42
-      Width = 761
-      Height = 471
+      Left = 0
+      Top = 40
+      Width = 670
+      Height = 475
       Antialiasing = True
       DataSource = OrgChartDataSource
       KeyFieldName = 'ID'
@@ -32,6 +33,7 @@ inherited frEntityOrgChartView: TfrEntityOrgChartView
       Font.Name = 'MS Sans Serif'
       Font.Style = []
       ParentFont = False
+      ExplicitWidth = 765
     end
   end
   object OrgChartDataSource: TDataSource

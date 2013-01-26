@@ -4,13 +4,13 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, CustomContentView, cxGraphics, cxControls, cxLookAndFeels,
+  Dialogs, CustomView, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxContainer, cxEdit, ActnList, cxGroupBox,
   SettingsPresenter, cxPC, db, cxStyles, cxInplaceContainer, cxVGrid,
   cxDBVGrid, StdCtrls, cxRadioGroup, cxPCdxBarPopupMenu;
 
 type
-  TfrSettingsView = class(TfrCustomContentView, ISettingsView)
+  TfrSettingsView = class(TfrCustomView, ISettingsView)
     dsCommonAppSettings: TDataSource;
     dsAliasAppSettings: TDataSource;
     dsHostAppSettings: TDataSource;

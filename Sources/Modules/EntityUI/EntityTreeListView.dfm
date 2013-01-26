@@ -1,11 +1,13 @@
 inherited frEntityTreeListView: TfrEntityTreeListView
   Caption = 'frEntityTreeListView'
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
     object pnInfo: TcxGroupBox
-      Left = 2
-      Top = 42
+      Left = 0
+      Top = 40
       Align = alTop
       PanelStyle.Active = True
       PanelStyle.CaptionIndent = 5
@@ -29,14 +31,15 @@ inherited frEntityTreeListView: TfrEntityTreeListView
       StyleHot.LookAndFeel.Kind = lfOffice11
       TabOrder = 1
       Visible = False
+      ExplicitWidth = 765
       Height = 30
-      Width = 761
+      Width = 670
     end
     object grList: TcxDBTreeList
-      Left = 2
-      Top = 72
-      Width = 761
-      Height = 441
+      Left = 0
+      Top = 70
+      Width = 670
+      Height = 445
       Align = alClient
       Bands = <
         item
@@ -52,6 +55,7 @@ inherited frEntityTreeListView: TfrEntityTreeListView
       RootValue = -1
       TabOrder = 2
       OnDblClick = grListDblClick
+      ExplicitWidth = 765
     end
   end
   object ListDataSource: TDataSource

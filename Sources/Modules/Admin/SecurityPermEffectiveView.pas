@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, CustomContentView, cxGraphics, cxControls, cxLookAndFeels,
+  Dialogs, CustomView, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxContainer, cxEdit, ActnList, cxGroupBox,
   cxStyles, cxCustomData, cxFilter, cxData, cxDataStorage,
   cxGridCustomTableView, cxGridTableView, cxGridLevel, cxClasses,
@@ -12,7 +12,7 @@ uses
   cxCheckBox;
 
 type
-  TfrSecurityPermEffectiveView = class(TfrCustomContentView, ISecurityPermEffectiveView)
+  TfrSecurityPermEffectiveView = class(TfrCustomView, ISecurityPermEffectiveView)
     grList: TcxGrid;
     grListView: TcxGridTableView;
     grListLevel1: TcxGridLevel;

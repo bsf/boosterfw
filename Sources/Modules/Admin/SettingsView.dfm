@@ -19,8 +19,9 @@ inherited frSettingsView: TfrSettingsView
       StyleFocused.LookAndFeel.Kind = lfOffice11
       StyleHot.LookAndFeel.Kind = lfOffice11
       TabOrder = 1
+      ExplicitWidth = 765
       Height = 31
-      Width = 765
+      Width = 670
       object chCommonAppSettings: TcxRadioButton
         Left = 12
         Top = 8
@@ -60,32 +61,30 @@ inherited frSettingsView: TfrSettingsView
     object pcAppSettings: TcxPageControl
       Left = 0
       Top = 71
-      Width = 765
+      Width = 670
       Height = 358
       Align = alClient
       Focusable = False
       TabOrder = 2
       Properties.ActivePage = tsCommonAppSettings
       LookAndFeel.Kind = lfOffice11
-      ExplicitTop = 31
-      ExplicitWidth = 753
-      ExplicitHeight = 412
+      ExplicitWidth = 765
       ClientRectBottom = 354
       ClientRectLeft = 4
-      ClientRectRight = 761
+      ClientRectRight = 666
       ClientRectTop = 24
       object tsCommonAppSettings: TcxTabSheet
         Caption = 'Common'
         ImageIndex = 0
         ExplicitLeft = 0
         ExplicitTop = 0
-        ExplicitWidth = 745
-        ExplicitHeight = 415
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object grCommonAppSettings: TcxDBVerticalGrid
           Left = 0
           Top = 0
-          Width = 753
-          Height = 326
+          Width = 757
+          Height = 330
           Align = alClient
           LayoutStyle = lsMultiRecordView
           OptionsView.ShowEditButtons = ecsbAlways
@@ -100,8 +99,6 @@ inherited frSettingsView: TfrSettingsView
           TabOrder = 0
           OnDrawValue = grCommonAppSettingsDrawValue
           DataController.DataSource = dsCommonAppSettings
-          ExplicitWidth = 745
-          ExplicitHeight = 415
           Version = 1
         end
       end

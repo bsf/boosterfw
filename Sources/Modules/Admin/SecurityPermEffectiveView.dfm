@@ -3,23 +3,26 @@ inherited frSecurityPermEffectiveView: TfrSecurityPermEffectiveView
   Top = 220
   Caption = 'frSecurityPermEffectiveView'
   ClientWidth = 1006
+  ExplicitWidth = 1012
+  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
+    ExplicitWidth = 1006
     Width = 1006
     inherited pnButtons: TcxGroupBox
-      Width = 1002
+      ExplicitWidth = 1006
+      Width = 1006
     end
     object grList: TcxGrid
-      Left = 2
-      Top = 42
-      Width = 1002
-      Height = 479
+      Left = 0
+      Top = 40
+      Width = 1006
+      Height = 475
       Align = alClient
       TabOrder = 1
       LookAndFeel.Kind = lfOffice11
       object grListView: TcxGridTableView
-        NavigatorButtons.ConfirmDelete = False
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
         DataController.Summary.SummaryGroups = <>

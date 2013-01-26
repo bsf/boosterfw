@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, CustomContentView, cxGraphics, cxControls, cxLookAndFeels,
+  Dialogs, CustomView, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxContainer, cxEdit, ActnList, cxGroupBox,
   cxStyles, cxCustomData, cxFilter, cxData, cxDataStorage, DB, cxDBData,
   cxGridLevel, cxClasses, cxGridCustomView, cxGridCustomTableView,
@@ -13,7 +13,7 @@ uses
   cxDBLookupComboBox;
 
 type
-  TfrEntityComplexView = class(TfrCustomContentView, IEntityComplexView)
+  TfrEntityComplexView = class(TfrCustomView, IEntityComplexView)
     HeadDataSource: TDataSource;
     DetailsDataSource: TDataSource;
     grHeader: TcxDBVerticalGrid;

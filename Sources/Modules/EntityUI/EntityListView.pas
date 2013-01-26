@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, CustomContentView, cxGraphics, cxControls, cxLookAndFeels,
+  Dialogs, CustomView, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxContainer, cxEdit, Menus, ActnList, StdCtrls,
   cxButtons, cxGroupBox, cxStyles, cxCustomData, cxFilter, cxData,
   cxDataStorage, DB, cxDBData, cxGridLevel, cxClasses, cxGridCustomView,
@@ -12,7 +12,7 @@ uses
   UIClasses, CoreClasses, EntityListPresenter;
 
 type
-  TfrEntityListView = class(TfrCustomContentView, IEntityListView)
+  TfrEntityListView = class(TfrCustomView, IEntityListView)
     pnInfo: TcxGroupBox;
     ListDataSource: TDataSource;
     grList: TcxGrid;

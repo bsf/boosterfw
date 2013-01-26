@@ -4,15 +4,15 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, CustomContentView, cxGraphics, cxControls, cxLookAndFeels,
+  Dialogs, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxContainer, cxEdit, ActnList, cxGroupBox,
   cxStyles, cxCheckBox, cxVGrid, cxInplaceContainer, UserPreferencesPresenter,
   ShellIntf, Menus, StdCtrls, cxButtons, cxDropDownEdit,
-  cxDBVGrid, cxPC, DB, cxPCdxBarPopupMenu, cxClasses;
+  cxDBVGrid, cxPC, DB, cxPCdxBarPopupMenu, cxClasses, CustomView;
 
 type
 
-  TfrUserPreferencesView = class(TfrCustomContentView, IUserPreferencesView)
+  TfrUserPreferencesView = class(TfrCustomView, IUserPreferencesView)
     AppPreferencesDataSource: TDataSource;
     cxStyleRepository1: TcxStyleRepository;
     cxStyleValueChanged: TcxStyle;

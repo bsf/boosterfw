@@ -8,12 +8,12 @@ uses
   cxLookAndFeelPainters, cxContainer, cxEdit, ActnList, cxGroupBox, Menus,
   cxStyles, cxInplaceContainer, cxVGrid, cxDBVGrid, DB, dxmdaset, StdCtrls,
   cxButtons, cxLabel, cxDBLookupComboBox, cxCheckBox, ReportLauncherPresenter,
-  CustomContentView, cxButtonEdit, cxDropDownEdit, cxCheckComboBox, cxDBCheckComboBox, cxCheckListBox,
+  cxButtonEdit, cxDropDownEdit, cxCheckComboBox, cxDBCheckComboBox, cxCheckListBox,
   cxDBCheckListBox, cxClasses;
 
 
 type
-  TfrReportLauncherView = class(TfrCustomContentView, IReportLauncherView)
+  TfrReportLauncherView = class(TfrCustomView, IReportLauncherView)
     ParamDataSource: TDataSource;
     grParams: TcxDBVerticalGrid;
     grParamsCategoryTop: TcxCategoryRow;

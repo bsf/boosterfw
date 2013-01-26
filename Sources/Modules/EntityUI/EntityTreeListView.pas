@@ -4,13 +4,13 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, CustomContentView, cxGraphics, cxControls, cxLookAndFeels,
+  Dialogs, CustomView, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxContainer, cxEdit, ActnList, cxGroupBox,
   cxCustomData, cxStyles, cxTL, cxTLdxBarBuiltInMenu, cxInplaceContainer,
   cxTLData, cxDBTL, DB, EntityTreeListPresenter, UIClasses;
 
 type
-  TfrEntityTreeListView = class(TfrCustomContentView, IEntityTreeListView)
+  TfrEntityTreeListView = class(TfrCustomView, IEntityTreeListView)
     pnInfo: TcxGroupBox;
     grList: TcxDBTreeList;
     ListDataSource: TDataSource;
