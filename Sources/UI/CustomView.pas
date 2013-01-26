@@ -8,7 +8,7 @@ uses
   cxGroupBox, CoreClasses, CustomPresenter, ShellIntf,
   ImgList, cxGraphics, ActnList, cxButtons,
   UIClasses, db, Contnrs, cxEdit, Typinfo, cxLookAndFeels, dxSkinsCore,
-  dxSkinsDefaultPainters, inifiles, cxStyles;
+  dxSkinsDefaultPainters, inifiles, cxStyles, ICommandBarImpl;
 
 const
   const_PreferenceValueFileName = 'PreferenceValue.ini';
@@ -42,7 +42,9 @@ type
   TfrCustomView = class(TView, IView, ICustomView, IViewOwner)
     ViewControl: TcxGroupBox;
     ActionList: TActionList;
+    pnButtons: TcxGroupBox;
   private
+    FICommandBarImpl: TICommandBarImpl;
 
     FActivateHandler: TViewActivateHandler;
     FDeactivateHandler: TViewDeactivateHandler;
@@ -72,7 +74,8 @@ type
     function GetViewControl: TControl; override;
 
     //ICustomView
-    function CommandBar: ICommandBar; virtual; abstract;
+    function GetCommandBarControl: TcxGroupBox; virtual;
+    function CommandBar: ICommandBar; virtual;
 
     procedure LinkDataSet(ADataSource: TDataSource; ADataSet: TDataSet);
     procedure UnLinkDataSet(ADataSource: TDataSource);
@@ -153,6 +156,13 @@ begin
   for I := 0 to Self.ComponentCount - 1 do
     if Components[I] is TcxStyle then
       TcxStyle(Components[I]).Font.Size := MulDiv(TcxStyle(Components[I]).Font.Size, App.UI.Scale, 100);
+end;
+
+function TfrCustomView.CommandBar: ICommandBar;
+begin
+  if FICommandBarImpl = nil then
+    FICommandBarImpl := TICommandBarImpl.Create(Self, WorkItem, GetCommandBarControl, alLeft);
+  Result := FICommandBarImpl as ICommandBar;
 end;
 
 constructor TfrCustomView.Create(APresenterWI: TWorkItem; const AViewURI: string);
@@ -427,6 +437,11 @@ begin
   if Idx = -1 then
     raise Exception.CreateFmt('Child interface %s not exists', [AName]);
   Result := FChildInterfacesIntf[Idx];  
+end;
+
+function TfrCustomView.GetCommandBarControl: TcxGroupBox;
+begin
+  Result := pnButtons;
 end;
 
 procedure TfrCustomView.RegisterChildInterface(const AName: string;

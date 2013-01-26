@@ -35,6 +35,21 @@ object frCustomView: TfrCustomView
     Transparent = True
     Height = 515
     Width = 670
+    object pnButtons: TcxGroupBox
+      Left = 0
+      Top = 0
+      Align = alTop
+      PanelStyle.Active = True
+      PanelStyle.OfficeBackgroundKind = pobkGradient
+      Style.BorderStyle = ebsNone
+      Style.LookAndFeel.Kind = lfOffice11
+      StyleDisabled.LookAndFeel.Kind = lfOffice11
+      StyleFocused.LookAndFeel.Kind = lfOffice11
+      StyleHot.LookAndFeel.Kind = lfOffice11
+      TabOrder = 0
+      Height = 40
+      Width = 670
+    end
   end
   object ActionList: TActionList
     Left = 62
