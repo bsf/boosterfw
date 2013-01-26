@@ -1,7 +1,7 @@
 unit SecurityPoliciesPresenter;
 
 interface
-uses coreClasses, CustomContentPresenter, UIClasses, cxCustomData, ShellIntf,
+uses coreClasses, CustomPresenter, UIClasses, cxCustomData, ShellIntf,
   sysutils, Contnrs, classes, db, dxmdaset, SecurityIntf, variants,
   AdminConst, UIStr;
 
@@ -26,7 +26,7 @@ type
     procedure ClearPermissions;
   end;
 
-  TSecurityPoliciesPresenter = class(TCustomContentPresenter)
+  TSecurityPoliciesPresenter = class(TCustomPresenter)
   private
     procedure CmdOpen(Sender: TObject);
     procedure FillPoliciesList(APolicies: ISecurityPolicies);

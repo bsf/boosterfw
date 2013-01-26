@@ -2,7 +2,7 @@ unit EntityNewPresenter;
 
 interface
 uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
-  SysUtils, Variants, ShellIntf, CustomContentPresenter, db, UIStr;
+  SysUtils, Variants, ShellIntf, db, UIStr;
 
 type
   IEntityNewView = interface(IContentView)
@@ -11,7 +11,7 @@ type
     procedure CancelEdit;
   end;
 
-  TEntityNewPresenter = class(TCustomContentPresenter)
+  TEntityNewPresenter = class(TCustomPresenter)
   private
     FEntityViewReady: boolean;
     procedure CmdCancel(Sender: TObject);

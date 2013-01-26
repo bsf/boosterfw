@@ -1,7 +1,7 @@
 unit SecurityPermEffectivePresenter;
 
 interface
-uses CustomContentPresenter, UIClasses, coreClasses, ShellIntf, SecurityIntf,
+uses CustomPresenter, UIClasses, coreClasses, ShellIntf, SecurityIntf,
   AdminConst, sysutils, classes, variants, db, UIStr;
 
 
@@ -12,7 +12,7 @@ type
       State: TPermissionState);
   end;
 
-  TSecurityPermEffectivePresenter = class(TCustomContentPresenter)
+  TSecurityPermEffectivePresenter = class(TCustomPresenter)
   protected
     procedure OnViewReady; override;
   end;

@@ -2,7 +2,7 @@ unit EntityJournalPresenter;
 
 interface
 uses classes, CoreClasses, CustomPresenter, UIClasses, SysUtils, Variants,
-  ShellIntf, Controls, CustomContentPresenter, db, StrUtils, UIStr,
+  ShellIntf, Controls, db, StrUtils, UIStr,
   EntityServiceIntf;
 
 
@@ -27,7 +27,7 @@ type
     procedure SetJournalDataSet(ADataSet: TDataSet);
   end;
 
-  TEntityJournalPresenter = class(TCustomContentPresenter)
+  TEntityJournalPresenter = class(TCustomPresenter)
   private
     FIsReady: boolean;
     FSelectorInitialized: boolean;

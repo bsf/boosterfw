@@ -2,7 +2,7 @@ unit EntityTreeListPresenter;
 
 interface
 uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
-  cxClasses, SysUtils, Variants, ShellIntf, CustomContentPresenter,
+  cxClasses, SysUtils, Variants, ShellIntf,
   db, controls, UIStr, strUtils;
 
 const
@@ -23,7 +23,7 @@ type
     procedure SetInfoText(const AText: string);
   end;
 
-  TEntityTreeListPresenter = class(TCustomContentPresenter)
+  TEntityTreeListPresenter = class(TCustomPresenter)
   private
     FCanEdit: boolean;
     FCanOpen: boolean;

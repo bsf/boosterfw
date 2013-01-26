@@ -2,7 +2,7 @@ unit EntityListPresenter;
 
 interface
 uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
-  cxClasses, SysUtils, Variants, ShellIntf, CustomContentPresenter,
+  cxClasses, SysUtils, Variants, ShellIntf,
   db, controls, UIStr, StrUtils;
 
 const
@@ -23,7 +23,7 @@ type
     procedure SetInfoText(const AText: string);
   end;
 
-  TEntityListPresenter = class(TCustomContentPresenter)
+  TEntityListPresenter = class(TCustomPresenter)
   const
     ENT_VIEW_LIST = 'List';
   private

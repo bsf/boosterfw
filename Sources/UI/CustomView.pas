@@ -74,8 +74,8 @@ type
     function GetViewControl: TControl; override;
 
     //ICustomView
-    function GetCommandBarControl: TcxGroupBox; virtual;
-    function CommandBar: ICommandBar; virtual;
+    function GetCommandBarAlignment: TButtonAlignment; virtual;
+    function CommandBar: ICommandBar;
 
     procedure LinkDataSet(ADataSource: TDataSource; ADataSet: TDataSet);
     procedure UnLinkDataSet(ADataSource: TDataSource);
@@ -161,7 +161,8 @@ end;
 function TfrCustomView.CommandBar: ICommandBar;
 begin
   if FICommandBarImpl = nil then
-    FICommandBarImpl := TICommandBarImpl.Create(Self, WorkItem, GetCommandBarControl, alLeft);
+    FICommandBarImpl := TICommandBarImpl.Create(Self, WorkItem, pnButtons,
+      GetCommandBarAlignment);
   Result := FICommandBarImpl as ICommandBar;
 end;
 
@@ -436,12 +437,12 @@ begin
   Idx := FChildInterfaces.IndexOf(AName);
   if Idx = -1 then
     raise Exception.CreateFmt('Child interface %s not exists', [AName]);
-  Result := FChildInterfacesIntf[Idx];  
+  Result := FChildInterfacesIntf[Idx];
 end;
 
-function TfrCustomView.GetCommandBarControl: TcxGroupBox;
+function TfrCustomView.GetCommandBarAlignment: TButtonAlignment;
 begin
-  Result := pnButtons;
+  Result := alLeft;
 end;
 
 procedure TfrCustomView.RegisterChildInterface(const AName: string;

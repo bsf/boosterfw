@@ -11,9 +11,15 @@ inherited frAboutView: TfrAboutView
     ExplicitHeight = 533
     Height = 533
     Width = 695
+    inherited pnButtons: TcxGroupBox
+      TabOrder = 2
+      Visible = False
+      ExplicitWidth = 695
+      Width = 695
+    end
     object cxGroupBox2: TcxGroupBox
       Left = 0
-      Top = 0
+      Top = 40
       Align = alLeft
       PanelStyle.Active = True
       PanelStyle.OfficeBackgroundKind = pobkStyleColor
@@ -23,7 +29,7 @@ inherited frAboutView: TfrAboutView
       StyleFocused.LookAndFeel.Kind = lfOffice11
       StyleHot.LookAndFeel.Kind = lfOffice11
       TabOrder = 0
-      Height = 533
+      Height = 493
       Width = 407
       object cxGroupBox1: TcxGroupBox
         AlignWithMargins = True
@@ -943,7 +949,6 @@ inherited frAboutView: TfrAboutView
       SpeedButtonOptions.Transparent = True
       TabOrder = 1
       OnClick = btCloseClick
-      ExplicitTop = 456
     end
   end
   inherited ActionList: TActionList

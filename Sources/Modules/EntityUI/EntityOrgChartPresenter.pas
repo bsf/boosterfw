@@ -1,7 +1,7 @@
 unit EntityOrgChartPresenter;
 
 interface
-uses CustomContentPresenter, EntityServiceIntf, CoreClasses,
+uses CustomPresenter, EntityServiceIntf, CoreClasses,
   UIClasses, db, sysutils, UIStr;
 
 const
@@ -15,7 +15,7 @@ type
     procedure Zoom;
   end;
 
-  TEntityOrgChartPresenter = class(TCustomContentPresenter)
+  TEntityOrgChartPresenter = class(TCustomPresenter)
   private
     procedure CmdReload(Sender: TObject);
     procedure CmdRotate(Sender: TObject);

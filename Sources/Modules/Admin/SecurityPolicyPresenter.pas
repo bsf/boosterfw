@@ -1,7 +1,7 @@
 unit SecurityPolicyPresenter;
 
 interface
-uses CustomContentPresenter, UIClasses, coreClasses, ShellIntf, SecurityIntf,
+uses CustomPresenter, UIClasses, coreClasses, ShellIntf, SecurityIntf,
   AdminConst, sysutils, classes, variants, UIStr;
 
 const
@@ -20,7 +20,7 @@ type
     function UserSelection: ISelection;
   end;
 
-  TSecurityPolicyPresenter = class(TCustomContentPresenter)
+  TSecurityPolicyPresenter = class(TCustomPresenter)
   private
     FPolicy: ISecurityPolicy;
     function View: ISecurityPolicyView;

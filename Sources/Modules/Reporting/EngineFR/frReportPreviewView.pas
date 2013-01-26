@@ -11,7 +11,6 @@ uses
 
 type
   TfrfrReportPreviewView = class(TfrCustomView, IfrReportPreviewView)
-    pnButtons: TcxGroupBox;
     btClose: TcxButton;
     frxPreview: TfrxPreview;
     btPrint: TcxButton;

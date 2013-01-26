@@ -1,7 +1,7 @@
 unit UserAccountsPresenter;
 
 interface
-uses coreClasses, CustomContentPresenter, UIClasses, ShellIntf,
+uses coreClasses, CustomPresenter, UIClasses, ShellIntf,
   sysutils, Contnrs, classes, SecurityIntf, AdminConst, UIStr;
 
 const
@@ -29,7 +29,7 @@ type
     function RoleUsersSelection: ISelection;
   end;
 
-  TUserAccountsPresenter = class(TCustomContentPresenter)
+  TUserAccountsPresenter = class(TCustomPresenter)
   private
     FAccounts: IUserAccounts;
     function View: IUserAccountsView;

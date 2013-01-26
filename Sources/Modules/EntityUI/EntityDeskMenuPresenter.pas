@@ -3,7 +3,7 @@ unit EntityDeskMenuPresenter;
 interface
 
 uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
-  SysUtils, Variants, ShellIntf, CustomContentPresenter, db, UIStr;
+  SysUtils, Variants, ShellIntf, db, UIStr;
 
 type
   IEntityDeskMenuView = interface(IContentView)
@@ -11,7 +11,7 @@ type
     procedure LinkItems(ADataSet: TDataSet);
   end;
 
-  TEntityDeskMenuPresenter = class(TCustomContentPresenter)
+  TEntityDeskMenuPresenter = class(TCustomPresenter)
   private
     function View: IEntityDeskMenuView;
     procedure CmdItemHandler(Sender: TObject);

@@ -1,7 +1,7 @@
 unit EntityComplexPresenter;
 
 interface
-uses CoreClasses, CustomContentPresenter, ShellIntf, EntityServiceIntf, SysUtils,
+uses CoreClasses, CustomPresenter, ShellIntf, EntityServiceIntf, SysUtils,
   variants, db,  UIClasses, StrUtils, controls, UIStr;
 
 const
@@ -27,7 +27,7 @@ type
     function DetailSelection: ISelection;
   end;
 
-  TEntityComplexPresenter = class(TCustomContentPresenter)
+  TEntityComplexPresenter = class(TCustomPresenter)
   private
     procedure CmdHeadEdit(Sender: TObject);
     procedure CmdDetailCollect(Sender: TObject);

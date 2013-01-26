@@ -11,20 +11,8 @@ inherited frfrReportPreviewView: TfrfrReportPreviewView
     ExplicitHeight = 525
     Height = 525
     Width = 933
-    object pnButtons: TcxGroupBox
-      Left = 0
-      Top = 0
-      Align = alTop
-      PanelStyle.Active = True
-      PanelStyle.OfficeBackgroundKind = pobkGradient
-      Style.BorderStyle = ebsNone
-      Style.LookAndFeel.Kind = lfOffice11
-      Style.TransparentBorder = True
-      StyleDisabled.LookAndFeel.Kind = lfOffice11
-      StyleFocused.LookAndFeel.Kind = lfOffice11
-      StyleHot.LookAndFeel.Kind = lfOffice11
-      TabOrder = 0
-      Height = 40
+    inherited pnButtons: TcxGroupBox
+      ExplicitWidth = 933
       Width = 933
       object btClose: TcxButton
         Left = 4
@@ -147,10 +135,6 @@ inherited frfrReportPreviewView: TfrfrReportPreviewView
       OnClick = frxPreviewClick
       OnPageChanged = frxPreviewPageChanged
       UseReportHints = True
-      ExplicitLeft = 2
-      ExplicitTop = 42
-      ExplicitWidth = 929
-      ExplicitHeight = 481
     end
   end
   inherited ActionList: TActionList

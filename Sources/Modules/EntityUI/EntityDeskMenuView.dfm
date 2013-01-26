@@ -1,22 +1,20 @@
 inherited frEntityDeskMenuView: TfrEntityDeskMenuView
   Caption = 'frEntityDeskMenuView'
-  ExplicitWidth = 676
-  ExplicitHeight = 543
   PixelsPerInch = 96
   TextHeight = 13
   inherited ViewControl: TcxGroupBox
+    inherited pnButtons: TcxGroupBox
+      TabOrder = 1
+      Visible = False
+    end
     object grMenu: TcxGrid
       Left = 0
-      Top = 0
+      Top = 40
       Width = 670
-      Height = 515
+      Height = 475
       Align = alClient
       BorderStyle = cxcbsNone
       TabOrder = 0
-      ExplicitLeft = 3
-      ExplicitTop = 3
-      ExplicitWidth = 664
-      ExplicitHeight = 509
       object grMenuView: TcxGridDBCardView
         OnCellClick = grMenuViewCellClick
         DataController.DataSource = dsItems

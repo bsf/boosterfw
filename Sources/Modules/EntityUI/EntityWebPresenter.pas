@@ -3,7 +3,7 @@ unit EntityWebPresenter;
 interface
 
 uses classes, CoreClasses, CustomPresenter, EntityServiceIntf, UIClasses,
-  SysUtils, Variants, ShellIntf, CustomContentPresenter, db,
+  SysUtils, Variants, ShellIntf, db,
   UIStr, SHDocVw, MSHTML, strUtils, WBCtrl;
 
 const
@@ -15,7 +15,7 @@ type
     function WebBrowser: TWebBrowserCtrl;
   end;
 
-  TEntityWebPresenter = class(TCustomContentPresenter)
+  TEntityWebPresenter = class(TCustomPresenter)
   private
     FEntityViewReady: boolean;
 

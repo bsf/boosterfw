@@ -1,6 +1,6 @@
 unit UserPreferencesPresenter;
 interface
-uses coreClasses, CustomContentPresenter, UIClasses, cxCustomData, ShellIntf,
+uses coreClasses, CustomPresenter, UIClasses, cxCustomData, ShellIntf,
   cxVGrid, sysutils, Contnrs, classes, ConfigServiceIntf, db,
   dxmdaset, EntityServiceIntf, variants, ShellLayoutStr, UIStr;
 
@@ -17,7 +17,7 @@ type
     function GetSelectedAppSetting: string;
   end;
 
-  TUserPreferencesPresenter = class(TCustomContentPresenter)
+  TUserPreferencesPresenter = class(TCustomPresenter)
   private
     FAppPreferencesData: TdxMemData;
     procedure CmdResetValue(Sender: TObject);

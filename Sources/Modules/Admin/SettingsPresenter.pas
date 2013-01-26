@@ -1,7 +1,7 @@
 unit SettingsPresenter;
 
 interface
-uses coreClasses, CustomContentPresenter, UIClasses, ShellIntf,
+uses coreClasses, CustomPresenter, UIClasses, ShellIntf,
   sysutils, Contnrs, classes, ConfigServiceIntf, db,
   dxmdaset, EntityServiceIntf, variants, AdminConst, UIStr;
 
@@ -17,7 +17,7 @@ type
     procedure BindAppSettingsData(ACommonData, AAliasData, AHostData: TDataSet);
   end;
 
-  TSettingsPresenter = class(TCustomContentPresenter)
+  TSettingsPresenter = class(TCustomPresenter)
   private
     FCommonAppSettingsData: TdxMemData;
     FAliasAppSettingsData: TdxMemData;
