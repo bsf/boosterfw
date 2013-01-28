@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, cxLookAndFeelPainters, cxControls, cxContainer,  Menus,
-  cxGroupBox, CoreClasses, CustomPresenter, ShellIntf,
+  cxGroupBox, CoreClasses, ShellIntf,
   ImgList, cxGraphics, ActnList, cxButtons,
   UIClasses, db, Contnrs, cxEdit, Typinfo, cxLookAndFeels, dxSkinsCore,
   dxSkinsDefaultPainters, inifiles, cxStyles, ICommandBarImpl;
@@ -111,10 +111,9 @@ type
     //
     procedure Initialize; virtual;
   public
-    constructor Create(APresenterWI: TWorkItem; const AViewURI: string); override;
+    constructor Create(AWorkItem: TWorkItem; const AViewURI: string); override;
     destructor Destroy; override;
 
-    procedure RegisterHelper(AHelperClass: TViewHelperClass);
     procedure RegisterChildInterface(const AName: string; AInterface: IInterface);
 
   end;
@@ -166,7 +165,7 @@ begin
   Result := FICommandBarImpl as ICommandBar;
 end;
 
-constructor TfrCustomView.Create(APresenterWI: TWorkItem; const AViewURI: string);
+constructor TfrCustomView.Create(AWorkItem: TWorkItem; const AViewURI: string);
 begin
   inherited;
 
@@ -359,11 +358,6 @@ procedure TfrCustomView.OnViewMouseWheel(AView: TControl; Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 begin
 
-end;
-
-procedure TfrCustomView.RegisterHelper(AHelperClass: TViewHelperClass);
-begin
-  FViewHelperClasses.Add(AHelperClass);
 end;
 
 function TfrCustomView.GetHelperList(const AHelperInterface: TGUID): TInterfaceList;

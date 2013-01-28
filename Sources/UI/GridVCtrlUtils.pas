@@ -104,11 +104,6 @@ type
 
 implementation
 
-procedure GridUtilsAddon(AForm: TfrCustomView);
-begin
-  AForm.RegisterHelper(TcxVGridViewHelper);
-
-end;
 
 { TcxVGridViewHelper }
 
