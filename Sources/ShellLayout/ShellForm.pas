@@ -247,8 +247,9 @@ begin
     NavBar.Visible := false;
     SplitterLeft.Visible := false;
     BarStatus.Visible := false;
-  end
-  else if (FWorkItem.Services[IUIService] as IUIService).ShellLayoutKind = slFullDesk then
+  end;
+
+  if (FWorkItem.Services[IUIService] as IUIService).ShellLayoutKind = slFullDesk then
   begin
     Self.BorderStyle := bsNone;
   end;
