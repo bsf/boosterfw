@@ -118,7 +118,7 @@ begin
 
   View.Selection.SetSelectionChangedHandler(SelectionChangedHandler);
   View.SetListDataSet(GetEVList.DataSet);
-  if GetEVList.DataSet.FieldByName('Name') <> nil then
+  if GetEVList.DataSet.FindField('Name') <> nil then
     GetView.FocusDataSetControl(GetEVList.DataSet, 'Name');
   inherited;
 
