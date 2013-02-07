@@ -21,6 +21,7 @@ type
     procedure UpdateApplication;
   protected
     procedure AddServices; override;
+    procedure RemoveServices; override;
     procedure OnLoadModule(const AModuleName, AInfo: string; Kind: TModuleKind);
     //IApp
     function Version: string;
@@ -231,6 +232,15 @@ end;
 procedure TApp.OnLoadModule(const AModuleName, AInfo: string; Kind: TModuleKind);
 begin
 
+end;
+
+procedure TApp.RemoveServices;
+begin
+  try
+    (WorkItem.Services[IEntityService] as IEntityService).Disconnect;
+  except
+
+  end;
 end;
 
 end.

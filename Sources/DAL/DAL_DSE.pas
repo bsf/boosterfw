@@ -1,8 +1,8 @@
 unit DAL_DSE;
 
 interface
-uses DAL, classes, provider, SqlExpr, DSConnect, DBClient, DbxDatasnap,
-  DSHTTPLayer, DAL_DSE_ClientProxy;
+uses DAL, classes, provider, SqlExpr, Datasnap.DSConnect, DBClient, DbxDatasnap,
+  Datasnap.DSHTTPLayer, DAL_DSE_ClientProxy, IndyPeerImpl;
 
 type
   TDAL_DSE = class(TCustomDAL)
@@ -71,14 +71,12 @@ end;
 
 destructor TDAL_DSE.Destroy;
 begin
-
   inherited;
 end;
 
 procedure TDAL_DSE.Disconnect;
 begin
-  inherited;
-
+  FDSProviderConnection.Connected := false;
 end;
 
 class function TDAL_DSE.EngineName: string;

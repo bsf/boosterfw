@@ -135,7 +135,7 @@ end;
 
 procedure TEntityPickListPresenter.OnViewShow;
 begin
-  SetFilter(WorkItem.State['Filter']);
+  SetFilter(WorkItem.State['FilterText']);
 end;
 
 procedure TEntityPickListPresenter.SelectionChangedHandler;

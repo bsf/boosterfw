@@ -27,7 +27,7 @@ object ServerContainer1: TServerContainer1
     OnGetClass = DSServerClass1GetClass
     Server = DSServer1
     LifeCycle = 'Session'
-    Left = 208
+    Left = 216
     Top = 19
   end
 end

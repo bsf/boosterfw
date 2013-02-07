@@ -5,7 +5,7 @@ interface
 uses
   SysUtils, Classes, 
   DSHTTPCommon, DSHTTP,
-  DSServer, DSCommonServer, DSAuth; 
+  DSServer, DSCommonServer, DSAuth, IndyPeerImpl;
 
 type
   TServerContainer1 = class(TDataModule)

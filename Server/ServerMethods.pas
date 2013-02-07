@@ -22,6 +22,7 @@ type
     function GetProvider(const ProviderName: string): TCustomProvider; override;
   public
     constructor Create(AOwner: TComponent); override;
+    procedure BeforeDestruction; override;
     procedure Connect(const AUserName, APassword: string);
   end;
 
@@ -30,6 +31,12 @@ implementation
 {$R *.dfm}
 
 { TBoosterFrameWork }
+
+procedure TBoosterFrameWork.BeforeDestruction;
+begin
+  FDAL.Disconnect;
+  inherited;
+end;
 
 procedure TBoosterFrameWork.Connect(const AUserName, APassword: string);
 begin

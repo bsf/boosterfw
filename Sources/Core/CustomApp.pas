@@ -26,6 +26,7 @@ type
     procedure UnLoadModules;
   protected
     procedure AddServices; virtual;
+    procedure RemoveServices; virtual;
   public
     class function AppInstance: TCustomApplication;
     class var ShellFormClass: TShellFormClass;
@@ -96,6 +97,11 @@ begin
 
 end;
 
+procedure TCustomApplication.RemoveServices;
+begin
+
+end;
+
 procedure TCustomApplication.Run;
 begin
 
@@ -133,7 +139,10 @@ begin
 
   UnLoadModules;
 
+  RemoveServices;
+
   FreeAndNil(FWorkItem);
+
 end;
 
 

@@ -492,7 +492,6 @@ begin
   FEntities.Free;
   FEntityList.Free;
   FSchemeInfoDictionary.Free;
-
   inherited;
 end;
 
@@ -504,6 +503,7 @@ begin
 
   if FDAL <> nil then
   begin
+    FConnection.Connection := nil;
     FDAL.Disconnect;
     FDAL.Free;
     FDAL := nil;

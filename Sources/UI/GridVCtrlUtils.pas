@@ -17,7 +17,7 @@ const
 type
   TPickListActivityParams = record
   const
-    Filter = 'FILTER';
+    Filter = 'FILTERTEXT';
   end;
 
   TPickListActivityOuts = record
@@ -1013,7 +1013,7 @@ var
   dataSet: TDataSet;
   OldValue: Variant;
   OldIDValue: Variant;
-
+  fieldReadOnly: boolean;
   fClear: boolean;
   I: integer;
 
@@ -1088,6 +1088,7 @@ begin
         if Assigned(fieldID) then
           fieldID.Value := activity.Outs[TPickListActivityOuts.ID];
 
+        dataSet.Post;
         //DataOutExt
         for I := 0 to editorOptions.Count - 1 do
         begin
@@ -1098,7 +1099,14 @@ begin
             dataValueName := editorOptions.Values[optionName];
             dataValueField := dataSet.FindField(dataValueName);
             if dataValueField <> nil then
-              dataValueField.Value := activity.Outs[dataName]
+            begin
+              fieldReadOnly := dataValueField.ReadOnly;
+              dataValueField.ReadOnly := false;
+              dataSet.Edit;
+              dataValueField.Value := activity.Outs[dataName];
+              dataSet.Post;
+              dataValueField.ReadOnly := fieldReadOnly;
+            end
             else
               WorkItem.State[dataValueName] := activity.Outs[dataName];
           end;

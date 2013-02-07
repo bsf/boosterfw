@@ -68,7 +68,7 @@ object Form1: TForm1
     Top = 120
   end
   object frxReport1: TfrxReport
-    Version = '4.10.5'
+    Version = '4.12'
     DotMatrixReport = False
     IniFile = '\Software\Fast Reports'
     PreviewOptions.Buttons = [pbPrint, pbLoad, pbSave, pbExport, pbZoom, pbFind, pbOutline, pbPageSetup, pbTools, pbEdit, pbNavigator, pbExportQuick]
@@ -114,6 +114,7 @@ object Form1: TForm1
       'lc_ctype=WIN1251')
     LoginPrompt = False
     DefaultTransaction = IBTransaction1
+    ServerType = 'IBServer'
     SQLDialect = 1
     Left = 264
     Top = 144
@@ -280,5 +281,21 @@ object Form1: TForm1
   object DataSetProvider1: TDataSetProvider
     Left = 432
     Top = 168
+  end
+  object SQLConnection1: TSQLConnection
+    DriverName = 'Datasnap'
+    Params.Strings = (
+      'DriverUnit=Data.DBXDataSnap'
+      'HostName=localhost'
+      'Port=8080'
+      'CommunicationProtocol=http'
+      'DatasnapContext=datasnap/'
+      
+        'DriverAssemblyLoader=Borland.Data.TDBXClientDriverLoader,Borland' +
+        '.Data.DbxClientDriver,Version=16.0.0.0,Culture=neutral,PublicKey' +
+        'Token=91d62ebb5b0d1b1b'
+      'Filters={}')
+    Left = 576
+    Top = 72
   end
 end
