@@ -96,7 +96,6 @@
 			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityComplexView.pas">
 				<Form>frEntityComplexView</Form>
 			</DCCReference>
-			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityController.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityDeskPresenter.pas"/>
 			<DCCReference Include="..\..\Sources\Modules\EntityUI\EntityDeskView.pas">
 				<Form>frEntityDeskView</Form>

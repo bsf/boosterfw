@@ -45,7 +45,6 @@ contains
   EntityCollectView in '..\..\Sources\Modules\EntityUI\EntityCollectView.pas' {frEntityCollectView},
   EntityComplexPresenter in '..\..\Sources\Modules\EntityUI\EntityComplexPresenter.pas',
   EntityComplexView in '..\..\Sources\Modules\EntityUI\EntityComplexView.pas' {frEntityComplexView},
-  EntityController in '..\..\Sources\Modules\EntityUI\EntityController.pas',
   EntityDeskPresenter in '..\..\Sources\Modules\EntityUI\EntityDeskPresenter.pas',
   EntityDeskView in '..\..\Sources\Modules\EntityUI\EntityDeskView.pas' {frEntityDeskView},
   EntityItemPresenter in '..\..\Sources\Modules\EntityUI\EntityItemPresenter.pas',
